@@ -1,0 +1,112 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "react", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "warn",
+    "pedantic": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "env": {
+    "builtin": true,
+    "es2022": true
+  },
+  "ignorePatterns": [
+    "**/.agents/**",
+    "**/dist/**",
+    "**/.expo/**",
+    "**/.turbo/**",
+    "**/*.d.ts",
+    "dist/**",
+    "*.min.js",
+    "node_modules",
+    ".next",
+    "build",
+    ".turbo",
+    "coverage",
+    "*.min.js",
+    ".vercel",
+    ".env",
+    ".env.local"
+  ],
+  "rules": {
+    "no-console": "warn",
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-definitions": ["warn", "type"],
+    "typescript/consistent-type-imports": [
+      "warn",
+      {
+        "prefer": "type-imports",
+        "fixStyle": "inline-type-imports"
+      }
+    ],
+    "typescript/prefer-nullish-coalescing": "warn",
+    "typescript/prefer-optional-chain": "warn",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/no-unnecessary-condition": "warn",
+    "unicorn/filename-case": "off",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-module": "off",
+    "unicorn/no-array-reduce": "off",
+    "unicorn/no-nested-ternary": "off",
+    "import/no-named-export": "off",
+    "import/prefer-default-export": "off",
+    "import/exports-last": "off",
+    "import/group-exports": "off",
+    "import/no-namespace": "off",
+    "import/consistent-type-specifier-style": "off",
+    "import/no-unassigned-import": "off",
+    "eslint/sort-imports": "off",
+    "eslint/sort-keys": "off",
+    "eslint/no-ternary": "off",
+    "eslint/no-nested-ternary": "off",
+    "eslint/arrow-body-style": "off",
+    "eslint/no-implicit-coercion": "off",
+    "eslint/prefer-destructuring": "off",
+    "eslint/no-magic-numbers": "off",
+    "eslint/func-names": "off",
+    "eslint/func-style": "off",
+    "eslint/curly": "off",
+    "eslint/max-statements": "off",
+    "eslint/id-length": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-max-depth": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/no-unstable-nested-components": [
+      "warn",
+      {
+        "allowAsProps": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["scripts/**/*.ts"],
+      "rules": {
+        "no-console": "off",
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      "files": ["sst.config.ts"],
+      "rules": {
+        "typescript/triple-slash-reference": "off"
+      }
+    },
+    {
+      "files": ["apps/server/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["apps/native/lib/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx,js,jsx}"
+      exclude: "**/*.d.ts"
+      run: bunx oxlint {staged_files}
+    format:
+      glob: "*.{ts,tsx,js,jsx,json,md,yml,yaml,toml}"
+      exclude: "{.agents/**,**/src/migrations/**}"
+      run: bunx oxfmt --write {staged_files}
+      stage_fixed: true
+
+pre-push:
+  commands:
+    types:
+      run: bun run check:types
