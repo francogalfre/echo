@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@echo/ui/components/button";
+import { cn } from "@echo/ui/lib/utils";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
@@ -42,7 +43,10 @@ export const SocialButtons = () => {
           variant="outline"
           disabled={pending !== null}
           onClick={continueWith(id)}
-          className="h-10 w-full justify-center gap-2 text-sm"
+          className={cn(
+            "relative h-10 w-full justify-center gap-2 text-sm",
+            lastMethod === id && "border-foreground/30 bg-muted/40 hover:bg-muted",
+          )}
         >
           {pending === id ? (
             <IconLoader2 className="size-4 animate-spin" />
@@ -51,7 +55,7 @@ export const SocialButtons = () => {
           )}
           Continue with {label}
           {lastMethod === id ? (
-            <span className="ml-1 text-[10px] font-medium text-muted-foreground">
+            <span className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
               Last used
             </span>
           ) : null}
