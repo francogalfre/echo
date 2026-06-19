@@ -11,10 +11,16 @@
     "@echo/assets": "workspace:*",
     "@echo/env": "workspace:*",
     "@echo/ui": "workspace:*",
+    "@hookform/resolvers": "^5.4.0",
+    "@tabler/icons-react": "^3.44.0",
     "babel-plugin-react-compiler": "^1.0.0",
+    "better-auth": "catalog:",
+    "lucide-react": "catalog:",
     "next": "^16.2.0",
     "react": "catalog:",
-    "react-dom": "catalog:"
+    "react-dom": "catalog:",
+    "react-hook-form": "^7.79.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@echo/config": "workspace:*",

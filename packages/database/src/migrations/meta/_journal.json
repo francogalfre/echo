@@ -8,6 +8,13 @@
       "when": 1781839311149,
       "tag": "0000_nappy_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781842424495,
+      "tag": "0001_redundant_leper_queen",
+      "breakpoints": true
     }
   ]
 }
