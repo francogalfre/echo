@@ -23,6 +23,9 @@ export const plugins = [
       portal(),
     ],
   }),
-  organization(),
+  organization({
+    organizationLimit: 1,
+    creatorRole: "owner",
+  }),
   lastLoginMethod(),
 ];

@@ -44,7 +44,7 @@ export const SocialButtons = () => {
           disabled={pending !== null}
           onClick={continueWith(id)}
           className={cn(
-            "relative h-10 w-full justify-center gap-2 text-sm",
+            "relative h-12 w-full justify-center gap-2 text-sm",
             lastMethod === id && "border-foreground/30 bg-muted/40 hover:bg-muted",
           )}
         >

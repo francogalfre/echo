@@ -5,24 +5,39 @@ import { IconLayoutDashboard, IconLoader2, IconLogout } from "@tabler/icons-reac
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-import { signOut, useSession } from "@/lib/auth-client";
+import { authClient, signOut, useSession } from "@/lib/auth-client";
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const { data: session, isPending: sessionPending } = useSession();
+  const { data: organizations, isPending: organizationsPending } =
+    authClient.useListOrganizations();
+  const { data: activeOrganization } = authClient.useActiveOrganization();
 
   useEffect(() => {
-    if (!isPending && !session) {
+    if (!sessionPending && !session) {
       router.replace("/login");
     }
-  }, [isPending, session, router]);
+  }, [sessionPending, session, router]);
+
+  useEffect(() => {
+    if (!organizationsPending && organizations && organizations.length === 0) {
+      router.replace("/onboarding");
+    }
+  }, [organizationsPending, organizations, router]);
 
   const handleSignOut = async () => {
     await signOut();
     router.replace("/login");
   };
 
-  if (isPending || !session) {
+  const isLoading =
+    sessionPending ||
+    !session ||
+    organizationsPending ||
+    (organizations?.length ?? 0) === 0;
+
+  if (isLoading) {
     return (
       <main className="flex min-h-svh items-center justify-center">
         <IconLoader2 className="size-5 animate-spin text-muted-foreground" />
@@ -36,7 +51,7 @@ const DashboardPage = () => {
         <div className="flex items-center gap-2">
           <IconLayoutDashboard className="size-5 text-primary" />
           <span className="font-display text-lg font-semibold tracking-tight">
-            Dashboard
+            {activeOrganization?.name ?? "Dashboard"}
           </span>
         </div>
         <Button variant="outline" className="h-9 gap-2 text-sm" onClick={handleSignOut}>
