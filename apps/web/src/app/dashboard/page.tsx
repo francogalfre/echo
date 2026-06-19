@@ -48,8 +48,18 @@ const DashboardPage = () => {
   return (
     <main className="mx-auto flex min-h-svh max-w-3xl flex-col px-4 py-8">
       <header className="flex items-center justify-between border-b border-border pb-4">
-        <div className="flex items-center gap-2">
-          <IconLayoutDashboard className="size-5 text-primary" />
+        <div className="flex items-center gap-2.5">
+          {activeOrganization?.logo ? (
+            <img
+              src={activeOrganization.logo}
+              alt=""
+              className="size-7 rounded-md object-cover"
+            />
+          ) : (
+            <span className="flex size-7 items-center justify-center rounded-md bg-muted text-muted-foreground">
+              <IconLayoutDashboard className="size-4" />
+            </span>
+          )}
           <span className="font-display text-lg font-semibold tracking-tight">
             {activeOrganization?.name ?? "Dashboard"}
           </span>
