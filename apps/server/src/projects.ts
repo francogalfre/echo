@@ -5,6 +5,7 @@ import {
   ORGANIZATION_BUCKET,
   organizationLogoPath,
   organizationLogoUrl,
+  supabaseProjectUrl,
 } from "@echo/db/storage";
 import { env } from "@echo/env/server";
 import { and, eq } from "drizzle-orm";
@@ -17,7 +18,7 @@ const EXTENSION_BY_TYPE = new Map<string, string>([
   ["image/svg+xml", "svg"],
 ]);
 
-const MAX_LOGO_BYTES = 1024 * 1024; // 1 MB, matches the bucket limit
+const MAX_LOGO_BYTES = 1024 * 1024;
 
 export const projects = new Hono();
 
@@ -62,7 +63,7 @@ projects.post("/logo", async (c) => {
   const path = organizationLogoPath(organizationId, filename);
 
   const upload = await fetch(
-    `${env.SUPABASE_URL}/storage/v1/object/${ORGANIZATION_BUCKET}/${path}`,
+    `${supabaseProjectUrl(env.SUPABASE_URL)}/storage/v1/object/${ORGANIZATION_BUCKET}/${path}`,
     {
       method: "POST",
       headers: {
