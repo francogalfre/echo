@@ -12,15 +12,15 @@ export const NavLink = ({
   <Link
     href={href as Route}
     className={[
-      "group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors duration-100",
+      "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
       active
-        ? "bg-accent/60 font-medium text-foreground"
+        ? "bg-foreground/5 text-foreground"
         : "text-muted-foreground hover:text-foreground",
     ].join(" ")}
   >
     <Icon
       className={[
-        "size-4 shrink-0 transition-colors duration-100",
+        "size-4.5 shrink-0 transition-colors duration-300",
         active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground",
       ].join(" ")}
     />

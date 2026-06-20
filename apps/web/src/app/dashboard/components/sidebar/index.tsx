@@ -1,11 +1,11 @@
 "use client";
 
-import isotipo from "@echo/assets/isotipo/accent.png";
+import imagotipo from "@echo/assets/imagotipo/dark.png";
+import { Skeleton } from "@echo/ui/components/skeleton";
 import {
   IconBook,
   IconHelp,
-  IconHome2,
-  IconLoader2,
+  IconHome,
   IconMessageCircle,
   IconRadar2,
 } from "@tabler/icons-react";
@@ -23,7 +23,7 @@ import { UpgradeCard } from "./upgrade-card";
 import { UserMenu } from "./user-menu";
 
 const navItems: NavItem[] = [
-  { label: "Home", href: "/dashboard", icon: IconHome2 },
+  { label: "Home", href: "/dashboard", icon: IconHome },
   { label: "Feedback", href: "/dashboard/feedback", icon: IconMessageCircle },
   { label: "Collect", href: "/dashboard/collect", icon: IconRadar2 },
 ];
@@ -52,25 +52,19 @@ export const Sidebar = (): React.ReactElement => {
   const isActive = (href: string): boolean =>
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
-  if (sessionPending || orgsPending) {
-    return (
-      <aside className="flex w-52 shrink-0 items-center justify-center border-r border-border">
-        <IconLoader2 className="size-4 animate-spin text-muted-foreground" />
-      </aside>
-    );
-  }
-
   return (
     <aside className="flex w-52 shrink-0 flex-col border-r border-border">
-      <div className="px-4 py-3">
-        <Image src={isotipo} alt="echo" className="h-6 w-auto" priority />
+      <div className="px-3 py-3">
+        <Image src={imagotipo} alt="echo" className="h-5 w-auto" priority />
       </div>
 
-      <div className="px-2 pb-1">
+      <div className="h-px bg-border" />
+
+      <div className="p-2">
         <OrgSwitcher />
       </div>
 
-      <nav className="flex flex-col gap-0.5 px-2 pt-1">
+      <nav className="flex flex-col gap-0.5 px-2">
         {navItems.map((item) => (
           <NavLink key={item.href} item={item} active={isActive(item.href)} />
         ))}
@@ -78,7 +72,7 @@ export const Sidebar = (): React.ReactElement => {
 
       <div className="flex-1" />
 
-      <div className="flex flex-col gap-1 p-2 pb-3">
+      <div className="flex flex-col gap-0.5 p-2 pb-3">
         <UpgradeCard />
 
         <div className="mt-1 flex flex-col gap-0.5">
@@ -87,7 +81,13 @@ export const Sidebar = (): React.ReactElement => {
           ))}
         </div>
 
-        {session ? <UserMenu session={session} /> : null}
+        <div className="h-px bg-border" />
+
+        {sessionPending ? (
+          <Skeleton className="h-8 w-full rounded-md" />
+        ) : session ? (
+          <UserMenu session={session} />
+        ) : null}
       </div>
     </aside>
   );
