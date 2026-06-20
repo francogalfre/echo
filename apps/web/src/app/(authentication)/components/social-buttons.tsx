@@ -2,7 +2,7 @@
 
 import { Button } from "@echo/ui/components/button";
 import { cn } from "@echo/ui/lib/utils";
-import { IconLoader2 } from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import { useEffect, useState } from "react";
 
 import { authClient, signIn } from "@/lib/auth-client";
@@ -45,17 +45,17 @@ export const SocialButtons = () => {
           onClick={continueWith(id)}
           className={cn(
             "relative h-12 w-full justify-center gap-2 text-sm",
-            lastMethod === id && "border-foreground/30 bg-muted/40 hover:bg-muted",
+            lastMethod === id && "border-accent/40 bg-muted/50 hover:bg-muted",
           )}
         >
           {pending === id ? (
-            <IconLoader2 className="size-4 animate-spin" />
+            <Icons.loading className="size-4 animate-spin" />
           ) : (
             <Icon className="size-4" />
           )}
           Continue with {label}
           {lastMethod === id ? (
-            <span className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+            <span className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-accent/10 px-2 py-1 text-[10px] font-light text-accent">
               Last used
             </span>
           ) : null}

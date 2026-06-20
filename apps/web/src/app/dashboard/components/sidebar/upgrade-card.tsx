@@ -9,7 +9,7 @@ export const UpgradeCard = (): React.ReactElement => (
     </p>
     <Link
       href={"/dashboard/settings" as Route}
-      className="mt-2 block w-fit text-sm font-medium text-primary hover:underline"
+      className="mt-2 block w-fit text-sm font-medium text-accent hover:underline"
     >
       Upgrade
     </Link>

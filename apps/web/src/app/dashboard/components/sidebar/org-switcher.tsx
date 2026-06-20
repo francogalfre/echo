@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
 import { Skeleton } from "@echo/ui/components/skeleton";
-import { IconCheck, IconChevronDown, IconCirclePlus } from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -65,7 +65,7 @@ export const OrgSwitcher = (): React.ReactElement => {
         <span className="flex-1 truncate text-left text-foreground">
           {activeOrg?.name ?? organizations?.[0]?.name ?? "Select"} project
         </span>
-        <IconChevronDown className="size-4 shrink-0 text-muted-foreground" />
+        <Icons.chevronDown className="size-4 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="px-2 py-2.5 shadow-xs" side="bottom" align="start">
@@ -79,16 +79,16 @@ export const OrgSwitcher = (): React.ReactElement => {
             <span className="flex-1 truncate">{org.name}</span>
 
             {activeOrg?.id === org.id ? (
-              <IconCheck className="ml-auto size-3.5 text-primary" />
+              <Icons.check className="ml-auto size-3.5 text-accent" />
             ) : null}
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuItem
-          className="text-sm transition-all duration-300"
+          className="text-sm text-muted-foreground transition-all duration-300"
           onClick={() => router.push("/create-project" as Route)}
         >
-          <IconCirclePlus className="size-4 text-muted-foreground" />
+          <Icons.circlePlus className="size-4 text-muted-foreground" />
           Add project
         </DropdownMenuItem>
       </DropdownMenuContent>

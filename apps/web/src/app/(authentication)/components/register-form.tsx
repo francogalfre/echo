@@ -3,7 +3,7 @@
 import { Button } from "@echo/ui/components/button";
 import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2 } from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -64,7 +64,11 @@ export const RegisterForm = () => {
       {serverError ? <p className="text-xs text-destructive">{serverError}</p> : null}
 
       <Button type="submit" disabled={isSubmitting} className="h-10 w-full text-sm">
-        {isSubmitting ? <IconLoader2 className="size-4 animate-spin" /> : "Create account"}
+        {isSubmitting ? (
+          <Icons.loading className="size-4 animate-spin" />
+        ) : (
+          "Create account"
+        )}
       </Button>
     </form>
   );

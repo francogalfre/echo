@@ -82,7 +82,7 @@ export const ExpandableNavLink = ({
                   className={[
                     "rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
                     isActive
-                      ? "bg-foreground/5 text-foreground"
+                      ? "bg-foreground/5 text-primary "
                       : "text-muted-foreground hover:text-foreground",
                   ].join(" ")}
                 >

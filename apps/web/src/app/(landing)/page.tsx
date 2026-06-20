@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-6 px-4 text-center">
       <div className="flex items-center gap-2">
-        <span className="size-6 rounded-md bg-primary" />
+        <span className="size-6 rounded-md bg-accent" />
         <span className="font-display text-2xl font-semibold tracking-tight">echo</span>
       </div>
       <p className="max-w-sm text-sm text-muted-foreground">

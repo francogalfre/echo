@@ -4,7 +4,7 @@ import { env } from "@echo/env/web";
 import { Button } from "@echo/ui/components/button";
 import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IconLoader2, IconPhotoPlus } from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -104,7 +104,7 @@ const CreateProjectPage = (): React.ReactElement => {
   if (isLoading) {
     return (
       <main className="flex min-h-svh items-center justify-center">
-        <IconLoader2 className="size-5 animate-spin text-muted-foreground" />
+        <Icons.loading className="size-5 animate-spin text-muted-foreground" />
       </main>
     );
   }
@@ -126,7 +126,7 @@ const CreateProjectPage = (): React.ReactElement => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-input bg-muted/30 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-accent/40 hover:text-foreground"
+              className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-input bg-muted/30 text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-foreground"
             >
               {logoPreview ? (
                 <Image
@@ -137,7 +137,7 @@ const CreateProjectPage = (): React.ReactElement => {
                   className="size-full object-cover"
                 />
               ) : (
-                <IconPhotoPlus className="size-5" />
+                <Icons.imageAdd className="size-5" />
               )}
             </button>
             <div className="text-xs text-muted-foreground">
@@ -188,7 +188,7 @@ const CreateProjectPage = (): React.ReactElement => {
 
           <Button type="submit" disabled={isSubmitting} className="h-10 w-full text-sm">
             {isSubmitting ? (
-              <IconLoader2 className="size-4 animate-spin" />
+              <Icons.loading className="size-4 animate-spin" />
             ) : (
               "Create project"
             )}

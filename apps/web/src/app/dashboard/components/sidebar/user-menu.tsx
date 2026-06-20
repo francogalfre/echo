@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
-import { IconChevronDown, IconLogout, IconSettings } from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ const UserAvatar = ({
   }
 
   return (
-    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
+    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-accent text-[9px] font-bold text-accent-foreground">
       {initials(name)}
     </span>
   );
@@ -61,7 +61,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
           {session.user.name}
         </span>
 
-        <IconChevronDown className="size-4 shrink-0 text-muted-foreground" />
+        <Icons.chevronDown className="size-4 shrink-0 text-muted-foreground" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent side="top" align="start" className="px-2 py-2.5 mb-2 shadow-xs">
@@ -69,7 +69,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
           className="text-sm transition-all duration-300"
           onClick={() => router.push("/dashboard/settings" as Route)}
         >
-          <IconSettings className="size-5" />
+          <Icons.settings className="size-4" />
           User settings
         </DropdownMenuItem>
         <DropdownMenuSeparator className="my-2" />
@@ -78,7 +78,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
           variant="destructive"
           onClick={handleSignOut}
         >
-          <IconLogout className="size-5" />
+          <Icons.logout className="size-4" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

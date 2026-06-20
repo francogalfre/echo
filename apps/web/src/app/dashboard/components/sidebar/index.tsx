@@ -2,14 +2,7 @@
 
 import imagotipo from "@echo/assets/imagotipo/dark.png";
 import { Skeleton } from "@echo/ui/components/skeleton";
-import {
-  IconAdjustmentsHorizontal,
-  IconBook,
-  IconHelp,
-  IconHome,
-  IconMessageCircle,
-  IconRadar2,
-} from "@tabler/icons-react";
+import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -24,14 +17,14 @@ import { UpgradeCard } from "./upgrade-card";
 import { UserMenu } from "./user-menu";
 
 const navItems: NavItem[] = [
-  { label: "Home", href: "/dashboard", icon: IconHome },
-  { label: "Feedback", href: "/dashboard/feedback", icon: IconMessageCircle },
+  { label: "Home", href: "/dashboard", icon: Icons.home },
+  { label: "Feedback", href: "/dashboard/feedback", icon: Icons.message },
 ];
 
 const collectItem: NavItem = {
   label: "Collect",
   href: "/dashboard/collect",
-  icon: IconRadar2,
+  icon: Icons.radar,
 };
 
 const collectSubLinks = [
@@ -40,14 +33,14 @@ const collectSubLinks = [
 ];
 
 const utilityLinks: NavItem[] = [
-  { label: "Support", href: "#", icon: IconHelp },
-  { label: "Documentation", href: "https://docs.echo.dev", icon: IconBook },
+  { label: "Support", href: "#", icon: Icons.help },
+  { label: "Documentation", href: "https://docs.echo.dev", icon: Icons.book },
 ];
 
 const settingsItem: NavItem = {
   label: "Settings",
   href: "/dashboard/settings",
-  icon: IconAdjustmentsHorizontal,
+  icon: Icons.slidersHorizontal,
 };
 
 export const Sidebar = (): React.ReactElement => {
@@ -71,7 +64,7 @@ export const Sidebar = (): React.ReactElement => {
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="flex min-w-72 max-w-72 w-full shrink-0 flex-col border-r border-border px-2">
+    <aside className="flex min-w-72 max-w-72 w-full shrink-0 flex-col border-r border-border px-2 bg-card">
       <div className="px-4 py-4">
         <Image src={imagotipo} alt="echo" className="h-6 w-auto" priority />
       </div>
