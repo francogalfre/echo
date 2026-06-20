@@ -74,7 +74,7 @@ export const ExpandableNavLink = ({
         <div className="overflow-hidden">
           <div className="ml-4 flex flex-col gap-0.5 border-l border-border pb-0.5 pl-2.5">
             {subLinks.map(({ label: subLabel, href }) => {
-              const isActive = pathname === href || pathname.startsWith(`${href}/`);
+              const isActive = pathname === href;
               return (
                 <Link
                   key={href}
