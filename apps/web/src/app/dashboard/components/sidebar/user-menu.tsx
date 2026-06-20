@@ -9,14 +9,39 @@ import {
 } from "@echo/ui/components/dropdown-menu";
 import { IconChevronDown, IconLogout, IconSettings } from "@tabler/icons-react";
 import type { Route } from "next";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { signOut } from "@/lib/auth-client";
-
 import { initials } from "./utils";
 
 type UserMenuProps = {
-  session: { user: { name: string; email: string } };
+  session: { user: { name: string; email: string; image?: string | null } };
+};
+
+const UserAvatar = ({
+  name,
+  image,
+}: {
+  name: string;
+  image?: string | null;
+}): React.ReactElement => {
+  if (image) {
+    return (
+      <Image
+        src={image}
+        alt={name}
+        width={20}
+        height={20}
+        className="size-5 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
+      {initials(name)}
+    </span>
+  );
 };
 
 export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
@@ -30,9 +55,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 outline-none transition-colors hover:bg-accent/60">
-        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
-          {initials(session.user.name)}
-        </span>
+        <UserAvatar name={session.user.name} image={session.user.image} />
         <span className="flex-1 truncate text-left text-sm font-medium text-foreground">
           {session.user.name}
         </span>
