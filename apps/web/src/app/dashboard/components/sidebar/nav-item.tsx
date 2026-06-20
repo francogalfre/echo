@@ -1,6 +1,5 @@
 "use client";
 
-import { IconChevronDown } from "@tabler/icons-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -42,7 +41,7 @@ export const ExpandableNavLink = ({
 }: ExpandableNavLinkProps): React.ReactElement => {
   const pathname = usePathname();
   const isChildActive = subLinks.some(
-    ({ href }) => pathname === href || pathname.startsWith(href + "/"),
+    ({ href }) => pathname === href || pathname.startsWith(`${href}/`),
   );
   const [open, setOpen] = useState(isChildActive);
 
@@ -65,34 +64,35 @@ export const ExpandableNavLink = ({
           ].join(" ")}
         />
         {label}
-        <IconChevronDown
-          className={[
-            "ml-auto size-3.5 shrink-0 text-muted-foreground transition-transform duration-200",
-            open ? "rotate-180" : "",
-          ].join(" ")}
-        />
       </button>
-      {open ? (
-        <div className="ml-4 mt-0.5 flex flex-col gap-0.5 border-l border-border pl-2.5">
-          {subLinks.map(({ label: subLabel, href }) => {
-            const isActive = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={href}
-                href={href as Route}
-                className={[
-                  "rounded-md px-2 py-1.5 text-sm transition-colors duration-300",
-                  isActive
-                    ? "font-medium text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                ].join(" ")}
-              >
-                {subLabel}
-              </Link>
-            );
-          })}
+      <div
+        className={[
+          "grid transition-all duration-200 ease-in-out",
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+        ].join(" ")}
+      >
+        <div className="overflow-hidden">
+          <div className="ml-4 flex flex-col gap-0.5 border-l border-border pb-0.5 pl-2.5">
+            {subLinks.map(({ label: subLabel, href }) => {
+              const isActive = pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <Link
+                  key={href}
+                  href={href as Route}
+                  className={[
+                    "rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
+                    isActive
+                      ? "bg-foreground/5 text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  ].join(" ")}
+                >
+                  {subLabel}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-      ) : null}
+      </div>
     </div>
   );
 };
