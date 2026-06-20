@@ -32,7 +32,7 @@ const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => {
   }
 
   return (
-    <span className="flex size-4 shrink-0 items-center justify-center rounded-sm bg-muted text-[8px] font-semibold text-muted-foreground">
+    <span className="flex size-6 shrink-0 items-center justify-center rounded-sm bg-muted text-[8px] font-semibold text-muted-foreground">
       {name?.[0]?.toUpperCase() ?? "·"}
     </span>
   );

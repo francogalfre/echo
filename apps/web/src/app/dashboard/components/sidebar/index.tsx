@@ -3,6 +3,7 @@
 import imagotipo from "@echo/assets/imagotipo/dark.png";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import {
+  IconAdjustmentsHorizontal,
   IconBook,
   IconHelp,
   IconHome,
@@ -16,7 +17,7 @@ import { useEffect } from "react";
 
 import { authClient, useSession } from "@/lib/auth-client";
 
-import { NavLink } from "./nav-item";
+import { ExpandableNavLink, NavLink } from "./nav-item";
 import { OrgSwitcher } from "./org-switcher";
 import type { NavItem } from "./types";
 import { UpgradeCard } from "./upgrade-card";
@@ -25,13 +26,29 @@ import { UserMenu } from "./user-menu";
 const navItems: NavItem[] = [
   { label: "Home", href: "/dashboard", icon: IconHome },
   { label: "Feedback", href: "/dashboard/feedback", icon: IconMessageCircle },
-  { label: "Collect", href: "/dashboard/collect", icon: IconRadar2 },
+];
+
+const collectItem: NavItem = {
+  label: "Collect",
+  href: "/dashboard/collect",
+  icon: IconRadar2,
+};
+
+const collectSubLinks = [
+  { label: "Feedback page", href: "/dashboard/collect" },
+  { label: "API", href: "/dashboard/collect/api" },
 ];
 
 const utilityLinks: NavItem[] = [
   { label: "Support", href: "#", icon: IconHelp },
   { label: "Documentation", href: "https://docs.echo.dev", icon: IconBook },
 ];
+
+const settingsItem: NavItem = {
+  label: "Settings",
+  href: "/dashboard/settings",
+  icon: IconAdjustmentsHorizontal,
+};
 
 export const Sidebar = (): React.ReactElement => {
   const router = useRouter();
@@ -53,21 +70,23 @@ export const Sidebar = (): React.ReactElement => {
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="flex w-52 shrink-0 flex-col border-r border-border">
-      <div className="px-3 py-3">
-        <Image src={imagotipo} alt="echo" className="h-5 w-auto" priority />
+    <aside className="flex min-w-40 shrink-0 flex-col border-r border-border px-2">
+      <div className="px-4 py-4">
+        <Image src={imagotipo} alt="echo" className="h-6 w-auto" priority />
       </div>
 
-      <div className="h-px bg-border" />
+      <div className="my-2 h-px bg-border" />
 
-      <div className="p-2">
+      <div className="px-2 pb-1">
         <OrgSwitcher />
       </div>
 
-      <nav className="flex flex-col gap-0.5 px-2">
+      <nav className="flex flex-col gap-0.5 px-2 pt-1">
         {navItems.map((item) => (
           <NavLink key={item.href} item={item} active={isActive(item.href)} />
         ))}
+        <ExpandableNavLink item={collectItem} subLinks={collectSubLinks} />
+        <NavLink item={settingsItem} active={isActive(settingsItem.href)} />
       </nav>
 
       <div className="flex-1" />
@@ -81,7 +100,7 @@ export const Sidebar = (): React.ReactElement => {
           ))}
         </div>
 
-        <div className="h-px bg-border" />
+        <div className="my-2 h-px bg-border" />
 
         {sessionPending ? (
           <Skeleton className="h-8 w-full rounded-md" />
