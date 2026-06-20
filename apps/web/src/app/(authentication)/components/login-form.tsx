@@ -5,16 +5,17 @@ import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
+import { Field } from "@/components/field";
 import { signIn } from "@/lib/auth-client";
 
-import { Field } from "./field";
 import { loginSchema, type LoginValues } from "./schemas";
 
 export const LoginForm = () => {
   const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -22,11 +23,10 @@ export const LoginForm = () => {
   } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = handleSubmit(async (values) => {
+    setServerError(null);
     await signIn.email(values, {
       onSuccess: () => router.push("/dashboard"),
-      onError: ({ error }) => {
-        toast.error(error.message);
-      },
+      onError: ({ error }) => setServerError(error.message),
     });
   });
 
@@ -41,6 +41,7 @@ export const LoginForm = () => {
           {...register("email")}
         />
       </Field>
+
       <Field name="password" label="Password" error={errors.password?.message}>
         <Input
           id="password"
@@ -50,6 +51,9 @@ export const LoginForm = () => {
           {...register("password")}
         />
       </Field>
+
+      {serverError ? <p className="text-xs text-destructive">{serverError}</p> : null}
+
       <Button type="submit" disabled={isSubmitting} className="h-10 w-full text-sm">
         {isSubmitting ? <IconLoader2 className="size-4 animate-spin" /> : "Log in"}
       </Button>

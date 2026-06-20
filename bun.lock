@@ -23,14 +23,10 @@
       "dependencies": {
         "@echo/api": "workspace:*",
         "@echo/auth": "workspace:*",
-        "@echo/db": "workspace:*",
         "@echo/env": "workspace:*",
         "@hono/trpc-server": "^0.4.0",
         "@trpc/server": "catalog:",
-        "better-auth": "catalog:",
-        "dotenv": "catalog:",
         "hono": "catalog:",
-        "zod": "catalog:",
       },
       "devDependencies": {
         "@echo/config": "workspace:*",
@@ -76,6 +72,7 @@
         "@trpc/client": "catalog:",
         "@trpc/server": "catalog:",
         "dotenv": "catalog:",
+        "drizzle-orm": "^0.45.1",
         "zod": "catalog:",
       },
       "devDependencies": {

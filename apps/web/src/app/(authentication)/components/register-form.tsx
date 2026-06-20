@@ -5,16 +5,17 @@ import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
+import { Field } from "@/components/field";
 import { signUp } from "@/lib/auth-client";
 
-import { Field } from "./field";
 import { registerSchema, type RegisterValues } from "./schemas";
 
 export const RegisterForm = () => {
   const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -22,11 +23,10 @@ export const RegisterForm = () => {
   } = useForm<RegisterValues>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = handleSubmit(async (values) => {
+    setServerError(null);
     await signUp.email(values, {
       onSuccess: () => router.push("/dashboard"),
-      onError: ({ error }) => {
-        toast.error(error.message);
-      },
+      onError: ({ error }) => setServerError(error.message),
     });
   });
 
@@ -40,6 +40,7 @@ export const RegisterForm = () => {
           {...register("name")}
         />
       </Field>
+
       <Field name="email" label="Email" error={errors.email?.message}>
         <Input
           id="email"
@@ -49,6 +50,7 @@ export const RegisterForm = () => {
           {...register("email")}
         />
       </Field>
+
       <Field name="password" label="Password" error={errors.password?.message}>
         <Input
           id="password"
@@ -58,6 +60,9 @@ export const RegisterForm = () => {
           {...register("password")}
         />
       </Field>
+
+      {serverError ? <p className="text-xs text-destructive">{serverError}</p> : null}
+
       <Button type="submit" disabled={isSubmitting} className="h-10 w-full text-sm">
         {isSubmitting ? <IconLoader2 className="size-4 animate-spin" /> : "Create account"}
       </Button>

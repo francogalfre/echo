@@ -22,7 +22,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!organizationsPending && organizations && organizations.length === 0) {
-      router.replace("/onboarding");
+      router.replace("/create-project");
     }
   }, [organizationsPending, organizations, router]);
 

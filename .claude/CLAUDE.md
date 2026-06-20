@@ -169,3 +169,4 @@ Just describe what you're trying to do and Claude will figure it out.
 ## Last Note
 
 Keep this file under 150 lines and specific. It's **guidance**, not law. If a pattern in the codebase contradicts this, follow the codebase — consistency beats doctrine.
+Never put comments in the code.
