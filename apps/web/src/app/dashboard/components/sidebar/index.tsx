@@ -53,6 +53,7 @@ const settingsItem: NavItem = {
 export const Sidebar = (): React.ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
+
   const { data: session, isPending: sessionPending } = useSession();
   const { data: organizations, isPending: orgsPending } = authClient.useListOrganizations();
 
@@ -70,7 +71,7 @@ export const Sidebar = (): React.ReactElement => {
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="flex min-w-40 shrink-0 flex-col border-r border-border px-2">
+    <aside className="flex min-w-72 max-w-72 w-full shrink-0 flex-col border-r border-border px-2">
       <div className="px-4 py-4">
         <Image src={imagotipo} alt="echo" className="h-6 w-auto" priority />
       </div>
