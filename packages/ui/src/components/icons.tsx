@@ -25,6 +25,8 @@ import {
   ArrowRight01Icon,
   ArrowReloadHorizontalIcon,
   LockIcon,
+  EyeIcon,
+  EyeOffIcon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -62,4 +64,6 @@ export const Icons = {
   arrowRight: createIcon(ArrowRight01Icon),
   refresh: createIcon(ArrowReloadHorizontalIcon),
   lock: createIcon(LockIcon),
+  eye: createIcon(EyeIcon),
+  eyeOff: createIcon(EyeOffIcon),
 };

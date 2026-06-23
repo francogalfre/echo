@@ -42,6 +42,28 @@ export const feedback = pgTable(
   (t) => [index("feedback_org_idx").on(t.organizationId)],
 );
 
+export const apiKeys = pgTable("api_keys", {
+  id: text("id").primaryKey(),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, { onDelete: "cascade" })
+    .unique(),
+  publicKey: text("public_key").notNull().unique(),
+  secretKeyHash: text("secret_key_hash").notNull().unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
+  organization: one(organization, {
+    fields: [apiKeys.organizationId],
+    references: [organization.id],
+  }),
+}));
+
 export const feedbackPageConfigRelations = relations(feedbackPageConfig, ({ one }) => ({
   organization: one(organization, {
     fields: [feedbackPageConfig.organizationId],

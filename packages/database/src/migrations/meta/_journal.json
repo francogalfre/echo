@@ -29,6 +29,13 @@
       "when": 1782185384250,
       "tag": "0003_pale_vindicator",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782187089439,
+      "tag": "0004_clumsy_maddog",
+      "breakpoints": true
     }
   ]
 }

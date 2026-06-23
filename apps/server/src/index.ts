@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
+import { feedbackApi } from "./feedback-api";
 import { projects } from "./projects";
 
 const app = new Hono();
@@ -25,6 +26,7 @@ app.use(
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/projects", projects);
+app.route("/api/feedback", feedbackApi);
 
 app.use(
   "/trpc/*",
