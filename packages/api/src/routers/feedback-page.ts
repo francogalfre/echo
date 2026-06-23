@@ -11,6 +11,10 @@ const updateConfigInput = z.object({
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/)
     .optional(),
+  backgroundColor: z
+    .string()
+    .regex(/^#[0-9a-fA-F]{6}$/)
+    .optional(),
   enableEmail: z.boolean().optional(),
   enableRating: z.boolean().optional(),
   enableCoverBanner: z.boolean().optional(),

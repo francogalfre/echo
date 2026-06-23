@@ -38,6 +38,11 @@ export default function FeedbackPage(): React.ReactElement {
     name: "accentColor",
     defaultValue: DEFAULT_CONFIG.accentColor,
   });
+  const backgroundColor = useWatch({
+    control: form.control,
+    name: "backgroundColor",
+    defaultValue: DEFAULT_CONFIG.backgroundColor,
+  });
   const enableEmail = useWatch({
     control: form.control,
     name: "enableEmail",
@@ -59,11 +64,20 @@ export default function FeedbackPage(): React.ReactElement {
       title,
       description,
       accentColor,
+      backgroundColor,
       enableEmail,
       enableRating,
       enableCoverBanner,
     }),
-    [title, description, accentColor, enableEmail, enableRating, enableCoverBanner],
+    [
+      title,
+      description,
+      accentColor,
+      backgroundColor,
+      enableEmail,
+      enableRating,
+      enableCoverBanner,
+    ],
   );
 
   const pageUrl = useMemo(
@@ -83,6 +97,7 @@ export default function FeedbackPage(): React.ReactElement {
             title: config.title,
             description: config.description,
             accentColor: config.accentColor,
+            backgroundColor: config.backgroundColor,
             enableEmail: config.enableEmail,
             enableRating: config.enableRating,
             enableCoverBanner: config.enableCoverBanner,

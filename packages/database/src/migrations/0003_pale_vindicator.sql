@@ -1,0 +1,1 @@
+ALTER TABLE "feedback_page_config" ADD COLUMN "background_color" text DEFAULT '#F5F3FF' NOT NULL;

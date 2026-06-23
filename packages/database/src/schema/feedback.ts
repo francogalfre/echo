@@ -12,6 +12,7 @@ export const feedbackPageConfig = pgTable("feedback_page_config", {
   title: text("title").notNull().default(""),
   description: text("description").notNull().default(""),
   accentColor: text("accent_color").notNull().default("#7C3AED"),
+  backgroundColor: text("background_color").notNull().default("#F5F3FF"),
   enableEmail: boolean("enable_email").notNull().default(false),
   enableRating: boolean("enable_rating").notNull().default(false),
   enableCoverBanner: boolean("enable_cover_banner").notNull().default(false),

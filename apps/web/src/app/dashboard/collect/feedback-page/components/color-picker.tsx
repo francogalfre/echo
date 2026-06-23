@@ -3,7 +3,7 @@
 import { cn } from "@echo/ui/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
-const presetColors = [
+const accentPresets = [
   "#7C3AED",
   "#2563EB",
   "#0891B2",
@@ -15,12 +15,30 @@ const presetColors = [
   "#18181B",
 ] as const;
 
+const backgroundPresets = [
+  "#EDE9FE",
+  "#DBEAFE",
+  "#CCFBF1",
+  "#DCFCE7",
+  "#FEF9C3",
+  "#FFE4E6",
+  "#FCE7F3",
+  "#E0F2FE",
+  "#F1F5F9",
+] as const;
+
 type ColorPickerProps = {
   value: string;
   onChange: (color: string) => void;
+  variant?: "accent" | "background";
 };
 
-export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactElement => {
+export const ColorPicker = ({
+  value,
+  onChange,
+  variant = "accent",
+}: ColorPickerProps): React.ReactElement => {
+  const presets = variant === "background" ? backgroundPresets : accentPresets;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -43,7 +61,7 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactE
         aria-expanded={open}
         aria-controls="color-picker-menu"
         onClick={() => setOpen((o) => !o)}
-        className="size-9 w-24 cursor-pointer rounded-full ring-offset-1 transition-transform duration-300 hover:scale-105"
+        className="size-8 cursor-pointer rounded-lg border border-border/60 ring-offset-1 transition-transform duration-200 hover:scale-105"
         style={{ backgroundColor: value }}
         title={value}
       />
@@ -51,7 +69,7 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactE
       {open && (
         <div
           id="color-picker-menu"
-          className="animate-in fade-in zoom-in-95 absolute left-0 top-11 z-50 w-56 rounded-2xl border border-border bg-card p-4 shadow-2xl duration-150"
+          className="animate-in fade-in zoom-in-95 absolute left-0 top-10 z-50 w-56 rounded-2xl border border-border bg-card p-4 shadow-2xl duration-150"
           role="menu"
         >
           <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
@@ -62,7 +80,7 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactE
             role="group"
             aria-label="Color presets"
           >
-            {presetColors.map((color) => (
+            {presets.map((color) => (
               <button
                 key={color}
                 type="button"
@@ -73,7 +91,7 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactE
                   setOpen(false);
                 }}
                 className={cn(
-                  "size-8 rounded-full transition-all duration-150 hover:scale-110",
+                  "size-8 rounded-lg border border-border/40 transition-all duration-150 hover:scale-110",
                   value.toLowerCase() === color.toLowerCase() &&
                     "scale-110 ring-2 ring-foreground ring-offset-2 ring-offset-card",
                 )}
@@ -95,7 +113,7 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps): React.ReactE
                   className="absolute inset-0 cursor-pointer opacity-0"
                 />
                 <div
-                  className="size-8 rounded-lg shadow-sm"
+                  className="size-8 rounded-lg border border-border/40"
                   style={{ backgroundColor: value }}
                 />
               </div>

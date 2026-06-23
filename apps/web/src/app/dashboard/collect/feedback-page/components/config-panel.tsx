@@ -97,6 +97,11 @@ export const ConfigPanel = ({
   const title = useWatch({ control, name: "title", defaultValue: "" });
   const description = useWatch({ control, name: "description", defaultValue: "" });
   const accentColor = useWatch({ control, name: "accentColor", defaultValue: "#7C3AED" });
+  const backgroundColor = useWatch({
+    control,
+    name: "backgroundColor",
+    defaultValue: "#F5F3FF",
+  });
   const enableEmail = useWatch({ control, name: "enableEmail", defaultValue: false });
   const enableRating = useWatch({ control, name: "enableRating", defaultValue: false });
   const enableCoverBanner = useWatch({
@@ -196,16 +201,35 @@ export const ConfigPanel = ({
 
       <Section title="Appearance">
         <div className="space-y-1">
-          <div>
-            <p className="mb-3 text-xs text-muted-foreground">Accent color</p>
-            <div className="flex items-center gap-3">
-              <ColorPicker
-                value={accentColor}
-                onChange={(color) => setValue("accentColor", color, { shouldDirty: true })}
-              />
-              <span className="font-mono text-sm text-muted-foreground">
-                {accentColor.toUpperCase()}
-              </span>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="mb-3 text-xs text-muted-foreground">Accent color</p>
+              <div className="flex items-center gap-2.5">
+                <ColorPicker
+                  value={accentColor}
+                  onChange={(color) =>
+                    setValue("accentColor", color, { shouldDirty: true })
+                  }
+                />
+                <span className="font-mono text-sm text-muted-foreground">
+                  {accentColor.toUpperCase()}
+                </span>
+              </div>
+            </div>
+            <div>
+              <p className="mb-3 text-xs text-muted-foreground">Background color</p>
+              <div className="flex items-center gap-2.5">
+                <ColorPicker
+                  value={backgroundColor}
+                  onChange={(color) =>
+                    setValue("backgroundColor", color, { shouldDirty: true })
+                  }
+                  variant="background"
+                />
+                <span className="font-mono text-sm text-muted-foreground">
+                  {backgroundColor.toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
           <div className="border-t border-border pt-1">

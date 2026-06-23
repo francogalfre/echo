@@ -15,9 +15,12 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
   const { org, config } = page;
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-muted/30 px-4 py-12">
+    <main
+      className="flex min-h-svh items-center justify-center px-4 py-12"
+      style={{ backgroundColor: config.backgroundColor }}
+    >
       <div className="w-full max-w-lg">
-        <div className="rounded-xl border border-border bg-card p-8 shadow-sm">
+        <div className="rounded-xl border border-border bg-white p-8 shadow-md dark:bg-card">
           {org.logo && (
             <Image
               src={org.logo}
@@ -43,7 +46,7 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
             />
           </div>
         </div>
-        <p className="mt-4 text-center text-xs text-muted-foreground">Powered by echo</p>
+        <p className="mt-4 text-center text-xs text-black/30">Powered by echo</p>
       </div>
     </main>
   );
