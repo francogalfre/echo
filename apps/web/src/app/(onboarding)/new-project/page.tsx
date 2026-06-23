@@ -1,13 +1,11 @@
 "use client";
 
-import { env } from "@echo/env/web";
 import { Button } from "@echo/ui/components/button";
+import { Icons } from "@echo/ui/components/icons";
 import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Icons } from "@echo/ui/components/icons";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -15,32 +13,28 @@ import { Field } from "@/components/field";
 import { authClient, useSession } from "@/lib/auth-client";
 import { slugify } from "@/lib/slug";
 
+import { LogoPicker } from "./components/logo-picker";
+import { useLogoUpload } from "./hooks/use-logo-upload";
 import { createProjectSchema, type CreateProjectValues } from "./schemas";
 
-const CreateProjectPage = (): React.ReactElement => {
+const NewProjectPage = (): React.ReactElement => {
   const router = useRouter();
   const { data: session, isPending: sessionPending } = useSession();
   const { data: organizations, isPending: organizationsPending } =
     authClient.useListOrganizations();
+  const logo = useLogoUpload();
+  const slugEdited = useRef(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [logoError, setLogoError] = useState<string | null>(null);
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [slugEdited, setSlugEdited] = useState(false);
-
+  const form = useForm<CreateProjectValues>({ resolver: zodResolver(createProjectSchema) });
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<CreateProjectValues>({ resolver: zodResolver(createProjectSchema) });
+  } = form;
 
   useEffect(() => {
-    if (!sessionPending && !session) {
-      router.replace("/login");
-    }
+    if (!sessionPending && !session) router.replace("/login");
   }, [sessionPending, session, router]);
 
   useEffect(() => {
@@ -49,47 +43,20 @@ const CreateProjectPage = (): React.ReactElement => {
     }
   }, [organizationsPending, organizations, router]);
 
-  const onLogoChange = (file: File | undefined): void => {
-    if (!file) return;
-    if (file.size > 1024 * 1024) {
-      setLogoError("Logo must be 1MB or smaller.");
-      return;
-    }
-    setLogoError(null);
-    setLogoFile(file);
-    setLogoPreview(URL.createObjectURL(file));
-  };
-
-  const uploadLogo = async (organizationId: string): Promise<void> => {
-    if (!logoFile) return;
-    const body = new FormData();
-    body.append("organizationId", organizationId);
-    body.append("file", logoFile);
-
-    const response = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/projects/logo`, {
-      method: "POST",
-      credentials: "include",
-      body,
-    });
-    if (!response.ok) {
-      throw new Error("Logo upload failed");
-    }
-  };
-
   const onSubmit = handleSubmit(async (values) => {
-    setServerError(null);
+    form.clearErrors("root");
     const { data, error } = await authClient.organization.create({
       name: values.name.trim(),
       slug: values.slug,
     });
 
     if (error || !data) {
-      setServerError(error?.message ?? "Could not create the project.");
+      form.setError("root", { message: error?.message ?? "Could not create the project." });
       return;
     }
 
     try {
-      await uploadLogo(data.id);
+      await logo.upload(data.id);
     } catch {
       toast.warning("Project created, but the logo couldn't be uploaded.");
     }
@@ -122,37 +89,12 @@ const CreateProjectPage = (): React.ReactElement => {
         </div>
 
         <form onSubmit={onSubmit} className="space-y-5">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-input bg-muted/30 text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-foreground"
-            >
-              {logoPreview ? (
-                <Image
-                  src={logoPreview}
-                  alt="Project logo"
-                  width={64}
-                  height={64}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <Icons.imageAdd className="size-5" />
-              )}
-            </button>
-            <div className="text-xs text-muted-foreground">
-              <p className="font-medium text-foreground">Logo</p>
-              <p>PNG, JPG, WebP or SVG. Max 1MB. Optional.</p>
-              {logoError ? <p className="text-destructive">{logoError}</p> : null}
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/svg+xml"
-              className="hidden"
-              onChange={(event) => onLogoChange(event.target.files?.[0])}
-            />
-          </div>
+          <LogoPicker
+            inputRef={logo.fileInputRef}
+            preview={logo.preview}
+            error={logo.error}
+            onChange={logo.onChange}
+          />
 
           <Field name="name" label="Project name" error={errors.name?.message}>
             <Input
@@ -161,9 +103,7 @@ const CreateProjectPage = (): React.ReactElement => {
               autoFocus
               {...register("name", {
                 onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                  if (!slugEdited) {
-                    setValue("slug", slugify(e.target.value));
-                  }
+                  if (!slugEdited.current) setValue("slug", slugify(e.target.value));
                 },
               })}
             />
@@ -179,12 +119,16 @@ const CreateProjectPage = (): React.ReactElement => {
               id="slug"
               placeholder="acme-feedback"
               {...register("slug", {
-                onChange: () => setSlugEdited(true),
+                onChange: () => {
+                  slugEdited.current = true;
+                },
               })}
             />
           </Field>
 
-          {serverError ? <p className="text-xs text-destructive">{serverError}</p> : null}
+          {errors.root ? (
+            <p className="text-xs text-destructive">{errors.root.message}</p>
+          ) : null}
 
           <Button type="submit" disabled={isSubmitting} className="h-10 w-full text-sm">
             {isSubmitting ? (
@@ -199,4 +143,4 @@ const CreateProjectPage = (): React.ReactElement => {
   );
 };
 
-export default CreateProjectPage;
+export default NewProjectPage;

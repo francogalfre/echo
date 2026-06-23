@@ -28,7 +28,7 @@ const collectItem: NavItem = {
 };
 
 const collectSubLinks = [
-  { label: "Feedback page", href: "/dashboard/collect" },
+  { label: "Feedback page", href: "/dashboard/collect/feedback-page" },
   { label: "API", href: "/dashboard/collect/api" },
 ];
 
@@ -56,7 +56,7 @@ export const Sidebar = (): React.ReactElement => {
 
   useEffect(() => {
     if (!orgsPending && organizations && organizations.length === 0) {
-      router.replace("/create-project" as Route);
+      router.replace("/new-project" as Route);
     }
   }, [orgsPending, organizations, router]);
 
@@ -64,7 +64,7 @@ export const Sidebar = (): React.ReactElement => {
     href === "/dashboard" ? pathname === href : pathname.startsWith(href);
 
   return (
-    <aside className="flex min-w-72 max-w-72 w-full shrink-0 flex-col border-r border-border px-2 bg-card">
+    <aside className="flex min-w-72 max-w-72 w-full h-screen shrink-0 flex-col border-r border-border px-2 bg-card fixed">
       <div className="px-4 py-4">
         <Image src={imagotipo} alt="echo" className="h-6 w-auto" priority />
       </div>

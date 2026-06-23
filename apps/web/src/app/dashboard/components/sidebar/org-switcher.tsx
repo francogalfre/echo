@@ -7,10 +7,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
+
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Icons } from "@echo/ui/components/icons";
+
 import type { Route } from "next";
 import Image from "next/image";
+
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -86,7 +89,7 @@ export const OrgSwitcher = (): React.ReactElement => {
         <DropdownMenuSeparator className="my-2" />
         <DropdownMenuItem
           className="text-sm text-muted-foreground transition-all duration-300"
-          onClick={() => router.push("/create-project" as Route)}
+          onClick={() => router.push("/new-project" as Route)}
         >
           <Icons.circlePlus className="size-4 text-muted-foreground" />
           Add project

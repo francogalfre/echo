@@ -72,6 +72,7 @@
     "eslint/curly": "off",
     "eslint/max-statements": "off",
     "eslint/id-length": "off",
+    "react/jsx-pascal-case": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-max-depth": "off",
     "react/jsx-props-no-spreading": "off",

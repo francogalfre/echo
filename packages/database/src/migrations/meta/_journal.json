@@ -15,6 +15,13 @@
       "when": 1781842424495,
       "tag": "0001_redundant_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781978870650,
+      "tag": "0002_fuzzy_sebastian_shaw",
+      "breakpoints": true
     }
   ]
 }

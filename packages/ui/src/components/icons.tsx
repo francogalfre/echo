@@ -12,13 +12,19 @@ import {
   ChevronRightIcon,
   AddCircleIcon,
   CheckIcon,
-  Loading04Icon,
+  Loading03Icon,
   ImageAdd01Icon,
   CircleCheckIcon,
   AlertCircleIcon,
   CancelCircleIcon,
   InformationCircleIcon,
   TriangleIcon,
+  Copy01Icon,
+  ExternalLinkIcon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  ArrowReloadHorizontalIcon,
+  LockIcon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -26,6 +32,7 @@ type IconProps = Omit<HugeiconsIconProps, "icon">;
 function createIcon(icon: HugeiconsIconProps["icon"]) {
   const Component = (props: IconProps) => <HugeiconsIcon icon={icon} {...props} />;
   Component.displayName = "Icon";
+
   return Component;
 }
 
@@ -42,11 +49,17 @@ export const Icons = {
   chevronRight: createIcon(ChevronRightIcon),
   circlePlus: createIcon(AddCircleIcon),
   check: createIcon(CheckIcon),
-  loading: createIcon(Loading04Icon),
+  loading: createIcon(Loading03Icon),
   imageAdd: createIcon(ImageAdd01Icon),
   circleCheck: createIcon(CircleCheckIcon),
   alertCircle: createIcon(AlertCircleIcon),
   cancelCircle: createIcon(CancelCircleIcon),
   info: createIcon(InformationCircleIcon),
   triangleAlert: createIcon(TriangleIcon),
+  copy: createIcon(Copy01Icon),
+  externalLink: createIcon(ExternalLinkIcon),
+  arrowLeft: createIcon(ArrowLeft01Icon),
+  arrowRight: createIcon(ArrowRight01Icon),
+  refresh: createIcon(ArrowReloadHorizontalIcon),
+  lock: createIcon(LockIcon),
 };

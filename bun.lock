@@ -39,10 +39,12 @@
       "name": "web",
       "version": "0.1.0",
       "dependencies": {
+        "@echo/api": "workspace:*",
         "@echo/assets": "workspace:*",
         "@echo/env": "workspace:*",
         "@echo/ui": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
+        "@trpc/client": "catalog:",
         "babel-plugin-react-compiler": "^1.0.0",
         "better-auth": "catalog:",
         "next": "^16.2.0",

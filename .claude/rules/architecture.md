@@ -54,3 +54,91 @@ packages/api/src/
 A Hono route in `apps/server` (or a tRPC procedure) does exactly: authenticate →
 parse the request → call a controller → translate the `Result` to a response
 (`c.json(..., status)`). Nothing more.
+
+---
+
+# Frontend Architecture (Next.js App Router)
+
+## Route Map
+
+| URL                        | File                                | Purpose                           |
+| -------------------------- | ----------------------------------- | --------------------------------- |
+| `/`                        | `(marketing)/page.tsx`              | Landing page                      |
+| `/login`                   | `(auth)/login/page.tsx`             | Authentication                    |
+| `/register`                | `(auth)/register/page.tsx`          | Authentication                    |
+| `/new-project`             | `(onboarding)/new-project/page.tsx` | Create first org (post-auth gate) |
+| `/dashboard`               | `dashboard/page.tsx`                | Home: stats, recent feedback      |
+| `/dashboard/feedback`      | `dashboard/feedback/page.tsx`       | Feedback list                     |
+| `/dashboard/feedback/[id]` | `dashboard/feedback/[id]/page.tsx`  | Feedback detail                   |
+| `/dashboard/collect`       | `dashboard/collect/page.tsx`        | Feedback page customization       |
+| `/dashboard/collect/api`   | `dashboard/collect/api/page.tsx`    | API keys + docs                   |
+| `/dashboard/team/members`  | `dashboard/team/members/page.tsx`   | Invite + manage team              |
+| `/dashboard/team/projects` | `dashboard/team/projects/page.tsx`  | Switch / create projects          |
+| `/dashboard/settings`      | `dashboard/settings/page.tsx`       | Org, project, account settings    |
+
+## Folder Structure
+
+```
+apps/web/src/app/
+├── layout.tsx                          # Root: fonts, <Toaster />, providers
+├── (marketing)/
+│   └── page.tsx
+├── (auth)/
+│   ├── layout.tsx                      # Centered auth shell
+│   ├── login/page.tsx
+│   └── register/page.tsx
+├── (onboarding)/
+│   └── new-project/
+│       ├── page.tsx
+│       └── schemas.ts
+└── dashboard/
+    ├── layout.tsx                      # Sidebar shell + auth/org guard
+    ├── page.tsx
+    ├── components/                     # Dashboard-wide shared components
+    │   └── sidebar/
+    ├── feedback/
+    │   ├── page.tsx
+    │   ├── components/
+    │   └── [id]/
+    │       └── page.tsx
+    ├── collect/
+    │   ├── page.tsx
+    │   ├── components/
+    │   └── api/
+    │       ├── page.tsx
+    │       └── components/
+    ├── team/
+    │   ├── members/
+    │   │   ├── page.tsx
+    │   │   └── components/
+    │   └── projects/
+    │       ├── page.tsx
+    │       └── components/
+    └── settings/
+        ├── page.tsx
+        └── components/
+```
+
+## Component Co-location Rule
+
+- Components used only by one page live in that page's `components/` subfolder.
+- Components shared across the dashboard live in `dashboard/components/`.
+- Global UI primitives (Button, Input, Card) live in `packages/ui`.
+- Never create a global `components/` folder at `src/` level for dashboard features.
+
+## Layout Hierarchy
+
+```
+Root layout (fonts, Toaster)
+├── (marketing) — no extra layout
+├── (auth)/layout.tsx — centered shell + echo logotype
+├── (onboarding) — no extra layout
+└── dashboard/layout.tsx — sidebar + main content area
+```
+
+## Rendering Strategy
+
+- Pages are **Server Components** by default.
+- `'use client'` only at leaf components (forms, interactive controls).
+- Auth guard lives in `dashboard/layout.tsx` via a client wrapper: no session → `/login`, no orgs → `/new-project`.
+- Data fetching happens at the page level; components receive typed props.
