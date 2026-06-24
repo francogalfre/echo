@@ -11,10 +11,6 @@ type InsertFeedback = {
   source: string;
 };
 
-export async function insertFeedback(data: InsertFeedback): Promise<void> {
-  await db.insert(feedback).values({ id: crypto.randomUUID(), ...data });
-}
-
 export type FeedbackListItem = {
   id: string;
   name: string;
@@ -23,6 +19,10 @@ export type FeedbackListItem = {
   rating: number | null;
   createdAt: Date;
 };
+
+export async function insertFeedback(data: InsertFeedback): Promise<void> {
+  await db.insert(feedback).values({ id: crypto.randomUUID(), ...data });
+}
 
 export async function listFeedback(
   organizationId: string,
@@ -33,6 +33,7 @@ export async function listFeedback(
     orderBy: [desc(feedback.createdAt)],
     limit,
   });
+
   return rows.map((r) => ({
     id: r.id,
     name: r.authorName,

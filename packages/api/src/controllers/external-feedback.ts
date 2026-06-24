@@ -1,6 +1,8 @@
 import { findByPublicKey, findBySecretKeyHash, hashKey } from "../services/api-keys";
 import { insertFeedback, listFeedback, type FeedbackListItem } from "../services/feedback";
 
+export type { FeedbackListItem } from "../services/feedback";
+
 type SubmitInput = {
   authorization: string | undefined;
   name: string;
@@ -44,6 +46,33 @@ export async function submitFeedback(input: SubmitInput): Promise<SubmitResult> 
     email: input.email,
     rating: input.rating,
     source: "api",
+  });
+
+  return { success: true };
+}
+
+export async function submitWidgetFeedback(input: SubmitInput): Promise<SubmitResult> {
+  const token = extractBearer(input.authorization);
+  if (!token) return { success: false, status: 401, error: "Missing Bearer token" };
+
+  if (!token.startsWith("echo_pk_")) {
+    return {
+      success: false,
+      status: 403,
+      error: "Widget endpoint requires a publishable key (echo_pk_...)",
+    };
+  }
+
+  const keyRow = await findByPublicKey(token);
+  if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
+
+  await insertFeedback({
+    organizationId: keyRow.organizationId,
+    authorName: input.name,
+    content: input.feedback,
+    email: input.email,
+    rating: input.rating,
+    source: "widget",
   });
 
   return { success: true };

@@ -9,6 +9,7 @@ import { logger } from "hono/logger";
 
 import { feedbackApi } from "./feedback-api";
 import { projects } from "./projects";
+import { widgetApi } from "./widget-api";
 
 const app = new Hono();
 
@@ -27,6 +28,7 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/projects", projects);
 app.route("/api/feedback", feedbackApi);
+app.route("/api/widget", widgetApi);
 
 app.use(
   "/trpc/*",

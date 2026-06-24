@@ -45,3 +45,48 @@ export function findBySecretKeyHash(secretKeyHash: string): Promise<ApiKeyRow | 
     where: (k) => eq(k.secretKeyHash, secretKeyHash),
   });
 }
+
+export type PublicKeyLookup = {
+  publicKey: string;
+  organizationId: string;
+};
+
+export async function getPublicKeyByOrgSlug(slug: string): Promise<PublicKeyLookup | null> {
+  const org = await db.query.organization.findFirst({
+    where: (o) => eq(o.slug, slug),
+    columns: { id: true },
+  });
+
+  if (!org) return null;
+
+  const keys = await db.query.apiKeys.findFirst({
+    where: (k) => eq(k.organizationId, org.id),
+    columns: { publicKey: true, organizationId: true },
+  });
+
+  return keys ?? null;
+}
+
+export type WidgetInstallInfo = {
+  publicKey: string;
+  orgSlug: string;
+};
+
+export async function getWidgetInstallInfo(
+  organizationId: string,
+): Promise<WidgetInstallInfo | null> {
+  const [org, keys] = await Promise.all([
+    db.query.organization.findFirst({
+      where: (o) => eq(o.id, organizationId),
+      columns: { slug: true },
+    }),
+    db.query.apiKeys.findFirst({
+      where: (k) => eq(k.organizationId, organizationId),
+      columns: { publicKey: true },
+    }),
+  ]);
+
+  if (!org || !keys) return null;
+
+  return { orgSlug: org.slug, publicKey: keys.publicKey };
+}

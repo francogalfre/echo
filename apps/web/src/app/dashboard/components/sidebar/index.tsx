@@ -30,6 +30,7 @@ const collectItem: NavItem = {
 const collectSubLinks = [
   { label: "Feedback page", href: "/dashboard/collect/feedback-page" },
   { label: "API", href: "/dashboard/collect/api" },
+  { label: "Widget", href: "/dashboard/collect/widget" },
 ];
 
 const utilityLinks: NavItem[] = [

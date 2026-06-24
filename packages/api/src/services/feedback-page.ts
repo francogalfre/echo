@@ -40,11 +40,13 @@ export async function getFeedbackPageBySlug(slug: string): Promise<{
   const org = await db.query.organization.findFirst({
     where: (o) => eq(o.slug, slug),
   });
+
   if (!org) return null;
 
   const config = await db.query.feedbackPageConfig.findFirst({
     where: (c) => and(eq(c.organizationId, org.id), eq(c.published, true)),
   });
+
   if (!config) return null;
 
   return { org, config };
