@@ -1,10 +1,12 @@
 import { db } from "@echo/db";
-import { organization } from "@echo/db/schema/auth";
-import { feedback, feedbackPageConfig } from "@echo/db/schema/feedback";
+import { feedbackPageConfig, type feedback } from "@echo/db/schema/feedback";
 import { and, eq } from "drizzle-orm";
+
+import type { organization } from "@echo/db/schema/auth";
 
 export type FeedbackPageConfig = typeof feedbackPageConfig.$inferSelect;
 export type FeedbackRow = typeof feedback.$inferSelect;
+type OrgRow = typeof organization.$inferSelect;
 
 type UpdateData = Partial<
   Omit<FeedbackPageConfig, "id" | "organizationId" | "createdAt" | "updatedAt">
@@ -30,8 +32,6 @@ export async function upsertFeedbackPageConfig(
       set: { ...data, updatedAt: new Date() },
     });
 }
-
-type OrgRow = typeof organization.$inferSelect;
 
 export async function getFeedbackPageBySlug(slug: string): Promise<{
   org: OrgRow;

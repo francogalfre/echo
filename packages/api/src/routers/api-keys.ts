@@ -1,52 +1,36 @@
 import { TRPCError } from "@trpc/server";
 
-import { protectedProcedure, router } from "../index";
+import { organizationProcedure, router } from "../index";
 import { generateRawKey, getApiKeys, hashKey, upsertApiKeys } from "../services/api-keys";
 
-type SessionWithOrg = { activeOrganizationId?: string | null };
-
-function getActiveOrgId(ctx: { session: { session: unknown } }): string {
-  const orgId = (ctx.session.session as SessionWithOrg).activeOrganizationId;
-  if (!orgId)
-    throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization" });
-
-  return orgId;
+function createKeyPair(): { publicKey: string; secretKey: string } {
+  return {
+    publicKey: generateRawKey("echo_pk_"),
+    secretKey: generateRawKey("echo_sk_"),
+  };
 }
 
 export const apiKeysRouter = router({
-  get: protectedProcedure.query(async ({ ctx }) => {
-    const orgId = getActiveOrgId(ctx);
-    const keys = await getApiKeys(orgId);
-
+  get: organizationProcedure.query(async ({ ctx }) => {
+    const keys = await getApiKeys(ctx.organizationId);
     if (!keys) return null;
 
-    return {
-      publicKey: keys.publicKey,
-      hasSecret: true,
-      createdAt: keys.createdAt,
-    };
+    return { publicKey: keys.publicKey, hasSecret: true, createdAt: keys.createdAt };
   }),
 
-  generate: protectedProcedure.mutation(async ({ ctx }) => {
-    const orgId = getActiveOrgId(ctx);
-    const publicKey = generateRawKey("echo_pk_");
-    const secretKey = generateRawKey("echo_sk_");
-
-    await upsertApiKeys(orgId, publicKey, hashKey(secretKey));
+  generate: organizationProcedure.mutation(async ({ ctx }) => {
+    const { publicKey, secretKey } = createKeyPair();
+    await upsertApiKeys(ctx.organizationId, publicKey, hashKey(secretKey));
     return { publicKey, secretKey };
   }),
 
-  roll: protectedProcedure.mutation(async ({ ctx }) => {
-    const orgId = getActiveOrgId(ctx);
-
-    if (!(await getApiKeys(orgId))) {
+  roll: organizationProcedure.mutation(async ({ ctx }) => {
+    if (!(await getApiKeys(ctx.organizationId))) {
       throw new TRPCError({ code: "NOT_FOUND", message: "No API keys to roll" });
     }
 
-    const publicKey = generateRawKey("echo_pk_");
-    const secretKey = generateRawKey("echo_sk_");
-
-    await upsertApiKeys(orgId, publicKey, hashKey(secretKey));
+    const { publicKey, secretKey } = createKeyPair();
+    await upsertApiKeys(ctx.organizationId, publicKey, hashKey(secretKey));
     return { publicKey, secretKey };
   }),
 });

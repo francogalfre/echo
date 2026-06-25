@@ -1,4 +1,4 @@
-import { Label } from "@echo/ui/components/label";
+import { Label } from "./label";
 import type { ReactNode } from "react";
 
 interface FieldProps {

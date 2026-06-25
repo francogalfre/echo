@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { Field } from "@/components/field";
+import { Field } from "@echo/ui/components/field";
 import { authClient, useSession } from "@/lib/auth-client";
 import { slugify } from "@/lib/slug";
 

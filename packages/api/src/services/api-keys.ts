@@ -6,6 +6,16 @@ import { eq } from "drizzle-orm";
 
 export type ApiKeyRow = typeof apiKeys.$inferSelect;
 
+export type PublicKeyLookup = {
+  publicKey: string;
+  organizationId: string;
+};
+
+export type WidgetInstallInfo = {
+  publicKey: string;
+  orgSlug: string;
+};
+
 export function generateRawKey(prefix: "echo_pk_" | "echo_sk_"): string {
   return `${prefix}${randomBytes(32).toString("hex")}`;
 }
@@ -46,11 +56,6 @@ export function findBySecretKeyHash(secretKeyHash: string): Promise<ApiKeyRow | 
   });
 }
 
-export type PublicKeyLookup = {
-  publicKey: string;
-  organizationId: string;
-};
-
 export async function getPublicKeyByOrgSlug(slug: string): Promise<PublicKeyLookup | null> {
   const org = await db.query.organization.findFirst({
     where: (o) => eq(o.slug, slug),
@@ -66,11 +71,6 @@ export async function getPublicKeyByOrgSlug(slug: string): Promise<PublicKeyLook
 
   return keys ?? null;
 }
-
-export type WidgetInstallInfo = {
-  publicKey: string;
-  orgSlug: string;
-};
 
 export async function getWidgetInstallInfo(
   organizationId: string,

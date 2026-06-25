@@ -3,19 +3,10 @@ import {
   getWidgetInstallInfo,
   type WidgetInstallInfo,
 } from "../services/api-keys";
-import { generateShadcnWidget, generateStandaloneWidget } from "./widget-templates";
+import { generateShadcnWidget, generateStandaloneWidget } from "../templates/widget";
+import type { ComponentResult, RegistryResult } from "../types";
 
-export type { WidgetInstallInfo } from "../services/api-keys";
-
-export type ComponentResult =
-  | { success: true; code: string }
-  | { success: false; status: 404; error: string };
-
-export type RegistryResult =
-  | { success: true; registry: Record<string, unknown> }
-  | { success: false; status: 404; error: string };
-
-export async function resolveInstallInfo(
+export function resolveInstallInfo(
   organizationId: string,
 ): Promise<WidgetInstallInfo | null> {
   return getWidgetInstallInfo(organizationId);
@@ -35,10 +26,7 @@ export async function resolveStandaloneComponent(
     };
   }
 
-  return {
-    success: true,
-    code: generateStandaloneWidget(info.publicKey, widgetUrl),
-  };
+  return { success: true, code: generateStandaloneWidget(info.publicKey, widgetUrl) };
 }
 
 export async function resolveShadcnRegistry(

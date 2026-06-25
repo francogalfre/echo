@@ -1,50 +1,19 @@
-import { TRPCError } from "@trpc/server";
-import { z } from "zod";
-
-import { protectedProcedure, router } from "../index";
+import { organizationProcedure, router } from "../index";
+import { feedbackPageConfigSchema } from "../schemas";
 import { getFeedbackPageConfig, upsertFeedbackPageConfig } from "../services/feedback-page";
 
-const updateConfigInput = z.object({
-  title: z.string().max(100).optional(),
-  description: z.string().max(500).optional(),
-  accentColor: z
-    .string()
-    .regex(/^#[0-9a-fA-F]{6}$/)
-    .optional(),
-  backgroundColor: z
-    .string()
-    .regex(/^#[0-9a-fA-F]{6}$/)
-    .optional(),
-  enableEmail: z.boolean().optional(),
-  enableRating: z.boolean().optional(),
-  enableCoverBanner: z.boolean().optional(),
-});
-
-type SessionWithOrg = { activeOrganizationId?: string | null };
-
-function getActiveOrgId(ctx: { session: { session: unknown } }): string {
-  const orgId = (ctx.session.session as SessionWithOrg).activeOrganizationId;
-  if (!orgId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization" });
-  }
-  return orgId;
-}
-
 export const feedbackPageRouter = router({
-  getConfig: protectedProcedure.query(async ({ ctx }) => {
-    const orgId = getActiveOrgId(ctx);
-    return (await getFeedbackPageConfig(orgId)) ?? null;
+  getConfig: organizationProcedure.query(({ ctx }) => {
+    return getFeedbackPageConfig(ctx.organizationId).then((config) => config ?? null);
   }),
 
-  upsertConfig: protectedProcedure
-    .input(updateConfigInput)
+  upsertConfig: organizationProcedure
+    .input(feedbackPageConfigSchema)
     .mutation(async ({ input, ctx }) => {
-      const orgId = getActiveOrgId(ctx);
-      await upsertFeedbackPageConfig(orgId, input);
+      await upsertFeedbackPageConfig(ctx.organizationId, input);
     }),
 
-  publish: protectedProcedure.mutation(async ({ ctx }) => {
-    const orgId = getActiveOrgId(ctx);
-    await upsertFeedbackPageConfig(orgId, { published: true });
+  publish: organizationProcedure.mutation(async ({ ctx }) => {
+    await upsertFeedbackPageConfig(ctx.organizationId, { published: true });
   }),
 });

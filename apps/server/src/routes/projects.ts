@@ -1,15 +1,13 @@
-import { auth } from "@echo/auth";
 import { uploadOrganizationLogo } from "@echo/api/controllers/organization";
 import { Hono } from "hono";
 
-export const projects = new Hono();
+import { authenticate } from "../middleware/auth";
 
-projects.post("/logo", async (c) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers });
+export const projectRoutes = new Hono();
 
-  if (!session) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
+projectRoutes.post("/logo", async (c) => {
+  const session = await authenticate(c);
+  if (session instanceof Response) return session;
 
   const form = await c.req.formData();
   const organizationId = form.get("organizationId");
@@ -25,9 +23,7 @@ projects.post("/logo", async (c) => {
     file,
   });
 
-  if (!result.success) {
-    return c.json({ error: result.error }, result.status);
-  }
+  if (!result.success) return c.json({ error: result.error }, result.status);
 
   return c.json({ url: result.url });
 });

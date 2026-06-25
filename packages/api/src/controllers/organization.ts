@@ -7,6 +7,9 @@ import { env } from "@echo/env/server";
 
 import { findMembership, updateOrganizationLogo } from "../services/organization";
 import { uploadObject } from "../services/storage";
+import type { UploadLogoResult } from "../types";
+
+const MAX_LOGO_BYTES = 1024 * 1024;
 
 const extensionByType: Record<string, string> = {
   "image/png": "png",
@@ -20,10 +23,6 @@ export interface UploadLogoInput {
   readonly organizationId: string;
   readonly file: File;
 }
-
-export type UploadLogoResult =
-  | { success: true; url: string }
-  | { success: false; status: 400 | 403 | 500 | 502; error: string };
 
 export async function uploadOrganizationLogo(
   input: UploadLogoInput,
@@ -41,7 +40,7 @@ export async function uploadOrganizationLogo(
     return { success: false, status: 400, error: "Unsupported file type" };
   }
 
-  if (input.file.size > 1024 * 1024) {
+  if (input.file.size > MAX_LOGO_BYTES) {
     return { success: false, status: 400, error: "File too large (max 1MB)" };
   }
 

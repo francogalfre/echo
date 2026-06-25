@@ -1,9 +1,13 @@
-import { findByPublicKey, findBySecretKeyHash, hashKey } from "../services/api-keys";
-import { insertFeedback, listFeedback, type FeedbackListItem } from "../services/feedback";
+import {
+  findByPublicKey,
+  findBySecretKeyHash,
+  hashKey,
+  type ApiKeyRow,
+} from "../services/api-keys";
+import { insertFeedback, listFeedback } from "../services/feedback";
+import type { ListResult, SubmitResult } from "../types";
 
-export type { FeedbackListItem } from "../services/feedback";
-
-type SubmitInput = {
+type FeedbackInput = {
   authorization: string | undefined;
   name: string;
   feedback: string;
@@ -11,32 +15,41 @@ type SubmitInput = {
   rating?: number;
 };
 
-export type SubmitResult =
-  | { success: true }
-  | { success: false; status: 400 | 401 | 403; error: string };
+type KeyKind = {
+  prefix: "echo_sk_" | "echo_pk_";
+  source: "api" | "widget";
+  lookup: (token: string) => Promise<ApiKeyRow | undefined>;
+};
 
-export type ListResult =
-  | { success: true; feedback: FeedbackListItem[] }
-  | { success: false; status: 401; error: string };
+const SECRET_KEY: KeyKind = {
+  prefix: "echo_sk_",
+  source: "api",
+  lookup: (token) => findBySecretKeyHash(hashKey(token)),
+};
+
+const PUBLIC_KEY: KeyKind = {
+  prefix: "echo_pk_",
+  source: "widget",
+  lookup: findByPublicKey,
+};
 
 function extractBearer(header: string | undefined): string | null {
   if (!header?.startsWith("Bearer ")) return null;
   return header.slice(7).trim() || null;
 }
 
-export async function submitFeedback(input: SubmitInput): Promise<SubmitResult> {
+async function createFeedbackWithKey(
+  input: FeedbackInput,
+  kind: KeyKind,
+): Promise<SubmitResult> {
   const token = extractBearer(input.authorization);
   if (!token) return { success: false, status: 401, error: "Missing Bearer token" };
 
-  if (!token.startsWith("echo_sk_")) {
-    return {
-      success: false,
-      status: 403,
-      error: "POST requires a secret key (echo_sk_...)",
-    };
+  if (!token.startsWith(kind.prefix)) {
+    return { success: false, status: 403, error: `Requires a ${kind.prefix} key` };
   }
 
-  const keyRow = await findBySecretKeyHash(hashKey(token));
+  const keyRow = await kind.lookup(token);
   if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
 
   await insertFeedback({
@@ -45,37 +58,18 @@ export async function submitFeedback(input: SubmitInput): Promise<SubmitResult> 
     content: input.feedback,
     email: input.email,
     rating: input.rating,
-    source: "api",
+    source: kind.source,
   });
 
   return { success: true };
 }
 
-export async function submitWidgetFeedback(input: SubmitInput): Promise<SubmitResult> {
-  const token = extractBearer(input.authorization);
-  if (!token) return { success: false, status: 401, error: "Missing Bearer token" };
+export function submitFeedback(input: FeedbackInput): Promise<SubmitResult> {
+  return createFeedbackWithKey(input, SECRET_KEY);
+}
 
-  if (!token.startsWith("echo_pk_")) {
-    return {
-      success: false,
-      status: 403,
-      error: "Widget endpoint requires a publishable key (echo_pk_...)",
-    };
-  }
-
-  const keyRow = await findByPublicKey(token);
-  if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
-
-  await insertFeedback({
-    organizationId: keyRow.organizationId,
-    authorName: input.name,
-    content: input.feedback,
-    email: input.email,
-    rating: input.rating,
-    source: "widget",
-  });
-
-  return { success: true };
+export function submitWidgetFeedback(input: FeedbackInput): Promise<SubmitResult> {
+  return createFeedbackWithKey(input, PUBLIC_KEY);
 }
 
 export async function getFeedback(input: {
@@ -84,16 +78,15 @@ export async function getFeedback(input: {
   const token = extractBearer(input.authorization);
   if (!token) return { success: false, status: 401, error: "Missing Bearer token" };
 
-  let organizationId: string | undefined;
+  const kind = token.startsWith("echo_pk_")
+    ? PUBLIC_KEY
+    : token.startsWith("echo_sk_")
+      ? SECRET_KEY
+      : null;
 
-  if (token.startsWith("echo_pk_")) {
-    organizationId = (await findByPublicKey(token))?.organizationId;
-  } else if (token.startsWith("echo_sk_")) {
-    organizationId = (await findBySecretKeyHash(hashKey(token)))?.organizationId;
-  } else {
-    return { success: false, status: 401, error: "Invalid API key format" };
-  }
+  if (!kind) return { success: false, status: 401, error: "Invalid API key format" };
 
+  const organizationId = (await kind.lookup(token))?.organizationId;
   if (!organizationId) return { success: false, status: 401, error: "Invalid API key" };
 
   return { success: true, feedback: await listFeedback(organizationId) };

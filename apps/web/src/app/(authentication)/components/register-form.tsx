@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { Field } from "@/components/field";
+import { Field } from "@echo/ui/components/field";
 import { signUp } from "@/lib/auth-client";
 
-import { registerSchema, type RegisterValues } from "./schemas";
+import { registerSchema, type RegisterValues } from "../schemas";
 
 export const RegisterForm = () => {
   const router = useRouter();

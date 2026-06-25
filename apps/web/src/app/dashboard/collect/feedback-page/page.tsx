@@ -3,7 +3,7 @@
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -23,70 +23,15 @@ export default function FeedbackPage(): React.ReactElement {
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
-  const title = useWatch({
+  const preview = useWatch({
     control: form.control,
-    name: "title",
-    defaultValue: DEFAULT_CONFIG.title,
-  });
-  const description = useWatch({
-    control: form.control,
-    name: "description",
-    defaultValue: DEFAULT_CONFIG.description,
-  });
-  const accentColor = useWatch({
-    control: form.control,
-    name: "accentColor",
-    defaultValue: DEFAULT_CONFIG.accentColor,
-  });
-  const backgroundColor = useWatch({
-    control: form.control,
-    name: "backgroundColor",
-    defaultValue: DEFAULT_CONFIG.backgroundColor,
-  });
-  const enableEmail = useWatch({
-    control: form.control,
-    name: "enableEmail",
-    defaultValue: DEFAULT_CONFIG.enableEmail,
-  });
-  const enableRating = useWatch({
-    control: form.control,
-    name: "enableRating",
-    defaultValue: DEFAULT_CONFIG.enableRating,
-  });
-  const enableCoverBanner = useWatch({
-    control: form.control,
-    name: "enableCoverBanner",
-    defaultValue: DEFAULT_CONFIG.enableCoverBanner,
-  });
+    defaultValue: DEFAULT_CONFIG,
+  }) as ConfigValues;
 
-  const preview = useMemo<ConfigValues>(
-    () => ({
-      title,
-      description,
-      accentColor,
-      backgroundColor,
-      enableEmail,
-      enableRating,
-      enableCoverBanner,
-    }),
-    [
-      title,
-      description,
-      accentColor,
-      backgroundColor,
-      enableEmail,
-      enableRating,
-      enableCoverBanner,
-    ],
-  );
-
-  const pageUrl = useMemo(
-    () =>
-      typeof window !== "undefined" && activeOrg?.slug
-        ? `${window.location.origin}/feedback/${activeOrg.slug}`
-        : null,
-    [activeOrg?.slug],
-  );
+  const pageUrl =
+    typeof window !== "undefined" && activeOrg?.slug
+      ? `${window.location.origin}/feedback/${activeOrg.slug}`
+      : null;
 
   useEffect(() => {
     trpc.feedbackPage.getConfig

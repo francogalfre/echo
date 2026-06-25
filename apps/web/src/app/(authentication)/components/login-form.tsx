@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { Field } from "@/components/field";
+import { Field } from "@echo/ui/components/field";
 import { signIn } from "@/lib/auth-client";
 
-import { loginSchema, type LoginValues } from "./schemas";
+import { loginSchema, type LoginValues } from "../schemas";
 
 export const LoginForm = () => {
   const router = useRouter();

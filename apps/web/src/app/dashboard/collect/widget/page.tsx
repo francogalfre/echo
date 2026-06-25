@@ -2,70 +2,60 @@
 
 import { env } from "@echo/env/web";
 import { Icons } from "@echo/ui/components/icons";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
-import { trpc } from "@/lib/trpc";
-
-import { WidgetInstallSection } from "./components/widget-install-section";
-
-type InstallInfo = {
-  publicKey: string;
-  orgSlug: string;
-};
+import { InstallMethods } from "./components/install-methods";
+import { WidgetShowcase } from "./components/widget-showcase";
+import { useWidgetInstall } from "./hooks/use-widget-install";
 
 export default function WidgetPage(): React.ReactElement {
-  const [info, setInfo] = useState<InstallInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    trpc.widget.getInstallInfo
-      .query()
-      .then((data) => {
-        if (data) setInfo(data);
-      })
-      .catch(() => toast.error("Failed to load widget configuration"))
-      .finally(() => setIsLoading(false));
-  }, []);
-
+  const state = useWidgetInstall();
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
   return (
-    <div className="p-8">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-6">
-          <h1 className="text-base font-semibold">Widget</h1>
-          <p className="text-sm text-muted-foreground">
-            Add a floating feedback button to any React application.
-          </p>
-        </div>
+    <div className="mx-auto max-w-3xl px-8 py-10">
+      <header className="mb-8">
+        <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          React
+        </span>
+        <h1 className="mt-4 text-2xl font-semibold tracking-tight">Feedback widget</h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          A floating feedback button you can drop into any React application.
+        </p>
+      </header>
 
-        {isLoading ? (
-          <div className="space-y-3">
-            <div className="h-36 animate-pulse rounded-2xl border border-border bg-muted/30" />
-            <div className="h-36 animate-pulse rounded-2xl border border-border bg-muted/30" />
-            <div className="h-48 animate-pulse rounded-2xl border border-border bg-muted/30" />
-          </div>
-        ) : !info ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 py-16">
-            <Icons.lock className="size-8 text-muted-foreground/50" />
-            <p className="mt-3 text-sm font-medium">No API keys yet</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Generate your API keys first in the{" "}
-              <a href="/dashboard/collect/api" className="underline underline-offset-2">
-                API section
-              </a>{" "}
-              to enable the widget.
-            </p>
-          </div>
-        ) : (
-          <WidgetInstallSection
-            publicKey={info.publicKey}
-            orgSlug={info.orgSlug}
-            serverUrl={serverUrl}
-          />
-        )}
+      {state.status === "loading" ? (
+        <div className="space-y-4">
+          <div className="h-72 animate-pulse rounded-2xl border border-border bg-muted/30" />
+          <div className="h-36 animate-pulse rounded-2xl border border-border bg-muted/30" />
+        </div>
+      ) : state.status === "empty" ? (
+        <EmptyState />
+      ) : (
+        <div className="space-y-4">
+          <WidgetShowcase publicKey={state.info.publicKey} serverUrl={serverUrl} />
+          <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EmptyState(): React.ReactElement {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
+      <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-background">
+        <Icons.lock className="size-5 text-muted-foreground" />
       </div>
+      <h2 className="mt-4 text-sm font-semibold">No API keys yet</h2>
+      <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+        Generate your API keys to enable the widget.
+      </p>
+      <a
+        href="/dashboard/collect/api"
+        className="mt-6 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity hover:opacity-85"
+      >
+        Go to API keys
+      </a>
     </div>
   );
 }

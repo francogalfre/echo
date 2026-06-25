@@ -2,25 +2,12 @@
 
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
-import { toast } from "sonner";
+
+import { CodeBlock } from "../../components/code-block";
 
 type Tab = "post" | "get";
 
-function highlight(code: string): React.ReactNode[] {
-  return code.split(/("(?:[^"\\]|\\.)*")/g).map((part, i) =>
-    part.startsWith('"') ? (
-      <span key={i} className="text-emerald-400">
-        {part}
-      </span>
-    ) : (
-      <span key={i} className="text-zinc-300">
-        {part}
-      </span>
-    ),
-  );
-}
-
-const fields = [
+const REQUEST_FIELDS = [
   { name: "name", required: true, type: "string", description: "Reporter's name." },
   {
     name: "feedback",
@@ -35,7 +22,9 @@ const fields = [
     type: "number",
     description: "Star rating from 1 to 5.",
   },
-];
+] as const;
+
+const MASKED_SECRET = `echo_sk_${"•".repeat(16)}`;
 
 type CodeSectionProps = {
   serverUrl: string;
@@ -48,15 +37,14 @@ export const CodeSection = ({
 }: CodeSectionProps): React.ReactElement => {
   const [tab, setTab] = useState<Tab>("post");
 
-  const sk = `echo_sk_${"•".repeat(16)}`;
   const pk = publicKey ?? `echo_pk_${"•".repeat(16)}`;
 
-  const postCode = `const response = await fetch(
+  const postCode = `await fetch(
   "${serverUrl}/api/feedback",
   {
     method: "POST",
     headers: {
-      "Authorization": "Bearer ${sk}",
+      "Authorization": "Bearer ${MASKED_SECRET}",
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -66,32 +54,39 @@ export const CodeSection = ({
   }
 )`;
 
-  const getCode = `const response = await fetch(
+  const getCode = `const res = await fetch(
   "${serverUrl}/api/feedback",
-  {
-    headers: {
-      "Authorization": "Bearer ${pk}",
-    },
-  }
+  { headers: { "Authorization": "Bearer ${pk}" } }
 )
 
-const { feedback } = await response.json()`;
+const { feedback } = await res.json()`;
 
-  const activeCode = tab === "post" ? postCode : getCode;
+  const postResponse = `{
+  "success": true
+}`;
 
-  const copy = (): void => {
-    void navigator.clipboard.writeText(activeCode);
-    toast.success("Copied to clipboard");
-  };
+  const getResponse = `{
+  "feedback": [
+    {
+      "id": "fb_a1b2c3",
+      "name": "Jane Smith",
+      "feedback": "Love the product!",
+      "rating": 5,
+      "createdAt": "2026-06-24T10:00:00Z"
+    }
+  ]
+}`;
+
+  const isPost = tab === "post";
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between">
+    <section className="rounded-2xl border border-border bg-card p-5">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-sm font-semibold">Integration</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Call <span className="font-mono text-foreground">/api/feedback</span> from your
-            backend using Bearer auth.
+          <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+            Call <span className="font-mono text-foreground">/api/feedback</span> with
+            Bearer auth.
           </p>
         </div>
 
@@ -114,39 +109,41 @@ const { feedback } = await response.json()`;
         </div>
       </div>
 
-      <div className="relative mt-4 overflow-hidden rounded-xl bg-zinc-950">
-        <button
-          type="button"
-          onClick={copy}
-          className="absolute right-3 top-3 flex h-7 items-center gap-1.5 rounded-lg bg-zinc-800 px-2.5 text-[11px] text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
-        >
-          Copy
-        </button>
-        <pre className="overflow-x-auto p-5 text-[12px] leading-[1.75]">
-          <code>{highlight(activeCode)}</code>
-        </pre>
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        <div>
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Request
+          </p>
+          <CodeBlock code={isPost ? postCode : getCode} language="ts" />
+        </div>
+        <div>
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Response
+          </p>
+          <CodeBlock
+            code={isPost ? postResponse : getResponse}
+            language="json"
+            highlightStrings={false}
+          />
+        </div>
       </div>
 
-      {tab === "post" && (
+      {isPost && (
         <div className="mt-5">
           <p className="mb-3 text-xs font-semibold">Request body</p>
           <div className="overflow-hidden rounded-xl border border-border">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Field
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Type
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                <tr className="border-b border-border bg-muted/30 text-left">
+                  <th className="px-4 py-2.5 font-medium text-muted-foreground">Field</th>
+                  <th className="px-4 py-2.5 font-medium text-muted-foreground">Type</th>
+                  <th className="px-4 py-2.5 font-medium text-muted-foreground">
                     Description
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {fields.map((f) => (
+                {REQUEST_FIELDS.map((f) => (
                   <tr key={f.name}>
                     <td className="px-4 py-2.5 font-mono text-[11px]">
                       {f.name}
@@ -161,6 +158,6 @@ const { feedback } = await response.json()`;
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };

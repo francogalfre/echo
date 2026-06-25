@@ -7,11 +7,13 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
-import { feedbackApi } from "./feedback-api";
-import { projects } from "./projects";
-import { widgetApi } from "./widget-api";
+import { feedbackRoutes } from "./routes/feedback";
+import { projectRoutes } from "./routes/projects";
+import { widgetRoutes } from "./routes/widget";
 
 const app = new Hono();
+
+app.onError((_err, c) => c.json({ error: "Internal server error" }, 500));
 
 app.use(logger());
 app.use(
@@ -26,9 +28,9 @@ app.use(
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
-app.route("/api/projects", projects);
-app.route("/api/feedback", feedbackApi);
-app.route("/api/widget", widgetApi);
+app.route("/api/projects", projectRoutes);
+app.route("/api/feedback", feedbackRoutes);
+app.route("/api/widget", widgetRoutes);
 
 app.use(
   "/trpc/*",
