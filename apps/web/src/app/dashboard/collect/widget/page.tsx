@@ -3,6 +3,7 @@
 import { env } from "@echo/env/web";
 import { Icons } from "@echo/ui/components/icons";
 
+import { PageContainer } from "../../components/page-container";
 import { InstallMethods } from "./components/install-methods";
 import { WidgetShowcase } from "./components/widget-showcase";
 import { useWidgetInstall } from "./hooks/use-widget-install";
@@ -12,7 +13,7 @@ export default function WidgetPage(): React.ReactElement {
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
   return (
-    <div className="mx-auto max-w-3xl px-8 py-10">
+    <PageContainer>
       <header className="mb-8">
         <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
           React
@@ -36,7 +37,7 @@ export default function WidgetPage(): React.ReactElement {
           <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
 

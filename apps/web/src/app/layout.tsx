@@ -1,6 +1,6 @@
 import { Toaster } from "@echo/ui/components/sonner";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 
 import "../index.css";
@@ -15,10 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const interDisplay = Inter({
-  variable: "--font-inter-display",
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -30,10 +30,10 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${interDisplay.variable}`}
+        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable}`}
       >
         {children}
-        <Toaster theme="light" position="top-center" />
+        <Toaster theme="light" position="bottom-right" />
       </body>
     </html>
   );

@@ -27,11 +27,19 @@
 
   /* Muted — for secondary text */
   --muted: oklch(0.95 0 0);
-  --muted-foreground: oklch(0.5 0 0);
+  --muted-foreground: oklch(0.44 0 0);
 
   /* Accent — #6B5CE7 violet for actions and highlights */
   --accent: oklch(0.567 0.202 282.7);
   --accent-foreground: oklch(0.985 0 0);
+
+  /* Semantic — solid colors for toasts, statuses and inline feedback */
+  --success: oklch(0.55 0.13 150);
+  --success-foreground: oklch(0.98 0 0);
+  --warning: oklch(0.72 0.15 75);
+  --warning-foreground: oklch(0.24 0.03 75);
+  --info: oklch(0.58 0.13 240);
+  --info-foreground: oklch(0.98 0 0);
 
   --destructive: oklch(0.58 0.22 27);
   --border: oklch(0.91 0 0);
@@ -77,11 +85,19 @@
 
   /* Muted — for secondary text */
   --muted: oklch(0.18 0 0);
-  --muted-foreground: oklch(0.58 0 0);
+  --muted-foreground: oklch(0.64 0 0);
 
   /* Accent — lighter violet for readability on dark backgrounds */
   --accent: oklch(0.68 0.18 282.7);
   --accent-foreground: oklch(0.985 0 0);
+
+  /* Semantic — brighter on dark for legibility */
+  --success: oklch(0.7 0.15 150);
+  --success-foreground: oklch(0.16 0 0);
+  --warning: oklch(0.8 0.15 75);
+  --warning-foreground: oklch(0.24 0.03 75);
+  --info: oklch(0.7 0.13 240);
+  --info-foreground: oklch(0.16 0 0);
 
   --destructive: oklch(0.65 0.22 27);
   --border: oklch(1 0 0 / 8%);
@@ -107,7 +123,7 @@
 
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
@@ -124,6 +140,12 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);

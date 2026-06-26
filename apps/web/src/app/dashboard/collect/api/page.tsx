@@ -3,6 +3,7 @@
 import { env } from "@echo/env/web";
 import { Icons } from "@echo/ui/components/icons";
 
+import { PageContainer } from "../../components/page-container";
 import { CodeSection } from "./components/code-section";
 import { KeysSection } from "./components/keys-section";
 import { useApiKeys } from "./hooks/use-api-keys";
@@ -12,7 +13,7 @@ export default function CollectApiPage(): React.ReactElement {
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
   return (
-    <div className="mx-auto max-w-3xl px-8 py-10">
+    <PageContainer>
       <header className="mb-8">
         <span className="rounded-full border border-border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
           REST API
@@ -37,7 +38,7 @@ export default function CollectApiPage(): React.ReactElement {
           <CodeSection serverUrl={serverUrl} publicKey={state.keys.publicKey} />
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
