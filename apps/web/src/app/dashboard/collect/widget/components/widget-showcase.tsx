@@ -3,7 +3,7 @@
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
 
-import { CodeBlock } from "../../components/code-block";
+import { CodeBlock } from "@echo/ui/components/code-block";
 import { WidgetPreview } from "./widget-preview";
 
 type Tab = "preview" | "code";

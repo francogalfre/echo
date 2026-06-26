@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlock } from "../../components/code-block";
+import { CodeBlock } from "@echo/ui/components/code-block";
 
 type InstallMethodsProps = {
   orgSlug: string;
@@ -83,7 +83,7 @@ const Method = ({
       )}
     </div>
     <p className="mb-4 text-xs leading-relaxed text-muted-foreground">{description}</p>
-    <CodeBlock code={code} language={language} highlightStrings={false} />
+    <CodeBlock code={code} language={language} />
     {footnote && <p className="mt-3 text-xs text-muted-foreground">{footnote}</p>}
   </section>
 );

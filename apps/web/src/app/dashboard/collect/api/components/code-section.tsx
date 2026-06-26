@@ -3,7 +3,7 @@
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
 
-import { CodeBlock } from "../../components/code-block";
+import { CodeBlock } from "@echo/ui/components/code-block";
 
 type Tab = "post" | "get";
 
@@ -120,11 +120,7 @@ const { feedback } = await res.json()`;
           <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Response
           </p>
-          <CodeBlock
-            code={isPost ? postResponse : getResponse}
-            language="json"
-            highlightStrings={false}
-          />
+          <CodeBlock code={isPost ? postResponse : getResponse} language="json" />
         </div>
       </div>
 
