@@ -1,9 +1,10 @@
 "use client";
 
+import { CodeBlock } from "@echo/ui/components/code-block";
 import { cn } from "@echo/ui/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
-import { CodeBlock } from "@echo/ui/components/code-block";
 import { WidgetPreview } from "./widget-preview";
 
 type Tab = "preview" | "code";
@@ -42,24 +43,43 @@ export function EchoWidget({ position = 'right' }) {
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className={cn(
-              "rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors",
-              tab === t
-                ? "bg-muted text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+            className="relative rounded-md px-3 py-1 text-xs font-medium capitalize"
           >
-            {t}
+            {tab === t && (
+              <motion.span
+                layoutId="showcase-tab"
+                className="absolute inset-0 rounded-md bg-muted"
+                transition={{ type: "spring", stiffness: 400, damping: 35 }}
+              />
+            )}
+            <span
+              className={cn(
+                "relative z-10 transition-colors",
+                tab === t ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
+              {t}
+            </span>
           </button>
         ))}
       </div>
 
       <div className="p-4">
-        {tab === "preview" ? (
-          <WidgetPreview />
-        ) : (
-          <CodeBlock code={snippet} language="tsx" />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {tab === "preview" ? (
+              <WidgetPreview />
+            ) : (
+              <CodeBlock code={snippet} language="tsx" />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </section>
   );

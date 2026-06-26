@@ -1,10 +1,11 @@
 "use client";
 
 import { env } from "@echo/env/web";
+import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
 
 import { PageContainer } from "../../components/page-container";
-import { DocsAside } from "../components/docs-aside";
+import { DocsHeader } from "../components/docs-header";
 import { InstallMethods } from "./components/install-methods";
 import { WidgetShowcase } from "./components/widget-showcase";
 import { useWidgetInstall } from "./hooks/use-widget-install";
@@ -16,12 +17,9 @@ export default function WidgetPage(): React.ReactElement {
   if (state.status === "loading") {
     return (
       <PageContainer>
-        <div className="flex flex-col gap-10 lg:flex-row">
-          <div className="h-40 animate-pulse rounded-2xl border border-border bg-muted/30 lg:w-72 lg:shrink-0" />
-          <div className="flex-1 space-y-4">
-            <div className="h-72 animate-pulse rounded-2xl border border-border bg-muted/30" />
-            <div className="h-36 animate-pulse rounded-2xl border border-border bg-muted/30" />
-          </div>
+        <div className="space-y-4">
+          <div className="h-72 animate-pulse rounded-2xl border border-border bg-muted/30" />
+          <div className="h-36 animate-pulse rounded-2xl border border-border bg-muted/30" />
         </div>
       </PageContainer>
     );
@@ -37,18 +35,22 @@ export default function WidgetPage(): React.ReactElement {
 
   return (
     <PageContainer>
-      <div className="flex flex-col gap-10 lg:flex-row">
-        <DocsAside
+      <FadeIn>
+        <DocsHeader
           eyebrow="React"
           title="Feedback widget"
           description="A floating feedback button you can drop into any React application."
           baseUrl={`${serverUrl}/api/widget`}
         />
+      </FadeIn>
 
-        <div className="min-w-0 flex-1 space-y-4">
+      <div className="space-y-4">
+        <FadeIn delay={0.05}>
           <WidgetShowcase publicKey={state.info.publicKey} serverUrl={serverUrl} />
+        </FadeIn>
+        <FadeIn delay={0.1}>
           <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />
-        </div>
+        </FadeIn>
       </div>
     </PageContainer>
   );

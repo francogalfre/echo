@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@echo/ui/lib/utils";
-import { useState } from "react";
-
 import { CodeBlock } from "@echo/ui/components/code-block";
+import { cn } from "@echo/ui/lib/utils";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 
 type Tab = "post" | "get";
 
@@ -96,33 +96,54 @@ const { feedback } = await res.json()`;
               key={t}
               type="button"
               onClick={() => setTab(t)}
-              className={cn(
-                "rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors",
-                tab === t
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className="relative rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide"
             >
-              {t}
+              {tab === t && (
+                <motion.span
+                  layoutId="api-method-tab"
+                  className="absolute inset-0 rounded-md bg-foreground"
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                />
+              )}
+              <span
+                className={cn(
+                  "relative z-10 transition-colors",
+                  tab === t
+                    ? "text-background"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t}
+              </span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-2">
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Request
-          </p>
-          <CodeBlock code={isPost ? postCode : getCode} language="ts" />
-        </div>
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Response
-          </p>
-          <CodeBlock code={isPost ? postResponse : getResponse} language="json" />
-        </div>
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+        >
+          <div className="mt-4 grid gap-3 lg:grid-cols-2">
+            <div>
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Request
+              </p>
+              <CodeBlock code={isPost ? postCode : getCode} language="ts" />
+            </div>
+            <div>
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Response
+              </p>
+              <CodeBlock code={isPost ? postResponse : getResponse} language="json" />
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       {isPost && (
         <div className="mt-5">
