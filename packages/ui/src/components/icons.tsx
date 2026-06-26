@@ -27,6 +27,7 @@ import {
   LockIcon,
   EyeIcon,
   EyeOffIcon,
+  User03Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -66,4 +67,5 @@ export const Icons = {
   lock: createIcon(LockIcon),
   eye: createIcon(EyeIcon),
   eyeOff: createIcon(EyeOffIcon),
+  user: createIcon(User03Icon),
 };

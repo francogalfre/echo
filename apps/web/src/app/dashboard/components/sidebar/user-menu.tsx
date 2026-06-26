@@ -33,6 +33,7 @@ const UserAvatar = ({
         alt={name}
         width={32}
         height={32}
+        unoptimized={image.startsWith("data:")}
         className="size-6 shrink-0 rounded-full object-cover"
       />
     );
