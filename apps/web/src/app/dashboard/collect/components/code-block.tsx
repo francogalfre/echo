@@ -51,7 +51,7 @@ export const CodeBlock = ({
       )}
     >
       <div className="flex items-center justify-between border-b border-white/5 px-4 py-2">
-        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+        <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
           {language}
         </span>
         <button
@@ -67,7 +67,7 @@ export const CodeBlock = ({
           )}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 text-[12px] leading-[1.7]">
+      <pre className="overflow-x-auto p-4 text-xs leading-relaxed">
         <code>{highlightStrings ? highlight(code) : code}</code>
       </pre>
     </div>

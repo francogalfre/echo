@@ -14,7 +14,14 @@ export const WidgetPreview = (): React.ReactElement => {
   };
 
   return (
-    <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-xl border border-border bg-[radial-gradient(circle_at_1px_1px,theme(colors.border)_1px,transparent_0)] [background-size:16px_16px]">
+    <div
+      className="relative flex min-h-96 items-center justify-center overflow-hidden rounded-xl border border-border"
+      style={{
+        backgroundImage:
+          "radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0)",
+        backgroundSize: "16px 16px",
+      }}
+    >
       {open && (
         <div className="w-80 rounded-2xl border border-border bg-background p-5 shadow-xl shadow-black/5">
           <div className="mb-4 flex items-center justify-between">

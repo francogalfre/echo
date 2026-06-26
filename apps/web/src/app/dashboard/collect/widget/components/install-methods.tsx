@@ -77,7 +77,7 @@ const Method = ({
     <div className="mb-1 flex items-center gap-2">
       <h2 className="text-sm font-semibold">{title}</h2>
       {badge && (
-        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
           {badge}
         </span>
       )}
@@ -100,7 +100,7 @@ const PropsTable = (): React.ReactElement => (
       </thead>
       <tbody>
         <tr>
-          <td className="px-4 py-2.5 font-mono text-[11px]">position</td>
+          <td className="px-4 py-2.5 font-mono text-xs">position</td>
           <td className="px-4 py-2.5 font-mono text-muted-foreground">'left' | 'right'</td>
           <td className="px-4 py-2.5 font-mono text-muted-foreground">'right'</td>
         </tr>

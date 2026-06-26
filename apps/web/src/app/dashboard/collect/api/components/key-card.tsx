@@ -48,7 +48,7 @@ export const KeyCard = ({
     <div className="flex flex-col rounded-xl border border-border bg-muted/20 p-4">
       <div className="flex items-center gap-2">
         <p className="text-xs font-semibold text-foreground">{label}</p>
-        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {badge}
         </span>
       </div>
@@ -62,7 +62,7 @@ export const KeyCard = ({
       )}
 
       <div className="mt-3 flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2.5">
-        <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-foreground">
+        <span className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">
           {hasValue && revealed ? value : masked}
         </span>
       </div>
@@ -115,7 +115,7 @@ const ActionButton = ({
     onClick={onClick}
     disabled={disabled}
     className={cn(
-      "flex h-7 items-center gap-1.5 rounded-lg border border-border px-2.5 text-[11px]",
+      "flex h-7 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs",
       "text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground",
       "disabled:opacity-50",
       className,

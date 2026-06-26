@@ -97,7 +97,7 @@ const { feedback } = await res.json()`;
               type="button"
               onClick={() => setTab(t)}
               className={cn(
-                "rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wide transition-colors",
+                "rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors",
                 tab === t
                   ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground",
@@ -111,13 +111,13 @@ const { feedback } = await res.json()`;
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <div>
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Request
           </p>
           <CodeBlock code={isPost ? postCode : getCode} language="ts" />
         </div>
         <div>
-          <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Response
           </p>
           <CodeBlock
@@ -145,7 +145,7 @@ const { feedback } = await res.json()`;
               <tbody className="divide-y divide-border">
                 {REQUEST_FIELDS.map((f) => (
                   <tr key={f.name}>
-                    <td className="px-4 py-2.5 font-mono text-[11px]">
+                    <td className="px-4 py-2.5 font-mono text-xs">
                       {f.name}
                       {f.required && <span className="ml-0.5 text-destructive">*</span>}
                     </td>
