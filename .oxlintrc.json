@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "react", "import"],
+  "plugins": ["typescript", "unicorn", "react", "import", "react-hooks"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
@@ -76,6 +76,8 @@
     "react/react-in-jsx-scope": "off",
     "react/jsx-max-depth": "off",
     "react/jsx-props-no-spreading": "off",
+    "react/jsx-handler-names": "off",
+    "eslint/new-cap": "off",
     "react/no-unstable-nested-components": [
       "warn",
       {
@@ -98,9 +100,16 @@
       }
     },
     {
+      "files": ["packages/api/**/*.ts"],
+      "rules": {
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
       "files": ["apps/server/**/*.ts"],
       "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "import/no-nodejs-modules": "off"
       }
     },
     {

@@ -15,22 +15,22 @@ const accentPresets = [
   "#18181B",
 ] as const;
 
-const backgroundPresets = [
-  "#EDE9FE",
-  "#DBEAFE",
-  "#CCFBF1",
-  "#DCFCE7",
-  "#FEF9C3",
-  "#FFE4E6",
-  "#FCE7F3",
-  "#E0F2FE",
-  "#F1F5F9",
+const bannerPresets = [
+  "#2D7DD2",
+  "#7C3AED",
+  "#0891B2",
+  "#059669",
+  "#D97706",
+  "#DC2626",
+  "#DB2777",
+  "#4F46E5",
+  "#475569",
 ] as const;
 
 type ColorPickerProps = {
   value: string;
   onChange: (color: string) => void;
-  variant?: "accent" | "background";
+  variant?: "accent" | "banner";
 };
 
 export const ColorPicker = ({
@@ -38,7 +38,7 @@ export const ColorPicker = ({
   onChange,
   variant = "accent",
 }: ColorPickerProps): React.ReactElement => {
-  const presets = variant === "background" ? backgroundPresets : accentPresets;
+  const presets = variant === "banner" ? bannerPresets : accentPresets;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

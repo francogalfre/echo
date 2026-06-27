@@ -1,4 +1,4 @@
-import { buttonVariants } from "@echo/ui/components/button";
+import { buttonVariants } from "@echo/ui/components/button-variants";
 import Link from "next/link";
 
 const Home = () => {

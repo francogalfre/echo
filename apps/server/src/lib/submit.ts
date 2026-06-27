@@ -18,7 +18,7 @@ export function createSubmitHandler(submit: SubmitFn) {
   return async (c: Context): Promise<Response> => {
     const authorization = c.req.header("Authorization");
 
-    let body: unknown;
+    let body: unknown = undefined;
 
     try {
       body = await c.req.json();

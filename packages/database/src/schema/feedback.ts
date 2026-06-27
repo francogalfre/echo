@@ -17,6 +17,7 @@ export const feedbackPageConfig = pgTable("feedback_page_config", {
   enableRating: boolean("enable_rating").notNull().default(false),
   enableCoverBanner: boolean("enable_cover_banner").notNull().default(false),
   coverBannerUrl: text("cover_banner_url"),
+  showFeedback: boolean("show_feedback").notNull().default(false),
   published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

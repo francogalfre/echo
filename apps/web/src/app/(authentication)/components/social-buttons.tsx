@@ -28,7 +28,7 @@ export const SocialButtons = () => {
     return async () => {
       setPending(provider);
       await signIn.social(
-        { provider, callbackURL: `${window.location.origin}/dashboard` },
+        { provider, callbackURL: `${globalThis.location.origin}/dashboard` },
         { onError: () => setPending(null) },
       );
     };

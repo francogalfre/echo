@@ -86,7 +86,8 @@ export async function getFeedback(input: {
 
   if (!kind) return { success: false, status: 401, error: "Invalid API key format" };
 
-  const organizationId = (await kind.lookup(token))?.organizationId;
+  const lookup = await kind.lookup(token);
+  const organizationId = lookup?.organizationId;
   if (!organizationId) return { success: false, status: 401, error: "Invalid API key" };
 
   return { success: true, feedback: await listFeedback(organizationId) };

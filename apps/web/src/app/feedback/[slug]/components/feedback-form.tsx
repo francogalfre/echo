@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Icons } from "@echo/ui/components/icons";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,7 +12,7 @@ import { trpc } from "@/lib/trpc";
 const schema = z.object({
   authorName: z.string().min(1, "Name is required"),
   content: z.string().min(1, "Feedback is required").max(5000),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  email: z.email("Invalid email").optional().or(z.literal("")),
   rating: z.number().int().min(1).max(5).optional(),
 });
 
@@ -23,20 +25,23 @@ type FeedbackFormProps = {
   enableRating: boolean;
 };
 
+const RATING_STARS = [1, 2, 3, 4, 5] as const;
+
 const StarRating = ({
   value,
   onChange,
 }: {
   value: number | undefined;
-  onChange: (v: number) => void;
+  onChange: (rating: number) => void;
 }): React.ReactElement => (
   <div className="flex gap-1">
-    {[1, 2, 3, 4, 5].map((n) => (
+    {RATING_STARS.map((star) => (
       <button
-        key={n}
+        key={star}
         type="button"
-        onClick={() => onChange(n)}
-        className={`text-xl transition-colors ${n <= (value ?? 0) ? "text-amber-400" : "text-muted-foreground/30"}`}
+        aria-label={`Rate ${star} of 5`}
+        onClick={() => onChange(star)}
+        className={`text-xl transition-colors ${star <= (value ?? 0) ? "text-amber-400" : "text-muted-foreground/30"}`}
       >
         ★
       </button>
@@ -72,13 +77,26 @@ export const FeedbackForm = ({
 
   if (submitted) {
     return (
-      <div className="py-8 text-center">
-        <p className="text-2xl">🎉</p>
-        <p className="mt-2 font-medium">Thanks for your feedback!</p>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col items-center py-10 text-center"
+      >
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 18 }}
+          className="flex size-14 items-center justify-center rounded-full text-white"
+          style={{ backgroundColor: accentColor }}
+        >
+          <Icons.check className="size-7" />
+        </motion.span>
+        <p className="mt-4 text-lg font-semibold text-foreground">Feedback received</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          We appreciate you taking the time.
+          Thanks for taking the time — we read every note.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -90,7 +108,7 @@ export const FeedbackForm = ({
         </label>
         <input
           id="authorName"
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm outline-none focus:ring-2 focus:ring-ring"
           placeholder="Your name"
           {...register("authorName")}
         />
@@ -106,7 +124,7 @@ export const FeedbackForm = ({
         <textarea
           id="content"
           rows={4}
-          className="w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          className="w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
           placeholder="Tell us what you think..."
           {...register("content")}
         />
@@ -123,7 +141,7 @@ export const FeedbackForm = ({
           <input
             id="email"
             type="email"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm outline-none focus:ring-2 focus:ring-ring"
             placeholder="you@example.com"
             {...register("email")}
           />
@@ -135,15 +153,18 @@ export const FeedbackForm = ({
 
       {enableRating && (
         <div>
-          <label className="mb-1 block text-sm font-medium">Rating</label>
-          <StarRating value={watch("rating")} onChange={(v) => setValue("rating", v)} />
+          <span className="mb-1 block text-sm font-medium">Rating</span>
+          <StarRating
+            value={watch("rating")}
+            onChange={(rating) => setValue("rating", rating)}
+          />
         </div>
       )}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="h-11 w-full rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
         style={{ backgroundColor: accentColor }}
       >
         {isSubmitting ? "Sending…" : "Send feedback"}

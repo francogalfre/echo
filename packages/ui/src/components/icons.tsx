@@ -28,6 +28,10 @@ import {
   EyeIcon,
   EyeOffIcon,
   User03Icon,
+  Search01Icon,
+  Notification03Icon,
+  CreditCardIcon,
+  Mail01Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -68,4 +72,8 @@ export const Icons = {
   eye: createIcon(EyeIcon),
   eyeOff: createIcon(EyeOffIcon),
   user: createIcon(User03Icon),
+  search: createIcon(Search01Icon),
+  bell: createIcon(Notification03Icon),
+  creditCard: createIcon(CreditCardIcon),
+  mail: createIcon(Mail01Icon),
 };

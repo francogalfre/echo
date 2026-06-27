@@ -112,7 +112,7 @@ export function CodeBlock({
             <div ref={tabsContainerRef} className="relative flex gap-1">
               {codeContent.map((tab, index) => (
                 <button
-                  key={`${tab.label}-${index}`}
+                  key={tab.label}
                   ref={(element) => {
                     tabRefs.current[index] = element;
                   }}

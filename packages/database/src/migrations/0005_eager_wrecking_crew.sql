@@ -1,0 +1,1 @@
+ALTER TABLE "feedback_page_config" ADD COLUMN "show_feedback" boolean DEFAULT false NOT NULL;

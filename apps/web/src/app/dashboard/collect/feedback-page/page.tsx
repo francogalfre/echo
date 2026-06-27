@@ -2,19 +2,57 @@
 
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
-import { Skeleton } from "@echo/ui/components/skeleton";
+import { cn } from "@echo/ui/lib/utils";
 import { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { type PathValue, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
 
-import { ConfigPanel } from "./components/config-panel";
-import { ConfigPanelSkeleton } from "./components/config-panel-skeleton";
-import { PreviewPanel } from "./components/preview-panel";
-import { PreviewPanelSkeleton } from "./components/preview-panel-skeleton";
+import { CanvasSkeleton } from "./components/canvas-skeleton";
+import { ColorPicker } from "./components/color-picker";
+import { EditorCanvas } from "./components/editor-canvas";
 import { DEFAULT_CONFIG, type ConfigValues } from "./components/types";
+
+const readPlanIsPro = (metadata: unknown): boolean => {
+  try {
+    const parsed =
+      typeof metadata === "string"
+        ? (JSON.parse(metadata) as { plan?: string })
+        : (metadata as { plan?: string } | null | undefined);
+    return parsed?.plan === "pro";
+  } catch {
+    return false;
+  }
+};
+
+const ToggleChip = ({
+  active,
+  onClick,
+  icon: Icon,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: (props: { className?: string }) => React.ReactElement;
+  label: string;
+}): React.ReactElement => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    className={cn(
+      "flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-colors",
+      active
+        ? "border-foreground/20 bg-muted text-foreground"
+        : "border-border text-muted-foreground hover:text-foreground",
+    )}
+  >
+    <Icon className="size-3.5" />
+    {label}
+  </button>
+);
 
 export default function FeedbackPage(): React.ReactElement {
   const { data: activeOrg } = authClient.useActiveOrganization();
@@ -23,49 +61,55 @@ export default function FeedbackPage(): React.ReactElement {
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
-  const preview = useWatch({
+  const config = useWatch({
     control: form.control,
     defaultValue: DEFAULT_CONFIG,
   }) as ConfigValues;
+  const isPro = readPlanIsPro(activeOrg?.metadata);
+
+  const setField = <FieldName extends keyof ConfigValues>(
+    fieldName: FieldName,
+    value: ConfigValues[FieldName],
+  ): void => {
+    form.setValue(fieldName, value as PathValue<ConfigValues, FieldName>, {
+      shouldDirty: true,
+    });
+  };
 
   const pageUrl =
-    typeof window !== "undefined" && activeOrg?.slug
-      ? `${window.location.origin}/feedback/${activeOrg.slug}`
+    typeof globalThis.window !== "undefined" && activeOrg?.slug
+      ? `${globalThis.location.origin}/feedback/${activeOrg.slug}`
       : null;
 
   useEffect(() => {
     trpc.feedbackPage.getConfig
       .query()
-      .then((config) => {
-        if (config) {
+      .then((loaded) => {
+        if (loaded) {
           form.reset({
-            title: config.title,
-            description: config.description,
-            accentColor: config.accentColor,
-            backgroundColor: config.backgroundColor,
-            enableEmail: config.enableEmail,
-            enableRating: config.enableRating,
-            enableCoverBanner: config.enableCoverBanner,
+            ...DEFAULT_CONFIG,
+            title: loaded.title,
+            description: loaded.description,
+            accentColor: loaded.accentColor,
+            backgroundColor: loaded.backgroundColor,
+            enableEmail: loaded.enableEmail,
+            enableRating: loaded.enableRating,
+            enableCoverBanner: loaded.enableCoverBanner,
+            coverBannerUrl: loaded.coverBannerUrl ?? "",
+            showFeedback: loaded.showFeedback,
           });
-          setIsPublished(config.published);
+          setIsPublished(loaded.published);
         }
       })
       .catch(() => toast.error("Failed to load config"))
       .finally(() => setIsLoading(false));
   }, [form]);
 
-  const validateAndSubmit = async (
-    onSuccess: () => Promise<void>,
-    errorMessage: string,
-  ): Promise<void> => {
-    const valid = await form.trigger();
-    if (!valid) {
-      toast.error(errorMessage);
-      return;
-    }
+  const save = async (): Promise<void> => {
     setIsSaving(true);
     try {
-      await onSuccess();
+      await trpc.feedbackPage.upsertConfig.mutate(form.getValues());
+      toast.success("Changes saved");
     } catch {
       toast.error("Failed to save changes");
     } finally {
@@ -73,20 +117,18 @@ export default function FeedbackPage(): React.ReactElement {
     }
   };
 
-  const save = async (): Promise<void> => {
-    await validateAndSubmit(async () => {
-      await trpc.feedbackPage.upsertConfig.mutate(form.getValues());
-      toast.success("Changes saved");
-    }, "Fix the errors before saving");
-  };
-
   const publish = async (): Promise<void> => {
-    await validateAndSubmit(async () => {
+    setIsSaving(true);
+    try {
       await trpc.feedbackPage.upsertConfig.mutate(form.getValues());
       await trpc.feedbackPage.publish.mutate();
       setIsPublished(true);
       toast.success("Page published!");
-    }, "Fix the errors before publishing");
+    } catch {
+      toast.error("Failed to publish");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const copyLink = (): void => {
@@ -96,65 +138,78 @@ export default function FeedbackPage(): React.ReactElement {
   };
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <div className="h-full w-[500px] shrink-0 overflow-y-auto border-r border-border">
-        {isLoading ? (
-          <ConfigPanelSkeleton />
-        ) : (
-          <ConfigPanel form={form} isPro={false} onSave={save} isSaving={isSaving} />
-        )}
-      </div>
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-4 border-b border-border bg-card px-6 py-3">
+        <div>
+          <h1 className="text-sm font-semibold">Feedback page</h1>
+          <p className="text-xs text-muted-foreground">
+            Click the title, description or fields to edit them.
+          </p>
+        </div>
 
-      <div className="flex-1 overflow-y-auto bg-muted/20 p-8">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-base font-semibold">Feedback page</h1>
-              <p className="text-sm text-muted-foreground">Your public feedback form.</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isLoading ? (
-                <Skeleton className="h-10 w-32 rounded-lg" />
-              ) : isPublished ? (
-                <>
-                  <Button variant="outline" size="default" onClick={copyLink}>
-                    <Icons.copy className="size-4" />
-                    Copy link
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={() => pageUrl && window.open(pageUrl, "_blank")}
-                  >
-                    <Icons.externalLink className="size-4" />
-                    Preview
-                  </Button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={publish}
-                  disabled={isSaving}
-                  className="flex h-10 items-center gap-2 rounded-lg px-5 text-sm font-semibold text-white transition-opacity hover:opacity-85 disabled:opacity-50"
-                  style={{ backgroundColor: preview.accentColor }}
-                >
-                  {isSaving ? <Icons.loading className="size-4 animate-spin" /> : null}
-                  Publish page
-                </button>
-              )}
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs text-muted-foreground">Accent color</span>
+            <ColorPicker
+              value={config.accentColor}
+              onChange={(color) => setField("accentColor", color)}
+            />
           </div>
 
-          {isLoading ? (
-            <PreviewPanelSkeleton />
+          <div className="mx-1 h-5 w-px bg-border" />
+
+          <ToggleChip
+            active={config.enableCoverBanner}
+            onClick={() => setField("enableCoverBanner", !config.enableCoverBanner)}
+            icon={Icons.imageAdd}
+            label="Banner"
+          />
+          <ToggleChip
+            active={config.showFeedback}
+            onClick={() => setField("showFeedback", !config.showFeedback)}
+            icon={Icons.message}
+            label="Feedback"
+          />
+
+          <div className="mx-1 h-5 w-px bg-border" />
+
+          {isPublished ? (
+            <>
+              <Button variant="outline" onClick={copyLink}>
+                <Icons.copy className="size-4" />
+                Copy link
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => pageUrl && globalThis.open(pageUrl, "_blank")}
+              >
+                <Icons.externalLink className="size-4" />
+                Preview
+              </Button>
+            </>
           ) : (
-            <PreviewPanel
-              values={preview}
-              orgLogo={activeOrg?.logo ?? null}
-              orgSlug={activeOrg?.slug ?? ""}
-            />
+            <Button onClick={publish} disabled={isSaving || isLoading}>
+              {isSaving ? <Icons.loading className="size-4 animate-spin" /> : null}
+              Publish
+            </Button>
           )}
+          <Button variant="secondary" onClick={save} disabled={isSaving || isLoading}>
+            Save
+          </Button>
         </div>
+      </div>
+
+      <div className="flex-1 overflow-x-hidden overflow-y-auto">
+        {isLoading ? (
+          <CanvasSkeleton />
+        ) : (
+          <EditorCanvas
+            form={form}
+            orgLogo={activeOrg?.logo ?? null}
+            orgId={activeOrg?.id ?? ""}
+            isPro={isPro}
+          />
+        )}
       </div>
     </div>
   );

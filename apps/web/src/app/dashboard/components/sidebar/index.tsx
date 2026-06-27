@@ -70,7 +70,7 @@ export const Sidebar = (): React.ReactElement => {
         <Image src={imagotipo} alt="echo" className="h-6 w-auto" priority />
       </div>
 
-      <div className="my-2 h-px bg-border" />
+      <div className="my-1.75 h-px bg-border" />
 
       <div className="px-2 pb-1">
         <OrgSwitcher />

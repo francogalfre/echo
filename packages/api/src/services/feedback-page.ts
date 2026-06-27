@@ -1,12 +1,20 @@
 import { db } from "@echo/db";
-import { feedbackPageConfig, type feedback } from "@echo/db/schema/feedback";
-import { and, eq } from "drizzle-orm";
+import { feedback, feedbackPageConfig } from "@echo/db/schema/feedback";
+import { and, desc, eq } from "drizzle-orm";
 
 import type { organization } from "@echo/db/schema/auth";
 
 export type FeedbackPageConfig = typeof feedbackPageConfig.$inferSelect;
 export type FeedbackRow = typeof feedback.$inferSelect;
 type OrgRow = typeof organization.$inferSelect;
+
+export type PublicFeedbackItem = {
+  id: string;
+  authorName: string;
+  content: string;
+  rating: number | null;
+  createdAt: Date;
+};
 
 type UpdateData = Partial<
   Omit<FeedbackPageConfig, "id" | "organizationId" | "createdAt" | "updatedAt">
@@ -36,6 +44,7 @@ export async function upsertFeedbackPageConfig(
 export async function getFeedbackPageBySlug(slug: string): Promise<{
   org: OrgRow;
   config: FeedbackPageConfig;
+  feedback: PublicFeedbackItem[];
 } | null> {
   const org = await db.query.organization.findFirst({
     where: (o) => eq(o.slug, slug),
@@ -49,5 +58,21 @@ export async function getFeedbackPageBySlug(slug: string): Promise<{
 
   if (!config) return null;
 
-  return { org, config };
+  if (!config.showFeedback) return { org, config, feedback: [] };
+
+  const rows = await db.query.feedback.findMany({
+    where: (f) => eq(f.organizationId, org.id),
+    orderBy: [desc(feedback.createdAt)],
+    limit: 12,
+  });
+
+  const recentFeedback = rows.map((row) => ({
+    id: row.id,
+    authorName: row.authorName,
+    content: row.content,
+    rating: row.rating,
+    createdAt: row.createdAt,
+  }));
+
+  return { org, config, feedback: recentFeedback };
 }

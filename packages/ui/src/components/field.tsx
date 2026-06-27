@@ -1,13 +1,13 @@
 import { Label } from "./label";
 import type { ReactNode } from "react";
 
-interface FieldProps {
+type FieldProps = {
   name: string;
   label: string;
   error?: string;
   hint?: string;
   children: ReactNode;
-}
+};
 
 export const Field = ({ name, label, error, hint, children }: FieldProps) => {
   return (

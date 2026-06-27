@@ -6,17 +6,19 @@ export const feedbackPageConfigSchema = z.object({
   title: z.string().max(100).optional(),
   description: z.string().max(500).optional(),
   accentColor: hexColor.optional(),
-  backgroundColor: hexColor.optional(),
+  backgroundColor: z.string().max(200).optional(),
   enableEmail: z.boolean().optional(),
   enableRating: z.boolean().optional(),
   enableCoverBanner: z.boolean().optional(),
+  coverBannerUrl: z.string().max(2000).optional(),
+  showFeedback: z.boolean().optional(),
 });
 
 export const publicFeedbackSchema = z.object({
   slug: z.string().min(1),
   authorName: z.string().min(1).max(100),
   content: z.string().min(1).max(5000),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   rating: z.number().int().min(1).max(5).optional(),
 });
 
