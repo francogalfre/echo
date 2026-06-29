@@ -39,6 +39,9 @@ export const feedback = pgTable(
     rating: integer("rating"),
     source: text("source").notNull().default("form"),
 
+    sentiment: text("sentiment"),
+    enrichedAt: timestamp("enriched_at"),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (t) => [index("feedback_org_idx").on(t.organizationId)],

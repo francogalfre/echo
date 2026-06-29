@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 
 import { publicProcedure, router } from "../index";
 import { publicFeedbackSchema, slugSchema } from "../schemas";
+import { createFeedback } from "../controllers/create-feedback";
 import { getFeedbackPageBySlug } from "../services/feedback-page";
-import { insertFeedback } from "../services/feedback";
 
 export const publicFeedbackRouter = router({
   getPage: publicProcedure.input(slugSchema).query(({ input }) => {
@@ -20,7 +20,7 @@ export const publicFeedbackRouter = router({
     }
 
     const { email, rating, slug: _slug, ...rest } = input;
-    await insertFeedback({
+    await createFeedback({
       ...rest,
       organizationId: page.org.id,
       email: page.config.enableEmail ? email : undefined,

@@ -2,7 +2,7 @@ import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
 import { desc, eq } from "drizzle-orm";
 
-type InsertFeedback = {
+export type InsertFeedback = {
   organizationId: string;
   authorName: string;
   content: string;
@@ -17,11 +17,22 @@ export type FeedbackListItem = {
   feedback: string;
   email: string | null;
   rating: number | null;
+  sentiment: string | null;
   createdAt: Date;
 };
 
-export async function insertFeedback(data: InsertFeedback): Promise<void> {
-  await db.insert(feedback).values({ id: crypto.randomUUID(), ...data });
+export async function insertFeedback(data: InsertFeedback): Promise<string> {
+  const id = crypto.randomUUID();
+  await db.insert(feedback).values({ id, ...data });
+
+  return id;
+}
+
+export async function setFeedbackSentiment(id: string, sentiment: string): Promise<void> {
+  await db
+    .update(feedback)
+    .set({ sentiment, enrichedAt: new Date() })
+    .where(eq(feedback.id, id));
 }
 
 export async function listFeedback(
@@ -40,6 +51,7 @@ export async function listFeedback(
     feedback: r.content,
     email: r.email,
     rating: r.rating,
+    sentiment: r.sentiment,
     createdAt: r.createdAt,
   }));
 }

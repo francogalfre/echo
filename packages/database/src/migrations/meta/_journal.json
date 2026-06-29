@@ -43,6 +43,13 @@
       "when": 1782498048272,
       "tag": "0005_eager_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1782749531374,
+      "tag": "0006_smart_ben_urich",
+      "breakpoints": true
     }
   ]
 }

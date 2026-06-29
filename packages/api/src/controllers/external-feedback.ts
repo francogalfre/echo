@@ -4,8 +4,9 @@ import {
   hashKey,
   type ApiKeyRow,
 } from "../services/api-keys";
-import { insertFeedback, listFeedback } from "../services/feedback";
+import { listFeedback } from "../services/feedback";
 import type { ListResult, SubmitResult } from "../types";
+import { createFeedback } from "./create-feedback";
 
 type FeedbackInput = {
   authorization: string | undefined;
@@ -52,7 +53,7 @@ async function createFeedbackWithKey(
   const keyRow = await kind.lookup(token);
   if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
 
-  await insertFeedback({
+  await createFeedback({
     organizationId: keyRow.organizationId,
     authorName: input.name,
     content: input.feedback,
