@@ -1,0 +1,196 @@
+"use client";
+
+import {
+  Kanban,
+  KanbanBoard,
+  KanbanColumn,
+  KanbanColumnContent,
+  KanbanItem,
+  KanbanItemHandle,
+  KanbanOverlay,
+  type KanbanMoveEvent,
+} from "@echo/ui/components/reui/kanban";
+import { Icons } from "@echo/ui/components/icons";
+import { arrayMove } from "@dnd-kit/sortable";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import Link from "next/link";
+
+import { trpc } from "@/lib/trpc";
+import type { BoardCard, BoardColumns } from "@echo/api/services/board";
+
+import { PageContainer } from "../components/page-container";
+import { BoardCardItem } from "./components/board-card";
+
+const COLUMNS: { id: keyof BoardColumns; label: string }[] = [
+  { id: "backlog", label: "Backlog" },
+  { id: "in_progress", label: "In Progress" },
+  { id: "done", label: "Done" },
+];
+
+const EMPTY: BoardColumns = { backlog: [], in_progress: [], done: [] };
+
+export default function BoardPage(): React.ReactElement {
+  const [columns, setColumns] = useState<BoardColumns>(EMPTY);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    trpc.board.items
+      .query()
+      .then((data) => {
+        setColumns(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Failed to load board");
+        setLoading(false);
+      });
+  }, []);
+
+  const handleMove = useCallback(
+    ({ activeContainer, activeIndex, overContainer, overIndex }: KanbanMoveEvent) => {
+      const item = columns[activeContainer as keyof BoardColumns]?.[activeIndex];
+      if (!item) return;
+
+      if (activeContainer === overContainer) {
+        setColumns((prev) => ({
+          ...prev,
+          [activeContainer]: arrayMove(
+            prev[activeContainer as keyof BoardColumns],
+            activeIndex,
+            overIndex,
+          ),
+        }));
+        return;
+      }
+
+      setColumns((prev) => {
+        const fromItems = [...prev[activeContainer as keyof BoardColumns]];
+        fromItems.splice(activeIndex, 1);
+        const toItems = [...prev[overContainer as keyof BoardColumns]];
+        toItems.splice(overIndex, 0, item);
+        return { ...prev, [activeContainer]: fromItems, [overContainer]: toItems };
+      });
+
+      trpc.board.move
+        .mutate({
+          id: item.id,
+          column: overContainer as "backlog" | "in_progress" | "done",
+        })
+        .catch(() => toast.error("Failed to move item"));
+    },
+    [columns],
+  );
+
+  const handleRemove = useCallback((item: BoardCard) => {
+    setColumns((prev) => {
+      const col = item.column as keyof BoardColumns;
+      return { ...prev, [col]: prev[col].filter((i) => i.id !== item.id) };
+    });
+    trpc.board.remove
+      .mutate({ id: item.id })
+      .catch(() => toast.error("Failed to remove item"));
+  }, []);
+
+  const totalItems = Object.values(columns).reduce((acc, arr) => acc + arr.length, 0);
+
+  return (
+    <PageContainer className="flex flex-col gap-6 h-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Board</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {totalItems === 0
+              ? "Add feedback from the Feedback page."
+              : `${totalItems} item${totalItems === 1 ? "" : "s"} across ${COLUMNS.length} columns.`}
+          </p>
+        </div>
+        <Link
+          href="/dashboard/feedback"
+          className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <Icons.message className="size-3.5" />
+          Feedback
+        </Link>
+      </div>
+
+      {loading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Icons.loading className="size-5 animate-spin text-muted-foreground" />
+        </div>
+      ) : totalItems === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20 text-center">
+          <Icons.board className="size-8 text-muted-foreground/40" />
+          <p className="mt-3 text-sm font-medium">Your board is empty</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Go to Feedback and click ··· → Add to board on any item.
+          </p>
+          <Link
+            href="/dashboard/feedback"
+            className="mt-4 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-opacity hover:opacity-80"
+          >
+            Browse feedback
+          </Link>
+        </div>
+      ) : (
+        <Kanban
+          value={columns}
+          onValueChange={(v) => setColumns(v as BoardColumns)}
+          getItemValue={(item: BoardCard) => item.id}
+          onMove={handleMove}
+        >
+          <KanbanBoard className="grid grid-cols-3 gap-4 items-start">
+            {COLUMNS.map((col) => (
+              <KanbanColumn
+                key={col.id}
+                value={col.id}
+                className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-3"
+              >
+                <div className="flex items-center gap-2 px-1 py-0.5">
+                  <span className="text-sm font-semibold">{col.label}</span>
+                  <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    {columns[col.id].length}
+                  </span>
+                </div>
+
+                <KanbanColumnContent
+                  value={col.id}
+                  className="flex flex-col gap-2 min-h-16"
+                >
+                  {columns[col.id].map((item) => (
+                    <KanbanItem
+                      key={item.id}
+                      value={item.id}
+                      className="cursor-grab active:cursor-grabbing"
+                    >
+                      <KanbanItemHandle>
+                        <BoardCardItem item={item} onRemove={() => handleRemove(item)} />
+                      </KanbanItemHandle>
+                    </KanbanItem>
+                  ))}
+                </KanbanColumnContent>
+
+                {columns[col.id].length === 0 && (
+                  <div className="flex items-center justify-center py-6 text-xs text-muted-foreground/50">
+                    Drop here
+                  </div>
+                )}
+              </KanbanColumn>
+            ))}
+          </KanbanBoard>
+
+          <KanbanOverlay>
+            {({ value }) => {
+              const item = Object.values(columns)
+                .flat()
+                .find((i) => i.id === value);
+              return item ? (
+                <BoardCardItem item={item} onRemove={() => {}} isDragging />
+              ) : null;
+            }}
+          </KanbanOverlay>
+        </Kanban>
+      )}
+    </PageContainer>
+  );
+}

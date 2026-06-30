@@ -19,6 +19,7 @@ import { UserMenu } from "./user-menu";
 const navItems: NavItem[] = [
   { label: "Home", href: "/dashboard", icon: Icons.home },
   { label: "Feedback", href: "/dashboard/feedback", icon: Icons.message },
+  { label: "Board", href: "/dashboard/board", icon: Icons.board },
 ];
 
 const collectItem: NavItem = {

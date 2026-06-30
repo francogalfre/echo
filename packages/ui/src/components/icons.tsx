@@ -36,6 +36,7 @@ import {
   AiMagicIcon,
   StarIcon,
   StarHalfIcon,
+  Grid3X2Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -84,4 +85,5 @@ export const Icons = {
   aiMagic: createIcon(AiMagicIcon),
   star: createIcon(StarIcon),
   starHalf: createIcon(StarHalfIcon),
+  board: createIcon(Grid3X2Icon),
 };

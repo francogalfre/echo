@@ -8,9 +8,10 @@ import {
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
 import { useState } from "react";
+import { toast } from "sonner";
 
-import type { FeedbackItem } from "../hooks/use-feedback";
-import { useFeedback } from "../hooks/use-feedback";
+import { trpc } from "@/lib/trpc";
+import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
 import { DetailModal } from "./detail-modal";
 import { InsightModal } from "./insight-modal";
 import { SentimentBadge } from "./sentiment-badge";
@@ -38,9 +39,15 @@ type RowProps = {
   item: FeedbackItem;
   onDetail: (item: FeedbackItem) => void;
   onInsight: (item: FeedbackItem) => void;
+  onAddToBoard: (item: FeedbackItem) => void;
 };
 
-function FeedbackRow({ item, onDetail, onInsight }: RowProps): React.ReactElement {
+function FeedbackRow({
+  item,
+  onDetail,
+  onInsight,
+  onAddToBoard,
+}: RowProps): React.ReactElement {
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-border px-4 py-3.5 last:border-0 hover:bg-muted/30 transition-colors">
       <div className="flex min-w-0 items-start gap-3">
@@ -81,10 +88,24 @@ function FeedbackRow({ item, onDetail, onInsight }: RowProps): React.ReactElemen
             <Icons.aiMagic className="size-4" />
             Explain
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onAddToBoard(item)}>
+            <Icons.board className="size-4" />
+            Add to board
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
   );
+}
+
+function addToBoard(item: FeedbackItem): void {
+  trpc.board.add
+    .mutate({ feedbackId: item.id })
+    .then(() => toast.success("Added to board"))
+    .catch((error: unknown) => {
+      const msg = error instanceof Error ? error.message : "Failed";
+      toast.error(msg.includes("Already") ? "Already on board" : "Failed to add to board");
+    });
 }
 
 export function FeedbackTable(): React.ReactElement {
@@ -190,6 +211,7 @@ export function FeedbackTable(): React.ReactElement {
               item={item}
               onDetail={setDetailItem}
               onInsight={setInsightItem}
+              onAddToBoard={addToBoard}
             />
           ))}
       </div>
