@@ -16,7 +16,7 @@ export function DigestButton(): React.ReactElement {
         className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
       >
         <Icons.aiMagic className="size-4 text-violet-500" />
-        Weekly Digest
+        AI Summary
       </button>
       <DigestModal open={open} onOpenChange={setOpen} />
     </>

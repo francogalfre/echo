@@ -43,7 +43,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               </span>
               <div>
                 <Dialog.Title className="text-base font-semibold tracking-tight">
-                  Weekly Digest
+                  AI Summary
                 </Dialog.Title>
                 {data && (
                   <p className="text-xs text-muted-foreground">
@@ -75,7 +75,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               <div>
                 <p className="text-sm font-medium">No digest yet</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Generate your first weekly summary from the last 7 days of feedback.
+                  Generate an AI summary of your feedback. Free plan refreshes weekly.
                 </p>
               </div>
               <button

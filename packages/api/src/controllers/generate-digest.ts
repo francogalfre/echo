@@ -1,11 +1,9 @@
-import { generateDigest } from "@echo/ai";
-import type { DigestOutput } from "@echo/ai";
+import { generateDigest, type DigestOutput } from "@echo/ai";
 
 import { getOrgPlan } from "../services/organization";
 import { getDigest, getFeedbackForDigest, upsertDigest } from "../services/digest";
 
-const DIGEST_WINDOW_DAYS = 7;
-const WEEK_MS = DIGEST_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 type DigestResult =
   | { success: true; digest: DigestOutput; generatedAt: Date; feedbackCount: number }
@@ -17,10 +15,6 @@ type DigestState = {
   feedbackCount: number;
   canRegenerate: boolean;
 };
-
-function weekAgo(): Date {
-  return new Date(Date.now() - WEEK_MS);
-}
 
 export async function getFeedbackDigest(organizationId: string): Promise<DigestState> {
   const [plan, cached] = await Promise.all([
@@ -65,14 +59,10 @@ export async function generateFeedbackDigest(
     }
   }
 
-  const inputs = await getFeedbackForDigest(organizationId, weekAgo());
+  const inputs = await getFeedbackForDigest(organizationId, isPro);
 
   if (inputs.length === 0) {
-    return {
-      success: false,
-      status: 400,
-      error: "No feedback in the last 7 days to analyze.",
-    };
+    return { success: false, status: 400, error: "No feedback yet to analyze." };
   }
 
   let digest: DigestOutput;

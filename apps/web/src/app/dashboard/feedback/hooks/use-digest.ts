@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { trpc } from "@/lib/trpc";
@@ -27,7 +27,7 @@ export function useDigest(): {
 } {
   const [state, setState] = useState<State>({ status: "idle" });
 
-  async function load(): Promise<void> {
+  const load = useCallback(async (): Promise<void> => {
     setState({ status: "loading" });
     try {
       const result = await trpc.digest.get.query();
@@ -47,9 +47,9 @@ export function useDigest(): {
     } catch {
       setState({ status: "error", message: "Failed to load digest." });
     }
-  }
+  }, []);
 
-  async function generate(): Promise<void> {
+  const generate = useCallback(async (): Promise<void> => {
     setState((prev) =>
       prev.status === "ready"
         ? { ...prev, status: "generating" }
@@ -66,12 +66,12 @@ export function useDigest(): {
           canRegenerate: false,
         },
       });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to generate digest.";
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to generate digest.";
       toast.error(message);
       setState((prev) => (prev.status === "generating" ? { status: "idle" } : prev));
     }
-  }
+  }, []);
 
   return { state, load, generate };
 }
