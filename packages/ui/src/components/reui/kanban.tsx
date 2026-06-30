@@ -117,7 +117,7 @@ export interface KanbanMoveEvent {
   overIndex: number;
 }
 
-export interface KanbanRootProps<T> extends Omit<
+export interface KanbanRootProps<T extends object> extends Omit<
   useRender.ComponentProps<"div">,
   "children"
 > {
@@ -129,7 +129,7 @@ export interface KanbanRootProps<T> extends Omit<
   modifiers?: Modifiers;
 }
 
-function Kanban<T>({
+function Kanban<T extends object>({
   value,
   onValueChange,
   getItemValue,
@@ -350,7 +350,7 @@ function Kanban<T>({
   };
 
   return (
-    <KanbanContext.Provider value={contextValue}>
+    <KanbanContext.Provider value={contextValue as unknown as KanbanContextProps<object>}>
       <DndContext
         sensors={sensors}
         modifiers={modifiers}

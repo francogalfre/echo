@@ -1,7 +1,7 @@
 import { db } from "@echo/db";
 import { boardItems } from "@echo/db/schema/board-items";
 import { feedback } from "@echo/db/schema/feedback";
-import { eq, asc } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 export type BoardCard = {
   id: string;
@@ -62,4 +62,15 @@ export async function moveBoardItem(
 
 export async function removeBoardItem(id: string): Promise<void> {
   await db.delete(boardItems).where(eq(boardItems.id, id));
+}
+
+export async function clearBoardColumn(
+  organizationId: string,
+  column: "backlog" | "in_progress" | "done",
+): Promise<void> {
+  await db
+    .delete(boardItems)
+    .where(
+      and(eq(boardItems.organizationId, organizationId), eq(boardItems.column, column)),
+    );
 }

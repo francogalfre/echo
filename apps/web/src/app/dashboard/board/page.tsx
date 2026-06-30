@@ -84,12 +84,22 @@ export default function BoardPage(): React.ReactElement {
 
   const handleRemove = useCallback((item: BoardCard) => {
     setColumns((prev) => {
-      const col = item.column as keyof BoardColumns;
-      return { ...prev, [col]: prev[col].filter((i) => i.id !== item.id) };
+      const next = { ...prev };
+      for (const col of Object.keys(next) as Array<keyof BoardColumns>) {
+        next[col] = next[col].filter((i) => i.id !== item.id);
+      }
+      return next;
     });
     trpc.board.remove
       .mutate({ id: item.id })
       .catch(() => toast.error("Failed to remove item"));
+  }, []);
+
+  const handleClearDone = useCallback(() => {
+    setColumns((prev) => ({ ...prev, done: [] }));
+    trpc.board.clearColumn
+      .mutate({ column: "done" })
+      .catch(() => toast.error("Failed to clear done"));
   }, []);
 
   const totalItems = Object.values(columns).reduce((acc, arr) => acc + arr.length, 0);
@@ -151,6 +161,15 @@ export default function BoardPage(): React.ReactElement {
                   <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {columns[col.id].length}
                   </span>
+                  {col.id === "done" && columns.done.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleClearDone}
+                      className="ml-auto text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Clear
+                    </button>
+                  )}
                 </div>
 
                 <KanbanColumnContent

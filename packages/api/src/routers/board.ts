@@ -4,6 +4,7 @@ import { z } from "zod";
 import { organizationProcedure, router } from "../index";
 import {
   addBoardItem,
+  clearBoardColumn,
   getBoardItems,
   moveBoardItem,
   removeBoardItem,
@@ -37,5 +38,11 @@ export const boardRouter = router({
     .input(z.object({ id: z.string().min(1) }))
     .mutation(({ input }) => {
       return removeBoardItem(input.id);
+    }),
+
+  clearColumn: organizationProcedure
+    .input(z.object({ column: z.enum(COLUMNS) }))
+    .mutation(({ input, ctx }) => {
+      return clearBoardColumn(ctx.organizationId, input.column);
     }),
 });
