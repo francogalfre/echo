@@ -5,6 +5,15 @@ export type CreateContextOptions = {
   context: HonoContext;
 };
 
+function extractIp(context: HonoContext): string {
+  return (
+    context.req.header("cf-connecting-ip") ??
+    context.req.header("x-real-ip") ??
+    context.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown"
+  );
+}
+
 export async function createContext({ context }: CreateContextOptions) {
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
@@ -13,6 +22,7 @@ export async function createContext({ context }: CreateContextOptions) {
   return {
     auth: null,
     session,
+    ip: extractIp(context),
   };
 }
 

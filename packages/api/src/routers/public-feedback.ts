@@ -1,8 +1,9 @@
 import { TRPCError } from "@trpc/server";
 
-import { publicProcedure, router } from "../index";
-import { publicFeedbackSchema, slugSchema } from "../schemas";
 import { createFeedback } from "../controllers/create-feedback";
+import { publicProcedure, router } from "../index";
+import { guardSubmission } from "../lib/rate-limit";
+import { publicFeedbackSchema, slugSchema } from "../schemas";
 import { getFeedbackPageBySlug } from "../services/feedback-page";
 
 export const publicFeedbackRouter = router({
@@ -10,7 +11,9 @@ export const publicFeedbackRouter = router({
     return getFeedbackPageBySlug(input.slug);
   }),
 
-  submit: publicProcedure.input(publicFeedbackSchema).mutation(async ({ input }) => {
+  submit: publicProcedure.input(publicFeedbackSchema).mutation(async ({ input, ctx }) => {
+    if (input._hp) return;
+
     const page = await getFeedbackPageBySlug(input.slug);
     if (!page) {
       throw new TRPCError({
@@ -19,7 +22,14 @@ export const publicFeedbackRouter = router({
       });
     }
 
-    const { email, rating, slug: _slug, ...rest } = input;
+    const guard = await guardSubmission(ctx.ip, input.slug, input.content);
+
+    if (!guard.allowed) {
+      if (guard.silent) return;
+      throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: guard.message });
+    }
+
+    const { email, rating, slug: _slug, _hp: _honeypot, ...rest } = input;
     await createFeedback({
       ...rest,
       organizationId: page.org.id,

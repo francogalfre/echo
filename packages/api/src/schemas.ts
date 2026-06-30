@@ -20,6 +20,7 @@ export const publicFeedbackSchema = z.object({
   content: z.string().min(1).max(5000),
   email: z.email().optional(),
   rating: z.number().int().min(1).max(5).optional(),
+  _hp: z.string().optional(),
 });
 
 export const slugSchema = z.object({ slug: z.string().min(1) });

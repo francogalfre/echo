@@ -15,6 +15,7 @@ const schema = z.object({
   content: z.string().min(1, "Feedback is required").max(5000),
   email: z.email("Invalid email").optional().or(z.literal("")),
   rating: z.number().int().min(1).max(5).optional(),
+  _hp: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -50,6 +51,7 @@ export const FeedbackForm = ({
       content: values.content,
       email: values.email || undefined,
       rating: values.rating,
+      _hp: values._hp,
     });
     setSubmitted(true);
   });
@@ -81,6 +83,10 @@ export const FeedbackForm = ({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <div aria-hidden="true" className="absolute -left-[9999px] overflow-hidden opacity-0">
+        <input type="text" tabIndex={-1} autoComplete="off" {...register("_hp")} />
+      </div>
+
       <div>
         <label className="mb-1 block text-sm font-medium" htmlFor="authorName">
           Name
