@@ -25,7 +25,7 @@ export const env = createEnv({
     // AI
     OPENROUTER_API_KEY: z.string().min(1),
 
-    // Redis (Upstash) — optional, rate limiting disabled when absent
+    // Redis (Upstash)
     UPSTASH_REDIS_REST_URL: z.url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 

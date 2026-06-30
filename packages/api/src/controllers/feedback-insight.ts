@@ -7,6 +7,7 @@ import type { InsightResult } from "../types";
 
 const INSIGHT_FEATURE = "insight";
 const FREE_DAILY_LIMIT = 3;
+const PRO_DAILY_LIMIT = 50;
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);
@@ -26,18 +27,19 @@ export async function generateFeedbackInsight(
   }
 
   const plan = await getOrgPlan(organizationId);
-  const isFree = plan !== "pro";
+  const isPro = plan === "pro";
   const day = todayKey();
+  const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
 
-  if (isFree) {
-    const used = await getUsageCount(organizationId, INSIGHT_FEATURE, day);
-    if (used >= FREE_DAILY_LIMIT) {
-      return {
-        success: false,
-        status: 403,
-        error: "Daily insight limit reached. Upgrade to Pro for unlimited insights.",
-      };
-    }
+  const used = await getUsageCount(organizationId, INSIGHT_FEATURE, day);
+  if (used >= limit) {
+    return {
+      success: false,
+      status: 403,
+      error: isPro
+        ? `Daily insight limit (${PRO_DAILY_LIMIT}) reached.`
+        : `Daily insight limit reached. Upgrade to Pro for more.`,
+    };
   }
 
   let insight: string;
@@ -53,9 +55,7 @@ export async function generateFeedbackInsight(
   }
 
   await setFeedbackInsight(feedbackId, insight);
-  if (isFree) {
-    await incrementUsage(organizationId, INSIGHT_FEATURE, day);
-  }
+  await incrementUsage(organizationId, INSIGHT_FEATURE, day);
 
   return { success: true, insight, cached: false };
 }

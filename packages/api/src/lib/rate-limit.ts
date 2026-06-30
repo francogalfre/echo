@@ -1,28 +1,23 @@
 import { createHash } from "crypto";
 
 import { Ratelimit } from "@upstash/ratelimit";
-
 import { redis } from "./redis";
-
-const ipLimiter = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(5, "1 h"),
-      prefix: "echo:rl:ip",
-    })
-  : null;
-
-const slugLimiter = redis
-  ? new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(500, "1 h"),
-      prefix: "echo:rl:slug",
-    })
-  : null;
 
 type Allowed = { allowed: true };
 type Blocked = { allowed: false; silent: boolean; message: string };
 export type GuardResult = Allowed | Blocked;
+
+const ipLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 h"),
+  prefix: "echo:rl:ip",
+});
+
+const slugLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(500, "1 h"),
+  prefix: "echo:rl:slug",
+});
 
 function hashContent(ip: string, content: string): string {
   return createHash("sha256").update(`${ip}:${content.trim().toLowerCase()}`).digest("hex");
