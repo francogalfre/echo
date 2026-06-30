@@ -1,5 +1,6 @@
 import { protectedProcedure, publicProcedure, router } from "../index";
 import { apiKeysRouter } from "./api-keys";
+import { digestRouter } from "./digest";
 import { feedbackRouter } from "./feedback";
 import { feedbackPageRouter } from "./feedback-page";
 import { publicFeedbackRouter } from "./public-feedback";
@@ -7,6 +8,7 @@ import { widgetRouter } from "./widget";
 
 export const appRouter = router({
   apiKeys: apiKeysRouter,
+  digest: digestRouter,
   feedback: feedbackRouter,
   feedbackPage: feedbackPageRouter,
   publicFeedback: publicFeedbackRouter,

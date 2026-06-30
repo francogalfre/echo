@@ -11,3 +11,6 @@ export {
   type Sentiment,
   type Tag,
 } from "./agents/analyze/types";
+
+export { generateDigest } from "./agents/digest";
+export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest/types";
