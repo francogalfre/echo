@@ -15,18 +15,6 @@ import { ColorPicker } from "./components/color-picker";
 import { EditorCanvas } from "./components/editor-canvas";
 import { DEFAULT_CONFIG, type ConfigValues } from "./components/types";
 
-const readPlanIsPro = (metadata: unknown): boolean => {
-  try {
-    const parsed =
-      typeof metadata === "string"
-        ? (JSON.parse(metadata) as { plan?: string })
-        : (metadata as { plan?: string } | null | undefined);
-    return parsed?.plan === "pro";
-  } catch {
-    return false;
-  }
-};
-
 const ToggleChip = ({
   active,
   onClick,
@@ -65,7 +53,6 @@ export default function FeedbackPage(): React.ReactElement {
     control: form.control,
     defaultValue: DEFAULT_CONFIG,
   }) as ConfigValues;
-  const isPro = readPlanIsPro(activeOrg?.metadata);
 
   const setField = <FieldName extends keyof ConfigValues>(
     fieldName: FieldName,
@@ -207,7 +194,6 @@ export default function FeedbackPage(): React.ReactElement {
             form={form}
             orgLogo={activeOrg?.logo ?? null}
             orgId={activeOrg?.id ?? ""}
-            isPro={isPro}
           />
         )}
       </div>

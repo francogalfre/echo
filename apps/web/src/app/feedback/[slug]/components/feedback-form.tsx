@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icons } from "@echo/ui/components/icons";
+import { Rating } from "@echo/ui/components/reui/rating";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,30 +26,6 @@ type FeedbackFormProps = {
   enableRating: boolean;
 };
 
-const RATING_STARS = [1, 2, 3, 4, 5] as const;
-
-const StarRating = ({
-  value,
-  onChange,
-}: {
-  value: number | undefined;
-  onChange: (rating: number) => void;
-}): React.ReactElement => (
-  <div className="flex gap-1">
-    {RATING_STARS.map((star) => (
-      <button
-        key={star}
-        type="button"
-        aria-label={`Rate ${star} of 5`}
-        onClick={() => onChange(star)}
-        className={`text-xl transition-colors ${star <= (value ?? 0) ? "text-amber-400" : "text-muted-foreground/30"}`}
-      >
-        ★
-      </button>
-    ))}
-  </div>
-);
-
 export const FeedbackForm = ({
   slug,
   accentColor,
@@ -63,6 +40,8 @@ export const FeedbackForm = ({
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
+
+  const ratingValue = watch("rating") ?? 0;
 
   const onSubmit = handleSubmit(async (values) => {
     await trpc.publicFeedback.submit.mutate({
@@ -154,9 +133,12 @@ export const FeedbackForm = ({
       {enableRating && (
         <div>
           <span className="mb-1 block text-sm font-medium">Rating</span>
-          <StarRating
-            value={watch("rating")}
-            onChange={(rating) => setValue("rating", rating)}
+          <Rating
+            rating={ratingValue}
+            accentColor={accentColor}
+            editable
+            onRatingChange={(r) => setValue("rating", r)}
+            size="lg"
           />
         </div>
       )}

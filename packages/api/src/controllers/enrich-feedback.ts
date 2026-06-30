@@ -1,11 +1,14 @@
-import { classifySentiment } from "@echo/ai";
+import { analyzeFeedback } from "@echo/ai";
 
-import { setFeedbackSentiment } from "../services/feedback";
+import { setFeedbackEnrichment } from "../services/feedback";
 
 export async function enrichFeedback(feedbackId: string, content: string): Promise<void> {
   try {
-    const sentiment = await classifySentiment(content);
-    await setFeedbackSentiment(feedbackId, sentiment);
+    const analysis = await analyzeFeedback(content);
+    await setFeedbackEnrichment(feedbackId, {
+      sentiment: analysis.sentiment,
+      tags: analysis.tags,
+    });
   } catch (error) {
     console.error(`[echo:ai] failed to enrich feedback ${feedbackId}`, error);
   }

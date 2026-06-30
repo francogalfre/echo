@@ -17,7 +17,9 @@ export type FeedbackListItem = {
   feedback: string;
   email: string | null;
   rating: number | null;
+  source: string;
   sentiment: string | null;
+  tags: string[] | null;
   hasInsight: boolean;
   createdAt: Date;
 };
@@ -30,6 +32,11 @@ export type FeedbackForInsight = {
   insight: string | null;
 };
 
+export type FeedbackEnrichment = {
+  sentiment: string;
+  tags: string[];
+};
+
 export async function insertFeedback(data: InsertFeedback): Promise<string> {
   const id = crypto.randomUUID();
   await db.insert(feedback).values({ id, ...data });
@@ -37,10 +44,13 @@ export async function insertFeedback(data: InsertFeedback): Promise<string> {
   return id;
 }
 
-export async function setFeedbackSentiment(id: string, sentiment: string): Promise<void> {
+export async function setFeedbackEnrichment(
+  id: string,
+  data: FeedbackEnrichment,
+): Promise<void> {
   await db
     .update(feedback)
-    .set({ sentiment, enrichedAt: new Date() })
+    .set({ sentiment: data.sentiment, tags: data.tags, enrichedAt: new Date() })
     .where(eq(feedback.id, id));
 }
 
@@ -85,7 +95,9 @@ export async function listFeedback(
     feedback: r.content,
     email: r.email,
     rating: r.rating,
+    source: r.source,
     sentiment: r.sentiment,
+    tags: r.tags,
     hasInsight: r.insight != null,
     createdAt: r.createdAt,
   }));

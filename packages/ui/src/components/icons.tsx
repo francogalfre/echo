@@ -32,6 +32,10 @@ import {
   Notification03Icon,
   CreditCardIcon,
   Mail01Icon,
+  More03Icon,
+  AiMagicIcon,
+  StarIcon,
+  StarHalfIcon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -76,4 +80,8 @@ export const Icons = {
   bell: createIcon(Notification03Icon),
   creditCard: createIcon(CreditCardIcon),
   mail: createIcon(Mail01Icon),
+  moreHorizontal: createIcon(More03Icon),
+  aiMagic: createIcon(AiMagicIcon),
+  star: createIcon(StarIcon),
+  starHalf: createIcon(StarHalfIcon),
 };

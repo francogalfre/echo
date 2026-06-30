@@ -1,6 +1,6 @@
 import { fallbackModel } from "../../provider";
 
-export const sentimentModel = fallbackModel([
+export const analyzeModel = fallbackModel([
   "openrouter/free",
   "google/gemini-2.5-flash-lite",
 ]);

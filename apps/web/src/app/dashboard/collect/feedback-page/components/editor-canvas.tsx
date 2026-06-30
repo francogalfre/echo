@@ -7,10 +7,10 @@ import {
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
+import { Rating } from "@echo/ui/components/reui/rating";
 import { cn } from "@echo/ui/lib/utils";
 import Image from "next/image";
 import { type PathValue, useWatch, type UseFormReturn } from "react-hook-form";
-import { toast } from "sonner";
 
 import { BannerPicker } from "./banner-picker";
 import { EditableText } from "./editable-text";
@@ -21,10 +21,7 @@ type EditorCanvasProps = {
   form: UseFormReturn<ConfigValues>;
   orgLogo: string | null;
   orgId: string;
-  isPro: boolean;
 };
-
-const RATING_STARS = [1, 2, 3, 4, 5] as const;
 
 const FauxField = ({
   label,
@@ -64,7 +61,6 @@ export const EditorCanvas = ({
   form,
   orgLogo,
   orgId,
-  isPro,
 }: EditorCanvasProps): React.ReactElement => {
   const { control, setValue } = form;
   const config = useWatch({ control, defaultValue: DEFAULT_CONFIG }) as ConfigValues;
@@ -76,13 +72,7 @@ export const EditorCanvas = ({
     setValue(fieldName, value as PathValue<ConfigValues, FieldName>, { shouldDirty: true });
   };
 
-  const addProField = (field: "enableEmail" | "enableRating"): void => {
-    if (!isPro) {
-      toast.error("Email and ratings are a Pro feature", {
-        description: "Upgrade your plan to collect them.",
-      });
-      return;
-    }
+  const addField = (field: "enableEmail" | "enableRating"): void => {
     setField(field, true);
   };
 
@@ -191,14 +181,7 @@ export const EditorCanvas = ({
                   <span className="mb-1.5 block text-sm font-medium text-foreground">
                     Rating
                   </span>
-                  <div className="flex gap-1.5">
-                    {RATING_STARS.map((star) => (
-                      <div
-                        key={star}
-                        className="size-9 rounded-lg border border-border bg-muted/40"
-                      />
-                    ))}
-                  </div>
+                  <Rating rating={4} accentColor={accentColor} size="lg" />
                   <button
                     type="button"
                     onClick={() => setField("enableRating", false)}
@@ -220,16 +203,9 @@ export const EditorCanvas = ({
                     {addableFields.map((addable) => (
                       <DropdownMenuItem
                         key={addable.field}
-                        onClick={() => addProField(addable.field)}
-                        className="flex items-center justify-between gap-6"
+                        onClick={() => addField(addable.field)}
                       >
                         {addable.label}
-                        {!isPro && (
-                          <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                            <Icons.lock className="size-3" />
-                            Pro
-                          </span>
-                        )}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>

@@ -40,6 +40,7 @@ export const feedback = pgTable(
     source: text("source").notNull().default("form"),
 
     sentiment: text("sentiment"),
+    tags: text("tags").array(),
     enrichedAt: timestamp("enriched_at"),
 
     insight: text("insight"),
