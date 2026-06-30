@@ -19,3 +19,12 @@ export async function updateOrganizationLogo(
 ): Promise<void> {
   await db.update(organization).set({ logo }).where(eq(organization.id, organizationId));
 }
+
+export async function getOrgPlan(organizationId: string): Promise<string | undefined> {
+  const org = await db.query.organization.findFirst({
+    where: (o) => eq(o.id, organizationId),
+    columns: { plan: true },
+  });
+
+  return org?.plan;
+}

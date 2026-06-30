@@ -1,6 +1,6 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 
 export type InsertFeedback = {
   organizationId: string;
@@ -18,7 +18,16 @@ export type FeedbackListItem = {
   email: string | null;
   rating: number | null;
   sentiment: string | null;
+  hasInsight: boolean;
   createdAt: Date;
+};
+
+export type FeedbackForInsight = {
+  id: string;
+  content: string;
+  rating: number | null;
+  sentiment: string | null;
+  insight: string | null;
 };
 
 export async function insertFeedback(data: InsertFeedback): Promise<string> {
@@ -32,6 +41,31 @@ export async function setFeedbackSentiment(id: string, sentiment: string): Promi
   await db
     .update(feedback)
     .set({ sentiment, enrichedAt: new Date() })
+    .where(eq(feedback.id, id));
+}
+
+export async function getFeedbackById(
+  id: string,
+  organizationId: string,
+): Promise<FeedbackForInsight | undefined> {
+  const row = await db.query.feedback.findFirst({
+    where: (f) => and(eq(f.id, id), eq(f.organizationId, organizationId)),
+  });
+  if (!row) return undefined;
+
+  return {
+    id: row.id,
+    content: row.content,
+    rating: row.rating,
+    sentiment: row.sentiment,
+    insight: row.insight,
+  };
+}
+
+export async function setFeedbackInsight(id: string, insight: string): Promise<void> {
+  await db
+    .update(feedback)
+    .set({ insight, insightAt: new Date() })
     .where(eq(feedback.id, id));
 }
 
@@ -52,6 +86,7 @@ export async function listFeedback(
     email: r.email,
     rating: r.rating,
     sentiment: r.sentiment,
+    hasInsight: r.insight != null,
     createdAt: r.createdAt,
   }));
 }

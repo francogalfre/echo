@@ -15,3 +15,7 @@ export type RegistryResult =
 export type UploadLogoResult =
   | { success: true; url: string }
   | Failure<400 | 403 | 500 | 502>;
+
+export type InsightResult =
+  | { success: true; insight: string; cached: boolean }
+  | Failure<403 | 404 | 502>;

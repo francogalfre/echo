@@ -42,6 +42,9 @@ export const feedback = pgTable(
     sentiment: text("sentiment"),
     enrichedAt: timestamp("enriched_at"),
 
+    insight: text("insight"),
+    insightAt: timestamp("insight_at"),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (t) => [index("feedback_org_idx").on(t.organizationId)],

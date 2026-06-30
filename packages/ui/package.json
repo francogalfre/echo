@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./globals.css": "./src/styles/globals.css",
+    "./globals.css": {
+      "style": "./src/styles/globals.css",
+      "default": "./src/styles/globals.css"
+    },
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
     "./hooks/*": "./src/hooks/*.ts",

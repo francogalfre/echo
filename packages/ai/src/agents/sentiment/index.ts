@@ -5,7 +5,7 @@ import { sentimentModel } from "./models";
 import { buildSentimentPrompt, SENTIMENT_SYSTEM_PROMPT } from "./prompt";
 import { SENTIMENT_VALUES, type Sentiment } from "./types";
 
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 30_000;
 
 function parseSentiment(text: string): Sentiment | undefined {
   const normalized = text.trim().toLowerCase();
