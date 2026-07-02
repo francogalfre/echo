@@ -73,8 +73,8 @@ export async function getDashboardOverview(
   const windowFilter = start ? and(orgFilter, gte(feedback.createdAt, start)) : orgFilter;
   const bucketExpr =
     granularity === "day"
-      ? sql<string>`TO_CHAR(${feedback.createdAt} AT TIME ZONE 'UTC', 'YYYY-MM-DD')`
-      : sql<string>`TO_CHAR(${feedback.createdAt} AT TIME ZONE 'UTC', 'YYYY-MM')`;
+      ? sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`
+      : sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM')`;
 
   const [
     currentRows,
