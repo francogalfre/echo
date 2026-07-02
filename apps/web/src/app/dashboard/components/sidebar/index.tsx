@@ -1,6 +1,7 @@
 "use client";
 
-import imagotipo from "@echo/assets/imagotipo/dark.png";
+import imagotipoDark from "@echo/assets/imagotipo/dark.png";
+import imagotipoLight from "@echo/assets/imagotipo/light.png";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
@@ -68,7 +69,18 @@ export const Sidebar = (): React.ReactElement => {
   return (
     <aside className="fixed flex h-screen w-64 min-w-64 shrink-0 flex-col border-r border-border bg-sidebar px-3">
       <div className="flex h-14 items-center px-2">
-        <Image src={imagotipo} alt="echo" className="h-5.5 w-auto" priority />
+        <Image
+          src={imagotipoDark}
+          alt="echo"
+          className="h-5.5 w-auto dark:hidden"
+          priority
+        />
+        <Image
+          src={imagotipoLight}
+          alt="echo"
+          className="hidden h-5.5 w-auto dark:block"
+          priority
+        />
       </div>
 
       <div className="pb-2">
