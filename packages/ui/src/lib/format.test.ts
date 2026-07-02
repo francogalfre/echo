@@ -4,7 +4,7 @@ import { formatCompact, formatCount } from "./format";
 
 describe("formatCount", () => {
   it("should group thousands", () => {
-    expect(formatCount(22842)).toBe("22,842");
+    expect(formatCount(22_842)).toBe("22,842");
     expect(formatCount(0)).toBe("0");
   });
 
@@ -15,8 +15,8 @@ describe("formatCount", () => {
 
 describe("formatCompact", () => {
   it("should abbreviate thousands and millions", () => {
-    expect(formatCompact(22842)).toBe("22.8K");
-    expect(formatCompact(1200000)).toBe("1.2M");
+    expect(formatCompact(22_842)).toBe("22.8K");
+    expect(formatCompact(1_200_000)).toBe("1.2M");
   });
 
   it("should leave small numbers alone", () => {
