@@ -1,6 +1,7 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
+import { Kbd } from "@echo/ui/components/kbd";
 import { cn } from "@echo/ui/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import type { Route } from "next";
@@ -160,10 +161,11 @@ export const CommandSearch = (): React.ReactElement => {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 w-44 items-center gap-2 rounded-lg border border-border bg-background px-3 text-sm text-muted-foreground transition-colors hover:bg-foreground/5 sm:w-64"
+        className="flex h-8 w-44 items-center gap-2 rounded-lg border border-border bg-background px-2.5 text-[13px] text-muted-foreground transition-colors hover:border-foreground/20 sm:w-60"
       >
-        <Icons.search className="size-4 shrink-0" />
+        <Icons.search className="size-3.5 shrink-0" />
         <span className="flex-1 text-left">Search…</span>
+        <Kbd>⌘K</Kbd>
       </button>
 
       <AnimatePresence>
@@ -181,7 +183,7 @@ export const CommandSearch = (): React.ReactElement => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: -8 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
+              className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-md"
               onClick={(event) => event.stopPropagation()}
               onKeyDown={onPanelKeyDown}
             >
@@ -193,9 +195,7 @@ export const CommandSearch = (): React.ReactElement => {
                   placeholder="Search pages, settings, help…"
                   className="h-12 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
                 />
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                  ESC
-                </kbd>
+                <Kbd>ESC</Kbd>
               </div>
 
               <div className="max-h-[60vh] overflow-y-auto p-2">
@@ -229,9 +229,7 @@ export const CommandSearch = (): React.ReactElement => {
                             <ItemIcon className="size-4 shrink-0" />
                             <span className="flex-1 text-foreground">{item.title}</span>
                             {item.shortcut && (
-                              <kbd className="text-xs tracking-widest text-muted-foreground">
-                                {item.shortcut}
-                              </kbd>
+                              <Kbd className="bg-transparent border-0">{item.shortcut}</Kbd>
                             )}
                           </button>
                         );
