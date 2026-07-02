@@ -12,3 +12,32 @@ export function formatCount(value: number): string {
 export function formatCompact(value: number): string {
   return compactFormatter.format(value);
 }
+
+const monthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  timeZone: "UTC",
+});
+
+const monthDayFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+});
+
+export function formatBucket(bucket: string, granularity: "day" | "month"): string {
+  if (granularity === "day") {
+    return monthDayFormatter.format(new Date(`${bucket}T00:00:00.000Z`));
+  }
+  return monthFormatter.format(new Date(`${bucket}-01T00:00:00.000Z`));
+}
+
+export function formatRelativeTime(iso: string, now: number = Date.now()): string {
+  const diffMinutes = Math.floor((now - new Date(iso).getTime()) / 60_000);
+  if (diffMinutes < 1) return "just now";
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+  const hours = Math.floor(diffMinutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return monthDayFormatter.format(new Date(iso));
+}
