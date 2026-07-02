@@ -9,7 +9,9 @@
       "default": "./src/*.ts"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@echo/ai": "workspace:*",
     "@echo/auth": "workspace:*",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@echo/config": "workspace:*",
     "hono": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^3.2.0"
   }
 }

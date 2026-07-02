@@ -95,6 +95,7 @@
         "@echo/config": "workspace:*",
         "hono": "catalog:",
         "typescript": "catalog:",
+        "vitest": "^3.2.0",
       },
     },
     "packages/assets": {
