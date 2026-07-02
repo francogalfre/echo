@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@echo/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,12 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
-
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { Icons } from "@echo/ui/components/icons";
-
-import Image from "next/image";
-
+import { Skeleton } from "@echo/ui/components/skeleton";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -21,25 +18,12 @@ import { CreateProjectModal } from "../create-project-modal";
 
 type OrgAvatarProps = { logo?: string | null; name?: string | null };
 
-const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => {
-  if (logo) {
-    return (
-      <Image
-        src={logo}
-        alt={`${name} project logo`}
-        width={32}
-        height={32}
-        className="size-6 shrink-0 rounded-sm object-cover"
-      />
-    );
-  }
-
-  return (
-    <span className="flex size-6 shrink-0 items-center justify-center rounded-sm bg-muted text-[8px] font-semibold text-muted-foreground">
-      {name?.[0]?.toUpperCase() ?? "·"}
-    </span>
-  );
-};
+const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => (
+  <Avatar className="size-6 rounded-md">
+    {logo ? <AvatarImage src={logo} alt={`${name} logo`} /> : null}
+    <AvatarFallback name={name ?? "·"} className="rounded-md text-[9px]" />
+  </Avatar>
+);
 
 export const OrgSwitcher = (): React.ReactElement => {
   const router = useRouter();
@@ -66,12 +50,12 @@ export const OrgSwitcher = (): React.ReactElement => {
     <>
       <CreateProjectModal open={createOpen} onOpenChange={setCreateOpen} />
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm outline-none transition-colors hover:bg-foreground/5">
+        <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.75 text-sm outline-none transition-colors hover:border-border hover:bg-background data-popup-open:border-border data-popup-open:bg-background">
           <OrgAvatar logo={activeOrg?.logo} name={activeOrg?.name} />
           <span className="flex-1 truncate text-left text-foreground">
-            {activeOrg?.name ?? organizations?.[0]?.name ?? "Select"} project
+            {activeOrg?.name ?? organizations?.[0]?.name ?? "Select"}
           </span>
-          <Icons.chevronDown className="size-4 shrink-0 text-muted-foreground" />
+          <Icons.chevronDown className="size-3.5 shrink-0 text-muted-foreground/70" />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent className="px-2 py-2.5 shadow-xs" side="bottom" align="start">

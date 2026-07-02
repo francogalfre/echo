@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@echo/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,51 +10,30 @@ import {
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { signOut } from "@/lib/auth-client";
-import { initials } from "./utils";
 
 type UserMenuProps = {
   session: { user: { name: string; email: string; image?: string | null } };
 };
 
-type AvatarProps = {
+type AvatarSize = "sm" | "lg";
+
+const UserAvatar = ({
+  name,
+  image,
+  size,
+}: {
   name: string;
   image?: string | null;
-  size: "sm" | "lg";
-};
-
-const UserAvatar = ({ name, image, size }: AvatarProps): React.ReactElement => {
-  const dimension = size === "lg" ? 40 : 24;
-  const box = size === "lg" ? "size-9 text-xs" : "size-5 text-[9px]";
-
-  if (image) {
-    return (
-      <Image
-        src={image}
-        alt={name}
-        width={dimension}
-        height={dimension}
-        unoptimized={image.startsWith("data:")}
-        className={
-          size === "lg"
-            ? "size-9 shrink-0 rounded-full object-cover"
-            : "size-6 shrink-0 rounded-full object-cover"
-        }
-      />
-    );
-  }
-
-  return (
-    <span
-      className={`flex shrink-0 items-center justify-center rounded-full bg-accent font-bold text-accent-foreground ${box}`}
-    >
-      {initials(name)}
-    </span>
-  );
-};
+  size: AvatarSize;
+}): React.ReactElement => (
+  <Avatar className={size === "lg" ? "size-9" : "size-6"}>
+    {image ? <AvatarImage src={image} alt={name} /> : null}
+    <AvatarFallback name={name} className={size === "lg" ? "text-xs" : "text-[9px]"} />
+  </Avatar>
+);
 
 export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
   const router = useRouter();
@@ -68,7 +48,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 outline-none transition-colors hover:bg-foreground/5">
+      <DropdownMenuTrigger className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-foreground/5">
         <UserAvatar name={name} image={image} size="sm" />
         <span className="flex-1 truncate text-left text-sm font-normal text-foreground">
           {name}

@@ -1,5 +1,8 @@
 "use client";
 
+import { Icons } from "@echo/ui/components/icons";
+import { cn } from "@echo/ui/lib/utils";
+import { motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,26 +12,35 @@ import type { NavItem } from "./types";
 
 type NavLinkProps = { item: NavItem; active: boolean };
 
+const activeSpring = { type: "spring", stiffness: 500, damping: 40 } as const;
+
 export const NavLink = ({
   item: { label, href, icon: Icon },
   active,
 }: NavLinkProps): React.ReactElement => (
   <Link
     href={href as Route}
-    className={[
-      "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
-      active
-        ? "bg-foreground/5 text-foreground"
-        : "text-muted-foreground hover:text-foreground",
-    ].join(" ")}
+    aria-current={active ? "page" : undefined}
+    className={cn(
+      "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.75 text-sm",
+      "transition-colors duration-150",
+      active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+    )}
   >
+    {active ? (
+      <motion.span
+        layoutId="sidebar-active"
+        transition={activeSpring}
+        className="absolute inset-0 rounded-lg bg-foreground/5"
+      />
+    ) : null}
     <Icon
-      className={[
-        "size-4.5 shrink-0 transition-colors duration-300",
+      className={cn(
+        "relative size-4.5 shrink-0 transition-colors duration-150",
         active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground",
-      ].join(" ")}
+      )}
     />
-    {label}
+    <span className="relative">{label}</span>
   </Link>
 );
 
@@ -50,49 +62,57 @@ export const ExpandableNavLink = ({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={[
-          "group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
+        aria-expanded={open}
+        className={cn(
+          "group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.75 text-sm",
+          "transition-colors duration-150",
           isChildActive ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-        ].join(" ")}
+        )}
       >
         <Icon
-          className={[
-            "size-4.5 shrink-0 transition-colors duration-300",
+          className={cn(
+            "size-4.5 shrink-0 transition-colors duration-150",
             isChildActive
               ? "text-foreground"
               : "text-muted-foreground group-hover:text-foreground",
-          ].join(" ")}
+          )}
         />
         {label}
+        <motion.span
+          animate={{ rotate: open ? 90 : 0 }}
+          transition={{ duration: 0.15 }}
+          className="ml-auto"
+        >
+          <Icons.chevronRight className="size-3.5 text-muted-foreground/70" />
+        </motion.span>
       </button>
-      <div
-        className={[
-          "grid transition-all duration-200 ease-in-out",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-        ].join(" ")}
+      <motion.div
+        initial={false}
+        animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="overflow-hidden"
       >
-        <div className="overflow-hidden">
-          <div className="ml-4 flex flex-col gap-0.5 border-l border-border pb-0.5 pl-2.5">
-            {subLinks.map(({ label: subLabel, href }) => {
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href as Route}
-                  className={[
-                    "rounded-md px-2.5 py-2 text-sm transition-colors duration-300",
-                    isActive
-                      ? "bg-foreground/5 text-primary "
-                      : "text-muted-foreground hover:text-foreground",
-                  ].join(" ")}
-                >
-                  {subLabel}
-                </Link>
-              );
-            })}
-          </div>
+        <div className="ml-4.75 flex flex-col gap-0.5 border-l border-border py-0.5 pl-2.5">
+          {subLinks.map(({ label: subLabel, href }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href as Route}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "relative rounded-md px-2.5 py-1.5 text-[13px] transition-colors duration-150",
+                  isActive
+                    ? "text-foreground before:absolute before:-left-[11.5px] before:top-1/2 before:h-4 before:w-px before:-translate-y-1/2 before:bg-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {subLabel}
+              </Link>
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

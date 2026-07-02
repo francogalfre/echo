@@ -14,7 +14,7 @@ const DashboardLayout = ({ children }: Props): React.ReactElement => {
     <MotionProvider>
       <div className="flex h-svh">
         <Sidebar />
-        <div className="flex min-w-0 flex-1 flex-col pl-72">
+        <div className="flex min-w-0 flex-1 flex-col pl-64">
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>

@@ -1,17 +1,22 @@
+import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
 import Link from "next/link";
 
 export const UpgradeCard = (): React.ReactElement => (
-  <div className="rounded-lg border border-border p-4">
-    <h3 className="text-sm font-medium text-foreground">Introducing echo plans</h3>
-    <p className="mt-1 text-sm font-light leading-relaxed text-muted-foreground">
+  <Link
+    href={"/dashboard/settings" as Route}
+    className="group block rounded-lg border border-border bg-surface p-3 transition-colors hover:border-accent/40"
+  >
+    <div className="flex items-center gap-2">
+      <Icons.aiMagic className="size-4 text-accent" />
+      <p className="text-xs font-medium text-foreground">Echo Pro</p>
+    </div>
+    <p className="mt-1 text-xs/relaxed text-muted-foreground">
       Unlimited feedback, AI summaries and webhooks.
     </p>
-    <Link
-      href={"/dashboard/settings" as Route}
-      className="mt-2 block w-fit text-sm font-medium text-accent hover:underline"
-    >
+    <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-accent">
       Upgrade
-    </Link>
-  </div>
+      <Icons.arrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+    </span>
+  </Link>
 );
