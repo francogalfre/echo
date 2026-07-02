@@ -35,6 +35,14 @@ function AvatarFallback({
   ...props
 }: AvatarPrimitive.Fallback.Props & { name?: string }) {
   const hue = name ? avatarHue(name) : undefined;
+  const tinted =
+    hue === undefined
+      ? undefined
+      : ({
+          "--avatar-bg": `oklch(0.6 0.14 ${hue} / 0.16)`,
+          "--avatar-fg-light": `oklch(0.45 0.13 ${hue})`,
+          "--avatar-fg-dark": `oklch(0.82 0.09 ${hue})`,
+        } as React.CSSProperties);
 
   return (
     <AvatarPrimitive.Fallback
@@ -42,17 +50,11 @@ function AvatarFallback({
       className={cn(
         "flex size-full items-center justify-center rounded-full bg-muted",
         "text-[10px] font-semibold text-muted-foreground select-none",
+        hue !== undefined &&
+          "bg-(--avatar-bg) text-(--avatar-fg-light) dark:text-(--avatar-fg-dark)",
         className,
       )}
-      style={
-        hue === undefined
-          ? style
-          : {
-              backgroundColor: `oklch(0.6 0.14 ${hue} / 0.16)`,
-              color: `oklch(0.52 0.14 ${hue})`,
-              ...style,
-            }
-      }
+      style={{ ...tinted, ...style }}
       {...props}
     >
       {children ?? (name ? initials(name) : null)}

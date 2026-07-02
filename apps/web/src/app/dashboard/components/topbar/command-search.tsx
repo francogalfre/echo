@@ -3,6 +3,7 @@
 import { Icons } from "@echo/ui/components/icons";
 import { Kbd } from "@echo/ui/components/kbd";
 import { cn } from "@echo/ui/lib/utils";
+import { durations, easings } from "@echo/ui/lib/motion";
 import { AnimatePresence, motion } from "motion/react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
@@ -174,7 +175,7 @@ export const CommandSearch = (): React.ReactElement => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: durations.fast }}
             className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 pt-[12vh] backdrop-blur-sm"
             onClick={close}
           >
@@ -182,7 +183,7 @@ export const CommandSearch = (): React.ReactElement => {
               initial={{ opacity: 0, scale: 0.97, y: -8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.97, y: -8 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: durations.base, ease: easings.out }}
               className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-md"
               onClick={(event) => event.stopPropagation()}
               onKeyDown={onPanelKeyDown}

@@ -14,7 +14,7 @@ export const Notifications = (): React.ReactElement => {
         <Icons.bell className="size-4" />
       </PopoverTrigger>
 
-      <PopoverContent side="bottom" align="end" className="w-80 p-0">
+      <PopoverContent side="bottom" align="end" className="w-80 gap-0 p-0">
         <div className="border-b border-border px-4 py-3">
           <p className="text-sm font-medium text-foreground">Notifications</p>
         </div>

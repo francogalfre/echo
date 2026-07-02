@@ -2,6 +2,7 @@
 
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
+import { durations, easings } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -80,7 +81,7 @@ export const ExpandableNavLink = ({
         {label}
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: durations.fast }}
           className="ml-auto"
         >
           <Icons.chevronRight className="size-3.5 text-muted-foreground/70" />
@@ -89,7 +90,7 @@ export const ExpandableNavLink = ({
       <motion.div
         initial={false}
         animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: durations.base, ease: easings.out }}
         className="overflow-hidden"
       >
         <div className="ml-4.75 flex flex-col gap-0.5 border-l border-border py-0.5 pl-2.5">
