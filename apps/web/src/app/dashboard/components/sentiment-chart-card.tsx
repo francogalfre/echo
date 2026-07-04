@@ -91,7 +91,11 @@ export function SentimentChartCard({
             pending && "opacity-60",
           )}
         >
-          <BarChart data={series} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+          <BarChart
+            key={granularity}
+            data={series}
+            margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+          >
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="bucket"

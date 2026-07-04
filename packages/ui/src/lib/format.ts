@@ -25,10 +25,12 @@ const monthDayFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 export function formatBucket(bucket: string, granularity: "day" | "month"): string {
-  if (granularity === "day") {
-    return monthDayFormatter.format(new Date(`${bucket}T00:00:00.000Z`));
-  }
-  return monthFormatter.format(new Date(`${bucket}-01T00:00:00.000Z`));
+  const date =
+    granularity === "day"
+      ? new Date(`${bucket}T00:00:00.000Z`)
+      : new Date(`${bucket}-01T00:00:00.000Z`);
+  if (Number.isNaN(date.getTime())) return bucket;
+  return (granularity === "day" ? monthDayFormatter : monthFormatter).format(date);
 }
 
 export function formatRelativeTime(iso: string, now: number = Date.now()): string {

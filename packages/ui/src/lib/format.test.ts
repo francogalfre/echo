@@ -32,6 +32,10 @@ describe("formatBucket", () => {
   it("should format month buckets as short month", () => {
     expect(formatBucket("2026-01", "month")).toBe("Jan");
   });
+
+  it("should return the raw bucket when the string does not match the granularity", () => {
+    expect(formatBucket("2026-06-30", "month")).toBe("2026-06-30");
+  });
 });
 
 describe("formatRelativeTime", () => {
