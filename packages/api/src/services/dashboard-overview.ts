@@ -54,8 +54,8 @@ function sentimentSums(): {
 } {
   return {
     total: count(),
-    positive: sql<number>`CAST(SUM(CASE WHEN ${feedback.sentiment} = 'positive' THEN 1 ELSE 0 END) AS INTEGER)`,
-    negative: sql<number>`CAST(SUM(CASE WHEN ${feedback.sentiment} = 'negative' THEN 1 ELSE 0 END) AS INTEGER)`,
+    positive: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${feedback.sentiment} = 'positive' THEN 1 ELSE 0 END), 0) AS INTEGER)`,
+    negative: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${feedback.sentiment} = 'negative' THEN 1 ELSE 0 END), 0) AS INTEGER)`,
   };
 }
 
@@ -102,8 +102,8 @@ export async function getDashboardOverview(
 
     db
       .select({
-        thisWeek: sql<number>`CAST(SUM(CASE WHEN ${feedback.createdAt} >= ${sevenDaysAgo} THEN 1 ELSE 0 END) AS INTEGER)`,
-        prevWeek: sql<number>`CAST(SUM(CASE WHEN ${feedback.createdAt} >= ${fourteenDaysAgo} AND ${feedback.createdAt} < ${sevenDaysAgo} THEN 1 ELSE 0 END) AS INTEGER)`,
+        thisWeek: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${feedback.createdAt} >= ${sevenDaysAgo} THEN 1 ELSE 0 END), 0) AS INTEGER)`,
+        prevWeek: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${feedback.createdAt} >= ${fourteenDaysAgo} AND ${feedback.createdAt} < ${sevenDaysAgo} THEN 1 ELSE 0 END), 0) AS INTEGER)`,
       })
       .from(feedback)
       .where(and(orgFilter, gte(feedback.createdAt, fourteenDaysAgo))),
