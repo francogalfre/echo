@@ -40,3 +40,21 @@ export function addToBoard(item: { id: string }): void {
       toast.error(msg.includes("Already") ? "Already on board" : "Failed to add to board");
     });
 }
+
+export function addManyToBoard(items: readonly { id: string }[]): void {
+  Promise.allSettled(
+    items.map((item) => trpc.board.add.mutate({ feedbackId: item.id })),
+  ).then((results) => {
+    const succeeded = results.filter((result) => result.status === "fulfilled").length;
+    const failed = items.length - succeeded;
+
+    if (succeeded === 0) {
+      toast.error("Failed to add to board");
+      return;
+    }
+
+    toast.success(
+      `Added ${succeeded} to board${failed > 0 ? ` (${failed} already added or failed)` : ""}`,
+    );
+  });
+}
