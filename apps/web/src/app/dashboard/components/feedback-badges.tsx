@@ -28,6 +28,12 @@ export function SentimentBadge({
   );
 }
 
+const SOURCE_VARIANT: Record<string, NonNullable<BadgeVariantProps["variant"]>> = {
+  api: "accent",
+  form: "warning",
+  widget: "info",
+};
+
 export function SourceBadge({
   source,
   className,
@@ -36,7 +42,10 @@ export function SourceBadge({
   className?: string;
 }): React.ReactElement {
   return (
-    <Badge variant="outline" className={cn("uppercase", className)}>
+    <Badge
+      variant={SOURCE_VARIANT[source] ?? "outline"}
+      className={cn("uppercase", className)}
+    >
       {source}
     </Badge>
   );
