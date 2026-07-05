@@ -37,9 +37,9 @@ export function RecentFeedbackTable({
           return (
             <li
               key={item.id}
-              className="flex items-center gap-3.5 border-b border-border px-5 py-3 transition-colors last:border-0 hover:bg-muted/40"
+              className="flex items-center gap-3.5 border-b border-border px-5 py-3.5 transition-colors duration-150 last:border-0 hover:bg-muted/30"
             >
-              <Avatar className="size-7">
+              <Avatar className="size-7 ring-1 ring-border">
                 <AvatarFallback name={item.name} />
               </Avatar>
               <span className="w-32 shrink-0 truncate text-[13px] font-medium">
@@ -48,16 +48,18 @@ export function RecentFeedbackTable({
               <p className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
                 {item.content}
               </p>
-              <Badge
-                dot
-                variant={SENTIMENT_VARIANT[sentiment] ?? "outline"}
-                className="capitalize max-sm:hidden"
-              >
-                {sentiment}
-              </Badge>
-              <Badge variant="outline" className="uppercase max-sm:hidden">
-                {item.source}
-              </Badge>
+              <span className="flex shrink-0 items-center gap-2 max-sm:hidden">
+                <Badge
+                  dot
+                  variant={SENTIMENT_VARIANT[sentiment] ?? "outline"}
+                  className="capitalize"
+                >
+                  {sentiment}
+                </Badge>
+                <Badge variant="outline" className="uppercase">
+                  {item.source}
+                </Badge>
+              </span>
               <span className="w-16 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
                 {formatRelativeTime(item.createdAt)}
               </span>
