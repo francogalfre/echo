@@ -133,7 +133,7 @@ export function DashboardClient(): React.ReactElement {
             <SourcesCard sources={state.data.sources} />
           </motion.div>
           <motion.div variants={fadeInUp}>
-            <AiSummaryBanner />
+            <AiSummaryBanner total={state.data.metrics.total.value} />
           </motion.div>
           <motion.div variants={fadeInUp}>
             <RecentFeedbackTable items={state.data.recent} />
