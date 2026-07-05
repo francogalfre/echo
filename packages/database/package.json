@@ -14,7 +14,8 @@
     "db:storage": "bun run scripts/apply-storage.ts",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed-demo": "bun run src/seed-demo.ts"
   },
   "dependencies": {
     "@echo/env": "workspace:*",
