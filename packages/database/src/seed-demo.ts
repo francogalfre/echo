@@ -188,7 +188,9 @@ function buildDemoFeedbackRow(organizationId: string): typeof feedback.$inferIns
   };
 }
 
-async function findTargetOrganization(target: string | undefined) {
+async function findTargetOrganization(
+  target: string | undefined,
+): Promise<typeof organization.$inferSelect | undefined> {
   if (!target) {
     return db.query.organization.findFirst();
   }
