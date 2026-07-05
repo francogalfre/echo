@@ -8,15 +8,13 @@ import { MetricCard } from "./metric-card";
 
 type MetricStripProps = {
   metrics: DashboardOverview["metrics"];
-  series: SeriesPoint[];
+  trend: SeriesPoint[];
 };
 
-export function MetricStrip({ metrics, series }: MetricStripProps): React.ReactElement {
-  const totalSeries = series.map(
-    (point) => point.positive + point.neutral + point.negative,
-  );
-  const positiveSeries = series.map((point) => point.positive);
-  const negativeSeries = series.map((point) => point.negative);
+export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactElement {
+  const totalSeries = trend.map((point) => point.positive + point.neutral + point.negative);
+  const positiveSeries = trend.map((point) => point.positive);
+  const negativeSeries = trend.map((point) => point.negative);
   // "This week" has no distinct daily series server-side, so it reuses the total trend
   const thisWeekSeries = totalSeries;
 
@@ -28,7 +26,7 @@ export function MetricStrip({ metrics, series }: MetricStripProps): React.ReactE
         iconClassName="bg-accent/10"
         value={metrics.total.value}
         growth={metrics.total.growth}
-        caption="vs previous period"
+        caption="vs last 30 days"
         sparklineData={totalSeries}
         sparklineColor="var(--chart-1)"
       />
@@ -38,7 +36,7 @@ export function MetricStrip({ metrics, series }: MetricStripProps): React.ReactE
         iconClassName="bg-success/10"
         value={metrics.positive.value}
         growth={metrics.positive.growth}
-        caption="vs previous period"
+        caption="vs last 30 days"
         sparklineData={positiveSeries}
         sparklineColor="var(--success)"
       />
@@ -48,7 +46,7 @@ export function MetricStrip({ metrics, series }: MetricStripProps): React.ReactE
         iconClassName="bg-destructive/10"
         value={metrics.negative.value}
         growth={metrics.negative.growth}
-        caption="vs previous period"
+        caption="vs last 30 days"
         sparklineData={negativeSeries}
         sparklineColor="var(--destructive)"
       />

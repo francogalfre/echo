@@ -37,6 +37,7 @@ export type DashboardOverview = {
   };
   granularity: SeriesGranularity;
   series: SeriesPoint[];
+  trend: SeriesPoint[];
   sources: SourceCount[];
   recent: OverviewRecentItem[];
 };
@@ -64,10 +65,12 @@ export async function getDashboardOverview(
   range: StatsRange,
 ): Promise<DashboardOverview> {
   const now = new Date();
-  const { start, prevStart } = rangeWindow(range, now);
+  const { start } = rangeWindow(range, now);
   const granularity = granularityFor(range);
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
   const orgFilter = eq(feedback.organizationId, organizationId);
   const windowFilter = start ? and(orgFilter, gte(feedback.createdAt, start)) : orgFilter;
@@ -75,30 +78,46 @@ export async function getDashboardOverview(
     granularity === "day"
       ? sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`
       : sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM')`;
+  const trendBucketExpr = sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`;
 
   const [
-    currentRows,
-    prevRows,
+    allTimeRows,
+    last30Rows,
+    prev30Rows,
+    trendRows,
     weekRows,
     seriesRows,
     sourceRows,
     recentRows,
     earliestRows,
   ] = await Promise.all([
-    db.select(sentimentSums()).from(feedback).where(windowFilter),
+    db.select(sentimentSums()).from(feedback).where(orgFilter),
 
-    start && prevStart
-      ? db
-          .select(sentimentSums())
-          .from(feedback)
-          .where(
-            and(
-              orgFilter,
-              gte(feedback.createdAt, prevStart),
-              lt(feedback.createdAt, start),
-            ),
-          )
-      : Promise.resolve([EMPTY_COUNTS]),
+    db
+      .select(sentimentSums())
+      .from(feedback)
+      .where(and(orgFilter, gte(feedback.createdAt, thirtyDaysAgo))),
+
+    db
+      .select(sentimentSums())
+      .from(feedback)
+      .where(
+        and(
+          orgFilter,
+          gte(feedback.createdAt, sixtyDaysAgo),
+          lt(feedback.createdAt, thirtyDaysAgo),
+        ),
+      ),
+
+    db
+      .select({
+        bucket: trendBucketExpr,
+        sentiment: feedback.sentiment,
+        n: sql<number>`CAST(COUNT(*) AS INTEGER)`,
+      })
+      .from(feedback)
+      .where(and(orgFilter, gte(feedback.createdAt, thirtyDaysAgo)))
+      .groupBy(trendBucketExpr, feedback.sentiment),
 
     db
       .select({
@@ -146,13 +165,14 @@ export async function getDashboardOverview(
       : Promise.resolve([{ earliest: null }]),
   ]);
 
-  const current = currentRows[0] ?? EMPTY_COUNTS;
-  const previous = prevRows[0] ?? EMPTY_COUNTS;
+  const allTime = allTimeRows[0] ?? EMPTY_COUNTS;
+  const last30 = last30Rows[0] ?? EMPTY_COUNTS;
+  const prev30 = prev30Rows[0] ?? EMPTY_COUNTS;
   const { thisWeek = 0, prevWeek = 0 } = weekRows[0] ?? {};
-  const hasPrevious = range !== "all";
 
   const earliestDate = earliestRows[0]?.earliest ?? null;
   const keys = bucketKeys(range, now, earliestDate ? monthKey(earliestDate) : undefined);
+  const trendKeys = bucketKeys("30d", now);
 
   const sourceMap = new Map(sourceRows.map((row) => [row.source, row.n]));
   const sources = SOURCES.map((source) => ({
@@ -163,21 +183,22 @@ export async function getDashboardOverview(
   return {
     metrics: {
       total: {
-        value: current.total,
-        growth: hasPrevious ? growthPercent(current.total, previous.total) : null,
+        value: allTime.total,
+        growth: growthPercent(last30.total, prev30.total),
       },
       positive: {
-        value: current.positive,
-        growth: hasPrevious ? growthPercent(current.positive, previous.positive) : null,
+        value: allTime.positive,
+        growth: growthPercent(last30.positive, prev30.positive),
       },
       negative: {
-        value: current.negative,
-        growth: hasPrevious ? growthPercent(current.negative, previous.negative) : null,
+        value: allTime.negative,
+        growth: growthPercent(last30.negative, prev30.negative),
       },
       thisWeek: { value: thisWeek, growth: growthPercent(thisWeek, prevWeek) },
     },
     granularity,
     series: zeroFillSeries(keys, seriesRows),
+    trend: zeroFillSeries(trendKeys, trendRows),
     sources,
     recent: recentRows.map((row) => ({
       id: row.id,

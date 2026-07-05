@@ -93,7 +93,7 @@ export function DashboardClient(): React.ReactElement {
 
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-4">
-          <MetricStrip metrics={state.data.metrics} series={state.data.series} />
+          <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           <div className="rounded-lg bg-card ring-1 ring-foreground/10">
             <EmptyState
               icon={<Icons.message />}
@@ -120,7 +120,7 @@ export function DashboardClient(): React.ReactElement {
           className="flex flex-col gap-4"
         >
           <motion.div variants={fadeInUp}>
-            <MetricStrip metrics={state.data.metrics} series={state.data.series} />
+            <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           </motion.div>
           <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
             <SentimentChartCard
