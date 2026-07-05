@@ -23,9 +23,12 @@ export function RecentFeedbackTable({
         <h2 className="text-sm font-medium">Recent feedback</h2>
         <Link
           href="/dashboard/feedback"
-          className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="group text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          View all →
+          <span>View all</span>{" "}
+          <span className="inline-block transition-transform duration-150 group-hover:translate-x-0.5">
+            →
+          </span>
         </Link>
       </div>
       <ul>
