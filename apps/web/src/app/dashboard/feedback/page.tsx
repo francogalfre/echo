@@ -1,6 +1,6 @@
 import { PageContainer } from "../components/page-container";
 import { DigestButton } from "./components/digest-button";
-import { FeedbackTable } from "./components/feedback-table";
+import { FeedbackList } from "./components/feedback-list";
 
 const FeedbackPage = (): React.ReactElement => {
   return (
@@ -14,7 +14,7 @@ const FeedbackPage = (): React.ReactElement => {
         </div>
         <DigestButton />
       </div>
-      <FeedbackTable />
+      <FeedbackList />
     </PageContainer>
   );
 };
