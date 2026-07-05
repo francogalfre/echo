@@ -11,6 +11,8 @@ import {
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
+import { fadeInUp } from "@echo/ui/lib/motion";
+import { motion } from "motion/react";
 
 import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
 import type { FeedbackItem } from "../hooks/use-feedback";
@@ -31,7 +33,10 @@ export function FeedbackRow({
   const tags = item.tags?.slice(0, 2) ?? [];
 
   return (
-    <li className="group relative flex items-center gap-3.5 border-b border-border px-5 py-3 last:border-0 transition-colors hover:bg-muted/40">
+    <motion.li
+      variants={fadeInUp}
+      className="group relative flex items-center gap-3.5 border-b border-border px-5 py-3 last:border-0 transition-colors hover:bg-muted/40"
+    >
       <button
         type="button"
         aria-label={`View details for ${item.name}`}
@@ -101,6 +106,6 @@ export function FeedbackRow({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-    </li>
+    </motion.li>
   );
 }
