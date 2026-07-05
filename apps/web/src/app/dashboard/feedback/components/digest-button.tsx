@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { useState } from "react";
 
@@ -10,14 +11,10 @@ export function DigestButton(): React.ReactElement {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
-      >
-        <Icons.aiMagic className="size-4 text-violet-500" />
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+        <Icons.aiMagic data-icon="inline-start" className="size-3.5 text-accent" />
         AI Summary
-      </button>
+      </Button>
       <DigestModal open={open} onOpenChange={setOpen} />
     </>
   );
