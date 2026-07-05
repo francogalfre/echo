@@ -13,6 +13,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@echo/ui/components/chart";
+import { Icons } from "@echo/ui/components/icons";
 import {
   Select,
   SelectContent,
@@ -64,98 +65,120 @@ export function SentimentChartCard({
     if (next) onRangeChange(next.value);
   };
 
+  const isEmpty = series.every(
+    (point) => point.positive === 0 && point.neutral === 0 && point.negative === 0,
+  );
+
   return (
     <Card className="lg:col-span-2">
       <CardHeader>
         <CardTitle>Feedback sentiment</CardTitle>
         <CardAction>
-          <Select value={range} onValueChange={handleRangeChange}>
-            <SelectTrigger size="sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent align="end" alignItemWithTrigger={false}>
-              {RANGE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {Object.entries(chartConfig).map(([key, item]) => (
+                <span
+                  key={key}
+                  className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                >
+                  <span
+                    aria-hidden
+                    className="size-2 rounded-full"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  {item.label}
+                </span>
               ))}
-            </SelectContent>
-          </Select>
+            </div>
+            <Select value={range} onValueChange={handleRangeChange}>
+              <SelectTrigger size="sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent align="end" alignItemWithTrigger={false}>
+                {RANGE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className={cn(
-            "h-64 w-full transition-opacity duration-200 aspect-auto",
-            pending && "opacity-60",
-          )}
-        >
-          <BarChart
-            key={granularity}
-            data={series}
-            margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+        <div className="relative">
+          <ChartContainer
+            config={chartConfig}
+            className={cn(
+              "h-64 w-full transition-opacity duration-200 aspect-auto",
+              pending && "opacity-60",
+            )}
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="bucket"
-              tickLine={false}
-              axisLine={false}
-              minTickGap={24}
-              tickMargin={8}
-              tickFormatter={(value: string) => formatBucket(value, granularity)}
-            />
-            <YAxis
-              width={36}
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-              tickFormatter={(value: number) => formatCompact(value)}
-            />
-            <ChartTooltip
-              cursor={{ fillOpacity: 0.4 }}
-              content={
-                <ChartTooltipContent
-                  config={chartConfig}
-                  labelFormatter={(label) => formatBucket(label, granularity)}
-                />
-              }
-            />
-            <Bar
-              dataKey="positive"
-              stackId="sentiment"
-              fill="var(--color-positive)"
-              maxBarSize={28}
-            />
-            <Bar
-              dataKey="neutral"
-              stackId="sentiment"
-              fill="var(--color-neutral)"
-              maxBarSize={28}
-            />
-            <Bar
-              dataKey="negative"
-              stackId="sentiment"
-              fill="var(--color-negative)"
-              maxBarSize={28}
-              radius={[3, 3, 0, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
-        <div className="mt-3 flex items-center gap-4">
-          {Object.entries(chartConfig).map(([key, item]) => (
-            <span
-              key={key}
-              className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
+            <BarChart
+              key={granularity}
+              data={series}
+              margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
             >
-              <span
-                aria-hidden
-                className="size-2 rounded-full"
-                style={{ backgroundColor: item.color }}
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="bucket"
+                tickLine={false}
+                axisLine={false}
+                minTickGap={24}
+                tickMargin={8}
+                tickFormatter={(value: string) => formatBucket(value, granularity)}
               />
-              {item.label}
-            </span>
-          ))}
+              <YAxis
+                width={36}
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+                tickFormatter={(value: number) => formatCompact(value)}
+              />
+              {isEmpty ? null : (
+                <ChartTooltip
+                  cursor={{ fillOpacity: 0.4 }}
+                  content={
+                    <ChartTooltipContent
+                      config={chartConfig}
+                      labelFormatter={(label) => formatBucket(label, granularity)}
+                    />
+                  }
+                />
+              )}
+              {isEmpty ? null : (
+                <Bar
+                  dataKey="positive"
+                  stackId="sentiment"
+                  fill="var(--color-positive)"
+                  maxBarSize={28}
+                />
+              )}
+              {isEmpty ? null : (
+                <Bar
+                  dataKey="neutral"
+                  stackId="sentiment"
+                  fill="var(--color-neutral)"
+                  maxBarSize={28}
+                />
+              )}
+              {isEmpty ? null : (
+                <Bar
+                  dataKey="negative"
+                  stackId="sentiment"
+                  fill="var(--color-negative)"
+                  maxBarSize={28}
+                  radius={[3, 3, 0, 0]}
+                />
+              )}
+            </BarChart>
+          </ChartContainer>
+          {isEmpty ? (
+            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5">
+              <Icons.message className="size-5 text-muted-foreground/60" />
+              <p className="text-xs text-muted-foreground">No feedback in this period</p>
+            </div>
+          ) : null}
         </div>
       </CardContent>
     </Card>
