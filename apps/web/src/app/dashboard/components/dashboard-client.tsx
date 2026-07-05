@@ -29,7 +29,12 @@ type State =
 function DashboardSkeleton(): React.ReactElement {
   return (
     <div className="flex flex-col gap-4">
-      <Skeleton className="h-28 rounded-lg" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Skeleton className="h-36 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
+        <Skeleton className="h-36 rounded-lg" />
+      </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <Skeleton className="h-80 rounded-lg lg:col-span-2" />
         <Skeleton className="h-80 rounded-lg" />
@@ -88,7 +93,7 @@ export function DashboardClient(): React.ReactElement {
 
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-4">
-          <MetricStrip metrics={state.data.metrics} />
+          <MetricStrip metrics={state.data.metrics} series={state.data.series} />
           <div className="rounded-lg bg-card ring-1 ring-foreground/10">
             <EmptyState
               icon={<Icons.message />}
@@ -115,7 +120,7 @@ export function DashboardClient(): React.ReactElement {
           className="flex flex-col gap-4"
         >
           <motion.div variants={fadeInUp}>
-            <MetricStrip metrics={state.data.metrics} />
+            <MetricStrip metrics={state.data.metrics} series={state.data.series} />
           </motion.div>
           <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
             <SentimentChartCard

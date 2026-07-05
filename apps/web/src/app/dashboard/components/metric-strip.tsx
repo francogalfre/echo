@@ -1,78 +1,66 @@
 "use client";
 
-import { AnimatedCounter } from "@echo/ui/components/animated-counter";
+import { Icons } from "@echo/ui/components/icons";
 
-import type { DashboardOverview, MetricValue } from "@echo/api/services/dashboard-overview";
+import type { DashboardOverview, SeriesPoint } from "@echo/api/services/dashboard-overview";
+
+import { MetricCard } from "./metric-card";
 
 type MetricStripProps = {
   metrics: DashboardOverview["metrics"];
+  series: SeriesPoint[];
 };
 
-function TrendChip({ growth }: { growth: number | null }): React.ReactElement {
-  if (growth === null) {
-    return <span className="font-medium text-muted-foreground/70">—</span>;
-  }
-  const positive = growth >= 0;
-  return (
-    <span
-      className={positive ? "font-medium text-success" : "font-medium text-destructive"}
-    >
-      {positive ? "↑" : "↓"} {Math.abs(growth)}%
-    </span>
+export function MetricStrip({ metrics, series }: MetricStripProps): React.ReactElement {
+  const totalSeries = series.map(
+    (point) => point.positive + point.neutral + point.negative,
   );
-}
+  const positiveSeries = series.map((point) => point.positive);
+  const negativeSeries = series.map((point) => point.negative);
+  // "This week" has no distinct daily series server-side, so it reuses the total trend
+  const thisWeekSeries = totalSeries;
 
-function Segment({
-  label,
-  caption,
-  metric,
-  className,
-}: {
-  label: string;
-  caption: string;
-  metric: MetricValue;
-  className?: string;
-}): React.ReactElement {
   return (
-    <div className={`flex flex-col gap-1.5 border-border px-5 py-4 ${className ?? ""}`}>
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-2xl font-semibold tracking-tight">
-        <AnimatedCounter value={metric.value} />
-      </p>
-      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        <TrendChip growth={metric.growth} />
-        {caption}
-      </p>
-    </div>
-  );
-}
-
-export function MetricStrip({ metrics }: MetricStripProps): React.ReactElement {
-  return (
-    <div className="grid grid-cols-2 overflow-hidden rounded-lg bg-card ring-1 ring-foreground/10 lg:grid-cols-4">
-      <Segment
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <MetricCard
         label="Total feedback"
+        icon={<Icons.message className="size-4 text-accent" />}
+        iconClassName="bg-accent/10"
+        value={metrics.total.value}
+        growth={metrics.total.growth}
         caption="vs previous period"
-        metric={metrics.total}
-        className="border-b lg:border-b-0"
+        sparklineData={totalSeries}
+        sparklineColor="var(--chart-1)"
       />
-      <Segment
+      <MetricCard
         label="Positive"
+        icon={<Icons.circleCheck className="size-4 text-success" />}
+        iconClassName="bg-success/10"
+        value={metrics.positive.value}
+        growth={metrics.positive.growth}
         caption="vs previous period"
-        metric={metrics.positive}
-        className="border-b border-l lg:border-b-0"
+        sparklineData={positiveSeries}
+        sparklineColor="var(--success)"
       />
-      <Segment
+      <MetricCard
         label="Negative"
+        icon={<Icons.triangleAlert className="size-4 text-destructive" />}
+        iconClassName="bg-destructive/10"
+        value={metrics.negative.value}
+        growth={metrics.negative.growth}
         caption="vs previous period"
-        metric={metrics.negative}
-        className="lg:border-l"
+        sparklineData={negativeSeries}
+        sparklineColor="var(--destructive)"
       />
-      <Segment
+      <MetricCard
         label="This week"
+        icon={<Icons.radar className="size-4 text-info" />}
+        iconClassName="bg-info/10"
+        value={metrics.thisWeek.value}
+        growth={metrics.thisWeek.growth}
         caption="vs last week"
-        metric={metrics.thisWeek}
-        className="border-l"
+        sparklineData={thisWeekSeries}
+        sparklineColor="var(--info)"
       />
     </div>
   );
