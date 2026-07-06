@@ -1,7 +1,6 @@
 import type { DigestInput } from "./types";
 
-export const DIGEST_SYSTEM_PROMPT = `Analyze product feedback and return ONLY a JSON object with this exact format:
-{"executiveSummary":"2-3 sentences on the overall state of feedback","themes":[{"title":"...","count":N,"insight":"..."}],"topIssues":["...","..."],"positiveHighlight":"..."}
+export const DIGEST_SYSTEM_PROMPT = `Analyze product feedback and summarize it for the team.
 
 Rules:
 - executiveSummary: honest overview — what users feel, main signal this period
