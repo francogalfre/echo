@@ -8,7 +8,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@echo/ui/components/tooltip";
+import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { ColorPicker } from "./color-picker";
 
@@ -47,7 +49,7 @@ const DockIconButton = ({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "flex size-8 items-center justify-center rounded-lg outline-none transition-colors",
+        "flex size-8 items-center justify-center rounded-lg outline-none transition-all duration-150 hover:scale-105 active:scale-95",
         active ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground",
       )}
     >
@@ -73,64 +75,96 @@ export const EditorDock = ({
   onPreview,
   onSave,
   onPublish,
-}: EditorDockProps): React.ReactElement => (
-  <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4">
-    <TooltipProvider delay={200}>
-      <div className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-border bg-card/95 p-1.5 shadow-lg ring-1 ring-foreground/10 backdrop-blur-sm">
-        <ColorPicker value={accentColor} onChange={onAccentColorChange} />
+}: EditorDockProps): React.ReactElement => {
+  const shouldReduceMotion = useReducedMotion();
+  const buttonMicroInteraction =
+    "transition-transform duration-150 hover:scale-105 active:scale-95";
 
-        <DockDivider />
+  return (
+    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-40 flex justify-center px-4">
+      <TooltipProvider delay={200}>
+        <motion.div
+          initial={shouldReduceMotion ? false : "hidden"}
+          animate="visible"
+          variants={fadeInUp}
+          className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-border bg-card/95 p-1.5 shadow-lg ring-1 ring-foreground/10 backdrop-blur-sm"
+        >
+          <Tooltip>
+            <TooltipTrigger render={<span className="inline-flex" />}>
+              <ColorPicker value={accentColor} onChange={onAccentColorChange} />
+            </TooltipTrigger>
+            <TooltipContent>Accent color</TooltipContent>
+          </Tooltip>
 
-        <DockIconButton
-          active={bannerEnabled}
-          onClick={onToggleBanner}
-          icon={Icons.imageAdd}
-          label="Toggle banner"
-        />
-        <DockIconButton
-          active={feedbackPanelEnabled}
-          onClick={onToggleFeedbackPanel}
-          icon={Icons.message}
-          label="Show recent feedback"
-        />
+          <DockDivider />
 
-        <DockDivider />
+          <DockIconButton
+            active={bannerEnabled}
+            onClick={onToggleBanner}
+            icon={Icons.imageAdd}
+            label="Toggle banner"
+          />
+          <DockIconButton
+            active={feedbackPanelEnabled}
+            onClick={onToggleFeedbackPanel}
+            icon={Icons.message}
+            label="Show recent feedback"
+          />
 
-        {isPublished && (
-          <>
-            <DockIconButton onClick={onCopyLink} icon={Icons.copy} label="Copy link" />
-            <DockIconButton
-              onClick={onPreview}
-              icon={Icons.externalLink}
-              label="Open preview"
-            />
-          </>
-        )}
+          <AnimatePresence mode="popLayout">
+            {isPublished && (
+              <motion.div
+                key="published-actions"
+                initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9, width: 0 }}
+                animate={{ opacity: 1, scale: 1, width: "auto" }}
+                exit={{ opacity: 0, scale: 0.9, width: 0 }}
+                transition={{ duration: 0.15 }}
+                className="flex items-center gap-1 overflow-hidden"
+              >
+                <DockDivider />
+                <DockIconButton onClick={onCopyLink} icon={Icons.copy} label="Copy link" />
+                <DockIconButton
+                  onClick={onPreview}
+                  icon={Icons.externalLink}
+                  label="Open preview"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={onSave}
-                disabled={isSaving || isLoading}
-              />
-            }
-          >
-            {isSaving && <Icons.loading className="size-3.5 animate-spin" />}
-            Save
-          </TooltipTrigger>
-          <TooltipContent>Save changes</TooltipContent>
-        </Tooltip>
+          <DockDivider />
 
-        {!isPublished && (
-          <Button size="sm" onClick={onPublish} disabled={isSaving || isLoading}>
-            {isSaving && <Icons.loading className="size-3.5 animate-spin" />}
-            Publish
-          </Button>
-        )}
-      </div>
-    </TooltipProvider>
-  </div>
-);
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={onSave}
+                  disabled={isSaving || isLoading}
+                  className={buttonMicroInteraction}
+                />
+              }
+            >
+              {isSaving && <Icons.loading className="size-3.5 animate-spin" />}
+              Save
+            </TooltipTrigger>
+            <TooltipContent>Save changes</TooltipContent>
+          </Tooltip>
+
+          {!isPublished && (
+            <Button
+              size="sm"
+              onClick={onPublish}
+              disabled={isSaving || isLoading}
+              className={buttonMicroInteraction}
+            >
+              {isSaving && <Icons.loading className="size-3.5 animate-spin" />}
+              Publish
+            </Button>
+          )}
+        </motion.div>
+      </TooltipProvider>
+    </div>
+  );
+};

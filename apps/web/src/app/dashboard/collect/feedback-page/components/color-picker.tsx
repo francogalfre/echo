@@ -61,7 +61,7 @@ export const ColorPicker = ({
         aria-expanded={open}
         aria-controls="color-picker-menu"
         onClick={() => setOpen((o) => !o)}
-        className="size-8 cursor-pointer rounded-lg border border-border/60 ring-offset-1 transition-transform duration-200 hover:scale-105"
+        className="size-8 cursor-pointer rounded-lg border border-border/60 ring-offset-1 transition-transform duration-200 hover:scale-105 active:scale-95"
         style={{ backgroundColor: value }}
         title={value}
       />
@@ -69,7 +69,7 @@ export const ColorPicker = ({
       {open && (
         <div
           id="color-picker-menu"
-          className="animate-in fade-in zoom-in-95 absolute left-0 top-10 z-50 w-56 rounded-2xl border border-border bg-card p-4 shadow-2xl duration-150"
+          className="animate-in fade-in zoom-in-95 slide-in-from-bottom-2 absolute bottom-10 left-0 z-50 w-56 origin-bottom-left rounded-2xl border border-border bg-card p-4 shadow-2xl duration-150"
           role="menu"
         >
           <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
