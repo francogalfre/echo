@@ -1,5 +1,7 @@
 "use client";
 
+import { durations, easings } from "@echo/ui/lib/motion";
+import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
 type FeedbackItem = {
@@ -22,6 +24,7 @@ export const FeedbackCards = ({
   accentColor,
 }: FeedbackCardsProps): React.ReactElement => {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <aside>
@@ -36,9 +39,13 @@ export const FeedbackCards = ({
         {items.slice(0, visibleCount).map((item) => {
           const rating = item.rating;
           return (
-            <div
+            <motion.div
               key={item.id}
-              className="rounded-xl border border-black/5 bg-white p-4 dark:bg-card"
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: durations.slow, ease: easings.out }}
+              className="rounded-xl border border-black/5 bg-white p-4 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md dark:bg-card"
             >
               <div className="flex items-center gap-2.5">
                 <span
@@ -64,7 +71,7 @@ export const FeedbackCards = ({
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {item.content}
               </p>
-            </div>
+            </motion.div>
           );
         })}
       </div>

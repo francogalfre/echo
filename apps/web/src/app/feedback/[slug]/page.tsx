@@ -38,10 +38,20 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
 
       <div
         className={cn(
-          "mx-auto w-full px-5 pb-24 sm:px-8",
+          "relative mx-auto w-full px-5 pb-24 sm:px-8",
           showCards ? "max-w-5xl" : "max-w-2xl",
         )}
       >
+        {!hasBanner && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64"
+            style={{
+              background: `radial-gradient(600px circle at 15% 0%, ${config.accentColor}14, transparent 70%)`,
+            }}
+          />
+        )}
+
         <FadeIn delay={0.05}>
           {org.logo && (
             <Image
