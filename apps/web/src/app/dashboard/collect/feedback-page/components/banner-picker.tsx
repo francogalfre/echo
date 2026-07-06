@@ -63,7 +63,6 @@ type BannerPickerProps = {
   hasImage: boolean;
   onSelectColor: (value: string) => void;
   onUploaded: (url: string) => void;
-  onRemoveBanner: () => void;
 };
 
 export const BannerPicker = ({
@@ -72,7 +71,6 @@ export const BannerPicker = ({
   hasImage,
   onSelectColor,
   onUploaded,
-  onRemoveBanner,
 }: BannerPickerProps): React.ReactElement => {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"gallery" | "upload">("gallery");
@@ -134,25 +132,15 @@ export const BannerPicker = ({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => setOpen((value) => !value)}
-          aria-expanded={open}
-          className="flex items-center gap-1 rounded-md bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/55"
-        >
-          <Icons.imageAdd className="size-3.5" />
-          Change cover
-        </button>
-        <button
-          type="button"
-          onClick={onRemoveBanner}
-          aria-label="Remove cover"
-          className="flex items-center justify-center rounded-md bg-black/40 p-1 text-white backdrop-blur-sm transition-colors hover:bg-black/55"
-        >
-          <Icons.cancelCircle className="size-3.5" />
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        className="flex items-center gap-1 rounded-md bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/55"
+      >
+        <Icons.imageAdd className="size-3.5" />
+        Change cover
+      </button>
 
       {open && (
         <div className="animate-in fade-in zoom-in-95 absolute top-9 right-0 z-50 max-h-[70vh] w-72 max-w-[calc(100vw-3rem)] overflow-y-auto rounded-xl border border-border bg-card p-3 shadow-2xl duration-150">

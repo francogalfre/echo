@@ -109,10 +109,6 @@ export const EditorCanvas = ({
                 setField("coverBannerUrl", "");
               }}
               onUploaded={(url) => setField("coverBannerUrl", url)}
-              onRemoveBanner={() => {
-                setField("enableCoverBanner", false);
-                setField("coverBannerUrl", "");
-              }}
             />
           </div>
         </div>
@@ -120,7 +116,7 @@ export const EditorCanvas = ({
 
       <div
         className={cn(
-          "mx-auto px-6 pb-32",
+          "relative z-10 mx-auto px-6 pb-32",
           config.showFeedback ? "max-w-5xl" : "max-w-2xl",
         )}
       >
@@ -130,7 +126,7 @@ export const EditorCanvas = ({
               "grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_340px]",
           )}
         >
-          <div className={cn(config.showFeedback && "lg:sticky lg:top-6")}>
+          <div className={cn(config.showFeedback && "lg:sticky lg:top-12")}>
             {orgLogo && (
               <Image
                 src={orgLogo}
@@ -162,7 +158,7 @@ export const EditorCanvas = ({
               className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base"
             />
 
-            <div className="mt-8 space-y-4">
+            <div className="mt-10 space-y-6">
               <FauxField label="Name" placeholder="Your name" />
               <FauxField
                 label="Your feedback"
