@@ -15,7 +15,7 @@ type FeedbackItem = {
 };
 
 const RATING_STARS = [1, 2, 3, 4, 5] as const;
-const PAGE_SIZE = 4;
+const PREVIEW_LIMIT = 3;
 
 type RecentFeedbackProps = {
   accentColor: string;
@@ -26,7 +26,6 @@ export const RecentFeedback = ({
 }: RecentFeedbackProps): React.ReactElement => {
   const [items, setItems] = useState<FeedbackItem[] | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -75,7 +74,7 @@ export const RecentFeedback = ({
       )}
 
       <div className="space-y-3">
-        {items?.slice(0, visibleCount).map((item) => {
+        {items?.slice(0, PREVIEW_LIMIT).map((item) => {
           const rating = item.rating;
           return (
             <motion.div
@@ -115,11 +114,11 @@ export const RecentFeedback = ({
         })}
       </div>
 
-      {items !== null && items.length > visibleCount && (
+      {items !== null && items.length > PREVIEW_LIMIT && (
         <button
           type="button"
-          onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-          className="mt-3 w-full rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-disabled="true"
+          className="mt-3 w-full cursor-default rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground"
         >
           Load more
         </button>
