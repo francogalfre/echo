@@ -24,13 +24,10 @@ export function BoardCardItem({
   return (
     <div
       onClick={onClick}
-      className={`group flex flex-col gap-2 rounded-lg border border-border bg-card p-3.5 transition-shadow hover:shadow-sm ${isDragging ? "ring-2 ring-violet-400" : ""}`}
+      className={`group flex flex-col gap-3 rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-sm ${isDragging ? "ring-2 ring-violet-400" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <SentimentBadge sentiment={item.sentiment} className="shrink-0" />
-          <span className="truncate text-sm font-medium">{item.name}</span>
-        </div>
+        <span className="truncate text-sm font-semibold">{item.name}</span>
         <div className="flex shrink-0 items-center gap-0.5">
           <KanbanItemHandle>
             <span
@@ -55,18 +52,24 @@ export function BoardCardItem({
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-1.5">
+        <SentimentBadge sentiment={item.sentiment} />
+        <SourceBadge source={item.source} />
+      </div>
+
       <p className="line-clamp-2 text-xs text-muted-foreground leading-relaxed">
         {item.content}
       </p>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        <SourceBadge source={item.source} />
-        {item.tags?.slice(0, 2).map((tag) => (
-          <Badge key={tag} variant="outline">
-            {tag}
-          </Badge>
-        ))}
-      </div>
+      {item.tags && item.tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {item.tags.slice(0, 2).map((tag) => (
+            <Badge key={tag} variant="outline">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
