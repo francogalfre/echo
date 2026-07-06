@@ -1,7 +1,13 @@
 import { generateDigest, type DigestOutput } from "@echo/ai";
 
 import { getUsageCount, incrementUsage } from "../services/ai-usage";
-import { getDigest, getFeedbackForDigest, upsertDigest } from "../services/digest";
+import {
+  getDigest,
+  getFeedbackForDigest,
+  insertDigest,
+  listDigests,
+  type DigestHistoryEntry,
+} from "../services/digest";
 import { getOrgPlan } from "../services/organization";
 
 const DIGEST_FEATURE = "digest";
@@ -104,9 +110,15 @@ export async function generateFeedbackDigest(
   }
 
   await Promise.all([
-    upsertDigest(organizationId, digest, inputs.length),
+    insertDigest(organizationId, digest, inputs.length),
     incrementUsage(organizationId, DIGEST_FEATURE, day),
   ]);
 
   return { success: true, digest, generatedAt: new Date(), feedbackCount: inputs.length };
+}
+
+export async function getDigestHistory(
+  organizationId: string,
+): Promise<DigestHistoryEntry[]> {
+  return listDigests(organizationId);
 }

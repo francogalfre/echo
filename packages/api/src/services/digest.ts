@@ -13,9 +13,14 @@ export type DigestRecord = {
 const FREE_MAX_ITEMS = 100;
 const PRO_MAX_ITEMS = 500;
 
+export type DigestHistoryEntry = DigestRecord & { id: string };
+
+const HISTORY_LIMIT = 10;
+
 export async function getDigest(organizationId: string): Promise<DigestRecord | null> {
   const row = await db.query.feedbackDigests.findFirst({
     where: (d) => eq(d.organizationId, organizationId),
+    orderBy: (d) => [desc(d.generatedAt)],
   });
   if (!row) return null;
 
@@ -24,6 +29,21 @@ export async function getDigest(organizationId: string): Promise<DigestRecord | 
     generatedAt: row.generatedAt,
     feedbackCount: row.feedbackCount,
   };
+}
+
+export async function listDigests(organizationId: string): Promise<DigestHistoryEntry[]> {
+  const rows = await db.query.feedbackDigests.findMany({
+    where: (d) => eq(d.organizationId, organizationId),
+    orderBy: (d) => [desc(d.generatedAt)],
+    limit: HISTORY_LIMIT,
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    digest: row.digest as DigestOutput,
+    generatedAt: row.generatedAt,
+    feedbackCount: row.feedbackCount,
+  }));
 }
 
 function sampleProportional(items: DigestInput[], max: number): DigestInput[] {
@@ -83,25 +103,16 @@ export async function getFeedbackForDigest(
   return sampleProportional(inputs, isPro ? PRO_MAX_ITEMS : FREE_MAX_ITEMS);
 }
 
-export async function upsertDigest(
+export async function insertDigest(
   organizationId: string,
   digest: DigestOutput,
   feedbackCount: number,
 ): Promise<void> {
-  const existing = await db.query.feedbackDigests.findFirst({
-    where: (d) => eq(d.organizationId, organizationId),
+  await db.insert(feedbackDigests).values({
+    id: crypto.randomUUID(),
+    organizationId,
+    digest,
+    generatedAt: new Date(),
+    feedbackCount,
   });
-
-  const values = { digest, generatedAt: new Date(), feedbackCount };
-
-  if (existing) {
-    await db
-      .update(feedbackDigests)
-      .set(values)
-      .where(eq(feedbackDigests.organizationId, organizationId));
-  } else {
-    await db
-      .insert(feedbackDigests)
-      .values({ id: crypto.randomUUID(), organizationId, ...values });
-  }
 }
