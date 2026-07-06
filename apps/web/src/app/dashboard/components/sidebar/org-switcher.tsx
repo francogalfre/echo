@@ -33,9 +33,11 @@ export const OrgSwitcher = (): React.ReactElement => {
 
   useEffect(() => {
     if (!activeOrg && organizations && organizations.length > 0) {
-      authClient.organization.setActive({ organizationId: organizations[0].id });
+      authClient.organization
+        .setActive({ organizationId: organizations[0].id })
+        .then(() => router.refresh());
     }
-  }, [activeOrg, organizations]);
+  }, [activeOrg, organizations, router]);
 
   if (isPending) {
     return <Skeleton className="h-8 w-full rounded-md" />;
