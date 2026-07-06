@@ -17,7 +17,13 @@ import { motion } from "motion/react";
 
 import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
 import type { FeedbackItem } from "../hooks/use-feedback";
-import { addToBoard, buildFeedbackMailto, copyFeedback } from "../utils/feedback-actions";
+import {
+  addToBoard,
+  buildFeedbackMailto,
+  copyEmail,
+  copyFeedback,
+  copyFeedbackLink,
+} from "../utils/feedback-actions";
 import { FEEDBACK_TABLE_GRID } from "./feedback-table-grid";
 
 type FeedbackRowProps = {
@@ -36,6 +42,7 @@ export function FeedbackRow({
   onExplainWithAi,
 }: FeedbackRowProps): React.ReactElement {
   const mailto = buildFeedbackMailto(item);
+  const email = item.email;
 
   return (
     <motion.div
@@ -103,13 +110,19 @@ export function FeedbackRow({
               Explain with AI
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => addToBoard(item)}>
-              <Icons.board className="size-4" />
-              Add to board
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => copyFeedback(item.feedback)}>
               <Icons.copy className="size-4" />
               Copy feedback
+            </DropdownMenuItem>
+            {email && (
+              <DropdownMenuItem onClick={() => copyEmail(email)}>
+                <Icons.mail className="size-4" />
+                Copy email
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem onClick={() => copyFeedbackLink(item.id)}>
+              <Icons.copy className="size-4" />
+              Copy link
             </DropdownMenuItem>
             {mailto && (
               <DropdownMenuItem render={<a href={mailto} />}>
@@ -117,6 +130,11 @@ export function FeedbackRow({
                 Send email
               </DropdownMenuItem>
             )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => addToBoard(item)}>
+              <Icons.board className="size-4" />
+              Add to board
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </span>

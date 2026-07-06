@@ -9,6 +9,22 @@ export function copyFeedback(content: string): void {
     .catch(() => toast.error("Failed to copy"));
 }
 
+export function copyEmail(email: string): void {
+  navigator.clipboard
+    .writeText(email)
+    .then(() => toast.success("Email copied to clipboard"))
+    .catch(() => toast.error("Failed to copy"));
+}
+
+export function copyFeedbackLink(id: string): void {
+  const link = `${globalThis.location.origin}/dashboard/feedback/${id}`;
+
+  navigator.clipboard
+    .writeText(link)
+    .then(() => toast.success("Link copied to clipboard"))
+    .catch(() => toast.error("Failed to copy link"));
+}
+
 type MailtoInput = {
   email: string | null;
   name: string;

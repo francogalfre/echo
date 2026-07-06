@@ -43,8 +43,9 @@ export function SourceBadge({
 }): React.ReactElement {
   return (
     <Badge
+      dot
       variant={SOURCE_VARIANT[source] ?? "outline"}
-      className={cn("uppercase", className)}
+      className={cn("capitalize", className)}
     >
       {source}
     </Badge>
