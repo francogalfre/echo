@@ -13,6 +13,13 @@ export type DigestItem = {
   canRegenerate: boolean;
 };
 
+export type DigestHistoryItem = {
+  id: string;
+  digest: DigestOutput;
+  generatedAt: Date;
+  feedbackCount: number;
+};
+
 type State =
   | { status: "idle" }
   | { status: "loading" }
@@ -24,11 +31,33 @@ export function useDigest(): {
   state: State;
   load: () => Promise<void>;
   generate: () => Promise<void>;
+  history: DigestHistoryItem[];
+  selectedId: string | null;
+  selectHistoryEntry: (id: string | null) => void;
 } {
   const [state, setState] = useState<State>({ status: "idle" });
+  const [history, setHistory] = useState<DigestHistoryItem[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const loadHistory = useCallback(async (): Promise<void> => {
+    try {
+      const result = await trpc.digest.history.query();
+      setHistory(
+        result.map((entry) => ({
+          id: entry.id,
+          digest: entry.digest,
+          generatedAt: new Date(entry.generatedAt),
+          feedbackCount: entry.feedbackCount,
+        })),
+      );
+    } catch {
+      // History is a secondary, non-blocking feature — ignore load failures
+    }
+  }, []);
 
   const load = useCallback(async (): Promise<void> => {
     setState({ status: "loading" });
+    void loadHistory();
     try {
       const result = await trpc.digest.get.query();
       if (!result.digest || !result.generatedAt) {
@@ -47,7 +76,7 @@ export function useDigest(): {
     } catch {
       setState({ status: "error", message: "Failed to load digest." });
     }
-  }, []);
+  }, [loadHistory]);
 
   const generate = useCallback(async (): Promise<void> => {
     setState((prev) =>
@@ -66,12 +95,18 @@ export function useDigest(): {
           canRegenerate: false,
         },
       });
+      setSelectedId(null);
+      void loadHistory();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Failed to generate digest.";
       toast.error(message);
       setState((prev) => (prev.status === "generating" ? { status: "idle" } : prev));
     }
+  }, [loadHistory]);
+
+  const selectHistoryEntry = useCallback((id: string | null): void => {
+    setSelectedId(id);
   }, []);
 
-  return { state, load, generate };
+  return { state, load, generate, history, selectedId, selectHistoryEntry };
 }
