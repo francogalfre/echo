@@ -47,7 +47,10 @@ function Star({
       width={px}
       height={px}
       viewBox="0 0 24 24"
-      className={cn(editable && "cursor-pointer")}
+      className={cn(
+        editable &&
+          "cursor-pointer transition-transform duration-150 hover:scale-125 active:scale-95",
+      )}
       onClick={() => editable && onClick(index)}
       onMouseEnter={() => editable && onHover(index)}
       onMouseLeave={() => editable && onLeave()}

@@ -94,7 +94,7 @@ export const FeedbackForm = ({
   return (
     <motion.form
       onSubmit={onSubmit}
-      className="space-y-4"
+      className="space-y-6"
       style={{ "--accent-color": accentColor } as React.CSSProperties}
       initial={shouldReduceMotion ? false : "hidden"}
       animate="visible"
@@ -105,7 +105,7 @@ export const FeedbackForm = ({
       </div>
 
       <motion.div variants={fadeInUp}>
-        <label className="mb-1 block text-sm font-medium" htmlFor="authorName">
+        <label className="mb-2 block text-sm font-medium" htmlFor="authorName">
           Name
         </label>
         <input
@@ -120,27 +120,29 @@ export const FeedbackForm = ({
       </motion.div>
 
       <motion.div variants={fadeInUp}>
-        <label className="mb-1 block text-sm font-medium" htmlFor="content">
-          Your feedback
-        </label>
+        <div className="mb-2 flex items-baseline justify-between">
+          <label className="block text-sm font-medium" htmlFor="content">
+            Your feedback
+          </label>
+          <span className="text-xs text-muted-foreground">
+            {contentLength}/{CONTENT_MAX_LENGTH}
+          </span>
+        </div>
         <textarea
           id="content"
-          rows={4}
-          className="field-sizing-content w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-150 focus:border-[var(--accent-color)]/70 focus:ring-2 focus:ring-[var(--accent-color)]/25"
+          rows={6}
+          className="field-sizing-content h-full max-h-80 min-h-32 w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-150 focus:border-[var(--accent-color)]/70 focus:ring-2 focus:ring-[var(--accent-color)]/25"
           placeholder="Tell us what you think..."
           {...register("content")}
         />
         {errors.content && (
           <p className="mt-1 text-xs text-destructive">{errors.content.message}</p>
         )}
-        <p className="mt-1 text-right text-xs text-muted-foreground">
-          {contentLength}/{CONTENT_MAX_LENGTH}
-        </p>
       </motion.div>
 
       {enableEmail && (
         <motion.div variants={fadeInUp}>
-          <label className="mb-1 block text-sm font-medium" htmlFor="email">
+          <label className="mb-2 block text-sm font-medium" htmlFor="email">
             Email <span className="text-muted-foreground">(optional)</span>
           </label>
           <input
@@ -158,7 +160,7 @@ export const FeedbackForm = ({
 
       {enableRating && (
         <motion.div variants={fadeInUp}>
-          <span className="mb-1 block text-sm font-medium">Rating</span>
+          <span className="mb-2 block text-sm font-medium">Rating</span>
           <Rating
             rating={ratingValue}
             accentColor={accentColor}

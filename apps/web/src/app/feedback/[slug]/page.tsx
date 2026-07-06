@@ -57,7 +57,7 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
             showCards && "grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_340px]",
           )}
         >
-          <div className={cn(showCards && "lg:sticky lg:top-12")}>
+          <div className={cn(showCards && "lg:sticky lg:top-20")}>
             <FadeIn delay={0.05}>
               {org.logo && (
                 <Image
