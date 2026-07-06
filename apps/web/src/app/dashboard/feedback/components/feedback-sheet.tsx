@@ -75,9 +75,9 @@ export function FeedbackSheet({
               </div>
             </DrawerHeader>
 
-            <div className="flex flex-1 flex-col overflow-y-auto p-4 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
+            <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
               <div className="flex flex-col gap-5">
-                <p className="rounded-md bg-muted/40 p-4 text-sm leading-relaxed">
+                <p className="rounded-md bg-muted/40 p-5 text-base leading-relaxed">
                   {item.feedback}
                 </p>
 
@@ -110,24 +110,11 @@ export function FeedbackSheet({
                 </div>
               </div>
 
-              <div className="mt-5 flex flex-col gap-3 sm:mt-0">
+              <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 sm:mt-0 sm:content-start">
                 {item.rating && (
                   <div>
                     <p className="text-xs text-muted-foreground">Rating</p>
                     <StarDisplay rating={item.rating} />
-                  </div>
-                )}
-
-                {item.tags && item.tags.length > 0 && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Tags</p>
-                    <div className="mt-1 flex flex-wrap gap-1.5">
-                      {item.tags.map((tag) => (
-                        <Badge key={tag} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
                   </div>
                 )}
 
@@ -136,7 +123,20 @@ export function FeedbackSheet({
                     <p className="text-xs text-muted-foreground">Email</p>
                     <div className="mt-1 flex items-center gap-2 text-sm">
                       <Icons.mail className="size-4 text-muted-foreground" />
-                      <span>{item.email}</span>
+                      <span className="truncate">{item.email}</span>
+                    </div>
+                  </div>
+                )}
+
+                {item.tags && item.tags.length > 0 && (
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Tags</p>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {item.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -157,7 +157,7 @@ export function FeedbackSheet({
               </div>
             </div>
 
-            <DrawerFooter className="flex-row border-t">
+            <DrawerFooter className="flex-row border-t px-4 pb-8 pt-4">
               <Button variant="outline" size="lg" onClick={() => addToBoard(item)}>
                 <Icons.board className="size-4" />
                 Add to board
