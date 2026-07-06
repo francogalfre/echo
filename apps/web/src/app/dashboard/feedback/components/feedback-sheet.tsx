@@ -54,86 +54,124 @@ export function FeedbackSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="sm:max-w-lg flex flex-col p-0">
+      <SheetContent side="bottom" className="flex max-h-[85vh] flex-col rounded-t-2xl p-0">
         {item && (
           <>
-            <SheetHeader className="flex-row items-center gap-2.5 border-b pr-10">
-              <Avatar className="size-7">
-                <AvatarFallback name={item.name} />
-              </Avatar>
-              <div>
-                <SheetTitle>{item.name}</SheetTitle>
-                <SheetDescription>
-                  {formatRelativeTime(item.createdAt.toISOString())}
-                </SheetDescription>
-              </div>
-            </SheetHeader>
+            <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-muted" />
 
-            <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-4">
+            <SheetHeader className="gap-2 border-b pr-10">
+              <div className="flex items-center gap-2.5">
+                <Avatar className="size-7">
+                  <AvatarFallback name={item.name} />
+                </Avatar>
+                <div>
+                  <SheetTitle>{item.name}</SheetTitle>
+                  <SheetDescription>
+                    {formatRelativeTime(item.createdAt.toISOString())}
+                  </SheetDescription>
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-2">
                 <SentimentBadge sentiment={item.sentiment} />
                 <SourceBadge source={item.source} />
-                {item.tags?.map((tag) => (
-                  <Badge key={tag} variant="outline">
-                    {tag}
-                  </Badge>
-                ))}
-                {item.rating && <StarDisplay rating={item.rating} />}
+              </div>
+            </SheetHeader>
+
+            <div className="flex flex-1 flex-col overflow-y-auto p-4 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
+              <div className="flex flex-col gap-5">
+                <p className="rounded-md bg-muted/40 p-4 text-sm leading-relaxed">
+                  {item.feedback}
+                </p>
+
+                <div className="flex flex-col gap-2.5">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
+                    <Icons.aiMagic className="size-4 text-accent" />
+                    <span>AI insight</span>
+                  </div>
+
+                  {state.status === "idle" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="self-start"
+                      onClick={() => void generate(item.id)}
+                    >
+                      Explain with AI
+                    </Button>
+                  )}
+
+                  {state.status === "loading" && (
+                    <div className="flex flex-col gap-2">
+                      <Skeleton className="h-3 w-full rounded" />
+                      <Skeleton className="h-3 w-4/5 rounded" />
+                      <Skeleton className="h-3 w-3/5 rounded" />
+                    </div>
+                  )}
+
+                  {state.status === "ready" && <InsightContent insight={state.insight} />}
+                </div>
               </div>
 
-              <p className="rounded-md bg-muted/40 p-4 text-[13px] leading-relaxed">
-                {item.feedback}
-              </p>
-
-              {item.email && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Icons.mail className="size-4" />
-                  <span>{item.email}</span>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2.5">
-                <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                  <Icons.aiMagic className="size-4 text-accent" />
-                  <span>AI insight</span>
-                </div>
-
-                {state.status === "idle" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="self-start"
-                    onClick={() => void generate(item.id)}
-                  >
-                    Explain with AI
-                  </Button>
-                )}
-
-                {state.status === "loading" && (
-                  <div className="flex flex-col gap-2">
-                    <Skeleton className="h-3 w-full rounded" />
-                    <Skeleton className="h-3 w-4/5 rounded" />
-                    <Skeleton className="h-3 w-3/5 rounded" />
+              <div className="mt-5 flex flex-col gap-3 sm:mt-0">
+                {item.rating && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Rating</p>
+                    <StarDisplay rating={item.rating} />
                   </div>
                 )}
 
-                {state.status === "ready" && <InsightContent insight={state.insight} />}
+                {item.tags && item.tags.length > 0 && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Tags</p>
+                    <div className="mt-1 flex flex-wrap gap-1.5">
+                      {item.tags.map((tag) => (
+                        <Badge key={tag} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {item.email && (
+                  <div>
+                    <p className="text-xs text-muted-foreground">Email</p>
+                    <div className="mt-1 flex items-center gap-2 text-sm">
+                      <Icons.mail className="size-4 text-muted-foreground" />
+                      <span>{item.email}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-xs text-muted-foreground">Source</p>
+                  <div className="mt-1">
+                    <SourceBadge source={item.source} />
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground">Submitted</p>
+                  <p className="mt-1 text-sm">
+                    {formatRelativeTime(item.createdAt.toISOString())}
+                  </p>
+                </div>
               </div>
             </div>
 
             <SheetFooter className="flex-row border-t">
-              <Button variant="outline" size="sm" onClick={() => addToBoard(item)}>
+              <Button variant="outline" size="lg" onClick={() => addToBoard(item)}>
                 <Icons.board className="size-4" />
                 Add to board
               </Button>
-              <Button variant="ghost" size="sm" onClick={() => copyFeedback(item.feedback)}>
+              <Button variant="ghost" size="lg" onClick={() => copyFeedback(item.feedback)}>
                 <Icons.copy className="size-4" />
                 Copy
               </Button>
               {mailto && (
                 <a
                   href={mailto}
-                  className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+                  className={cn(buttonVariants({ variant: "ghost", size: "lg" }))}
                 >
                   <Icons.mail className="size-4" />
                   Send email
