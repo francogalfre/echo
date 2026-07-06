@@ -8,10 +8,13 @@ export type BoardCard = {
   feedbackId: string;
   name: string;
   content: string;
+  email: string | null;
+  rating: number | null;
   sentiment: string | null;
   tags: string[] | null;
   source: string;
   column: string;
+  createdAt: Date;
 };
 
 export type BoardColumns = {
@@ -27,10 +30,13 @@ export async function getBoardItems(organizationId: string): Promise<BoardColumn
       feedbackId: boardItems.feedbackId,
       name: feedback.authorName,
       content: feedback.content,
+      email: feedback.email,
+      rating: feedback.rating,
       sentiment: feedback.sentiment,
       tags: feedback.tags,
       source: feedback.source,
       column: boardItems.column,
+      createdAt: feedback.createdAt,
     })
     .from(boardItems)
     .innerJoin(feedback, eq(boardItems.feedbackId, feedback.id))
