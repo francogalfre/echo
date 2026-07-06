@@ -13,43 +13,28 @@ import {
   DrawerTitle,
 } from "@echo/ui/components/drawer";
 import { Icons } from "@echo/ui/components/icons";
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
-import { useEffect } from "react";
 
 import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback-badges";
 
 import type { FeedbackItem } from "../hooks/use-feedback";
-import { useFeedbackInsight } from "../hooks/use-feedback-insight";
 import { addToBoard, buildFeedbackMailto, copyFeedback } from "../utils/feedback-actions";
-import { InsightContent } from "./insight-content";
 import { StarDisplay } from "./star-display";
 
 type FeedbackSheetProps = {
   item: FeedbackItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  autoGenerateInsight?: boolean;
+  onExplainWithAi: (item: FeedbackItem) => void;
 };
 
 export function FeedbackSheet({
   item,
   open,
   onOpenChange,
-  autoGenerateInsight = false,
+  onExplainWithAi,
 }: FeedbackSheetProps): React.ReactElement {
-  const { state, generate, reset } = useFeedbackInsight();
-
-  useEffect(() => {
-    if (open && item && autoGenerateInsight && state.status === "idle") {
-      void generate(item.id);
-    }
-    if (!open) {
-      reset();
-    }
-  }, [open, item, autoGenerateInsight, state.status, generate, reset]);
-
   const mailto = item ? buildFeedbackMailto(item) : null;
 
   return (
@@ -77,37 +62,19 @@ export function FeedbackSheet({
 
             <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
               <div className="flex flex-col gap-5">
-                <p className="rounded-md bg-muted/40 p-5 text-base leading-relaxed">
+                <p className="rounded-md bg-muted/40 p-4 text-sm leading-relaxed">
                   {item.feedback}
                 </p>
 
-                <div className="flex flex-col gap-2.5">
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                    <Icons.aiMagic className="size-4 text-accent" />
-                    <span>AI insight</span>
-                  </div>
-
-                  {state.status === "idle" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="self-start"
-                      onClick={() => void generate(item.id)}
-                    >
-                      Explain with AI
-                    </Button>
-                  )}
-
-                  {state.status === "loading" && (
-                    <div className="flex flex-col gap-2">
-                      <Skeleton className="h-3 w-full rounded" />
-                      <Skeleton className="h-3 w-4/5 rounded" />
-                      <Skeleton className="h-3 w-3/5 rounded" />
-                    </div>
-                  )}
-
-                  {state.status === "ready" && <InsightContent insight={state.insight} />}
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="self-start"
+                  onClick={() => onExplainWithAi(item)}
+                >
+                  <Icons.aiMagic className="size-4 text-accent" />
+                  Explain with AI
+                </Button>
               </div>
 
               <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 sm:mt-0 sm:content-start">

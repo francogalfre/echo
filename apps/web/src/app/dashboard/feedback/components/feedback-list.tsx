@@ -22,8 +22,9 @@ import {
   type SentimentFilter,
   type SourceFilter,
 } from "./feedback-toolbar";
+import { InsightDialog } from "./insight-dialog";
 
-type SheetState = { item: FeedbackItem; autoGenerate: boolean };
+type SheetState = { item: FeedbackItem };
 
 function FeedbackListSkeleton(): React.ReactElement {
   return (
@@ -52,6 +53,7 @@ export function FeedbackList(): React.ReactElement {
   const [source, setSource] = useState<SourceFilter>("all");
   const [search, setSearch] = useState("");
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
+  const [insightItem, setInsightItem] = useState<FeedbackItem | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(20);
 
@@ -222,12 +224,8 @@ export function FeedbackList(): React.ReactElement {
                     item={item}
                     selected={selected.has(item.id)}
                     onToggleSelect={toggleSelect}
-                    onViewDetails={(selectedItem) =>
-                      setSheetState({ item: selectedItem, autoGenerate: false })
-                    }
-                    onExplainWithAi={(selectedItem) =>
-                      setSheetState({ item: selectedItem, autoGenerate: true })
-                    }
+                    onViewDetails={(selectedItem) => setSheetState({ item: selectedItem })}
+                    onExplainWithAi={(selectedItem) => setInsightItem(selectedItem)}
                   />
                 ))}
               </motion.div>
@@ -257,7 +255,13 @@ export function FeedbackList(): React.ReactElement {
         onOpenChange={(open) => {
           if (!open) setSheetState(null);
         }}
-        autoGenerateInsight={sheetState?.autoGenerate ?? false}
+        onExplainWithAi={(item) => setInsightItem(item)}
+      />
+
+      <InsightDialog
+        item={insightItem}
+        open={insightItem !== null}
+        onOpenChange={(open) => !open && setInsightItem(null)}
       />
     </div>
   );
