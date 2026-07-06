@@ -39,6 +39,7 @@ import {
   Grid3X2Icon,
   Cancel01Icon,
   ChevronUpIcon,
+  GripVerticalIcon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -90,4 +91,5 @@ export const Icons = {
   board: createIcon(Grid3X2Icon),
   x: createIcon(Cancel01Icon),
   chevronUp: createIcon(ChevronUpIcon),
+  gripVertical: createIcon(GripVerticalIcon),
 };

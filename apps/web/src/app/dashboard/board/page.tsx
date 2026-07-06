@@ -6,7 +6,6 @@ import {
   KanbanColumn,
   KanbanColumnContent,
   KanbanItem,
-  KanbanItemHandle,
   KanbanOverlay,
   type KanbanMoveEvent,
 } from "@echo/ui/components/reui/kanban";
@@ -177,14 +176,8 @@ export default function BoardPage(): React.ReactElement {
                   className="flex flex-col gap-2 min-h-16"
                 >
                   {columns[col.id].map((item) => (
-                    <KanbanItem
-                      key={item.id}
-                      value={item.id}
-                      className="cursor-grab active:cursor-grabbing"
-                    >
-                      <KanbanItemHandle>
-                        <BoardCardItem item={item} onRemove={() => handleRemove(item)} />
-                      </KanbanItemHandle>
+                    <KanbanItem key={item.id} value={item.id}>
+                      <BoardCardItem item={item} onRemove={() => handleRemove(item)} />
                     </KanbanItem>
                   ))}
                 </KanbanColumnContent>
