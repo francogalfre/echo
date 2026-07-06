@@ -52,49 +52,50 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
           />
         )}
 
-        <FadeIn delay={0.05}>
-          {org.logo && (
-            <Image
-              src={org.logo}
-              alt={`${org.name} logo`}
-              width={96}
-              height={96}
-              unoptimized={org.logo.startsWith("data:")}
-              className={cn(
-                "relative z-10 size-16 rounded-2xl object-cover sm:size-20",
-                hasBanner ? "-mt-8 sm:-mt-10" : "mt-16",
-              )}
-            />
-          )}
-
-          <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            {config.title || org.name}
-          </h1>
-
-          {config.description && (
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-              {config.description}
-            </p>
-          )}
-        </FadeIn>
-
         <div
           className={cn(
-            "mt-10",
             showCards && "grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_340px]",
           )}
         >
-          <FadeIn delay={0.12} className={cn(showCards && "lg:sticky lg:top-10")}>
-            <FeedbackForm
-              slug={slug}
-              accentColor={config.accentColor}
-              enableEmail={config.enableEmail}
-              enableRating={config.enableRating}
-            />
-          </FadeIn>
+          <div className={cn(showCards && "lg:sticky lg:top-12")}>
+            <FadeIn delay={0.05}>
+              {org.logo && (
+                <Image
+                  src={org.logo}
+                  alt={`${org.name} logo`}
+                  width={96}
+                  height={96}
+                  unoptimized={org.logo.startsWith("data:")}
+                  className={cn(
+                    "relative z-10 size-16 rounded-2xl object-cover sm:size-20",
+                    hasBanner ? "-mt-8 sm:-mt-10" : "mt-16",
+                  )}
+                />
+              )}
+
+              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                {config.title || org.name}
+              </h1>
+
+              {config.description && (
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                  {config.description}
+                </p>
+              )}
+            </FadeIn>
+
+            <FadeIn delay={0.12} className="mt-8">
+              <FeedbackForm
+                slug={slug}
+                accentColor={config.accentColor}
+                enableEmail={config.enableEmail}
+                enableRating={config.enableRating}
+              />
+            </FadeIn>
+          </div>
 
           {showCards && (
-            <FadeIn delay={0.2}>
+            <FadeIn delay={0.2} className="lg:pt-24">
               <FeedbackCards items={feedback} accentColor={config.accentColor} />
             </FadeIn>
           )}

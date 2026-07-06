@@ -17,7 +17,7 @@ export const feedbackPageConfigSchema = z.object({
 export const publicFeedbackSchema = z.object({
   slug: z.string().min(1),
   authorName: z.string().min(1).max(100),
-  content: z.string().min(1).max(5000),
+  content: z.string().min(1).max(1000),
   email: z.email().optional(),
   rating: z.number().int().min(1).max(5).optional(),
   _hp: z.string().optional(),

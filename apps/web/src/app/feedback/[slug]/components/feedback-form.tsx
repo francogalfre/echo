@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { trpc } from "@/lib/trpc";
 
-const CONTENT_MAX_LENGTH = 5000;
+const CONTENT_MAX_LENGTH = 1000;
 
 const schema = z.object({
   authorName: z.string().min(1, "Name is required"),
@@ -51,8 +51,8 @@ export const FeedbackForm = ({
 
   const inputClassName =
     "h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm outline-none " +
-    "transition-all duration-150 focus:ring-2 focus:ring-[var(--accent-color)] " +
-    "focus:border-[var(--accent-color)]";
+    "transition-all duration-150 focus:ring-2 focus:ring-[var(--accent-color)]/25 " +
+    "focus:border-[var(--accent-color)]/70";
 
   const onSubmit = handleSubmit(async (values) => {
     await trpc.publicFeedback.submit.mutate({
@@ -126,7 +126,7 @@ export const FeedbackForm = ({
         <textarea
           id="content"
           rows={4}
-          className="field-sizing-content w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-150 focus:border-[var(--accent-color)] focus:ring-2 focus:ring-[var(--accent-color)]"
+          className="field-sizing-content w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-150 focus:border-[var(--accent-color)]/70 focus:ring-2 focus:ring-[var(--accent-color)]/25"
           placeholder="Tell us what you think..."
           {...register("content")}
         />
