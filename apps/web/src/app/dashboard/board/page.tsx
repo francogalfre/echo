@@ -43,20 +43,39 @@ export default function BoardPage(): React.ReactElement {
   const [selected, setSelected] = useState<BoardCard | null>(null);
 
   useEffect(() => {
-    trpc.board.items
-      .query()
-      .then((data) => {
-        setColumns({
-          backlog: data.backlog.map(hydrateCard),
-          in_progress: data.in_progress.map(hydrateCard),
-          done: data.done.map(hydrateCard),
+    let cancelled = false;
+    let attempt = 0;
+    const maxAttempts = 3;
+
+    const load = (): void => {
+      trpc.board.items
+        .query()
+        .then((data) => {
+          if (cancelled) return;
+          setColumns({
+            backlog: data.backlog.map(hydrateCard),
+            in_progress: data.in_progress.map(hydrateCard),
+            done: data.done.map(hydrateCard),
+          });
+          setLoading(false);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          attempt += 1;
+          if (attempt < maxAttempts) {
+            setTimeout(load, attempt * 800);
+          } else {
+            toast.error("Failed to load board");
+            setLoading(false);
+          }
         });
-        setLoading(false);
-      })
-      .catch(() => {
-        toast.error("Failed to load board");
-        setLoading(false);
-      });
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleMove = useCallback(

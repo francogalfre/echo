@@ -52,17 +52,32 @@ export function DashboardClient(): React.ReactElement {
 
   React.useEffect(() => {
     let cancelled = false;
+    let attempt = 0;
+    const maxAttempts = 3;
+
     setState((prev) =>
       prev.status === "ready" ? { ...prev, pending: true } : { status: "loading" },
     );
-    trpc.dashboard.overview
-      .query({ range })
-      .then((data) => {
-        if (!cancelled) setState({ status: "ready", data, pending: false });
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: "error" });
-      });
+
+    const load = (): void => {
+      trpc.dashboard.overview
+        .query({ range })
+        .then((data) => {
+          if (!cancelled) setState({ status: "ready", data, pending: false });
+        })
+        .catch(() => {
+          if (cancelled) return;
+          attempt += 1;
+          if (attempt < maxAttempts) {
+            setTimeout(load, attempt * 800);
+          } else {
+            setState({ status: "error" });
+          }
+        });
+    };
+
+    load();
+
     return () => {
       cancelled = true;
     };

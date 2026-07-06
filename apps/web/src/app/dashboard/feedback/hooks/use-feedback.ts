@@ -27,18 +27,37 @@ export function useFeedback(): State {
   const [state, setState] = useState<State>({ status: "loading" });
 
   useEffect(() => {
-    trpc.feedback.list
-      .query()
-      .then((items) =>
-        setState({
-          status: "ready",
-          items: items.map((item) => ({ ...item, createdAt: new Date(item.createdAt) })),
-        }),
-      )
-      .catch(() => {
-        toast.error("Failed to load feedback");
-        setState({ status: "error" });
-      });
+    let cancelled = false;
+    let attempt = 0;
+    const maxAttempts = 3;
+
+    const load = (): void => {
+      trpc.feedback.list
+        .query()
+        .then((items) => {
+          if (cancelled) return;
+          setState({
+            status: "ready",
+            items: items.map((item) => ({ ...item, createdAt: new Date(item.createdAt) })),
+          });
+        })
+        .catch(() => {
+          if (cancelled) return;
+          attempt += 1;
+          if (attempt < maxAttempts) {
+            setTimeout(load, attempt * 800);
+          } else {
+            toast.error("Failed to load feedback");
+            setState({ status: "error" });
+          }
+        });
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return state;
