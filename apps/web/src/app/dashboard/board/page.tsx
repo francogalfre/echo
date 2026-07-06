@@ -9,6 +9,7 @@ import {
   KanbanOverlay,
   type KanbanMoveEvent,
 } from "@echo/ui/components/reui/kanban";
+import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useState } from "react";
@@ -19,12 +20,13 @@ import { trpc } from "@/lib/trpc";
 import type { BoardCard, BoardColumns } from "@echo/api/services/board";
 
 import { PageContainer } from "../components/page-container";
+import { BoardCardDialog } from "./components/board-card-dialog";
 import { BoardCardItem } from "./components/board-card";
 
-const COLUMNS: { id: keyof BoardColumns; label: string }[] = [
-  { id: "backlog", label: "Backlog" },
-  { id: "in_progress", label: "In Progress" },
-  { id: "done", label: "Done" },
+const COLUMNS: { id: keyof BoardColumns; label: string; dot: string }[] = [
+  { id: "backlog", label: "Backlog", dot: "bg-muted-foreground" },
+  { id: "in_progress", label: "In Progress", dot: "bg-info" },
+  { id: "done", label: "Done", dot: "bg-success" },
 ];
 
 const EMPTY: BoardColumns = { backlog: [], in_progress: [], done: [] };
@@ -38,6 +40,7 @@ function hydrateCard(card: BoardItemsResult["backlog"][number]): BoardCard {
 export default function BoardPage(): React.ReactElement {
   const [columns, setColumns] = useState<BoardColumns>(EMPTY);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<BoardCard | null>(null);
 
   useEffect(() => {
     trpc.board.items
@@ -166,18 +169,23 @@ export default function BoardPage(): React.ReactElement {
                 className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-3"
               >
                 <div className="flex items-center gap-2 px-1 py-0.5">
+                  <span
+                    aria-hidden
+                    className={`size-1.5 shrink-0 rounded-full ${col.dot}`}
+                  />
                   <span className="text-sm font-semibold">{col.label}</span>
                   <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {columns[col.id].length}
                   </span>
                   {col.id === "done" && columns.done.length > 0 && (
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      className="ml-auto"
                       onClick={handleClearDone}
-                      className="ml-auto text-xs text-muted-foreground transition-colors hover:text-foreground"
                     >
                       Clear
-                    </button>
+                    </Button>
                   )}
                 </div>
 
@@ -187,7 +195,11 @@ export default function BoardPage(): React.ReactElement {
                 >
                   {columns[col.id].map((item) => (
                     <KanbanItem key={item.id} value={item.id}>
-                      <BoardCardItem item={item} onRemove={() => handleRemove(item)} />
+                      <BoardCardItem
+                        item={item}
+                        onRemove={() => handleRemove(item)}
+                        onClick={() => setSelected(item)}
+                      />
                     </KanbanItem>
                   ))}
                 </KanbanColumnContent>
@@ -213,6 +225,13 @@ export default function BoardPage(): React.ReactElement {
           </KanbanOverlay>
         </Kanban>
       )}
+
+      <BoardCardDialog
+        item={selected}
+        open={selected !== null}
+        onOpenChange={(open) => !open && setSelected(null)}
+        onRemove={handleRemove}
+      />
     </PageContainer>
   );
 }
