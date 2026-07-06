@@ -1,9 +1,11 @@
+import { Badge } from "@echo/ui/components/badge";
+import type { BadgeVariantProps } from "@echo/ui/components/badge-variants";
 import { cn } from "@echo/ui/lib/utils";
 
-const SENTIMENT_DOT: Record<string, string> = {
-  positive: "bg-success",
-  negative: "bg-destructive",
-  neutral: "bg-muted-foreground",
+const SENTIMENT_VARIANT: Record<string, NonNullable<BadgeVariantProps["variant"]>> = {
+  positive: "success",
+  negative: "destructive",
+  neutral: "outline",
 };
 
 export function SentimentBadge({
@@ -16,21 +18,13 @@ export function SentimentBadge({
   const value = sentiment ?? "neutral";
 
   return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center gap-1.5 text-[11px] font-medium capitalize text-foreground/80",
-        className,
-      )}
+    <Badge
+      dot
+      variant={SENTIMENT_VARIANT[value] ?? "outline"}
+      className={cn("capitalize", className)}
     >
-      <span
-        aria-hidden
-        className={cn(
-          "size-1.5 shrink-0 rounded-full",
-          SENTIMENT_DOT[value] ?? "bg-muted-foreground",
-        )}
-      />
       {value}
-    </span>
+    </Badge>
   );
 }
 
