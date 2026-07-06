@@ -120,7 +120,7 @@ export const EditorCanvas = ({
 
       <div
         className={cn(
-          "mx-auto px-6 pb-16",
+          "mx-auto px-6 pb-32",
           config.showFeedback ? "max-w-5xl" : "max-w-2xl",
         )}
       >
