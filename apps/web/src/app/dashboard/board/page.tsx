@@ -29,6 +29,12 @@ const COLUMNS: { id: keyof BoardColumns; label: string }[] = [
 
 const EMPTY: BoardColumns = { backlog: [], in_progress: [], done: [] };
 
+type BoardItemsResult = Awaited<ReturnType<typeof trpc.board.items.query>>;
+
+function hydrateCard(card: BoardItemsResult["backlog"][number]): BoardCard {
+  return { ...card, createdAt: new Date(card.createdAt) };
+}
+
 export default function BoardPage(): React.ReactElement {
   const [columns, setColumns] = useState<BoardColumns>(EMPTY);
   const [loading, setLoading] = useState(true);
@@ -37,7 +43,11 @@ export default function BoardPage(): React.ReactElement {
     trpc.board.items
       .query()
       .then((data) => {
-        setColumns(data);
+        setColumns({
+          backlog: data.backlog.map(hydrateCard),
+          in_progress: data.in_progress.map(hydrateCard),
+          done: data.done.map(hydrateCard),
+        });
         setLoading(false);
       })
       .catch(() => {
