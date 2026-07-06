@@ -9,7 +9,7 @@ import { staggerContainer } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
 import { addManyToBoard } from "../utils/feedback-actions";
@@ -53,26 +53,43 @@ export function FeedbackList(): React.ReactElement {
   const [search, setSearch] = useState("");
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [visibleCount, setVisibleCount] = useState(20);
 
-  const items = feedbackState.status === "ready" ? feedbackState.items : [];
+  const items = useMemo(
+    () => (feedbackState.status === "ready" ? feedbackState.items : []),
+    [feedbackState],
+  );
 
-  const counts: Record<SentimentFilter, number> = {
-    all: items.length,
-    positive: items.filter((item) => item.sentiment === "positive").length,
-    neutral: items.filter((item) => item.sentiment === "neutral").length,
-    negative: items.filter((item) => item.sentiment === "negative").length,
-  };
+  const counts: Record<SentimentFilter, number> = useMemo(
+    () => ({
+      all: items.length,
+      positive: items.filter((item) => item.sentiment === "positive").length,
+      neutral: items.filter((item) => item.sentiment === "neutral").length,
+      negative: items.filter((item) => item.sentiment === "negative").length,
+    }),
+    [items],
+  );
 
-  const filtered = items.filter((item) => {
-    const matchesSentiment = sentiment === "all" || item.sentiment === sentiment;
-    const matchesSource = source === "all" || item.source === source;
-    const query = search.toLowerCase();
-    const matchesSearch =
-      !query ||
-      item.name.toLowerCase().includes(query) ||
-      item.feedback.toLowerCase().includes(query);
-    return matchesSentiment && matchesSource && matchesSearch;
-  });
+  const filtered = useMemo(
+    () =>
+      items.filter((item) => {
+        const matchesSentiment = sentiment === "all" || item.sentiment === sentiment;
+        const matchesSource = source === "all" || item.source === source;
+        const query = search.toLowerCase();
+        const matchesSearch =
+          !query ||
+          item.name.toLowerCase().includes(query) ||
+          item.feedback.toLowerCase().includes(query);
+        return matchesSentiment && matchesSource && matchesSearch;
+      }),
+    [items, sentiment, source, search],
+  );
+
+  useEffect(() => {
+    setVisibleCount(20);
+  }, [sentiment, source, search]);
+
+  const visibleItems = filtered.slice(0, visibleCount);
 
   const allSelected =
     filtered.length > 0 && filtered.every((item) => selected.has(item.id));
@@ -199,7 +216,7 @@ export function FeedbackList(): React.ReactElement {
                 initial="hidden"
                 animate="visible"
               >
-                {filtered.map((item) => (
+                {visibleItems.map((item) => (
                   <FeedbackRow
                     key={item.id}
                     item={item}
@@ -214,6 +231,21 @@ export function FeedbackList(): React.ReactElement {
                   />
                 ))}
               </motion.div>
+
+              {filtered.length > visibleCount && (
+                <div className="flex flex-col items-center gap-2 border-t border-border py-4">
+                  <span className="text-xs text-muted-foreground">
+                    Showing {visibleItems.length} of {filtered.length}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setVisibleCount((c) => c + 20)}
+                  >
+                    Load more
+                  </Button>
+                </div>
+              )}
             </>
           )}
         </div>
