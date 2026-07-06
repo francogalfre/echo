@@ -1,6 +1,8 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
+import { durations, easings } from "@echo/ui/lib/motion";
+import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 import { trpc } from "@/lib/trpc";
@@ -25,6 +27,7 @@ export const RecentFeedback = ({
   const [items, setItems] = useState<FeedbackItem[] | null>(null);
   const [hasError, setHasError] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     trpc.feedbackPage.recentFeedback
@@ -75,7 +78,14 @@ export const RecentFeedback = ({
         {items?.slice(0, visibleCount).map((item) => {
           const rating = item.rating;
           return (
-            <div key={item.id} className="rounded-xl border border-border bg-card p-4">
+            <motion.div
+              key={item.id}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: durations.slow, ease: easings.out }}
+              className="rounded-xl border border-border bg-card p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-foreground/15"
+            >
               <div className="flex items-center gap-2.5">
                 <span
                   className="flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
@@ -100,7 +110,7 @@ export const RecentFeedback = ({
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {item.content}
               </p>
-            </div>
+            </motion.div>
           );
         })}
       </div>
