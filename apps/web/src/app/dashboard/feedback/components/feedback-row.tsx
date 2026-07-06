@@ -43,7 +43,7 @@ export function FeedbackRow({
       variants={fadeInUp}
       className={cn(
         FEEDBACK_TABLE_GRID,
-        "group relative border-b border-border py-3 transition-colors last:border-0 hover:bg-muted/40",
+        "group relative border-b border-border py-4 transition-colors last:border-0 hover:bg-muted/40",
         selected && "bg-accent/5",
       )}
     >

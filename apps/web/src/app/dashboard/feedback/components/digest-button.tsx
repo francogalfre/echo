@@ -11,8 +11,8 @@ export function DigestButton(): React.ReactElement {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        <Icons.aiMagic data-icon="inline-start" className="size-3.5 text-accent" />
+      <Button variant="outline" size="lg" onClick={() => setOpen(true)}>
+        <Icons.aiMagic data-icon="inline-start" className="size-4 text-accent" />
         AI Summary
       </Button>
       <DigestModal open={open} onOpenChange={setOpen} />

@@ -52,8 +52,8 @@ export function FeedbackToolbar({
   };
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
         {SENTIMENT_SEGMENTS.map(({ value, label }) => (
           <button
             key={value}
@@ -61,7 +61,7 @@ export function FeedbackToolbar({
             aria-pressed={sentiment === value}
             onClick={() => onSentimentChange(value)}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               sentiment === value
                 ? "bg-background text-foreground shadow-sm ring-1 ring-foreground/10"
                 : "text-muted-foreground hover:text-foreground",
@@ -75,7 +75,7 @@ export function FeedbackToolbar({
 
       <div className="flex items-center gap-2">
         <Select value={source} onValueChange={handleSourceChange}>
-          <SelectTrigger size="sm">
+          <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent align="end" alignItemWithTrigger={false}>
@@ -88,12 +88,12 @@ export function FeedbackToolbar({
         </Select>
 
         <div className="relative">
-          <Icons.search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Icons.search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search feedback…"
-            className="h-8 pl-8 sm:w-64"
+            className="h-9 pl-9 sm:w-72"
           />
         </div>
       </div>

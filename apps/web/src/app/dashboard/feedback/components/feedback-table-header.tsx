@@ -17,7 +17,10 @@ export function FeedbackTableHeader({
   onToggleSelectAll,
 }: FeedbackTableHeaderProps): React.ReactElement {
   return (
-    <div role="row" className={cn(FEEDBACK_TABLE_GRID, "border-b border-border py-2.5")}>
+    <div
+      role="row"
+      className={cn(FEEDBACK_TABLE_GRID, "border-b border-border bg-muted/30 py-3.5")}
+    >
       <span role="columnheader">
         <Checkbox
           checked={allSelected}
@@ -26,19 +29,19 @@ export function FeedbackTableHeader({
           aria-label="Select all"
         />
       </span>
-      <span role="columnheader" className="text-xs font-medium text-muted-foreground">
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Name
       </span>
-      <span role="columnheader" className="text-xs font-medium text-muted-foreground">
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Feedback Comment
       </span>
-      <span role="columnheader" className="text-xs font-medium text-muted-foreground">
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Sentiment
       </span>
-      <span role="columnheader" className="text-xs font-medium text-muted-foreground">
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Source
       </span>
-      <span role="columnheader" className="text-xs font-medium text-muted-foreground">
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Date
       </span>
       <span role="columnheader" className="sr-only">

@@ -31,7 +31,7 @@ function FeedbackListSkeleton(): React.ReactElement {
       {Array.from({ length: 8 }, (_, index) => (
         <div
           key={index}
-          className={cn(FEEDBACK_TABLE_GRID, "border-b border-border py-3 last:border-0")}
+          className={cn(FEEDBACK_TABLE_GRID, "border-b border-border py-4 last:border-0")}
         >
           <Skeleton className="size-4 shrink-0 rounded-sm" />
           <Skeleton className="h-3 w-24 shrink-0 rounded" />
