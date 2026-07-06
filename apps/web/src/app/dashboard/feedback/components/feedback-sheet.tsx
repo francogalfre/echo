@@ -4,15 +4,15 @@ import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
 import { Badge } from "@echo/ui/components/badge";
 import { Button } from "@echo/ui/components/button";
 import { buttonVariants } from "@echo/ui/components/button-variants";
-import { Icons } from "@echo/ui/components/icons";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@echo/ui/components/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@echo/ui/components/drawer";
+import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
@@ -53,29 +53,27 @@ export function FeedbackSheet({
   const mailto = item ? buildFeedbackMailto(item) : null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="flex max-h-[85vh] flex-col rounded-t-2xl p-0">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="p-0">
         {item && (
           <>
-            <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-muted" />
-
-            <SheetHeader className="gap-2 border-b pr-10">
+            <DrawerHeader className="gap-2 border-b pr-10">
               <div className="flex items-center gap-2.5">
                 <Avatar className="size-7">
                   <AvatarFallback name={item.name} />
                 </Avatar>
                 <div>
-                  <SheetTitle>{item.name}</SheetTitle>
-                  <SheetDescription>
+                  <DrawerTitle>{item.name}</DrawerTitle>
+                  <DrawerDescription>
                     {formatRelativeTime(item.createdAt.toISOString())}
-                  </SheetDescription>
+                  </DrawerDescription>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <SentimentBadge sentiment={item.sentiment} />
                 <SourceBadge source={item.source} />
               </div>
-            </SheetHeader>
+            </DrawerHeader>
 
             <div className="flex flex-1 flex-col overflow-y-auto p-4 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
               <div className="flex flex-col gap-5">
@@ -159,7 +157,7 @@ export function FeedbackSheet({
               </div>
             </div>
 
-            <SheetFooter className="flex-row border-t">
+            <DrawerFooter className="flex-row border-t">
               <Button variant="outline" size="lg" onClick={() => addToBoard(item)}>
                 <Icons.board className="size-4" />
                 Add to board
@@ -177,10 +175,10 @@ export function FeedbackSheet({
                   Send email
                 </a>
               )}
-            </SheetFooter>
+            </DrawerFooter>
           </>
         )}
-      </SheetContent>
-    </Sheet>
+      </DrawerContent>
+    </Drawer>
   );
 }
