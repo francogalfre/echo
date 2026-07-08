@@ -22,7 +22,8 @@ export const BillingUpgradeButton = ({
   const upgrade = async (): Promise<void> => {
     setLoading(true);
     try {
-      await authClient.checkout({ slug: "pro" });
+      const { error } = await authClient.checkout({ slug: "pro" });
+      if (error) throw new Error(error.message);
     } catch {
       toast.error("Could not start checkout — try again.");
       setLoading(false);
