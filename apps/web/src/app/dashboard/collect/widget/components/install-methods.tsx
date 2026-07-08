@@ -33,7 +33,7 @@ export default function Layout({ children }) {
         description="Installs components/echo-widget.tsx using your existing shadcn primitives."
         code={`npx shadcn@latest add "${registryUrl}"`}
         language="bash"
-        footnote="Auto-installs Button, Input, Label and Textarea if missing."
+        footnote="Auto-installs Button and Textarea if missing."
       />
 
       <Method
