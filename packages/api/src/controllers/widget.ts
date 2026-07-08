@@ -49,7 +49,7 @@ export async function resolveShadcnRegistry(
       $schema: "https://ui.shadcn.com/schema/registry-item.json",
       name: "echo-widget",
       type: "registry:component",
-      registryDependencies: ["button", "input", "label", "textarea"],
+      registryDependencies: ["button", "textarea"],
       files: [
         {
           path: "components/echo-widget.tsx",

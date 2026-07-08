@@ -29,9 +29,17 @@ const ECHO_WIDGET_URL = '${serverUrl}/api/widget'
 
 export function EchoWidget({ position = 'right' }) {
   const [open, setOpen] = useState(false)
+  const [rating, setRating] = useState(null)
+  const [comment, setComment] = useState('')
 
-  // Floating button toggles a slide-in panel
-  // that POSTs { name, feedback } to ECHO_WIDGET_URL.
+  async function handleSubmit() {
+    await fetch(ECHO_WIDGET_URL, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + ECHO_PUBLIC_KEY },
+      body: JSON.stringify({ name: 'Anonymous', feedback: comment || 'Great', rating }),
+    })
+  }
+
   return null
 }`;
 

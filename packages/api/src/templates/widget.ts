@@ -6,14 +6,30 @@ import { useState, type FormEvent } from 'react'
 const ECHO_PUBLIC_KEY = '${publicKey}'
 const ECHO_WIDGET_URL = '${widgetUrl}'
 
+const RATING_OPTIONS = [
+  { value: 1, emoji: '😞' },
+  { value: 2, emoji: '😐' },
+  { value: 3, emoji: '🙂' },
+  { value: 4, emoji: '😀' },
+  { value: 5, emoji: '😍' },
+]
+
+const RATING_LABEL: Record<number, string> = {
+  1: 'Bad',
+  2: 'Poor',
+  3: 'Okay',
+  4: 'Good',
+  5: 'Great',
+}
+
 type Props = {
   position?: 'left' | 'right'
 }
 
 export function EchoWidget({ position = 'right' }: Props): JSX.Element {
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [feedback, setFeedback] = useState('')
+  const [rating, setRating] = useState<number | null>(null)
+  const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +38,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault()
+    if (rating === null) return
     setSubmitting(true)
     setError(null)
 
@@ -32,7 +49,11 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
           Authorization: 'Bearer ' + ECHO_PUBLIC_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, feedback }),
+        body: JSON.stringify({
+          name: 'Anonymous',
+          feedback: comment.trim().length > 0 ? comment : RATING_LABEL[rating],
+          rating,
+        }),
       })
 
       if (!res.ok) {
@@ -61,7 +82,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       {open && (
         <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-xl'}>
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">Share your feedback</p>
+            <p className="text-sm font-semibold text-gray-900">How was your experience?</p>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -78,37 +99,36 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div>
-                <label htmlFor="echo-name" className="mb-1.5 block text-xs font-medium text-gray-700">
-                  Name
-                </label>
-                <input
-                  id="echo-name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  disabled={submitting}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none ring-gray-900 transition placeholder:text-gray-400 focus:ring-1 disabled:opacity-50"
-                />
+              <div className="flex items-center justify-between">
+                {RATING_OPTIONS.map((item) => {
+                  const selected = rating === item.value
+                  const base = 'text-2xl rounded-full p-2 transition '
+                  const state = selected
+                    ? 'ring-2 ring-black bg-gray-100 scale-110'
+                    : 'opacity-60 hover:opacity-100'
+                  return (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setRating(item.value)}
+                      disabled={submitting}
+                      aria-label={'Rate ' + item.value}
+                      className={base + state}
+                    >
+                      {item.emoji}
+                    </button>
+                  )
+                })}
               </div>
 
-              <div>
-                <label htmlFor="echo-feedback" className="mb-1.5 block text-xs font-medium text-gray-700">
-                  Feedback
-                </label>
-                <textarea
-                  id="echo-feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="What's on your mind?"
-                  rows={4}
-                  required
-                  disabled={submitting}
-                  className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none ring-gray-900 transition placeholder:text-gray-400 focus:ring-1 disabled:opacity-50"
-                />
-              </div>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Tell us more… (optional)"
+                rows={3}
+                disabled={submitting}
+                className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none ring-gray-900 transition placeholder:text-gray-400 focus:ring-1 disabled:opacity-50"
+              />
 
               {error !== null && (
                 <p className="text-xs text-red-500">{error}</p>
@@ -116,7 +136,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
 
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || rating === null}
                 className="w-full rounded-lg bg-black py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {submitting ? 'Sending...' : 'Send feedback'}
@@ -136,12 +156,26 @@ export function generateShadcnWidget(publicKey: string, widgetUrl: string): stri
 
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
 const ECHO_PUBLIC_KEY = '${publicKey}'
 const ECHO_WIDGET_URL = '${widgetUrl}'
+
+const RATING_OPTIONS = [
+  { value: 1, emoji: '😞' },
+  { value: 2, emoji: '😐' },
+  { value: 3, emoji: '🙂' },
+  { value: 4, emoji: '😀' },
+  { value: 5, emoji: '😍' },
+]
+
+const RATING_LABEL: Record<number, string> = {
+  1: 'Bad',
+  2: 'Poor',
+  3: 'Okay',
+  4: 'Good',
+  5: 'Great',
+}
 
 type Props = {
   position?: 'left' | 'right'
@@ -149,8 +183,8 @@ type Props = {
 
 export function EchoWidget({ position = 'right' }: Props): JSX.Element {
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [feedback, setFeedback] = useState('')
+  const [rating, setRating] = useState<number | null>(null)
+  const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -159,6 +193,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault()
+    if (rating === null) return
     setSubmitting(true)
     setError(null)
 
@@ -169,7 +204,11 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
           Authorization: 'Bearer ' + ECHO_PUBLIC_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, feedback }),
+        body: JSON.stringify({
+          name: 'Anonymous',
+          feedback: comment.trim().length > 0 ? comment : RATING_LABEL[rating],
+          rating,
+        }),
       })
 
       if (!res.ok) {
@@ -198,7 +237,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       {open && (
         <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-border bg-background p-5 shadow-xl'}>
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold">Share your feedback</p>
+            <p className="text-sm font-semibold">How was your experience?</p>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -215,36 +254,41 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="echo-name">Name</Label>
-                <Input
-                  id="echo-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  disabled={submitting}
-                />
+              <div className="flex items-center justify-between">
+                {RATING_OPTIONS.map((item) => {
+                  const selected = rating === item.value
+                  const base = 'text-2xl rounded-full p-2 transition '
+                  const state = selected
+                    ? 'ring-2 ring-ring bg-muted scale-110'
+                    : 'opacity-60 hover:opacity-100'
+                  return (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => setRating(item.value)}
+                      disabled={submitting}
+                      aria-label={'Rate ' + item.value}
+                      className={base + state}
+                    >
+                      {item.emoji}
+                    </button>
+                  )
+                })}
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="echo-feedback">Feedback</Label>
-                <Textarea
-                  id="echo-feedback"
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  placeholder="What's on your mind?"
-                  rows={4}
-                  required
-                  disabled={submitting}
-                />
-              </div>
+              <Textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Tell us more… (optional)"
+                rows={3}
+                disabled={submitting}
+              />
 
               {error !== null && (
                 <p className="text-xs text-destructive">{error}</p>
               )}
 
-              <Button type="submit" disabled={submitting} className="w-full">
+              <Button type="submit" disabled={submitting || rating === null} className="w-full">
                 {submitting ? 'Sending...' : 'Send feedback'}
               </Button>
             </form>
