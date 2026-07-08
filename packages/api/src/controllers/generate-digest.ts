@@ -1,5 +1,6 @@
 import { generateDigest, type DigestOutput } from "@echo/ai";
 
+import { FREE_DIGEST_INTERVAL_MS, PRO_DIGEST_DAILY_LIMIT } from "../lib/plan-limits";
 import { getUsageCount, incrementUsage } from "../services/ai-usage";
 import {
   getDigest,
@@ -11,8 +12,6 @@ import {
 import { getOrgPlan } from "../services/organization";
 
 const DIGEST_FEATURE = "digest";
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-const PRO_DAILY_LIMIT = 10;
 
 type DigestResult =
   | { success: true; digest: DigestOutput; generatedAt: Date; feedbackCount: number }
@@ -44,10 +43,10 @@ export async function getFeedbackDigest(organizationId: string): Promise<DigestS
   let canRegenerate: boolean;
   if (isPro) {
     const used = await getUsageCount(organizationId, DIGEST_FEATURE, todayKey());
-    canRegenerate = used < PRO_DAILY_LIMIT;
+    canRegenerate = used < PRO_DIGEST_DAILY_LIMIT;
   } else {
     const ageMs = Date.now() - cached.generatedAt.getTime();
-    canRegenerate = ageMs >= WEEK_MS;
+    canRegenerate = ageMs >= FREE_DIGEST_INTERVAL_MS;
   }
 
   return {
@@ -71,17 +70,17 @@ export async function generateFeedbackDigest(
 
   if (isPro) {
     const used = await getUsageCount(organizationId, DIGEST_FEATURE, day);
-    if (used >= PRO_DAILY_LIMIT) {
+    if (used >= PRO_DIGEST_DAILY_LIMIT) {
       return {
         success: false,
         status: 403,
-        error: `Daily digest limit (${PRO_DAILY_LIMIT}) reached. Resets tomorrow.`,
+        error: `Daily digest limit (${PRO_DIGEST_DAILY_LIMIT}) reached. Resets tomorrow.`,
       };
     }
   } else {
     if (cached) {
       const ageMs = Date.now() - cached.generatedAt.getTime();
-      if (ageMs < WEEK_MS) {
+      if (ageMs < FREE_DIGEST_INTERVAL_MS) {
         return {
           success: false,
           status: 403,

@@ -1,6 +1,6 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, gte } from "drizzle-orm";
 
 export type InsertFeedback = {
   organizationId: string;
@@ -36,6 +36,25 @@ export type FeedbackEnrichment = {
   sentiment: string;
   tags: string[];
 };
+
+function startOfCurrentMonthUtc(): Date {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+export async function countFeedbackThisMonth(organizationId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: count() })
+    .from(feedback)
+    .where(
+      and(
+        eq(feedback.organizationId, organizationId),
+        gte(feedback.createdAt, startOfCurrentMonthUtc()),
+      ),
+    );
+
+  return row?.count ?? 0;
+}
 
 export async function insertFeedback(data: InsertFeedback): Promise<string> {
   const id = crypto.randomUUID();

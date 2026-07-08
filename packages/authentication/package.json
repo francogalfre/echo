@@ -9,7 +9,9 @@
       "default": "./src/*.ts"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "@echo/db": "workspace:*",
     "@echo/env": "workspace:*",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@echo/config": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^3.2.0"
   }
 }

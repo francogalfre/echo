@@ -5,6 +5,7 @@ import { publicProcedure, router } from "../index";
 import { guardSubmission } from "../lib/rate-limit";
 import { publicFeedbackSchema, slugSchema } from "../schemas";
 import { getFeedbackPageBySlug } from "../services/feedback-page";
+import { getErrorCode } from "../utils/error-map";
 
 export const publicFeedbackRouter = router({
   getPage: publicProcedure.input(slugSchema).query(({ input }) => {
@@ -30,12 +31,16 @@ export const publicFeedbackRouter = router({
     }
 
     const { email, rating, slug: _slug, _hp: _honeypot, ...rest } = input;
-    await createFeedback({
+    const result = await createFeedback({
       ...rest,
       organizationId: page.org.id,
       email: page.config.enableEmail ? email : undefined,
       rating: page.config.enableRating ? rating : undefined,
       source: "form",
     });
+
+    if (!result.success) {
+      throw new TRPCError({ code: getErrorCode(result.status), message: result.error });
+    }
   }),
 });

@@ -1,6 +1,6 @@
 import { db } from "@echo/db";
-import { type member, organization } from "@echo/db/schema/auth";
-import { and, eq } from "drizzle-orm";
+import { member, organization } from "@echo/db/schema/auth";
+import { and, count, eq } from "drizzle-orm";
 
 type Member = typeof member.$inferSelect;
 
@@ -27,4 +27,14 @@ export async function getOrgPlan(organizationId: string): Promise<string | undef
   });
 
   return org?.plan;
+}
+
+export async function countOwnedOrganizations(userId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: count() })
+    .from(organization)
+    .innerJoin(member, eq(member.organizationId, organization.id))
+    .where(and(eq(member.userId, userId), eq(member.role, "owner")));
+
+  return row?.count ?? 0;
 }

@@ -53,7 +53,7 @@ async function createFeedbackWithKey(
   const keyRow = await kind.lookup(token);
   if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
 
-  await createFeedback({
+  return createFeedback({
     organizationId: keyRow.organizationId,
     authorName: input.name,
     content: input.feedback,
@@ -61,8 +61,6 @@ async function createFeedbackWithKey(
     rating: input.rating,
     source: kind.source,
   });
-
-  return { success: true };
 }
 
 export function submitFeedback(input: FeedbackInput): Promise<SubmitResult> {

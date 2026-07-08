@@ -1,8 +1,13 @@
 import { env } from "@echo/env/server";
-import { checkout, polar, portal } from "@polar-sh/better-auth";
+import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
 import { lastLoginMethod, organization } from "better-auth/plugins";
 
 import { polarClient } from "./payments";
+import {
+  hasReachedOrganizationLimit,
+  inheritPlanForNewOrganization,
+  syncPlanFromCustomerState,
+} from "./plan-sync";
 
 export const plugins = [
   polar({
@@ -13,7 +18,7 @@ export const plugins = [
       checkout({
         products: [
           {
-            productId: "your-product-id",
+            productId: env.POLAR_PRO_PRODUCT_ID,
             slug: "pro",
           },
         ],
@@ -21,11 +26,18 @@ export const plugins = [
         authenticatedUsersOnly: true,
       }),
       portal(),
+      webhooks({
+        secret: env.POLAR_WEBHOOK_SECRET,
+        onCustomerStateChanged: syncPlanFromCustomerState,
+      }),
     ],
   }),
   organization({
-    organizationLimit: 1,
+    organizationLimit: hasReachedOrganizationLimit,
     creatorRole: "owner",
+    organizationHooks: {
+      afterCreateOrganization: inheritPlanForNewOrganization,
+    },
   }),
   lastLoginMethod(),
 ];

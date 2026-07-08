@@ -1,13 +1,12 @@
 import { generateInsight } from "@echo/ai";
 
+import { FREE_INSIGHT_DAILY_LIMIT, PRO_INSIGHT_DAILY_LIMIT } from "../lib/plan-limits";
 import { getUsageCount, incrementUsage } from "../services/ai-usage";
 import { getFeedbackById, setFeedbackInsight } from "../services/feedback";
 import { getOrgPlan } from "../services/organization";
 import type { InsightResult } from "../types";
 
 const INSIGHT_FEATURE = "insight";
-const FREE_DAILY_LIMIT = 3;
-const PRO_DAILY_LIMIT = 50;
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);
@@ -29,7 +28,7 @@ export async function generateFeedbackInsight(
   const plan = await getOrgPlan(organizationId);
   const isPro = plan === "pro";
   const day = todayKey();
-  const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
+  const limit = isPro ? PRO_INSIGHT_DAILY_LIMIT : FREE_INSIGHT_DAILY_LIMIT;
 
   const used = await getUsageCount(organizationId, INSIGHT_FEATURE, day);
   if (used >= limit) {
@@ -37,7 +36,7 @@ export async function generateFeedbackInsight(
       success: false,
       status: 403,
       error: isPro
-        ? `Daily insight limit (${PRO_DAILY_LIMIT}) reached.`
+        ? `Daily insight limit (${PRO_INSIGHT_DAILY_LIMIT}) reached.`
         : `Daily insight limit reached. Upgrade to Pro for more.`,
     };
   }
