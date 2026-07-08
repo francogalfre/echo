@@ -6,9 +6,38 @@ import { Icons } from "@echo/ui/components/icons";
 
 import { PageContainer } from "../../components/page-container";
 import { DocsHeader } from "../components/docs-header";
-import { CodeSection } from "./components/code-section";
-import { KeysSection } from "./components/keys-section";
+import { AuthSection } from "./components/auth-section";
+import { EndpointCard, type ParamField } from "./components/endpoint-card";
+import { ErrorTable } from "./components/error-table";
+import type { LanguageSnippet } from "./components/language-tabs";
+import { SectionNav, type NavSection } from "./components/section-nav";
 import { useApiKeys } from "./hooks/use-api-keys";
+
+const SECTIONS: readonly NavSection[] = [
+  { id: "authentication", label: "Authentication" },
+  { id: "create-feedback", label: "Create feedback" },
+  { id: "list-feedback", label: "List feedback" },
+  { id: "errors", label: "Errors" },
+];
+
+const CREATE_FEEDBACK_PARAMS: ParamField[] = [
+  { name: "name", type: "string", required: true, description: "Reporter's name." },
+  {
+    name: "feedback",
+    type: "string",
+    required: true,
+    description: "The feedback content.",
+  },
+  { name: "email", type: "string", required: false, description: "Reporter's email." },
+  {
+    name: "rating",
+    type: "number",
+    required: false,
+    description: "Star rating from 1 to 5.",
+  },
+];
+
+const MASKED_SECRET = `echo_sk_${"•".repeat(16)}`;
 
 export default function CollectApiPage(): React.ReactElement {
   const { state, pending, generate, roll } = useApiKeys();
@@ -33,24 +62,153 @@ export default function CollectApiPage(): React.ReactElement {
     );
   }
 
+  const pk = state.keys.publicKey || `echo_pk_${"•".repeat(16)}`;
+
+  const createSnippets: LanguageSnippet[] = [
+    {
+      label: "cURL",
+      language: "bash",
+      code: `curl -X POST ${serverUrl}/api/feedback \\
+  -H "Authorization: Bearer ${MASKED_SECRET}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"name": "Jane Smith", "feedback": "Love the product!"}'`,
+    },
+    {
+      label: "JavaScript",
+      language: "js",
+      code: `await fetch("${serverUrl}/api/feedback", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer ${MASKED_SECRET}",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    name: "Jane Smith",
+    feedback: "Love the product!",
+  }),
+})`,
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `import requests
+
+requests.post(
+    "${serverUrl}/api/feedback",
+    headers={
+        "Authorization": "Bearer ${MASKED_SECRET}",
+        "Content-Type": "application/json",
+    },
+    json={"name": "Jane Smith", "feedback": "Love the product!"},
+)`,
+    },
+  ];
+
+  const listSnippets: LanguageSnippet[] = [
+    {
+      label: "cURL",
+      language: "bash",
+      code: `curl ${serverUrl}/api/feedback \\
+  -H "Authorization: Bearer ${pk}"`,
+    },
+    {
+      label: "JavaScript",
+      language: "js",
+      code: `const res = await fetch("${serverUrl}/api/feedback", {
+  headers: { "Authorization": "Bearer ${pk}" },
+})
+
+const { feedback } = await res.json()`,
+    },
+    {
+      label: "Python",
+      language: "python",
+      code: `import requests
+
+response = requests.get(
+    "${serverUrl}/api/feedback",
+    headers={"Authorization": "Bearer ${pk}"},
+)
+
+feedback = response.json()["feedback"]`,
+    },
+  ];
+
+  const createResponse = `{
+  "success": true
+}`;
+
+  const listResponse = `{
+  "feedback": [
+    {
+      "id": "fb_a1b2c3",
+      "name": "Jane Smith",
+      "feedback": "Love the product!",
+      "rating": 5,
+      "createdAt": "2026-06-24T10:00:00Z"
+    }
+  ]
+}`;
+
   return (
     <PageContainer>
       <FadeIn>
         <DocsHeader
           eyebrow="REST API"
-          title="API keys"
+          title="API reference"
           description="Send feedback events straight from your backend with a single authenticated request."
           baseUrl={`${serverUrl}/api/feedback`}
         />
       </FadeIn>
 
-      <div className="space-y-4">
-        <FadeIn delay={0.05}>
-          <KeysSection keys={state.keys} onRoll={roll} isRolling={pending === "roll"} />
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <CodeSection serverUrl={serverUrl} publicKey={state.keys.publicKey} />
-        </FadeIn>
+      <div className="lg:grid lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-10">
+        <SectionNav sections={SECTIONS} className="hidden lg:block" />
+
+        <div className="space-y-10">
+          <FadeIn delay={0.05}>
+            <section id="authentication">
+              <AuthSection keys={state.keys} onRoll={roll} isRolling={pending === "roll"} />
+            </section>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <section id="create-feedback">
+              <h2 className="mb-3 text-lg font-semibold tracking-tight">Create feedback</h2>
+              <EndpointCard
+                method="POST"
+                path="/api/feedback"
+                description="Submit a new feedback entry for the authenticated project."
+                note="Requires the secret key."
+                params={CREATE_FEEDBACK_PARAMS}
+                snippets={createSnippets}
+                responseStatus={201}
+                responseBody={createResponse}
+              />
+            </section>
+          </FadeIn>
+
+          <FadeIn delay={0.15}>
+            <section id="list-feedback">
+              <h2 className="mb-3 text-lg font-semibold tracking-tight">List feedback</h2>
+              <EndpointCard
+                method="GET"
+                path="/api/feedback"
+                description="List feedback entries for the authenticated project."
+                note="Requires the publishable key."
+                snippets={listSnippets}
+                responseStatus={200}
+                responseBody={listResponse}
+              />
+            </section>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <section id="errors">
+              <h2 className="mb-3 text-lg font-semibold tracking-tight">Errors</h2>
+              <ErrorTable />
+            </section>
+          </FadeIn>
+        </div>
       </div>
     </PageContainer>
   );
