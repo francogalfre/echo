@@ -1,5 +1,6 @@
 import imagotipo from "@echo/assets/imagotipo/accent.png";
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 const AmbientGlow = () => {
@@ -20,6 +21,14 @@ const AuthenticationLayout = ({ children }: { children: ReactNode }) => {
           <Image src={imagotipo} alt="echo" priority className="h-7 w-auto" />
         </div>
         {children}
+        <div className="mt-8 flex justify-center gap-4 text-xs text-muted-foreground">
+          <Link href="/legal/privacy" className="hover:text-foreground">
+            Privacy
+          </Link>
+          <Link href="/legal/terms" className="hover:text-foreground">
+            Terms
+          </Link>
+        </div>
       </div>
     </main>
   );
