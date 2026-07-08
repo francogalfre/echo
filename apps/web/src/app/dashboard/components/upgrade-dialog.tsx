@@ -50,25 +50,23 @@ export function UpgradeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <span className="flex size-8 items-center justify-center rounded-full bg-accent/10">
-            <Icons.sparkles className="size-4 text-accent" />
-          </span>
-          <DialogTitle className="mt-2 text-base">Upgrade to Echo Pro</DialogTitle>
-          <DialogDescription>{reason}</DialogDescription>
+      <DialogContent className="max-w-md gap-6 p-8">
+        <DialogHeader className="gap-3">
+          <Icons.sparkles className="size-5 text-accent" />
+          <DialogTitle className="text-lg">Upgrade to Echo Pro</DialogTitle>
+          <DialogDescription className="text-sm/relaxed">{reason}</DialogDescription>
         </DialogHeader>
 
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-3">
           {BENEFITS.map((benefit) => (
-            <li key={benefit} className="flex items-center gap-2 text-sm text-foreground">
+            <li key={benefit} className="flex items-center gap-2.5 text-sm text-foreground">
               <Icons.check className="size-3.5 shrink-0 text-accent" />
               {benefit}
             </li>
           ))}
         </ul>
 
-        <DialogFooter>
+        <DialogFooter className="gap-3">
           <DialogClose render={<Button variant="outline" />}>Maybe later</DialogClose>
           <Button onClick={upgrade} disabled={loading}>
             {loading ? (

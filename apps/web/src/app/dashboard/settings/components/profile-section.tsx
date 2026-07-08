@@ -14,6 +14,8 @@ import { toast } from "sonner";
 
 import { authClient, useSession } from "@/lib/auth-client";
 
+import { SettingsCard } from "./settings-card";
+
 export const ProfileSection = (): React.ReactElement => {
   const { data: session } = useSession();
   const [name, setName] = useState("");
@@ -40,7 +42,7 @@ export const ProfileSection = (): React.ReactElement => {
   };
 
   return (
-    <section className="rounded-2xl border border-border bg-card p-6">
+    <SettingsCard>
       <h2 className="text-sm font-semibold">Profile</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Update your display name and avatar.
@@ -66,6 +68,6 @@ export const ProfileSection = (): React.ReactElement => {
           </Button>
         </div>
       </div>
-    </section>
+    </SettingsCard>
   );
 };

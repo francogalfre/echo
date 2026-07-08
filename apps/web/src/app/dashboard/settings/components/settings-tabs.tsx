@@ -28,7 +28,7 @@ export const SettingsTabs = (): React.ReactElement => {
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex max-w-3xl flex-col gap-6">
       <Tabs value={activeTab} onValueChange={(value) => setTab(String(value))}>
         <TabsList variant="line">
           <TabsTrigger value="account">Account</TabsTrigger>

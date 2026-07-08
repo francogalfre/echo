@@ -8,13 +8,16 @@ import { useBillingOverview } from "../../hooks/use-billing-overview";
 import { BillingPlanCard } from "./billing-plan-card";
 import { BillingPlanComparison } from "./billing-plan-comparison";
 import { BillingUsageMeters } from "./billing-usage-meters";
+import { SettingsCard } from "./settings-card";
 
 function BillingSkeleton(): React.ReactElement {
   return (
     <div className="flex flex-col gap-4">
-      <Skeleton className="h-32 rounded-lg" />
-      <Skeleton className="h-64 rounded-lg" />
-      <Skeleton className="h-80 rounded-lg" />
+      <Skeleton className="h-28 rounded-2xl" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Skeleton className="h-56 rounded-2xl" />
+        <Skeleton className="h-56 rounded-2xl" />
+      </div>
     </div>
   );
 }
@@ -28,7 +31,7 @@ export const BillingSection = (): React.ReactElement => {
 
   if (state.status === "error") {
     return (
-      <div className="rounded-lg bg-card px-5 py-10 text-center ring-1 ring-foreground/10">
+      <SettingsCard className="py-10 text-center">
         <p className="text-sm text-muted-foreground">Failed to load billing information.</p>
         <button
           type="button"
@@ -37,7 +40,7 @@ export const BillingSection = (): React.ReactElement => {
         >
           Try again
         </button>
-      </div>
+      </SettingsCard>
     );
   }
 
@@ -51,10 +54,8 @@ export const BillingSection = (): React.ReactElement => {
       <motion.div variants={fadeInUp}>
         <BillingPlanCard plan={state.data.plan} />
       </motion.div>
-      <motion.div variants={fadeInUp}>
+      <motion.div variants={fadeInUp} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <BillingUsageMeters overview={state.data} />
-      </motion.div>
-      <motion.div variants={fadeInUp}>
         <BillingPlanComparison plan={state.data.plan} />
       </motion.div>
     </motion.div>

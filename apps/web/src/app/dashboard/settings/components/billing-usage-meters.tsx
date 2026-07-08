@@ -2,6 +2,7 @@ import { formatRelativeTime } from "@echo/ui/lib/format";
 
 import type { BillingOverviewData } from "../../hooks/use-billing-overview";
 import { BillingUsageMeterRow } from "./billing-usage-meter-row";
+import { SettingsCard } from "./settings-card";
 
 type BillingUsageMetersProps = { overview: BillingOverviewData };
 
@@ -19,9 +20,9 @@ export const BillingUsageMeters = ({
   const { feedback, insights, digests, projects } = overview;
 
   return (
-    <div className="rounded-lg bg-card p-5 ring-1 ring-foreground/10">
+    <SettingsCard>
       <h3 className="text-sm font-semibold text-foreground">Usage</h3>
-      <div className="mt-4 flex flex-col gap-5">
+      <div className="mt-4 flex flex-col gap-4">
         <BillingUsageMeterRow
           label="Feedback this month"
           used={feedback.used}
@@ -44,6 +45,6 @@ export const BillingUsageMeters = ({
           limit={projects.limit}
         />
       </div>
-    </div>
+    </SettingsCard>
   );
 };

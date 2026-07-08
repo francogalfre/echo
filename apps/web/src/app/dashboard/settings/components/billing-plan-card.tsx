@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 
 import { BillingUpgradeButton } from "./billing-upgrade-button";
+import { SettingsCard } from "./settings-card";
 
 type BillingPlanCardProps = { plan: string };
 
@@ -39,7 +40,7 @@ export const BillingPlanCard = ({ plan }: BillingPlanCardProps): React.ReactElem
   };
 
   return (
-    <div className="rounded-lg bg-card p-5 ring-1 ring-foreground/10">
+    <SettingsCard>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -69,6 +70,6 @@ export const BillingPlanCard = ({ plan }: BillingPlanCardProps): React.ReactElem
           <BillingUpgradeButton className="h-9 text-sm" />
         )}
       </div>
-    </div>
+    </SettingsCard>
   );
 };
