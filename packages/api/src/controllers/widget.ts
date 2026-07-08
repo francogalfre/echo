@@ -26,7 +26,14 @@ export async function resolveStandaloneComponent(
     };
   }
 
-  return { success: true, code: generateStandaloneWidget(info.publicKey, widgetUrl) };
+  return {
+    success: true,
+    code: generateStandaloneWidget(info.publicKey, widgetUrl, {
+      accentColor: info.accentColor,
+      projectName: info.name,
+      logoUrl: info.logo,
+    }),
+  };
 }
 
 export async function resolveShadcnRegistry(
@@ -53,7 +60,11 @@ export async function resolveShadcnRegistry(
       files: [
         {
           path: "components/echo-widget.tsx",
-          content: generateShadcnWidget(info.publicKey, widgetUrl),
+          content: generateShadcnWidget(info.publicKey, widgetUrl, {
+            accentColor: info.accentColor,
+            projectName: info.name,
+            logoUrl: info.logo,
+          }),
           type: "registry:component",
         },
       ],

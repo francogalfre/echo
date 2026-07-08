@@ -8,6 +8,9 @@ import { trpc } from "@/lib/trpc";
 export type WidgetInstall = {
   publicKey: string;
   orgSlug: string;
+  name: string;
+  logo: string | null;
+  accentColor: string;
 };
 
 type State =

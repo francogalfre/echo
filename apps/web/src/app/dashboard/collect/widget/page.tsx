@@ -46,7 +46,13 @@ export default function WidgetPage(): React.ReactElement {
 
       <div className="space-y-4">
         <FadeIn delay={0.05}>
-          <WidgetShowcase publicKey={state.info.publicKey} serverUrl={serverUrl} />
+          <WidgetShowcase
+            publicKey={state.info.publicKey}
+            serverUrl={serverUrl}
+            accentColor={state.info.accentColor}
+            logoUrl={state.info.logo}
+            projectName={state.info.name}
+          />
         </FadeIn>
         <FadeIn delay={0.1}>
           <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />

@@ -12,11 +12,17 @@ type Tab = "preview" | "code";
 type WidgetShowcaseProps = {
   publicKey: string;
   serverUrl: string;
+  accentColor: string;
+  logoUrl: string | null;
+  projectName: string;
 };
 
 export const WidgetShowcase = ({
   publicKey,
   serverUrl,
+  accentColor,
+  logoUrl,
+  projectName,
 }: WidgetShowcaseProps): React.ReactElement => {
   const [tab, setTab] = useState<Tab>("preview");
 
@@ -26,6 +32,7 @@ import { useState, type FormEvent } from 'react'
 
 const ECHO_PUBLIC_KEY = '${publicKey}'
 const ECHO_WIDGET_URL = '${serverUrl}/api/widget'
+const ECHO_ACCENT = '${accentColor}'
 
 export function EchoWidget({ position = 'right' }) {
   const [open, setOpen] = useState(false)
@@ -40,7 +47,13 @@ export function EchoWidget({ position = 'right' }) {
     })
   }
 
-  return null
+  return (
+    <div>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <StarIcon key={star} filled={star <= rating} color={ECHO_ACCENT} />
+      ))}
+    </div>
+  )
 }`;
 
   return (
@@ -82,7 +95,11 @@ export function EchoWidget({ position = 'right' }) {
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
             {tab === "preview" ? (
-              <WidgetPreview />
+              <WidgetPreview
+                accentColor={accentColor}
+                logoUrl={logoUrl}
+                projectName={projectName}
+              />
             ) : (
               <CodeBlock code={snippet} language="tsx" />
             )}

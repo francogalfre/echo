@@ -1,19 +1,22 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
+import { Rating } from "@echo/ui/components/reui/rating";
 import { cn } from "@echo/ui/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { useState, type FormEvent } from "react";
 
-const RATING_OPTIONS = [
-  { value: 1, emoji: "😞" },
-  { value: 2, emoji: "😐" },
-  { value: 3, emoji: "🙂" },
-  { value: 4, emoji: "😀" },
-  { value: 5, emoji: "😍" },
-];
+type WidgetPreviewProps = {
+  accentColor: string;
+  logoUrl: string | null;
+  projectName: string;
+};
 
-export const WidgetPreview = (): React.ReactElement => {
+export const WidgetPreview = ({
+  accentColor,
+  logoUrl,
+  projectName,
+}: WidgetPreviewProps): React.ReactElement => {
   const [open, setOpen] = useState(true);
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState("");
@@ -49,10 +52,26 @@ export const WidgetPreview = (): React.ReactElement => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="w-80 rounded-2xl border border-border bg-background p-5 shadow-xl shadow-black/5"
+            className="absolute right-5 bottom-20 w-80 rounded-2xl border border-border bg-background p-5 shadow-xl shadow-black/5"
           >
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm font-semibold">How was your experience?</p>
+              <div className="flex items-center gap-2">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={projectName}
+                    className="size-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <span
+                    className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                    style={{ backgroundColor: accentColor }}
+                  >
+                    {projectName.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <p className="text-sm font-semibold">Send us feedback</p>
+              </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -95,24 +114,14 @@ export const WidgetPreview = (): React.ReactElement => {
                   onSubmit={onSubmit}
                   className="space-y-3"
                 >
-                  <div className="flex items-center justify-between">
-                    {RATING_OPTIONS.map((item) => (
-                      <button
-                        key={item.value}
-                        type="button"
-                        onClick={() => setRating(item.value)}
-                        aria-label={`Rate ${item.value}`}
-                        className={cn(
-                          "rounded-full p-2 text-2xl transition",
-                          rating === item.value
-                            ? "scale-110 bg-muted ring-2 ring-ring"
-                            : "opacity-60 hover:opacity-100",
-                        )}
-                      >
-                        {item.emoji}
-                      </button>
-                    ))}
-                  </div>
+                  <Rating
+                    rating={rating ?? 0}
+                    accentColor={accentColor}
+                    editable
+                    onRatingChange={setRating}
+                    size="lg"
+                    className="justify-between"
+                  />
 
                   <textarea
                     value={comment}
@@ -126,7 +135,11 @@ export const WidgetPreview = (): React.ReactElement => {
                     type="submit"
                     disabled={rating === null}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full rounded-lg bg-foreground py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+                    style={{ backgroundColor: accentColor }}
+                    className={cn(
+                      "w-full rounded-lg py-2 text-sm font-medium text-white transition-opacity",
+                      "hover:opacity-90 disabled:opacity-50",
+                    )}
                   >
                     Send feedback
                   </motion.button>

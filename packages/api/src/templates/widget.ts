@@ -1,18 +1,23 @@
-export function generateStandaloneWidget(publicKey: string, widgetUrl: string): string {
+export type WidgetBranding = {
+  accentColor: string;
+  projectName: string;
+  logoUrl: string | null;
+};
+
+export function generateStandaloneWidget(
+  publicKey: string,
+  widgetUrl: string,
+  branding: WidgetBranding,
+): string {
   return `'use client'
 
 import { useState, type FormEvent } from 'react'
 
 const ECHO_PUBLIC_KEY = '${publicKey}'
 const ECHO_WIDGET_URL = '${widgetUrl}'
-
-const RATING_OPTIONS = [
-  { value: 1, emoji: '😞' },
-  { value: 2, emoji: '😐' },
-  { value: 3, emoji: '🙂' },
-  { value: 4, emoji: '😀' },
-  { value: 5, emoji: '😍' },
-]
+const ECHO_ACCENT = '${branding.accentColor}'
+const ECHO_PROJECT = ${JSON.stringify(branding.projectName)}
+const ECHO_LOGO = ${branding.logoUrl ? JSON.stringify(branding.logoUrl) : "null"}
 
 const RATING_LABEL: Record<number, string> = {
   1: 'Bad',
@@ -22,6 +27,9 @@ const RATING_LABEL: Record<number, string> = {
   5: 'Great',
 }
 
+const STAR_PATH =
+  'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
+
 type Props = {
   position?: 'left' | 'right'
 }
@@ -29,12 +37,14 @@ type Props = {
 export function EchoWidget({ position = 'right' }: Props): JSX.Element {
   const [open, setOpen] = useState(false)
   const [rating, setRating] = useState<number | null>(null)
+  const [hovered, setHovered] = useState<number | null>(null)
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const side = position === 'left' ? 'left-6' : 'right-6'
+  const display = hovered ?? rating ?? 0
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault()
@@ -82,7 +92,19 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       {open && (
         <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-xl'}>
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900">How was your experience?</p>
+            <div className="flex items-center gap-2">
+              {ECHO_LOGO ? (
+                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-full object-cover" />
+              ) : (
+                <span
+                  className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                  style={{ backgroundColor: ECHO_ACCENT }}
+                >
+                  {ECHO_PROJECT.charAt(0).toUpperCase()}
+                </span>
+              )}
+              <p className="text-sm font-semibold text-gray-900">Send us feedback</p>
+            </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -99,23 +121,30 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex items-center justify-between">
-                {RATING_OPTIONS.map((item) => {
-                  const selected = rating === item.value
-                  const base = 'text-2xl rounded-full p-2 transition '
-                  const state = selected
-                    ? 'ring-2 ring-black bg-gray-100 scale-110'
-                    : 'opacity-60 hover:opacity-100'
+              <div
+                className="flex items-center justify-between"
+                onMouseLeave={() => setHovered(null)}
+              >
+                {[1, 2, 3, 4, 5].map((value) => {
+                  const filled = display >= value
                   return (
                     <button
-                      key={item.value}
+                      key={value}
                       type="button"
-                      onClick={() => setRating(item.value)}
+                      onClick={() => setRating(value)}
+                      onMouseEnter={() => setHovered(value)}
                       disabled={submitting}
-                      aria-label={'Rate ' + item.value}
-                      className={base + state}
+                      aria-label={'Rate ' + value}
+                      className="rounded-full p-1 transition hover:scale-110"
                     >
-                      {item.emoji}
+                      <svg width={24} height={24} viewBox="0 0 24 24">
+                        <path
+                          d={STAR_PATH}
+                          fill={filled ? ECHO_ACCENT : 'none'}
+                          stroke={filled ? ECHO_ACCENT : '#D1D5DB'}
+                          strokeWidth={filled ? 0 : 1.5}
+                        />
+                      </svg>
                     </button>
                   )
                 })}
@@ -137,7 +166,8 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
               <button
                 type="submit"
                 disabled={submitting || rating === null}
-                className="w-full rounded-lg bg-black py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ backgroundColor: ECHO_ACCENT }}
+                className="w-full rounded-lg py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {submitting ? 'Sending...' : 'Send feedback'}
               </button>
@@ -151,7 +181,11 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
 `;
 }
 
-export function generateShadcnWidget(publicKey: string, widgetUrl: string): string {
+export function generateShadcnWidget(
+  publicKey: string,
+  widgetUrl: string,
+  branding: WidgetBranding,
+): string {
   return `'use client'
 
 import { useState, type FormEvent } from 'react'
@@ -160,14 +194,9 @@ import { Textarea } from '@/components/ui/textarea'
 
 const ECHO_PUBLIC_KEY = '${publicKey}'
 const ECHO_WIDGET_URL = '${widgetUrl}'
-
-const RATING_OPTIONS = [
-  { value: 1, emoji: '😞' },
-  { value: 2, emoji: '😐' },
-  { value: 3, emoji: '🙂' },
-  { value: 4, emoji: '😀' },
-  { value: 5, emoji: '😍' },
-]
+const ECHO_ACCENT = '${branding.accentColor}'
+const ECHO_PROJECT = ${JSON.stringify(branding.projectName)}
+const ECHO_LOGO = ${branding.logoUrl ? JSON.stringify(branding.logoUrl) : "null"}
 
 const RATING_LABEL: Record<number, string> = {
   1: 'Bad',
@@ -177,6 +206,9 @@ const RATING_LABEL: Record<number, string> = {
   5: 'Great',
 }
 
+const STAR_PATH =
+  'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'
+
 type Props = {
   position?: 'left' | 'right'
 }
@@ -184,12 +216,14 @@ type Props = {
 export function EchoWidget({ position = 'right' }: Props): JSX.Element {
   const [open, setOpen] = useState(false)
   const [rating, setRating] = useState<number | null>(null)
+  const [hovered, setHovered] = useState<number | null>(null)
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const side = position === 'left' ? 'left-6' : 'right-6'
+  const display = hovered ?? rating ?? 0
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>): Promise<void> {
     e.preventDefault()
@@ -237,7 +271,19 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       {open && (
         <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-border bg-background p-5 shadow-xl'}>
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm font-semibold">How was your experience?</p>
+            <div className="flex items-center gap-2">
+              {ECHO_LOGO ? (
+                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-full object-cover" />
+              ) : (
+                <span
+                  className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                  style={{ backgroundColor: ECHO_ACCENT }}
+                >
+                  {ECHO_PROJECT.charAt(0).toUpperCase()}
+                </span>
+              )}
+              <p className="text-sm font-semibold">Send us feedback</p>
+            </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -254,23 +300,31 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="flex items-center justify-between">
-                {RATING_OPTIONS.map((item) => {
-                  const selected = rating === item.value
-                  const base = 'text-2xl rounded-full p-2 transition '
-                  const state = selected
-                    ? 'ring-2 ring-ring bg-muted scale-110'
-                    : 'opacity-60 hover:opacity-100'
+              <div
+                className="flex items-center justify-between"
+                onMouseLeave={() => setHovered(null)}
+              >
+                {[1, 2, 3, 4, 5].map((value) => {
+                  const filled = display >= value
                   return (
                     <button
-                      key={item.value}
+                      key={value}
                       type="button"
-                      onClick={() => setRating(item.value)}
+                      onClick={() => setRating(value)}
+                      onMouseEnter={() => setHovered(value)}
                       disabled={submitting}
-                      aria-label={'Rate ' + item.value}
-                      className={base + state}
+                      aria-label={'Rate ' + value}
+                      className="rounded-full p-1 transition hover:scale-110"
                     >
-                      {item.emoji}
+                      <svg width={24} height={24} viewBox="0 0 24 24">
+                        <path
+                          d={STAR_PATH}
+                          fill={filled ? ECHO_ACCENT : 'none'}
+                          className={filled ? '' : 'stroke-muted-foreground'}
+                          stroke={filled ? ECHO_ACCENT : undefined}
+                          strokeWidth={filled ? 0 : 1.5}
+                        />
+                      </svg>
                     </button>
                   )
                 })}
@@ -288,7 +342,12 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
                 <p className="text-xs text-destructive">{error}</p>
               )}
 
-              <Button type="submit" disabled={submitting || rating === null} className="w-full">
+              <Button
+                type="submit"
+                disabled={submitting || rating === null}
+                style={{ backgroundColor: ECHO_ACCENT }}
+                className="w-full text-white hover:opacity-90"
+              >
                 {submitting ? 'Sending...' : 'Send feedback'}
               </Button>
             </form>
