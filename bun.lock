@@ -44,6 +44,7 @@
         "@echo/env": "workspace:*",
         "@echo/ui": "workspace:*",
         "@hookform/resolvers": "^5.4.0",
+        "@polar-sh/better-auth": "catalog:",
         "@trpc/client": "catalog:",
         "babel-plugin-react-compiler": "^1.0.0",
         "better-auth": "catalog:",
@@ -116,6 +117,7 @@
       "devDependencies": {
         "@echo/config": "workspace:*",
         "typescript": "catalog:",
+        "vitest": "^3.2.0",
       },
     },
     "packages/configuration": {

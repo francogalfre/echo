@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const UpgradeCard = (): React.ReactElement => (
   <Link
-    href={"/dashboard/settings" as Route}
+    href={"/dashboard/settings?tab=billing" as Route}
     className="group block rounded-lg border border-border bg-surface p-3 transition-colors hover:border-accent/40"
   >
     <div className="flex items-center gap-2">

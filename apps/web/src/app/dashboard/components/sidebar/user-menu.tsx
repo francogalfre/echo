@@ -75,7 +75,7 @@ export const UserMenu = ({ session }: UserMenuProps): React.ReactElement => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="text-sm transition-colors"
-            onClick={() => go("/dashboard/settings")}
+            onClick={() => go("/dashboard/settings?tab=billing")}
           >
             <Icons.creditCard className="size-4" />
             Billing

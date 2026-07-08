@@ -1,7 +1,8 @@
 import { FadeIn } from "@echo/ui/components/fade-in";
+import { Suspense } from "react";
 
 import { PageContainer } from "../components/page-container";
-import { ProfileSection } from "./components/profile-section";
+import { SettingsTabs } from "./components/settings-tabs";
 
 const SettingsPage = (): React.ReactElement => (
   <PageContainer>
@@ -14,7 +15,9 @@ const SettingsPage = (): React.ReactElement => (
       </header>
     </FadeIn>
     <FadeIn delay={0.05}>
-      <ProfileSection />
+      <Suspense fallback={null}>
+        <SettingsTabs />
+      </Suspense>
     </FadeIn>
   </PageContainer>
 );
