@@ -4,7 +4,7 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 
-import { useBillingOverview } from "../hooks/use-billing-overview";
+import { useBillingOverview } from "../../hooks/use-billing-overview";
 import { BillingPlanCard } from "./billing-plan-card";
 import { BillingPlanComparison } from "./billing-plan-comparison";
 import { BillingUsageMeters } from "./billing-usage-meters";

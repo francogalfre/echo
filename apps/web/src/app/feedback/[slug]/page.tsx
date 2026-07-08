@@ -16,7 +16,7 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
 
   if (!page) notFound();
 
-  const { org, config, feedback } = page;
+  const { org, config, feedback, hideBranding } = page;
   const hasBanner = config.enableCoverBanner;
   const showCards = config.showFeedback && feedback.length > 0;
 
@@ -101,7 +101,9 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
           )}
         </div>
 
-        <p className="mt-12 text-center text-xs text-muted-foreground">Powered by echo</p>
+        {!hideBranding && (
+          <p className="mt-12 text-center text-xs text-muted-foreground">Powered by echo</p>
+        )}
       </div>
     </main>
   );

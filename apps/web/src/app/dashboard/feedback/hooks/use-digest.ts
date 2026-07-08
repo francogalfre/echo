@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import type { DigestOutput } from "@echo/ai";
 
+import { isUpgradeError } from "../../components/upgrade-error";
+
 export type DigestItem = {
   digest: DigestOutput;
   generatedAt: Date;
@@ -34,10 +36,15 @@ export function useDigest(): {
   history: DigestHistoryItem[];
   selectedId: string | null;
   selectHistoryEntry: (id: string | null) => void;
+  upgradeReason: string | null;
+  dismissUpgrade: () => void;
 } {
   const [state, setState] = useState<State>({ status: "idle" });
   const [history, setHistory] = useState<DigestHistoryItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [upgradeReason, setUpgradeReason] = useState<string | null>(null);
+
+  const dismissUpgrade = useCallback((): void => setUpgradeReason(null), []);
 
   const loadHistory = useCallback(async (): Promise<void> => {
     try {
@@ -99,7 +106,11 @@ export function useDigest(): {
       void loadHistory();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Failed to generate digest.";
-      toast.error(message);
+      if (isUpgradeError(message)) {
+        setUpgradeReason(message);
+      } else {
+        toast.error(message);
+      }
       setState((prev) => (prev.status === "generating" ? { status: "idle" } : prev));
     }
   }, [loadHistory]);
@@ -108,5 +119,14 @@ export function useDigest(): {
     setSelectedId(id);
   }, []);
 
-  return { state, load, generate, history, selectedId, selectHistoryEntry };
+  return {
+    state,
+    load,
+    generate,
+    history,
+    selectedId,
+    selectHistoryEntry,
+    upgradeReason,
+    dismissUpgrade,
+  };
 }

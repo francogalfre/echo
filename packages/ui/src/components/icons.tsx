@@ -41,6 +41,7 @@ import {
   ChevronUpIcon,
   GripVerticalIcon,
   Clock01Icon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -94,4 +95,5 @@ export const Icons = {
   chevronUp: createIcon(ChevronUpIcon),
   gripVertical: createIcon(GripVerticalIcon),
   clock: createIcon(Clock01Icon),
+  sparkles: createIcon(SparklesIcon),
 };

@@ -4,11 +4,35 @@ import {
   organizationBannerUrl,
 } from "@echo/db/storage";
 import { env } from "@echo/env/server";
+import type { organization } from "@echo/db/schema/auth";
 
 import { findMembership } from "../services/organization";
-import { upsertFeedbackPageConfig } from "../services/feedback-page";
+import {
+  getFeedbackPageBySlug,
+  upsertFeedbackPageConfig,
+  type FeedbackPageConfig,
+  type PublicFeedbackItem,
+} from "../services/feedback-page";
 import { uploadObject } from "../services/storage";
 import type { UploadLogoResult } from "../types";
+
+type OrgRow = typeof organization.$inferSelect;
+
+export type PublicFeedbackPage = {
+  org: OrgRow;
+  config: FeedbackPageConfig;
+  feedback: PublicFeedbackItem[];
+  hideBranding: boolean;
+};
+
+export async function resolvePublicFeedbackPage(
+  slug: string,
+): Promise<PublicFeedbackPage | null> {
+  const page = await getFeedbackPageBySlug(slug);
+  if (!page) return null;
+
+  return { ...page, hideBranding: page.org.plan === "pro" };
+}
 
 const MAX_BANNER_BYTES = 5 * 1024 * 1024;
 

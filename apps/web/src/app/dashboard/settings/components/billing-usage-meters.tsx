@@ -1,6 +1,6 @@
 import { formatRelativeTime } from "@echo/ui/lib/format";
 
-import type { BillingOverviewData } from "../hooks/use-billing-overview";
+import type { BillingOverviewData } from "../../hooks/use-billing-overview";
 import { BillingUsageMeterRow } from "./billing-usage-meter-row";
 
 type BillingUsageMetersProps = { overview: BillingOverviewData };

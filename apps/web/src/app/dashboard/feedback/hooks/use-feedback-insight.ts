@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { trpc } from "@/lib/trpc";
 
+import { isUpgradeError } from "../../components/upgrade-error";
+
 type State =
   | { status: "idle" }
   | { status: "loading" }
@@ -14,8 +16,11 @@ export function useFeedbackInsight(): {
   state: State;
   generate: (feedbackId: string) => Promise<void>;
   reset: () => void;
+  upgradeReason: string | null;
+  dismissUpgrade: () => void;
 } {
   const [state, setState] = useState<State>({ status: "idle" });
+  const [upgradeReason, setUpgradeReason] = useState<string | null>(null);
 
   const generate = useCallback(async (feedbackId: string): Promise<void> => {
     setState({ status: "loading" });
@@ -24,12 +29,17 @@ export function useFeedbackInsight(): {
       setState({ status: "ready", insight: result.insight });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Could not generate insight";
-      toast.error(message);
+      if (isUpgradeError(message)) {
+        setUpgradeReason(message);
+      } else {
+        toast.error(message);
+      }
       setState({ status: "idle" });
     }
   }, []);
 
   const reset = useCallback(() => setState({ status: "idle" }), []);
+  const dismissUpgrade = useCallback((): void => setUpgradeReason(null), []);
 
-  return { state, generate, reset };
+  return { state, generate, reset, upgradeReason, dismissUpgrade };
 }

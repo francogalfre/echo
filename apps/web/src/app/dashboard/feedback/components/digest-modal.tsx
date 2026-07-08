@@ -15,6 +15,7 @@ import { cn } from "@echo/ui/lib/utils";
 import type { DigestOutput } from "@echo/ai";
 import { useEffect } from "react";
 
+import { UpgradeDialog } from "../../components/upgrade-dialog";
 import { useDigest } from "../hooks/use-digest";
 
 type Props = {
@@ -78,7 +79,16 @@ function ThemesAndIssues({ digest }: { digest: DigestOutput }): React.ReactEleme
 }
 
 export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
-  const { state, load, generate, history, selectedId, selectHistoryEntry } = useDigest();
+  const {
+    state,
+    load,
+    generate,
+    history,
+    selectedId,
+    selectHistoryEntry,
+    upgradeReason,
+    dismissUpgrade,
+  } = useDigest();
 
   useEffect(() => {
     if (open) void load();
@@ -96,123 +106,132 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
   const generatedAt = selectedEntry ? selectedEntry.generatedAt : data?.generatedAt;
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="p-0">
-        <DrawerHeader className="border-b">
-          <div className="flex items-center gap-2.5">
-            <span className="flex size-8 items-center justify-center rounded-full bg-accent/10">
-              <Icons.aiMagic className="size-4 text-accent" />
-            </span>
-            <div>
-              <DrawerTitle>AI Summary</DrawerTitle>
-              {feedbackCount !== undefined && generatedAt && (
-                <DrawerDescription>
-                  {feedbackCount} feedbacks ·{" "}
-                  {formatRelativeTime(generatedAt.toISOString())}
-                </DrawerDescription>
+    <>
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="p-0">
+          <DrawerHeader className="border-b">
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-8 items-center justify-center rounded-full bg-accent/10">
+                <Icons.aiMagic className="size-4 text-accent" />
+              </span>
+              <div>
+                <DrawerTitle>AI Summary</DrawerTitle>
+                {feedbackCount !== undefined && generatedAt && (
+                  <DrawerDescription>
+                    {feedbackCount} feedbacks ·{" "}
+                    {formatRelativeTime(generatedAt.toISOString())}
+                  </DrawerDescription>
+                )}
+              </div>
+            </div>
+          </DrawerHeader>
+
+          <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
+            <div className="flex flex-col gap-4">
+              {(isLoading || isGenerating) && (
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-6">
+                  <Icons.loading className="size-4 shrink-0 animate-spin text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    {isGenerating ? "Analyzing your feedback…" : "Loading…"}
+                  </p>
+                </div>
+              )}
+
+              {state.status === "idle" && !isLoading && !selectedEntry && (
+                <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border p-8 text-center">
+                  <Icons.aiMagic className="size-8 text-muted-foreground/40" />
+                  <div>
+                    <p className="text-sm font-medium">No digest yet</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Generate an AI summary of your feedback. Free plan refreshes weekly.
+                    </p>
+                  </div>
+                  <Button size="sm" onClick={() => void generate()}>
+                    <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
+                    Generate Digest
+                  </Button>
+                </div>
+              )}
+
+              {activeDigest && !isGenerating && <ThemesAndIssues digest={activeDigest} />}
+            </div>
+
+            <div className="mt-5 flex flex-col gap-4 sm:mt-0">
+              {activeDigest?.positiveHighlight && (
+                <div className="rounded-xl border border-success/20 bg-success/10 p-3">
+                  <p className="text-xs font-semibold text-success">What users love</p>
+                  <p className="mt-1 text-sm text-success">
+                    {activeDigest.positiveHighlight}
+                  </p>
+                </div>
+              )}
+
+              {history.length > 0 && (
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    History
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={() => selectHistoryEntry(null)}
+                      className={cn(
+                        "rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted",
+                        selectedId === null && "bg-muted font-medium",
+                      )}
+                    >
+                      Latest
+                    </button>
+                    {history.map((entry) => (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        onClick={() => selectHistoryEntry(entry.id)}
+                        className={cn(
+                          "flex flex-col items-start rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted",
+                          selectedId === entry.id && "bg-muted",
+                        )}
+                      >
+                        <span className="text-sm">
+                          {formatRelativeTime(entry.generatedAt.toISOString())}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {entry.feedbackCount} feedbacks
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
-        </DrawerHeader>
 
-        <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
-          <div className="flex flex-col gap-4">
-            {(isLoading || isGenerating) && (
-              <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-6">
-                <Icons.loading className="size-4 shrink-0 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  {isGenerating ? "Analyzing your feedback…" : "Loading…"}
-                </p>
-              </div>
-            )}
-
-            {state.status === "idle" && !isLoading && !selectedEntry && (
-              <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border p-8 text-center">
-                <Icons.aiMagic className="size-8 text-muted-foreground/40" />
-                <div>
-                  <p className="text-sm font-medium">No digest yet</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Generate an AI summary of your feedback. Free plan refreshes weekly.
-                  </p>
-                </div>
-                <Button size="sm" onClick={() => void generate()}>
-                  <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
-                  Generate Digest
+          {activeDigest && !isGenerating && (
+            <DrawerFooter className="flex-row border-t px-6 pb-8 pt-4">
+              {selectedEntry ? (
+                <Button variant="ghost" size="sm" onClick={() => selectHistoryEntry(null)}>
+                  <Icons.arrowLeft className="size-3.5" />
+                  Back to latest
                 </Button>
-              </div>
-            )}
-
-            {activeDigest && !isGenerating && <ThemesAndIssues digest={activeDigest} />}
-          </div>
-
-          <div className="mt-5 flex flex-col gap-4 sm:mt-0">
-            {activeDigest?.positiveHighlight && (
-              <div className="rounded-xl border border-success/20 bg-success/10 p-3">
-                <p className="text-xs font-semibold text-success">What users love</p>
-                <p className="mt-1 text-sm text-success">
-                  {activeDigest.positiveHighlight}
-                </p>
-              </div>
-            )}
-
-            {history.length > 0 && (
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  History
-                </p>
-                <div className="flex flex-col gap-1">
-                  <button
-                    type="button"
-                    onClick={() => selectHistoryEntry(null)}
-                    className={cn(
-                      "rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted",
-                      selectedId === null && "bg-muted font-medium",
-                    )}
-                  >
-                    Latest
-                  </button>
-                  {history.map((entry) => (
-                    <button
-                      key={entry.id}
-                      type="button"
-                      onClick={() => selectHistoryEntry(entry.id)}
-                      className={cn(
-                        "flex flex-col items-start rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted",
-                        selectedId === entry.id && "bg-muted",
-                      )}
-                    >
-                      <span className="text-sm">
-                        {formatRelativeTime(entry.generatedAt.toISOString())}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {entry.feedbackCount} feedbacks
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {activeDigest && !isGenerating && (
-          <DrawerFooter className="flex-row border-t px-6 pb-8 pt-4">
-            {selectedEntry ? (
-              <Button variant="ghost" size="sm" onClick={() => selectHistoryEntry(null)}>
-                <Icons.arrowLeft className="size-3.5" />
-                Back to latest
-              </Button>
-            ) : (
-              data?.canRegenerate && (
-                <Button variant="outline" size="sm" onClick={() => void generate()}>
-                  <Icons.loading className="size-3.5" />
-                  Regenerate
-                </Button>
-              )
-            )}
-          </DrawerFooter>
-        )}
-      </DrawerContent>
-    </Drawer>
+              ) : (
+                data?.canRegenerate && (
+                  <Button variant="outline" size="sm" onClick={() => void generate()}>
+                    <Icons.loading className="size-3.5" />
+                    Regenerate
+                  </Button>
+                )
+              )}
+            </DrawerFooter>
+          )}
+        </DrawerContent>
+      </Drawer>
+      <UpgradeDialog
+        open={upgradeReason !== null}
+        onOpenChange={(next) => {
+          if (!next) dismissUpgrade();
+        }}
+        reason={upgradeReason ?? ""}
+      />
+    </>
   );
 }
