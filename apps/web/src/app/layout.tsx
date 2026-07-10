@@ -1,6 +1,7 @@
 import { Toaster } from "@echo/ui/components/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 
 import "../index.css";
@@ -32,7 +33,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable}`}
       >
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster theme="light" position="bottom-right" />
       </body>
     </html>

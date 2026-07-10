@@ -18,6 +18,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "better-auth": "catalog:",
     "next": "^16.2.0",
+    "nuqs": "^2.9.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "^7.79.0",

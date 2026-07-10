@@ -9,6 +9,7 @@ import { staggerContainer } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 
 import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
@@ -24,7 +25,19 @@ import {
 } from "./feedback-toolbar";
 import { InsightDialog } from "./insight-dialog";
 
-type SheetState = { item: FeedbackItem };
+const SENTIMENT_VALUES = [
+  "all",
+  "positive",
+  "neutral",
+  "negative",
+] as const satisfies readonly SentimentFilter[];
+
+const SOURCE_VALUES = [
+  "all",
+  "api",
+  "form",
+  "widget",
+] as const satisfies readonly SourceFilter[];
 
 function FeedbackListSkeleton(): React.ReactElement {
   return (
@@ -49,10 +62,19 @@ function FeedbackListSkeleton(): React.ReactElement {
 
 export function FeedbackList(): React.ReactElement {
   const feedbackState = useFeedback();
-  const [sentiment, setSentiment] = useState<SentimentFilter>("all");
-  const [source, setSource] = useState<SourceFilter>("all");
-  const [search, setSearch] = useState("");
-  const [sheetState, setSheetState] = useState<SheetState | null>(null);
+  const [sentiment, setSentiment] = useQueryState(
+    "sentiment",
+    parseAsStringLiteral(SENTIMENT_VALUES).withDefault("all"),
+  );
+  const [source, setSource] = useQueryState(
+    "source",
+    parseAsStringLiteral(SOURCE_VALUES).withDefault("all"),
+  );
+  const [search, setSearch] = useQueryState(
+    "q",
+    parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
+  );
+  const [openId, setOpenId] = useQueryState("feedback");
   const [insightItem, setInsightItem] = useState<FeedbackItem | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [visibleCount, setVisibleCount] = useState(20);
@@ -60,6 +82,11 @@ export function FeedbackList(): React.ReactElement {
   const items = useMemo(
     () => (feedbackState.status === "ready" ? feedbackState.items : []),
     [feedbackState],
+  );
+
+  const openItem = useMemo(
+    () => items.find((item) => item.id === openId) ?? null,
+    [items, openId],
   );
 
   const counts: Record<SentimentFilter, number> = useMemo(
@@ -98,9 +125,9 @@ export function FeedbackList(): React.ReactElement {
   const someSelected = selected.size > 0 && !allSelected;
 
   const clearFilters = (): void => {
-    setSentiment("all");
-    setSource("all");
-    setSearch("");
+    void setSentiment("all");
+    void setSource("all");
+    void setSearch("");
   };
 
   const toggleSelect = (id: string): void => {
@@ -134,11 +161,11 @@ export function FeedbackList(): React.ReactElement {
       <FeedbackToolbar
         counts={counts}
         sentiment={sentiment}
-        onSentimentChange={setSentiment}
+        onSentimentChange={(value) => void setSentiment(value)}
         source={source}
-        onSourceChange={setSource}
+        onSourceChange={(value) => void setSource(value)}
         search={search}
-        onSearchChange={setSearch}
+        onSearchChange={(value) => void setSearch(value)}
       />
 
       <div className="overflow-x-auto overflow-y-hidden rounded-lg bg-card ring-1 ring-foreground/10">
@@ -224,7 +251,7 @@ export function FeedbackList(): React.ReactElement {
                     item={item}
                     selected={selected.has(item.id)}
                     onToggleSelect={toggleSelect}
-                    onViewDetails={(selectedItem) => setSheetState({ item: selectedItem })}
+                    onViewDetails={(selectedItem) => void setOpenId(selectedItem.id)}
                     onExplainWithAi={(selectedItem) => setInsightItem(selectedItem)}
                   />
                 ))}
@@ -250,10 +277,10 @@ export function FeedbackList(): React.ReactElement {
       </div>
 
       <FeedbackSheet
-        item={sheetState?.item ?? null}
-        open={sheetState !== null}
+        item={openItem}
+        open={openItem !== null}
         onOpenChange={(open) => {
-          if (!open) setSheetState(null);
+          if (!open) void setOpenId(null);
         }}
         onExplainWithAi={(item) => setInsightItem(item)}
       />
