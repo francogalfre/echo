@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@echo/ui/components/ca
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@echo/ui/components/chart";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
+import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { formatCount } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 import Link from "next/link";
@@ -129,11 +130,11 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
                 <span className="text-[11px] text-muted-foreground">total</span>
               </div>
             </div>
-            <div className="flex flex-col gap-2.5">
+            <Stagger className="flex flex-col gap-2.5" stagger={0.05}>
               {sources.map((item) => {
                 const share = Math.round((item.count / total) * 100);
                 return (
-                  <div
+                  <StaggerItem
                     key={item.source}
                     className="flex items-center justify-between text-xs"
                   >
@@ -148,10 +149,10 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
                     <span className="tabular-nums text-muted-foreground">
                       {formatCount(item.count)} · {share}%
                     </span>
-                  </div>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </Stagger>
           </div>
         )}
       </CardContent>
