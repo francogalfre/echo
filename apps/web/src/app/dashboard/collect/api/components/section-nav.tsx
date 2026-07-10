@@ -1,12 +1,15 @@
 "use client";
 
 import { cn } from "@echo/ui/lib/utils";
+import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
 export type NavSection = {
   id: string;
   label: string;
 };
+
+const activeSpring = { type: "spring", stiffness: 500, damping: 40 } as const;
 
 type SectionNavProps = {
   sections: readonly NavSection[];
@@ -59,22 +62,34 @@ export const SectionNav = ({
   return (
     <nav className={cn("lg:sticky lg:top-24 lg:self-start", className)}>
       <ul className="space-y-1">
-        {sections.map((section) => (
-          <li key={section.id}>
-            <button
-              type="button"
-              onClick={() => scrollToSection(section.id)}
-              className={cn(
-                "block w-full rounded-lg px-3 py-1.5 text-left text-sm transition-colors",
-                activeId === section.id
-                  ? "bg-muted font-medium text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {section.label}
-            </button>
-          </li>
-        ))}
+        {sections.map((section) => {
+          const isActive = activeId === section.id;
+
+          return (
+            <li key={section.id}>
+              <button
+                type="button"
+                onClick={() => scrollToSection(section.id)}
+                className={cn(
+                  "relative block w-full rounded-lg px-3 py-1.5 text-left text-sm",
+                  "transition-colors duration-150",
+                  isActive
+                    ? "font-medium text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="api-section-nav-active"
+                    transition={activeSpring}
+                    className="absolute inset-0 rounded-lg bg-muted"
+                  />
+                )}
+                <span className="relative">{section.label}</span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

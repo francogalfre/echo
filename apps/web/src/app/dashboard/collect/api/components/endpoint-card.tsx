@@ -1,4 +1,5 @@
 import { CodeBlock } from "@echo/ui/components/code-block";
+import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 
 import { LanguageTabs, type LanguageSnippet } from "./language-tabs";
@@ -24,9 +25,18 @@ type EndpointCardProps = {
 };
 
 const METHOD_STYLES: Record<Method, string> = {
-  POST: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  GET: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+  POST: "border border-accent/20 bg-accent/10 text-accent",
+  GET: "border border-info/20 bg-info/10 text-info",
 };
+
+const TABLE_HEAD_CELL =
+  "px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
+
+function statusTone(status: number): string {
+  if (status < 300) return "bg-success/10 text-success";
+  if (status < 500) return "bg-warning/10 text-warning";
+  return "bg-destructive/10 text-destructive";
+}
 
 export const EndpointCard = ({
   method,
@@ -42,7 +52,7 @@ export const EndpointCard = ({
     <div className="flex items-center gap-2.5">
       <span
         className={cn(
-          "rounded-md px-2 py-1 text-xs font-bold tracking-wide",
+          "rounded-md px-2 py-1 font-mono text-xs font-bold tracking-wide",
           METHOD_STYLES[method],
         )}
       >
@@ -51,30 +61,43 @@ export const EndpointCard = ({
       <span className="font-mono text-sm text-foreground">{path}</span>
     </div>
     <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
-    {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
+    {note && (
+      <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icons.lock className="size-3 shrink-0" />
+        {note}
+      </p>
+    )}
 
     {params && params.length > 0 && (
-      <div className="mt-5">
-        <p className="mb-3 text-xs font-semibold">Parameters</p>
+      <div className="mt-6">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Parameters
+        </p>
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-border bg-muted/30 text-left">
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Field</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Type</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">Required</th>
-                <th className="px-4 py-2.5 font-medium text-muted-foreground">
-                  Description
-                </th>
+                <th className={TABLE_HEAD_CELL}>Field</th>
+                <th className={TABLE_HEAD_CELL}>Type</th>
+                <th className={TABLE_HEAD_CELL}>Required</th>
+                <th className={TABLE_HEAD_CELL}>Description</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {params.map((field) => (
                 <tr key={field.name}>
-                  <td className="px-4 py-2.5 font-mono text-xs">{field.name}</td>
-                  <td className="px-4 py-2.5 text-muted-foreground">{field.type}</td>
-                  <td className="px-4 py-2.5 text-muted-foreground">
-                    {field.required ? "Yes" : "No"}
+                  <td className="px-4 py-2.5 font-mono text-xs text-foreground">
+                    {field.name}
+                  </td>
+                  <td className="px-4 py-2.5 font-mono text-muted-foreground">
+                    {field.type}
+                  </td>
+                  <td className="px-4 py-2.5">
+                    {field.required ? (
+                      <span className="font-medium text-foreground">Required</span>
+                    ) : (
+                      <span className="text-muted-foreground">Optional</span>
+                    )}
                   </td>
                   <td className="px-4 py-2.5 text-muted-foreground">{field.description}</td>
                 </tr>
@@ -85,17 +108,27 @@ export const EndpointCard = ({
       </div>
     )}
 
-    <div className="mt-5">
-      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+    <div className="mt-6">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         Request
       </p>
       <LanguageTabs snippets={snippets} />
     </div>
 
-    <div className="mt-4">
-      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        Response · <span className="font-mono normal-case">{responseStatus}</span>
-      </p>
+    <div className="mt-5">
+      <div className="mb-2 flex items-center gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Response
+        </p>
+        <span
+          className={cn(
+            "rounded-md px-1.5 py-0.5 font-mono text-[11px] font-semibold",
+            statusTone(responseStatus),
+          )}
+        >
+          {responseStatus}
+        </span>
+      </div>
       <CodeBlock code={responseBody} language="json" />
     </div>
   </div>

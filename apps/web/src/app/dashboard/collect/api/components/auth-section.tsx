@@ -1,3 +1,5 @@
+import { cn } from "@echo/ui/lib/utils";
+
 import type { ApiKeys } from "../hooks/use-api-keys";
 import { KeysSection } from "./keys-section";
 
@@ -10,6 +12,7 @@ type AuthSectionProps = {
 type KeyType = {
   prefix: string;
   access: string;
+  accessStyle: string;
   usage: string;
 };
 
@@ -17,14 +20,19 @@ const KEY_TYPES: readonly KeyType[] = [
   {
     prefix: "echo_pk_",
     access: "Read-only",
+    accessStyle: "bg-info/10 text-info",
     usage: "Safe to expose in client-side code. Used to authenticate GET requests.",
   },
   {
     prefix: "echo_sk_",
     access: "Read & write",
+    accessStyle: "bg-accent/10 text-accent",
     usage: "Server-side only, never expose it. Required to authenticate POST requests.",
   },
 ];
+
+const TABLE_HEAD_CELL =
+  "px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 export const AuthSection = ({
   keys,
@@ -48,16 +56,27 @@ export const AuthSection = ({
       <table className="w-full text-xs">
         <thead>
           <tr className="border-b border-border bg-muted/30 text-left">
-            <th className="px-4 py-2.5 font-medium text-muted-foreground">Key</th>
-            <th className="px-4 py-2.5 font-medium text-muted-foreground">Access</th>
-            <th className="px-4 py-2.5 font-medium text-muted-foreground">Usage</th>
+            <th className={TABLE_HEAD_CELL}>Key</th>
+            <th className={TABLE_HEAD_CELL}>Access</th>
+            <th className={TABLE_HEAD_CELL}>Usage</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
           {KEY_TYPES.map((type) => (
             <tr key={type.prefix}>
-              <td className="px-4 py-2.5 font-mono text-xs">{type.prefix}…</td>
-              <td className="px-4 py-2.5 text-muted-foreground">{type.access}</td>
+              <td className="px-4 py-2.5 font-mono text-xs text-foreground">
+                {type.prefix}…
+              </td>
+              <td className="px-4 py-2.5">
+                <span
+                  className={cn(
+                    "inline-flex rounded-md px-1.5 py-0.5 text-xs font-medium",
+                    type.accessStyle,
+                  )}
+                >
+                  {type.access}
+                </span>
+              </td>
               <td className="px-4 py-2.5 text-muted-foreground">{type.usage}</td>
             </tr>
           ))}

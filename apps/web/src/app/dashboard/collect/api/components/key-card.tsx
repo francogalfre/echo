@@ -7,6 +7,11 @@ import { toast } from "sonner";
 
 const MASK = "•".repeat(24);
 
+const BADGE_STYLES: Record<string, string> = {
+  Read: "bg-info/10 text-info",
+  Write: "bg-accent/10 text-accent",
+};
+
 type KeyCardProps = {
   label: string;
   badge: string;
@@ -48,16 +53,21 @@ export const KeyCard = ({
     <div className="flex flex-col rounded-xl border border-border bg-muted/20 p-4">
       <div className="flex items-center gap-2">
         <p className="text-xs font-semibold text-foreground">{label}</p>
-        <span className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <span
+          className={cn(
+            "rounded px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide",
+            BADGE_STYLES[badge] ?? "bg-muted text-muted-foreground",
+          )}
+        >
           {badge}
         </span>
       </div>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
 
       {warning && (
-        <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2.5 dark:bg-amber-950/30">
-          <Icons.alertCircle className="mt-0.5 size-3 shrink-0 text-amber-500" />
-          <p className="text-xs text-amber-700 dark:text-amber-400">{warning}</p>
+        <div className="mt-3 flex items-start gap-2 rounded-lg border border-warning/20 bg-warning/10 px-3 py-2.5">
+          <Icons.alertCircle className="mt-0.5 size-3 shrink-0 text-warning" />
+          <p className="text-xs text-warning">{warning}</p>
         </div>
       )}
 
