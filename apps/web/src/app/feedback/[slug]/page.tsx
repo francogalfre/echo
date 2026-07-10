@@ -1,14 +1,30 @@
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { cn } from "@echo/ui/lib/utils";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+import { createMetadata } from "@/lib/metadata";
 import { trpc } from "@/lib/trpc";
 
 import { FeedbackCards } from "./components/feedback-cards";
 import { FeedbackForm } from "./components/feedback-form";
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+export const generateMetadata = async ({ params }: PageProps): Promise<Metadata> => {
+  const { slug } = await params;
+  const page = await trpc.publicFeedback.getPage.query({ slug });
+
+  if (!page) return createMetadata({ title: "Feedback", noIndex: true });
+
+  const { org, config } = page;
+  return createMetadata({
+    title: config.title || org.name,
+    description: config.description ?? undefined,
+    path: `/feedback/${slug}`,
+  });
+};
 
 const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> => {
   const { slug } = await params;

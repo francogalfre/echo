@@ -1,13 +1,16 @@
 import { env } from "@echo/env/web";
 import { CodeBlock } from "@echo/ui/components/code-block";
 import { Separator } from "@echo/ui/components/separator";
-import type { Metadata } from "next";
+
+import { createMetadata } from "@/lib/metadata";
 
 import { DocsPageHeader } from "../components/docs-page-header";
 
-export const metadata: Metadata = {
-  title: "REST API · echo docs",
-};
+export const metadata = createMetadata({
+  title: "REST API",
+  description: "Authenticate and call the public feedback endpoints from your backend.",
+  path: "/docs/api",
+});
 
 const ApiDocsPage = () => {
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;

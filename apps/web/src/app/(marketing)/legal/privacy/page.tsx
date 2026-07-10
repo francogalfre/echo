@@ -1,11 +1,14 @@
 import { Separator } from "@echo/ui/components/separator";
-import type { Metadata } from "next";
+
+import { createMetadata } from "@/lib/metadata";
 
 import { LegalNotice } from "../components/legal-notice";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy · echo",
-};
+export const metadata = createMetadata({
+  title: "Privacy Policy",
+  description: "How Echo collects, uses, and protects your data.",
+  path: "/legal/privacy",
+});
 
 const PrivacyPolicyPage = () => {
   return (

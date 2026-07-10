@@ -1,13 +1,17 @@
-import type { Metadata } from "next";
 import Link from "next/link";
+
+import { createMetadata } from "@/lib/metadata";
 
 import { AuthDivider } from "../components/auth-divider";
 import { LoginForm } from "../components/login-form";
 import { SocialButtons } from "../components/social-buttons";
 
-export const metadata: Metadata = {
-  title: "Log in · echo",
-};
+export const metadata = createMetadata({
+  title: "Log in",
+  description: "Log in to your Echo account.",
+  path: "/login",
+  noIndex: true,
+});
 
 const LoginPage = () => {
   return (

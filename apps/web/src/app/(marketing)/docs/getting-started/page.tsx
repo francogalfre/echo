@@ -1,13 +1,16 @@
 import { env } from "@echo/env/web";
 import { CodeBlock } from "@echo/ui/components/code-block";
-import type { Metadata } from "next";
 import Link from "next/link";
+
+import { createMetadata } from "@/lib/metadata";
 
 import { DocsPageHeader } from "../components/docs-page-header";
 
-export const metadata: Metadata = {
-  title: "Getting started · echo docs",
-};
+export const metadata = createMetadata({
+  title: "Getting started",
+  description: "Create a project, generate API keys, and send your first feedback.",
+  path: "/docs/getting-started",
+});
 
 const GettingStartedPage = () => {
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;

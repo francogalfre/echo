@@ -1,8 +1,10 @@
 import { Toaster } from "@echo/ui/components/sonner";
-import type { Metadata } from "next";
+import type { Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
+
+import { createMetadata } from "@/lib/metadata";
 
 import "../index.css";
 
@@ -22,9 +24,13 @@ const instrumentSans = Instrument_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "echo",
-  description: "Feedback infrastructure for developers.",
+export const metadata = createMetadata();
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 const RootLayout = ({ children }: { children: ReactNode }) => {

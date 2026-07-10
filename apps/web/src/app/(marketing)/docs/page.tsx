@@ -1,10 +1,14 @@
 import { Separator } from "@echo/ui/components/separator";
-import type { Metadata, Route } from "next";
+import type { Route } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Documentation · echo",
-};
+import { createMetadata } from "@/lib/metadata";
+
+export const metadata = createMetadata({
+  title: "Documentation",
+  description: "Guides for getting started, the REST API, and the feedback widget.",
+  path: "/docs",
+});
 
 type DocCard = {
   href: string;

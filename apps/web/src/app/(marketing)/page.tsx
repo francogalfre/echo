@@ -1,7 +1,11 @@
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import Link from "next/link";
 
+import { createMetadata } from "@/lib/metadata";
+
 import { Logo } from "./components/logo";
+
+export const metadata = createMetadata({ path: "/" });
 
 const Home = () => {
   return (

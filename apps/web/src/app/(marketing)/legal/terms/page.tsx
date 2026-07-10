@@ -1,11 +1,14 @@
 import { Separator } from "@echo/ui/components/separator";
-import type { Metadata } from "next";
+
+import { createMetadata } from "@/lib/metadata";
 
 import { LegalNotice } from "../components/legal-notice";
 
-export const metadata: Metadata = {
-  title: "Terms of Service · echo",
-};
+export const metadata = createMetadata({
+  title: "Terms of Service",
+  description: "The terms governing your use of Echo.",
+  path: "/legal/terms",
+});
 
 const TermsOfServicePage = () => {
   return (
