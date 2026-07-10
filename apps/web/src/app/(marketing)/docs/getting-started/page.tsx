@@ -3,6 +3,8 @@ import { CodeBlock } from "@echo/ui/components/code-block";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { DocsPageHeader } from "../components/docs-page-header";
+
 export const metadata: Metadata = {
   title: "Getting started · echo docs",
 };
@@ -17,12 +19,10 @@ const GettingStartedPage = () => {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Getting started</h1>
-        <p className="mt-3 text-muted-foreground">
-          Four steps to your first piece of feedback.
-        </p>
-      </div>
+      <DocsPageHeader
+        title="Getting started"
+        description="Four steps to your first piece of feedback."
+      />
 
       <ol className="space-y-8">
         <li>

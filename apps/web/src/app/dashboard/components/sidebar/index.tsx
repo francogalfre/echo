@@ -37,7 +37,7 @@ const collectSubLinks = [
 
 const utilityLinks: NavItem[] = [
   { label: "Support", href: "#", icon: Icons.help },
-  { label: "Documentation", href: "https://docs.echo.dev", icon: Icons.book },
+  { label: "Documentation", href: "/docs", icon: Icons.book },
 ];
 
 const settingsItem: NavItem = {

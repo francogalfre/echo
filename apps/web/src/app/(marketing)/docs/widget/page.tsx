@@ -3,6 +3,8 @@ import { CodeBlock } from "@echo/ui/components/code-block";
 import { Separator } from "@echo/ui/components/separator";
 import type { Metadata } from "next";
 
+import { DocsPageHeader } from "../components/docs-page-header";
+
 export const metadata: Metadata = {
   title: "Widget · echo docs",
 };
@@ -14,14 +16,10 @@ const WidgetDocsPage = () => {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Widget</h1>
-        <p className="mt-3 text-muted-foreground">
-          A floating, sentiment-first feedback button you drop into your app. Users pick an
-          emoji rating from 1 to 5 and can optionally leave a comment — no separate feedback
-          page required.
-        </p>
-      </div>
+      <DocsPageHeader
+        title="Widget"
+        description="A floating, sentiment-first feedback button you drop into your app. Users pick a star rating from 1 to 5 and can optionally leave a comment — no separate feedback page required."
+      />
 
       <section>
         <h2 className="text-lg font-semibold tracking-tight">Install via shadcn</h2>

@@ -3,6 +3,8 @@ import { CodeBlock } from "@echo/ui/components/code-block";
 import { Separator } from "@echo/ui/components/separator";
 import type { Metadata } from "next";
 
+import { DocsPageHeader } from "../components/docs-page-header";
+
 export const metadata: Metadata = {
   title: "REST API · echo docs",
 };
@@ -36,12 +38,10 @@ const ApiDocsPage = () => {
 
   return (
     <div className="space-y-10">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">REST API</h1>
-        <p className="mt-3 text-muted-foreground">
-          A small, authenticated API for sending and reading feedback from your own backend.
-        </p>
-      </div>
+      <DocsPageHeader
+        title="REST API"
+        description="A small, authenticated API for sending and reading feedback from your own backend."
+      />
 
       <section>
         <h2 className="text-lg font-semibold tracking-tight">Authentication</h2>
