@@ -1,11 +1,12 @@
 import { PageContainer } from "../components/page-container";
+import { PageHeader } from "../components/page-header";
 
 const CollectPage = (): React.ReactElement => (
   <PageContainer>
-    <h1 className="text-2xl font-semibold">Feedback page</h1>
-    <p className="mt-1.5 text-sm text-muted-foreground">
-      Your embeddable feedback page will appear here.
-    </p>
+    <PageHeader
+      title="Feedback page"
+      description="Your embeddable feedback page will appear here."
+    />
   </PageContainer>
 );
 

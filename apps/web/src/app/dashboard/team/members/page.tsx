@@ -1,11 +1,9 @@
 import { PageContainer } from "../../components/page-container";
+import { PageHeader } from "../../components/page-header";
 
 const MembersPage = (): React.ReactElement => (
   <PageContainer>
-    <h1 className="text-2xl font-semibold">Members</h1>
-    <p className="mt-1.5 text-sm text-muted-foreground">
-      Invite and manage your team members.
-    </p>
+    <PageHeader title="Members" description="Invite and manage your team members." />
   </PageContainer>
 );
 
