@@ -5,10 +5,17 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { BillingSection } from "./billing-section";
 import { ProfileSection } from "./profile-section";
+import { TeamSection } from "./team-section";
 
-type SettingsTab = "account" | "billing";
+type SettingsTab = "account" | "team" | "billing";
 
-const SETTINGS_TAB_VALUES = ["account", "billing"] as const;
+const SETTINGS_TAB_VALUES = ["account", "team", "billing"] as const;
+
+function renderTab(tab: SettingsTab): React.ReactElement {
+  if (tab === "team") return <TeamSection />;
+  if (tab === "billing") return <BillingSection />;
+  return <ProfileSection />;
+}
 
 export const SettingsTabs = (): React.ReactElement => {
   const [activeTab, setActiveTab] = useQueryState(
@@ -19,18 +26,19 @@ export const SettingsTabs = (): React.ReactElement => {
   );
 
   return (
-    <div className="flex max-w-3xl flex-col gap-6">
+    <div className="flex max-w-4xl flex-col gap-8">
       <Tabs
         value={activeTab}
         onValueChange={(value) => void setActiveTab(value as SettingsTab)}
       >
         <TabsList variant="line">
           <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {activeTab === "account" ? <ProfileSection /> : <BillingSection />}
+      {renderTab(activeTab)}
     </div>
   );
 };

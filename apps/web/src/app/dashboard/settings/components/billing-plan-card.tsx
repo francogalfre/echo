@@ -41,15 +41,15 @@ export const BillingPlanCard = ({ plan }: BillingPlanCardProps): React.ReactElem
 
   return (
     <SettingsCard>
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-base font-semibold text-foreground">
               {isPro ? "Pro" : "Free"} plan
             </h3>
             <Badge variant={isPro ? "accent" : "default"}>{isPro ? "Pro" : "Free"}</Badge>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{copy.price}</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">{copy.price}</p>
           <p className="mt-2 text-xs/relaxed text-muted-foreground">{copy.description}</p>
         </div>
 

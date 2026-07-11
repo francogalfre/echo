@@ -26,7 +26,7 @@ export const BillingPlanComparison = ({
 
   return (
     <SettingsCard className="flex flex-col p-0">
-      <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-3 gap-y-2.5 p-6">
+      <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-4 gap-y-3 p-6 sm:p-8">
         <span className="text-xs font-medium text-muted-foreground">Feature</span>
         <span className="text-xs font-medium text-muted-foreground">Free</span>
         <Badge variant="accent" className="w-fit px-1.5 text-[11px]">
@@ -51,7 +51,7 @@ export const BillingPlanComparison = ({
       </div>
 
       {!isPro ? (
-        <div className="flex justify-end border-t border-border px-6 py-4">
+        <div className="flex justify-end border-t border-border px-6 py-4 sm:px-8">
           <BillingUpgradeButton size="sm" />
         </div>
       ) : null}

@@ -83,14 +83,14 @@ const COMMANDS: CommandItem[] = [
     title: "Team members",
     section: "Team",
     icon: Icons.user,
-    run: navigate("/dashboard/team/members"),
+    run: navigate("/dashboard/settings?tab=team"),
   },
   {
     id: "projects",
     title: "Projects",
     section: "Team",
     icon: Icons.circlePlus,
-    run: navigate("/dashboard/team/projects"),
+    run: navigate("/dashboard/settings?tab=team"),
   },
   {
     id: "settings",
