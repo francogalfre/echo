@@ -161,15 +161,17 @@ export default function BoardPage(): React.ReactElement {
             <Icons.loading className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : totalItems === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-border text-center">
-            <Icons.board className="size-8 text-muted-foreground/40" />
-            <p className="mt-3 text-sm font-medium">Your board is empty</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+          <div className="flex h-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border text-center">
+            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+              <Icons.board className="size-4.5 text-muted-foreground/50" />
+            </div>
+            <p className="mt-2 text-sm font-medium">Your board is empty</p>
+            <p className="text-xs text-muted-foreground">
               Go to Feedback and click ··· → Add to board on any item.
             </p>
             <Link
               href="/dashboard/feedback"
-              className="mt-4 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-opacity hover:opacity-80"
+              className="mt-3 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-opacity hover:opacity-80"
             >
               Browse feedback
             </Link>
@@ -182,20 +184,20 @@ export default function BoardPage(): React.ReactElement {
             onMove={handleMove}
             className="flex h-full flex-col"
           >
-            <KanbanBoard className="grid flex-1 min-h-0 grid-cols-3 gap-4">
+            <KanbanBoard className="grid flex-1 min-h-0 grid-cols-3 gap-3">
               {COLUMNS.map((col) => (
                 <KanbanColumn
                   key={col.id}
                   value={col.id}
-                  className="flex h-full flex-col gap-2 rounded-xl border border-border bg-muted/30 p-3"
+                  className="flex h-full flex-col gap-2 rounded-xl border border-border bg-muted/30 p-2.5"
                 >
-                  <div className="flex items-center gap-2 px-1 py-0.5">
+                  <div className="flex items-center gap-1.5 px-1">
                     <span
                       aria-hidden
                       className={`size-1.5 shrink-0 rounded-full ${col.dot}`}
                     />
-                    <span className="text-sm font-semibold">{col.label}</span>
-                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
+                    <span className="text-[13px] font-semibold">{col.label}</span>
+                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
                       {columns[col.id].length}
                     </span>
                     {col.id === "done" && columns.done.length > 0 && (
@@ -212,7 +214,7 @@ export default function BoardPage(): React.ReactElement {
 
                   <KanbanColumnContent
                     value={col.id}
-                    className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto"
+                    className="flex flex-1 min-h-0 flex-col gap-1.5 overflow-y-auto"
                   >
                     {columns[col.id].map((item) => (
                       <KanbanItem key={item.id} value={item.id}>
@@ -226,8 +228,9 @@ export default function BoardPage(): React.ReactElement {
                   </KanbanColumnContent>
 
                   {columns[col.id].length === 0 && (
-                    <div className="flex items-center justify-center py-6 text-xs text-muted-foreground/50">
-                      Drop here
+                    <div className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 py-8 text-center">
+                      <Icons.board className="size-4 text-muted-foreground/30" />
+                      <p className="text-xs text-muted-foreground/60">Drop cards here</p>
                     </div>
                   )}
                 </KanbanColumn>
