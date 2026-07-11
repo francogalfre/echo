@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { createMetadata } from "@/lib/metadata";
 
+import { DocsPageHeader } from "./components/docs-page-header";
+
 export const metadata = createMetadata({
   title: "Documentation",
   description: "Guides for getting started, the REST API, and the feedback widget.",
@@ -36,15 +38,11 @@ const CARDS: readonly DocCard[] = [
 
 const DocsIntroductionPage = () => {
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Introduction</h1>
-        <p className="mt-3 text-muted-foreground">
-          Echo is developer-first feedback infrastructure. It gives you API keys, a REST
-          endpoint, and a drop-in widget so you can collect feedback from your users without
-          building any of the plumbing yourself.
-        </p>
-      </div>
+    <div className="space-y-10">
+      <DocsPageHeader
+        title="Introduction"
+        description="Echo is developer-first feedback infrastructure. It gives you API keys, a REST endpoint, and a drop-in widget so you can collect feedback from your users without building any of the plumbing yourself."
+      />
 
       <Separator />
 
