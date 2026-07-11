@@ -4,6 +4,7 @@ import { Separator } from "@echo/ui/components/separator";
 
 import { createMetadata } from "@/lib/metadata";
 
+import { DocsCodeHero } from "../components/docs-code-hero";
 import { DocsPageHeader } from "../components/docs-page-header";
 
 export const metadata = createMetadata({
@@ -44,10 +45,15 @@ const ApiDocsPage = () => {
       <DocsPageHeader
         title="REST API"
         description="A small, authenticated API for sending and reading feedback from your own backend."
+        breadcrumb={["Reference", "REST API"]}
       />
 
+      <DocsCodeHero code={createRequest} language="bash" />
+
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">Authentication</h2>
+        <h2 id="authentication" className="text-lg font-semibold tracking-tight">
+          Authentication
+        </h2>
         <p className="mt-2 text-muted-foreground">
           Every request is authenticated with an API key sent as a bearer token:{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">
@@ -70,7 +76,9 @@ const ApiDocsPage = () => {
       <Separator />
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">Create feedback</h2>
+        <h2 id="create-feedback" className="text-lg font-semibold tracking-tight">
+          Create feedback
+        </h2>
         <p className="mt-2 text-muted-foreground">
           <span className="font-mono text-xs font-semibold text-foreground">POST</span>{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">/api/feedback</code> —
@@ -89,7 +97,9 @@ const ApiDocsPage = () => {
       <Separator />
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">List feedback</h2>
+        <h2 id="list-feedback" className="text-lg font-semibold tracking-tight">
+          List feedback
+        </h2>
         <p className="mt-2 text-muted-foreground">
           <span className="font-mono text-xs font-semibold text-foreground">GET</span>{" "}
           <code className="rounded bg-muted px-1 py-0.5 text-xs">/api/feedback</code> —
@@ -104,7 +114,9 @@ const ApiDocsPage = () => {
       <Separator />
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">Errors</h2>
+        <h2 id="errors" className="text-lg font-semibold tracking-tight">
+          Errors
+        </h2>
         <ul className="mt-3 space-y-2 text-muted-foreground">
           <li>
             <span className="font-mono text-xs font-semibold text-foreground">400</span> —

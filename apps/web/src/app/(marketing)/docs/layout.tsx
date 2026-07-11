@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { Logo } from "../components/logo";
 import { DocsSidebar } from "./components/docs-sidebar";
+import { DocsToc } from "./components/docs-toc";
 
 type DocsLayoutProps = {
   children: ReactNode;
@@ -13,7 +14,7 @@ const DocsLayout = ({ children }: DocsLayoutProps) => {
   return (
     <div className="flex h-svh flex-col">
       <header className="border-b border-border">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link href="/">
             <Logo />
           </Link>
@@ -29,9 +30,12 @@ const DocsLayout = ({ children }: DocsLayoutProps) => {
         </div>
       </header>
       <main className="flex-1 overflow-y-auto [scrollbar-gutter:stable]">
-        <div className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:gap-10">
+        <div className="mx-auto max-w-7xl px-6 py-12 lg:flex lg:gap-10">
           <DocsSidebar />
-          <div className="min-w-0 max-w-3xl flex-1 py-2">{children}</div>
+          <div id="docs-content" className="min-w-0 max-w-3xl flex-1 py-2">
+            {children}
+          </div>
+          <DocsToc />
         </div>
       </main>
     </div>

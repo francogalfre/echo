@@ -22,10 +22,13 @@ const WidgetDocsPage = () => {
       <DocsPageHeader
         title="Widget"
         description="A floating, sentiment-first feedback button you drop into your app. Users pick a star rating from 1 to 5 and can optionally leave a comment — no separate feedback page required."
+        breadcrumb={["Reference", "Widget"]}
       />
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">Install via shadcn</h2>
+        <h2 id="install-via-shadcn" className="text-lg font-semibold tracking-tight">
+          Install via shadcn
+        </h2>
         <p className="mt-2 text-muted-foreground">
           The widget ships as a shadcn registry component, wired to your project's
           publishable key. Replace{" "}
@@ -40,7 +43,9 @@ const WidgetDocsPage = () => {
       <Separator />
 
       <section>
-        <h2 className="text-lg font-semibold tracking-tight">Standalone component</h2>
+        <h2 id="standalone-component" className="text-lg font-semibold tracking-tight">
+          Standalone component
+        </h2>
         <p className="mt-2 text-muted-foreground">
           Prefer not to use the shadcn CLI? Download a single self-contained component file
           instead:

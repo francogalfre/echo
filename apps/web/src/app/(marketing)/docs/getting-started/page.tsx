@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { createMetadata } from "@/lib/metadata";
 
+import { DocsCodeHero } from "../components/docs-code-hero";
 import { DocsPageHeader } from "../components/docs-page-header";
 
 export const metadata = createMetadata({
@@ -26,11 +27,16 @@ const GettingStartedPage = () => {
       <DocsPageHeader
         title="Getting started"
         description="Four steps to your first piece of feedback."
+        breadcrumb={["Setup", "Getting started"]}
       />
+
+      <DocsCodeHero code={curlExample} language="bash" />
 
       <ol className="space-y-8">
         <li>
-          <h2 className="text-lg font-semibold tracking-tight">1. Create a project</h2>
+          <h2 id="1-create-a-project" className="text-lg font-semibold tracking-tight">
+            1. Create a project
+          </h2>
           <p className="mt-2 text-muted-foreground">
             Sign up and create your first project from the dashboard. A project maps to one
             app or product you want to collect feedback for.
@@ -38,7 +44,9 @@ const GettingStartedPage = () => {
         </li>
 
         <li>
-          <h2 className="text-lg font-semibold tracking-tight">2. Generate API keys</h2>
+          <h2 id="2-generate-api-keys" className="text-lg font-semibold tracking-tight">
+            2. Generate API keys
+          </h2>
           <p className="mt-2 text-muted-foreground">
             From{" "}
             <span className="inline-flex items-center gap-1 font-medium text-foreground">
@@ -53,7 +61,10 @@ const GettingStartedPage = () => {
         </li>
 
         <li>
-          <h2 className="text-lg font-semibold tracking-tight">
+          <h2
+            id="3-send-your-first-feedback"
+            className="text-lg font-semibold tracking-tight"
+          >
             3. Send your first feedback
           </h2>
           <p className="mt-2 text-muted-foreground">
@@ -65,7 +76,9 @@ const GettingStartedPage = () => {
         </li>
 
         <li>
-          <h2 className="text-lg font-semibold tracking-tight">4. Install the widget</h2>
+          <h2 id="4-install-the-widget" className="text-lg font-semibold tracking-tight">
+            4. Install the widget
+          </h2>
           <p className="mt-2 text-muted-foreground">
             Prefer collecting feedback directly from your UI? See the{" "}
             <Link href="/docs/widget" className="font-medium text-foreground underline">

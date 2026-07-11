@@ -1,3 +1,5 @@
+import { Icons } from "@echo/ui/components/icons";
+import { HoverLift } from "@echo/ui/components/motion/hover-lift";
 import { Separator } from "@echo/ui/components/separator";
 import type { Route } from "next";
 import Link from "next/link";
@@ -16,6 +18,7 @@ type DocCard = {
   href: string;
   title: string;
   description: string;
+  icon: keyof typeof Icons;
 };
 
 const CARDS: readonly DocCard[] = [
@@ -23,16 +26,19 @@ const CARDS: readonly DocCard[] = [
     href: "/docs/getting-started",
     title: "Getting started",
     description: "Create a project, generate API keys, and send your first feedback.",
+    icon: "circlePlus",
   },
   {
     href: "/docs/api",
     title: "REST API",
     description: "Authenticate and call the public feedback endpoints from your backend.",
+    icon: "externalLink",
   },
   {
     href: "/docs/widget",
     title: "Widget",
     description: "Drop a floating, sentiment-first feedback button into your app.",
+    icon: "star",
   },
 ];
 
@@ -42,12 +48,15 @@ const DocsIntroductionPage = () => {
       <DocsPageHeader
         title="Introduction"
         description="Echo is developer-first feedback infrastructure. It gives you API keys, a REST endpoint, and a drop-in widget so you can collect feedback from your users without building any of the plumbing yourself."
+        breadcrumb={["Introduction"]}
       />
 
       <Separator />
 
       <div>
-        <h2 className="text-lg font-semibold tracking-tight">How Echo is organized</h2>
+        <h2 id="how-echo-is-organized" className="text-lg font-semibold tracking-tight">
+          How Echo is organized
+        </h2>
         <p className="mt-2 text-muted-foreground">
           Every account is built from three nested layers:
         </p>
@@ -72,17 +81,29 @@ const DocsIntroductionPage = () => {
 
       <Separator />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {CARDS.map((card) => (
-          <Link
-            key={card.href}
-            href={card.href as Route}
-            className="rounded-xl border border-border p-4 transition-colors hover:bg-muted/40"
-          >
-            <h3 className="text-sm font-semibold">{card.title}</h3>
-            <p className="mt-1.5 text-xs text-muted-foreground">{card.description}</p>
-          </Link>
-        ))}
+      <div>
+        <h2 id="explore-the-docs" className="text-lg font-semibold tracking-tight">
+          Explore the docs
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          {CARDS.map((card) => {
+            const Icon = Icons[card.icon];
+
+            return (
+              <HoverLift key={card.href} className="rounded-xl border border-border">
+                <Link href={card.href as Route} className="flex h-full flex-col gap-3 p-5">
+                  <span className="flex size-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                    <Icon className="size-5" />
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">
+                    {card.title}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{card.description}</span>
+                </Link>
+              </HoverLift>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
