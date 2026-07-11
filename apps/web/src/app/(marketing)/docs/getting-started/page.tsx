@@ -21,7 +21,7 @@ const GettingStartedPage = () => {
   -d '{"name": "Jane Smith", "feedback": "Love the product!"}'`;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <DocsPageHeader
         title="Getting started"
         description="Four steps to your first piece of feedback."

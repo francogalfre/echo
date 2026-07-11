@@ -18,7 +18,7 @@ const WidgetDocsPage = () => {
   const componentUrl = `${serverUrl}/api/widget/<project-slug>/component`;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <DocsPageHeader
         title="Widget"
         description="A floating, sentiment-first feedback button you drop into your app. Users pick a star rating from 1 to 5 and can optionally leave a comment — no separate feedback page required."

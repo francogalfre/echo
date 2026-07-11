@@ -2,8 +2,6 @@ import { Separator } from "@echo/ui/components/separator";
 
 import { createMetadata } from "@/lib/metadata";
 
-import { LegalNotice } from "../components/legal-notice";
-
 export const metadata = createMetadata({
   title: "Privacy Policy",
   description: "How Echo collects, uses, and protects your data.",
@@ -13,135 +11,105 @@ export const metadata = createMetadata({
 const PrivacyPolicyPage = () => {
   return (
     <div>
-      <LegalNotice />
-
       <h1 className="text-3xl font-semibold tracking-tight">Privacy Policy</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Effective date: [date]</p>
+      <p className="mt-3 text-muted-foreground">
+        Echo is feedback infrastructure for developers. This page explains what we collect
+        and how we use it, in plain language.
+      </p>
 
       <div className="mt-8 space-y-8 text-sm leading-relaxed text-muted-foreground">
         <section>
-          <h2 className="text-base font-semibold text-foreground">
-            1. Information we collect
-          </h2>
+          <h2 className="text-base font-semibold text-foreground">What we collect</h2>
+          <ul className="mt-2 space-y-1.5">
+            <li>Account information — your name and email address when you sign up.</li>
+            <li>
+              Feedback content — the feedback your users submit through your projects, via
+              the API, widget, or hosted feedback page.
+            </li>
+            <li>
+              Basic usage data — things like IP address and browser type, used to keep the
+              service secure and reliable.
+            </li>
+          </ul>
+        </section>
+
+        <Separator />
+
+        <section>
+          <h2 className="text-base font-semibold text-foreground">How we use it</h2>
           <p className="mt-2">
-            [Company Name] collects account information you provide directly (name, email,
-            organization details), content you submit through the service (feedback entries,
-            project configuration), and technical data collected automatically (IP address,
-            browser type, usage logs).
+            We use this information to run Echo: authenticate you, store and display
+            feedback for your projects, and keep the service secure. We don&apos;t use your
+            data for anything beyond that.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">2. How we use it</h2>
+          <h2 className="text-base font-semibold text-foreground">Sharing</h2>
           <p className="mt-2">
-            We use collected information to operate and improve the service, provide
-            customer support, process payments, send administrative communications, and
-            detect abuse or security incidents.
+            We do not sell your data. We share it only with the infrastructure providers
+            that run Echo — hosting, database, and email — and only as needed to provide the
+            service.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">
-            3. Data sharing and subprocessors
-          </h2>
+          <h2 className="text-base font-semibold text-foreground">Data retention</h2>
           <p className="mt-2">
-            We do not sell personal information. We share data with subprocessors who help
-            us run the service — for example hosting providers, database providers, and
-            payment processors — under confidentiality obligations, and only to the extent
-            necessary to provide the service.
+            We keep your data for as long as your account is active. If you delete your
+            account, we delete your data with it, except where we&apos;re required to keep
+            it for legal reasons.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">4. Cookies</h2>
+          <h2 className="text-base font-semibold text-foreground">Security</h2>
           <p className="mt-2">
-            We use cookies and similar technologies for authentication, session management,
-            and understanding how the service is used. You can control cookies through your
-            browser settings.
+            We use industry-standard measures to protect your data, including encryption in
+            transit and hashing of API keys and passwords. No system is perfectly secure,
+            but we take this seriously.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">5. Data retention</h2>
+          <h2 className="text-base font-semibold text-foreground">Your rights</h2>
           <p className="mt-2">
-            We retain personal information for as long as your account is active or as
-            needed to provide the service, comply with legal obligations, resolve disputes,
-            and enforce our agreements.
+            You can access, update, or delete your account data at any time from your
+            dashboard settings. If you need help, contact us.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">6. Security</h2>
+          <h2 className="text-base font-semibold text-foreground">Changes</h2>
           <p className="mt-2">
-            We use administrative, technical, and physical safeguards designed to protect
-            personal information, including encryption in transit and hashing of sensitive
-            credentials. No method of transmission or storage is completely secure.
+            If we make material changes to this policy, we&apos;ll let you know through the
+            product or by email.
           </p>
         </section>
 
         <Separator />
 
         <section>
-          <h2 className="text-base font-semibold text-foreground">7. Your rights</h2>
+          <h2 className="text-base font-semibold text-foreground">Contact</h2>
           <p className="mt-2">
-            Depending on your location, you may have rights under laws such as the GDPR or
-            CCPA to access, correct, delete, or export your personal information, or to
-            object to certain processing. Contact us to exercise these rights.
-          </p>
-        </section>
-
-        <Separator />
-
-        <section>
-          <h2 className="text-base font-semibold text-foreground">
-            8. Children&apos;s privacy
-          </h2>
-          <p className="mt-2">
-            The service is not directed to children under 16, and we do not knowingly
-            collect personal information from children.
-          </p>
-        </section>
-
-        <Separator />
-
-        <section>
-          <h2 className="text-base font-semibold text-foreground">
-            9. International transfers
-          </h2>
-          <p className="mt-2">
-            Your information may be processed in countries other than your own. Where
-            required, we rely on appropriate safeguards for such transfers.
-          </p>
-        </section>
-
-        <Separator />
-
-        <section>
-          <h2 className="text-base font-semibold text-foreground">
-            10. Changes to this policy
-          </h2>
-          <p className="mt-2">
-            We may update this policy from time to time. Material changes will be
-            communicated through the service or by email.
-          </p>
-        </section>
-
-        <Separator />
-
-        <section>
-          <h2 className="text-base font-semibold text-foreground">11. Contact</h2>
-          <p className="mt-2">
-            Questions about this policy can be sent to [contact email].
+            Questions? Email us at{" "}
+            <a
+              href="mailto:support@echo.dev"
+              className="font-medium text-foreground underline"
+            >
+              support@echo.dev
+            </a>
+            .
           </p>
         </section>
       </div>

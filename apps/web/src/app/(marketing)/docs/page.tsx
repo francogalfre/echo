@@ -38,7 +38,7 @@ const CARDS: readonly DocCard[] = [
 
 const DocsIntroductionPage = () => {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <DocsPageHeader
         title="Introduction"
         description="Echo is developer-first feedback infrastructure. It gives you API keys, a REST endpoint, and a drop-in widget so you can collect feedback from your users without building any of the plumbing yourself."

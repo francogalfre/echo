@@ -11,14 +11,14 @@ type DocsLayoutProps = {
 
 const DocsLayout = ({ children }: DocsLayoutProps) => {
   return (
-    <div className="min-h-svh">
+    <div className="flex h-svh flex-col">
       <header className="border-b border-border">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/">
             <Logo />
           </Link>
           <Link
-            href="/login"
+            href="/dashboard"
             className={buttonVariants({
               variant: "outline",
               className: "h-8 px-3 text-xs",
@@ -28,10 +28,12 @@ const DocsLayout = ({ children }: DocsLayoutProps) => {
           </Link>
         </div>
       </header>
-      <div className="mx-auto max-w-6xl px-6 py-10 lg:flex lg:gap-10">
-        <DocsSidebar />
-        <div className="min-w-0 max-w-3xl flex-1 py-2">{children}</div>
-      </div>
+      <main className="flex-1 overflow-y-auto [scrollbar-gutter:stable]">
+        <div className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:gap-10">
+          <DocsSidebar />
+          <div className="min-w-0 max-w-3xl flex-1 py-2">{children}</div>
+        </div>
+      </main>
     </div>
   );
 };

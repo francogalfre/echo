@@ -40,7 +40,7 @@ const ApiDocsPage = () => {
 }`;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <DocsPageHeader
         title="REST API"
         description="A small, authenticated API for sending and reading feedback from your own backend."
