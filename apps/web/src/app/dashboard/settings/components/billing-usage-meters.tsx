@@ -22,7 +22,10 @@ export const BillingUsageMeters = ({
   return (
     <SettingsCard>
       <h3 className="text-sm font-semibold text-foreground">Usage</h3>
-      <div className="mt-6 flex flex-col gap-5">
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        Resets at the start of each billing cycle.
+      </p>
+      <div className="mt-6 flex flex-col gap-6">
         <BillingUsageMeterRow
           label="Feedback this month"
           used={feedback.used}

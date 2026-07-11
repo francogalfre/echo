@@ -31,12 +31,12 @@ export const BillingUsageMeterRow = ({
     <div className="flex flex-col gap-1.5">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-sm text-foreground">{label}</span>
-        <span className="shrink-0 text-xs text-muted-foreground">
+        <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
           {rightLabel ?? (hasLimit ? `${used} / ${limit}` : "Unlimited")}
         </span>
       </div>
       {hasLimit ? (
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <motion.div
             className={cn("h-full rounded-full", barColorClass(ratio))}
             initial={{ width: reduced ? widthPercent : "0%" }}
