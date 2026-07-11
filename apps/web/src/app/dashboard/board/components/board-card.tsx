@@ -25,7 +25,7 @@ export function BoardCardItem({
     <div
       onClick={onClick}
       className={cn(
-        "group flex flex-col gap-2 rounded-lg border border-border bg-card p-3",
+        "group flex flex-col gap-3 rounded-xl border border-border bg-card p-4",
         "transition-shadow duration-150 hover:shadow-sm motion-reduce:transition-none",
         isDragging && "shadow-md ring-2 ring-violet-400",
       )}
