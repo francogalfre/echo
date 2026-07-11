@@ -6,8 +6,11 @@ import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import * as React from "react";
 
-function Drawer({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />;
+function Drawer({
+  direction = "bottom",
+  ...props
+}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
+  return <DrawerPrimitive.Root data-slot="drawer" direction={direction} {...props} />;
 }
 
 function DrawerTrigger({ ...props }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
@@ -39,22 +42,34 @@ function DrawerContent({
   className,
   children,
   showCloseButton = true,
+  direction = "bottom",
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content> & {
   showCloseButton?: boolean;
+  direction?: "bottom" | "left" | "right";
 }) {
+  const isSide = direction === "right" || direction === "left";
+
   return (
     <DrawerPortal>
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-2xl border border-b-0 border-border bg-card text-card-foreground shadow-md ring-1 ring-foreground/10 outline-none",
+          "fixed z-50 flex flex-col bg-card text-card-foreground outline-none",
+          isSide && "inset-y-0 h-full w-full max-w-[540px] border-border shadow-2xl",
+          direction === "right" && "right-0 rounded-l-2xl border-l",
+          direction === "left" && "left-0 rounded-r-2xl border-r",
+          direction === "bottom" &&
+            "inset-x-0 bottom-0 mx-auto max-h-[85vh] w-full max-w-2xl rounded-t-2xl border " +
+              "border-b-0 border-border shadow-md ring-1 ring-foreground/10",
           className,
         )}
         {...props}
       >
-        <DrawerPrimitive.Handle className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full bg-muted" />
+        {!isSide && (
+          <DrawerPrimitive.Handle className="mx-auto mt-3 h-1.5 w-10 shrink-0 rounded-full bg-muted" />
+        )}
         {children}
         {showCloseButton && (
           <DrawerPrimitive.Close asChild>
