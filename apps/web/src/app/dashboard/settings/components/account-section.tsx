@@ -19,8 +19,11 @@ export const AccountSection = (): React.ReactElement => (
       <ProfileSection />
     </motion.div>
 
-    <motion.div variants={fadeInUp} className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <motion.div variants={fadeInUp}>
       <AppearanceSection />
+    </motion.div>
+
+    <motion.div variants={fadeInUp}>
       <WorkspaceSection />
     </motion.div>
 

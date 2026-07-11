@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { authClient, signOut } from "@/lib/auth-client";
 
 import { SettingsCard } from "./settings-card";
+import { SettingsRow } from "./settings-row";
 
 export const DangerZoneSection = (): React.ReactElement => {
   const router = useRouter();
@@ -61,20 +62,14 @@ export const DangerZoneSection = (): React.ReactElement => {
   const canDelete = Boolean(activeOrg) && confirmText.trim() === activeOrg?.name;
 
   return (
-    <SettingsCard className="border-destructive/20">
+    <SettingsCard className="bg-destructive/[0.02] ring-destructive/20">
       <h2 className="text-sm font-semibold text-destructive">Danger zone</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Irreversible actions for your account and workspace.
       </p>
 
-      <div className="mt-6 flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border p-4">
-          <div>
-            <p className="text-sm font-medium text-foreground">Sign out</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              End your session on this device.
-            </p>
-          </div>
+      <div className="mt-6 divide-y divide-destructive/10">
+        <SettingsRow label="Sign out" description="End your session on this device.">
           <Button
             variant="outline"
             onClick={handleSignOut}
@@ -83,16 +78,13 @@ export const DangerZoneSection = (): React.ReactElement => {
           >
             {signingOut ? <Icons.loading className="size-4 animate-spin" /> : "Sign out"}
           </Button>
-        </div>
+        </SettingsRow>
 
         {activeOrg ? (
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4">
-            <div>
-              <p className="text-sm font-medium text-foreground">Delete workspace</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Permanently delete &ldquo;{activeOrg.name}&rdquo; and all of its feedback.
-              </p>
-            </div>
+          <SettingsRow
+            label="Delete workspace"
+            description={`Permanently delete “${activeOrg.name}” and all of its feedback.`}
+          >
             <Button
               variant="destructive"
               onClick={() => setConfirmOpen(true)}
@@ -101,7 +93,7 @@ export const DangerZoneSection = (): React.ReactElement => {
               <Icons.trash className="size-4" />
               Delete workspace
             </Button>
-          </div>
+          </SettingsRow>
         ) : null}
       </div>
 

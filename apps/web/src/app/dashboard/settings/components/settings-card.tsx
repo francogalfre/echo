@@ -8,7 +8,10 @@ export const SettingsCard = ({
   ...props
 }: SettingsCardProps): React.ReactElement => (
   <div
-    className={cn("rounded-2xl border border-border bg-card p-6 sm:p-8", className)}
+    className={cn(
+      "rounded-2xl bg-card p-6 shadow-xs ring-1 ring-foreground/10 sm:p-8",
+      className,
+    )}
     {...props}
   />
 );
