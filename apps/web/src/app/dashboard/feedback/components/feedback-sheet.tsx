@@ -39,11 +39,11 @@ export function FeedbackSheet({
   const mailto = item ? buildFeedbackMailto(item) : null;
 
   return (
-    <Drawer direction="right" open={open} onOpenChange={onOpenChange}>
-      <DrawerContent direction="right" className="p-0">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="p-0">
         {item && (
           <>
-            <DrawerHeader className="flex-row items-start justify-between gap-4 border-b p-8 pr-14">
+            <DrawerHeader className="flex-row items-start justify-between gap-4 border-b p-8">
               <div className="flex min-w-0 items-start gap-3.5">
                 <Avatar className="size-11">
                   <AvatarFallback name={item.name} />

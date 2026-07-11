@@ -12,10 +12,10 @@ const PILL_TONE = {
 
 type PillTone = keyof typeof PILL_TONE;
 
-const SENTIMENT_TONE: Record<string, PillTone> = {
-  positive: "green",
-  neutral: "slate",
-  negative: "rose",
+const SENTIMENT_SOLID: Record<string, string> = {
+  positive: "bg-success text-white",
+  neutral: "bg-slate-500 text-white",
+  negative: "bg-destructive text-white",
 };
 
 const SOURCE_TONE: Record<string, PillTone> = {
@@ -34,12 +34,10 @@ export function SentimentBadge({
   className,
 }: SentimentBadgeProps): React.ReactElement {
   const value = sentiment ?? "neutral";
-  const tone = SENTIMENT_TONE[value] ?? "slate";
+  const solid = SENTIMENT_SOLID[value] ?? SENTIMENT_SOLID.neutral;
 
   return (
-    <Badge dot className={cn(PILL_TONE[tone], "capitalize", className)}>
-      {value}
-    </Badge>
+    <Badge className={cn(solid, "border-transparent capitalize", className)}>{value}</Badge>
   );
 }
 
@@ -65,6 +63,8 @@ type TagPillProps = {
 
 export function TagPill({ label, className }: TagPillProps): React.ReactElement {
   return (
-    <Badge className={cn(PILL_TONE.slate, "max-w-20 truncate", className)}>{label}</Badge>
+    <Badge className={cn(PILL_TONE.slate, "max-w-[8rem] truncate", className)}>
+      {label}
+    </Badge>
   );
 }
