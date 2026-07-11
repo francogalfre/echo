@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "motion/react";
+
 import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
 import { Badge } from "@echo/ui/components/badge";
 import { Button } from "@echo/ui/components/button";
@@ -14,6 +16,7 @@ import {
 } from "@echo/ui/components/drawer";
 import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
+import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 
 import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback-badges";
@@ -42,89 +45,59 @@ export function FeedbackSheet({
       <DrawerContent className="p-0">
         {item && (
           <>
-            <DrawerHeader className="gap-2 border-b pr-10">
-              <div className="flex items-center gap-2.5">
-                <Avatar className="size-7">
+            <DrawerHeader className="flex-row items-start justify-between gap-4 border-b pr-12">
+              <div className="flex min-w-0 items-start gap-3">
+                <Avatar className="size-10">
                   <AvatarFallback name={item.name} />
                 </Avatar>
-                <div>
-                  <DrawerTitle>{item.name}</DrawerTitle>
-                  <DrawerDescription>
-                    {formatRelativeTime(item.createdAt.toISOString())}
-                  </DrawerDescription>
+                <div className="min-w-0 pt-0.5">
+                  <DrawerTitle className="text-base font-semibold">{item.name}</DrawerTitle>
+                  {item.email ? (
+                    <DrawerDescription className="mt-0.5 break-all">
+                      {item.email}
+                    </DrawerDescription>
+                  ) : (
+                    <DrawerDescription className="mt-0.5">
+                      {formatRelativeTime(item.createdAt.toISOString())}
+                    </DrawerDescription>
+                  )}
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex shrink-0 flex-col items-end gap-1.5">
                 <SentimentBadge sentiment={item.sentiment} />
                 <SourceBadge source={item.source} />
               </div>
             </DrawerHeader>
 
-            <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
-              <div className="flex flex-col gap-5">
-                <p className="rounded-md bg-muted/40 p-4 text-sm leading-relaxed">
-                  {item.feedback}
-                </p>
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+              className="flex flex-1 flex-col gap-5 overflow-y-auto p-6"
+            >
+              <p className="rounded-xl bg-muted/40 p-5 text-sm leading-7 text-foreground">
+                {item.feedback}
+              </p>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="self-start"
-                  onClick={() => onExplainWithAi(item)}
-                >
-                  <Icons.aiMagic className="size-4 text-accent" />
-                  Explain with AI
-                </Button>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 sm:mt-0 sm:content-start">
-                {item.rating && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Rating</p>
-                    <StarDisplay rating={item.rating} />
-                  </div>
-                )}
-
-                {item.email && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">Email</p>
-                    <div className="mt-1 flex items-center gap-2 text-sm">
-                      <Icons.mail className="size-4 text-muted-foreground" />
-                      <span className="truncate">{item.email}</span>
-                    </div>
-                  </div>
-                )}
-
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+                {item.rating && <StarDisplay rating={item.rating} />}
+                <div className="flex items-center gap-1.5">
+                  <Icons.clock className="size-3.5" />
+                  {formatRelativeTime(item.createdAt.toISOString())}
+                </div>
                 {item.tags && item.tags.length > 0 && (
-                  <div className="col-span-2">
-                    <p className="text-xs text-muted-foreground">Tags</p>
-                    <div className="mt-1 flex flex-wrap gap-1.5">
-                      {item.tags.map((tag) => (
-                        <Badge key={tag} variant="outline">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {item.tags.map((tag) => (
+                      <Badge key={tag} variant="outline">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
                 )}
-
-                <div>
-                  <p className="text-xs text-muted-foreground">Source</p>
-                  <div className="mt-1">
-                    <SourceBadge source={item.source} />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-xs text-muted-foreground">Submitted</p>
-                  <p className="mt-1 text-sm">
-                    {formatRelativeTime(item.createdAt.toISOString())}
-                  </p>
-                </div>
               </div>
-            </div>
+            </motion.div>
 
-            <DrawerFooter className="flex-row border-t px-4 pb-8 pt-4">
+            <DrawerFooter className="flex-row flex-wrap border-t px-4 pb-8 pt-4">
               <Button variant="outline" size="lg" onClick={() => addToBoard(item)}>
                 <Icons.board className="size-4" />
                 Add to board
@@ -142,6 +115,10 @@ export function FeedbackSheet({
                   Send email
                 </a>
               )}
+              <Button variant="ghost" size="lg" onClick={() => onExplainWithAi(item)}>
+                <Icons.aiMagic className="size-4 text-accent" />
+                Explain with AI
+              </Button>
             </DrawerFooter>
           </>
         )}
