@@ -3,8 +3,8 @@
 import { Tabs, TabsList, TabsTrigger } from "@echo/ui/components/tabs";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 
+import { AccountSection } from "./account-section";
 import { BillingSection } from "./billing-section";
-import { ProfileSection } from "./profile-section";
 import { TeamSection } from "./team-section";
 
 type SettingsTab = "account" | "team" | "billing";
@@ -14,7 +14,7 @@ const SETTINGS_TAB_VALUES = ["account", "team", "billing"] as const;
 function renderTab(tab: SettingsTab): React.ReactElement {
   if (tab === "team") return <TeamSection />;
   if (tab === "billing") return <BillingSection />;
-  return <ProfileSection />;
+  return <AccountSection />;
 }
 
 export const SettingsTabs = (): React.ReactElement => {
@@ -26,7 +26,7 @@ export const SettingsTabs = (): React.ReactElement => {
   );
 
   return (
-    <div className="flex max-w-4xl flex-col gap-8">
+    <div className="flex w-full flex-col gap-8">
       <Tabs
         value={activeTab}
         onValueChange={(value) => void setActiveTab(value as SettingsTab)}
