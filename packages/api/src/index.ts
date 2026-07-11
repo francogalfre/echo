@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 
 import type { Context } from "./context";
+import { findMembership } from "./services/organization";
 
 export type { AppRouter } from "./routers/index";
 
@@ -23,11 +24,20 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   return next({ ctx: { ...ctx, session: ctx.session } });
 });
 
-export const organizationProcedure = protectedProcedure.use(({ ctx, next }) => {
+export const organizationProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const { activeOrganizationId } = ctx.session.session as SessionWithOrg;
 
   if (!activeOrganizationId) {
     throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization" });
+  }
+
+  const membership = await findMembership(ctx.session.user.id, activeOrganizationId);
+
+  if (!membership) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Not a member of this organization",
+    });
   }
 
   return next({ ctx: { ...ctx, organizationId: activeOrganizationId } });

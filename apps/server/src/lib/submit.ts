@@ -4,7 +4,7 @@ import { submitFeedbackSchema } from "../schemas";
 
 type SubmitResult =
   | { success: true }
-  | { success: false; status: 400 | 401 | 403; error: string };
+  | { success: false; status: 400 | 401 | 403 | 429; error: string };
 
 type SubmitFn = (input: {
   authorization: string | undefined;

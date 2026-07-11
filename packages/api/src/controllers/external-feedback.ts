@@ -1,3 +1,4 @@
+import { guardKeySubmission } from "../lib/rate-limit";
 import {
   findByPublicKey,
   findBySecretKeyHash,
@@ -52,6 +53,11 @@ async function createFeedbackWithKey(
 
   const keyRow = await kind.lookup(token);
   if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
+
+  const guard = await guardKeySubmission(hashKey(token));
+  if (!guard.allowed) {
+    return { success: false, status: 429, error: guard.message };
+  }
 
   return createFeedback({
     organizationId: keyRow.organizationId,
