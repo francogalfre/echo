@@ -3,6 +3,11 @@ import Link from "next/link";
 
 import { createMetadata } from "@/lib/metadata";
 
+import {
+  JsonLd,
+  organizationSchema,
+  softwareApplicationSchema,
+} from "./components/json-ld";
 import { Logo } from "./components/logo";
 
 export const metadata = createMetadata({ path: "/" });
@@ -10,6 +15,8 @@ export const metadata = createMetadata({ path: "/" });
 const Home = () => {
   return (
     <main className="relative flex min-h-svh flex-col items-center justify-center gap-6 px-4 text-center">
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={softwareApplicationSchema()} />
       <Logo />
       <p className="max-w-sm text-sm text-muted-foreground">
         Feedback infrastructure for developers.
