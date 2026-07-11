@@ -1,28 +1,14 @@
 import { Toaster } from "@echo/ui/components/sonner";
-import type { Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google";
+import { geistMono, geistSans, instrumentSans } from "@/utils/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ThemeProvider } from "next-themes";
+
+import type { Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { createMetadata } from "@/lib/metadata";
 
 import "../index.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata = createMetadata();
 
@@ -39,8 +25,10 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable}`}
       >
-        <NuqsAdapter>{children}</NuqsAdapter>
-        <Toaster theme="light" position="bottom-right" />
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <NuqsAdapter>{children}</NuqsAdapter>
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

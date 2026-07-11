@@ -200,6 +200,7 @@
   h3,
   h4 {
     @apply font-display tracking-tight;
+    text-wrap: balance;
   }
 }
 
