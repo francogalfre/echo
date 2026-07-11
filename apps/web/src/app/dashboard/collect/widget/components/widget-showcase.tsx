@@ -58,13 +58,13 @@ export function EchoWidget({ position = 'right' }) {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-card">
-      <div className="flex items-center gap-1 border-b border-border px-3 py-2">
+      <div className="flex items-center gap-1 border-b border-border px-4 py-2.5">
         {(["preview", "code"] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTab(t)}
-            className="relative rounded-md px-3 py-1 text-xs font-medium capitalize"
+            className="relative rounded-md px-3 py-1.5 text-xs font-medium capitalize"
           >
             {tab === t && (
               <motion.span
@@ -85,7 +85,7 @@ export function EchoWidget({ position = 'right' }) {
         ))}
       </div>
 
-      <div className="p-4">
+      <div className="p-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={tab}

@@ -84,26 +84,27 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={'fixed bottom-6 ' + side + ' z-50 flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-medium text-white shadow-lg transition-opacity hover:opacity-90'}
+        style={{ backgroundColor: ECHO_ACCENT }}
+        className={'fixed bottom-6 ' + side + ' z-50 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-opacity hover:opacity-90'}
       >
         Feedback
       </button>
 
       {open && (
-        <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-gray-200 bg-white p-5 shadow-xl'}>
-          <div className="mb-4 flex items-center justify-between">
+        <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-gray-200 bg-white p-6 shadow-xl'}>
+          <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {ECHO_LOGO ? (
-                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-full object-cover" />
+                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-lg object-cover" />
               ) : (
                 <span
-                  className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                  className="flex size-7 items-center justify-center rounded-lg text-xs font-semibold text-white"
                   style={{ backgroundColor: ECHO_ACCENT }}
                 >
                   {ECHO_PROJECT.charAt(0).toUpperCase()}
                 </span>
               )}
-              <p className="text-sm font-semibold text-gray-900">Send us feedback</p>
+              <p className="text-sm font-medium text-gray-900">Send us feedback</p>
             </div>
             <button
               type="button"
@@ -120,9 +121,9 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
               <p className="mt-1 text-xs text-gray-500">We appreciate you taking the time.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div
-                className="flex items-center justify-between"
+                className="flex items-center justify-start gap-1.5"
                 onMouseLeave={() => setHovered(null)}
               >
                 {[1, 2, 3, 4, 5].map((value) => {
@@ -167,7 +168,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
                 type="submit"
                 disabled={submitting || rating === null}
                 style={{ backgroundColor: ECHO_ACCENT }}
-                className="w-full rounded-lg py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="w-full rounded-lg py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {submitting ? 'Sending...' : 'Send feedback'}
               </button>
@@ -263,26 +264,27 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={'fixed bottom-6 ' + side + ' z-50 flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background shadow-lg transition-opacity hover:opacity-90'}
+        style={{ backgroundColor: ECHO_ACCENT }}
+        className={'fixed bottom-6 ' + side + ' z-50 flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-opacity hover:opacity-90'}
       >
         Feedback
       </button>
 
       {open && (
-        <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-border bg-background p-5 shadow-xl'}>
-          <div className="mb-4 flex items-center justify-between">
+        <div className={'fixed bottom-20 ' + side + ' z-50 w-80 rounded-2xl border border-border bg-background p-6 shadow-xl'}>
+          <div className="mb-5 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {ECHO_LOGO ? (
-                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-full object-cover" />
+                <img src={ECHO_LOGO} alt={ECHO_PROJECT} className="size-7 rounded-lg object-cover" />
               ) : (
                 <span
-                  className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                  className="flex size-7 items-center justify-center rounded-lg text-xs font-semibold text-white"
                   style={{ backgroundColor: ECHO_ACCENT }}
                 >
                   {ECHO_PROJECT.charAt(0).toUpperCase()}
                 </span>
               )}
-              <p className="text-sm font-semibold">Send us feedback</p>
+              <p className="text-sm font-medium">Send us feedback</p>
             </div>
             <button
               type="button"
@@ -299,9 +301,9 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
               <p className="mt-1 text-xs text-muted-foreground">We appreciate you taking the time.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div
-                className="flex items-center justify-between"
+                className="flex items-center justify-start gap-1.5"
                 onMouseLeave={() => setHovered(null)}
               >
                 {[1, 2, 3, 4, 5].map((value) => {
@@ -346,7 +348,7 @@ export function EchoWidget({ position = 'right' }: Props): JSX.Element {
                 type="submit"
                 disabled={submitting || rating === null}
                 style={{ backgroundColor: ECHO_ACCENT }}
-                className="w-full text-white hover:opacity-90"
+                className="w-full py-2.5 text-white hover:opacity-90"
               >
                 {submitting ? 'Sending...' : 'Send feedback'}
               </Button>

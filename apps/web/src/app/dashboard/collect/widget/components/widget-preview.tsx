@@ -37,7 +37,7 @@ export const WidgetPreview = ({
 
   return (
     <div
-      className="relative flex min-h-96 items-center justify-center overflow-hidden rounded-xl border border-border"
+      className="relative flex min-h-[28rem] items-center justify-center overflow-hidden rounded-xl border border-border"
       style={{
         backgroundImage:
           "radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0)",
@@ -52,25 +52,25 @@ export const WidgetPreview = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-5 bottom-20 w-80 rounded-2xl border border-border bg-background p-5 shadow-xl shadow-black/5"
+            className="absolute right-5 bottom-20 w-80 rounded-2xl border border-border bg-background p-6 shadow-xl shadow-black/5"
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-5 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {logoUrl ? (
                   <img
                     src={logoUrl}
                     alt={projectName}
-                    className="size-7 rounded-full object-cover"
+                    className="size-7 rounded-lg object-cover"
                   />
                 ) : (
                   <span
-                    className="flex size-7 items-center justify-center rounded-full text-xs font-semibold text-white"
+                    className="flex size-7 items-center justify-center rounded-lg text-xs font-semibold text-white"
                     style={{ backgroundColor: accentColor }}
                   >
                     {projectName.charAt(0).toUpperCase()}
                   </span>
                 )}
-                <p className="text-sm font-semibold">Send us feedback</p>
+                <p className="text-sm font-medium">Send us feedback</p>
               </div>
               <button
                 type="button"
@@ -112,7 +112,7 @@ export const WidgetPreview = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                   onSubmit={onSubmit}
-                  className="space-y-3"
+                  className="space-y-4"
                 >
                   <Rating
                     rating={rating ?? 0}
@@ -120,7 +120,7 @@ export const WidgetPreview = ({
                     editable
                     onRatingChange={setRating}
                     size="lg"
-                    className="justify-between"
+                    className="justify-start gap-1.5"
                   />
 
                   <textarea
@@ -137,7 +137,7 @@ export const WidgetPreview = ({
                     whileTap={{ scale: 0.98 }}
                     style={{ backgroundColor: accentColor }}
                     className={cn(
-                      "w-full rounded-lg py-2 text-sm font-medium text-white transition-opacity",
+                      "w-full rounded-lg py-2.5 text-sm font-medium text-white transition-opacity",
                       "hover:opacity-90 disabled:opacity-50",
                     )}
                   >
@@ -154,9 +154,10 @@ export const WidgetPreview = ({
         type="button"
         whileTap={{ scale: 0.95 }}
         onClick={toggleOpen}
+        style={{ backgroundColor: accentColor }}
         className={cn(
-          "absolute right-5 bottom-5 flex items-center gap-2 rounded-full bg-foreground px-4 py-2",
-          "text-sm font-medium text-background shadow-lg transition-opacity hover:opacity-90",
+          "absolute right-5 bottom-5 flex items-center gap-2 rounded-full px-4 py-2",
+          "text-sm font-medium text-white shadow-lg transition-opacity hover:opacity-90",
         )}
       >
         <Icons.message className="size-4" />
