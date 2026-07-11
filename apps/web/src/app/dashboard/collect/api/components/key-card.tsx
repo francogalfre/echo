@@ -51,7 +51,7 @@ export const KeyCard = ({
   };
 
   return (
-    <HoverLift className="flex flex-col rounded-xl border border-border bg-muted/20 p-4">
+    <HoverLift className="flex flex-col rounded-xl border border-border bg-muted/20 p-5">
       <div className="flex items-center gap-2">
         <p className="text-xs font-semibold text-foreground">{label}</p>
         <span

@@ -61,6 +61,9 @@ export const SectionNav = ({
 
   return (
     <nav className={cn("lg:sticky lg:top-24 lg:self-start", className)}>
+      <p className="mb-3 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        On this page
+      </p>
       <ul className="space-y-1">
         {sections.map((section) => {
           const isActive = activeId === section.id;

@@ -32,17 +32,17 @@ const KEY_TYPES: readonly KeyType[] = [
 ];
 
 const TABLE_HEAD_CELL =
-  "px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
+  "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 export const AuthSection = ({
   keys,
   onRoll,
   isRolling,
 }: AuthSectionProps): React.ReactElement => (
-  <div className="space-y-5">
+  <div className="space-y-6">
     <div>
-      <h2 className="text-lg font-semibold tracking-tight">Authentication</h2>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+      <h2 className="text-xl font-semibold tracking-tight">Authentication</h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         Authenticate every request with an{" "}
         <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">
           Authorization: Bearer &lt;key&gt;
@@ -64,10 +64,10 @@ export const AuthSection = ({
         <tbody className="divide-y divide-border">
           {KEY_TYPES.map((type) => (
             <tr key={type.prefix}>
-              <td className="px-4 py-2.5 font-mono text-xs text-foreground">
+              <td className="px-4 py-3 font-mono text-xs text-foreground">
                 {type.prefix}…
               </td>
-              <td className="px-4 py-2.5">
+              <td className="px-4 py-3">
                 <span
                   className={cn(
                     "inline-flex rounded-md px-1.5 py-0.5 text-xs font-medium",
@@ -77,7 +77,7 @@ export const AuthSection = ({
                   {type.access}
                 </span>
               </td>
-              <td className="px-4 py-2.5 text-muted-foreground">{type.usage}</td>
+              <td className="px-4 py-3 text-muted-foreground">{type.usage}</td>
             </tr>
           ))}
         </tbody>

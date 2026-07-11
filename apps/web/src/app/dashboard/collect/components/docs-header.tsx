@@ -23,20 +23,20 @@ export const DocsHeader = ({
   };
 
   return (
-    <header className="mb-8 flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <header className="mb-10 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <span className="inline-block rounded-full border border-border px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {eyebrow}
         </span>
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">{title}</h1>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+        <h1 className="mt-5 text-3xl font-semibold tracking-tight">{title}</h1>
+        <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       </div>
 
       {baseUrl && (
         <div className="lg:w-80">
-          <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Base URL
           </p>
           <button

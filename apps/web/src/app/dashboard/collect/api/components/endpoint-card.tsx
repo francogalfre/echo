@@ -30,7 +30,7 @@ const METHOD_STYLES: Record<Method, string> = {
 };
 
 const TABLE_HEAD_CELL =
-  "px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
+  "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 function statusTone(status: number): string {
   if (status < 300) return "bg-success/10 text-success";
@@ -48,7 +48,7 @@ export const EndpointCard = ({
   responseBody,
   note,
 }: EndpointCardProps): React.ReactElement => (
-  <div className="rounded-2xl border border-border bg-card p-5">
+  <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
     <div className="flex items-center gap-2.5">
       <span
         className={cn(
@@ -60,16 +60,16 @@ export const EndpointCard = ({
       </span>
       <span className="font-mono text-sm text-foreground">{path}</span>
     </div>
-    <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
+    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
     {note && (
-      <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <p className="mt-2.5 flex items-center gap-1.5 text-xs text-muted-foreground">
         <Icons.lock className="size-3 shrink-0" />
         {note}
       </p>
     )}
 
     {params && params.length > 0 && (
-      <div className="mt-6">
+      <div className="mt-8">
         <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Parameters
         </p>
@@ -86,20 +86,20 @@ export const EndpointCard = ({
             <tbody className="divide-y divide-border">
               {params.map((field) => (
                 <tr key={field.name}>
-                  <td className="px-4 py-2.5 font-mono text-xs text-foreground">
+                  <td className="px-4 py-3 font-mono text-xs text-foreground">
                     {field.name}
                   </td>
-                  <td className="px-4 py-2.5 font-mono text-muted-foreground">
+                  <td className="px-4 py-3 font-mono text-muted-foreground">
                     {field.type}
                   </td>
-                  <td className="px-4 py-2.5">
+                  <td className="px-4 py-3">
                     {field.required ? (
                       <span className="font-medium text-foreground">Required</span>
                     ) : (
                       <span className="text-muted-foreground">Optional</span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-muted-foreground">{field.description}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{field.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -108,15 +108,15 @@ export const EndpointCard = ({
       </div>
     )}
 
-    <div className="mt-6">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+    <div className="mt-8">
+      <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         Request
       </p>
       <LanguageTabs snippets={snippets} />
     </div>
 
-    <div className="mt-5">
-      <div className="mb-2 flex items-center gap-2">
+    <div className="mt-6">
+      <div className="mb-2.5 flex items-center gap-2">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Response
         </p>

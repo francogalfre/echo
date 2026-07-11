@@ -12,13 +12,13 @@ export const KeysSection = ({
   onRoll,
   isRolling,
 }: KeysSectionProps): React.ReactElement => (
-  <section className="rounded-2xl border border-border bg-card p-5">
+  <section className="rounded-2xl border border-border bg-card p-6">
     <h2 className="text-sm font-semibold">Keys</h2>
-    <p className="mt-0.5 text-xs text-muted-foreground">
+    <p className="mt-1 text-xs text-muted-foreground">
       Use your publishable key to read feedback and your secret key to write it.
     </p>
 
-    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+    <div className="mt-5 grid gap-4 sm:grid-cols-2">
       <KeyCard
         label="Publishable key"
         badge="Read"

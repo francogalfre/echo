@@ -6,6 +6,7 @@ import { Icons } from "@echo/ui/components/icons";
 
 import { PageContainer } from "../../components/page-container";
 import { DocsHeader } from "../components/docs-header";
+import { ApiHero } from "./components/api-hero";
 import { AuthSection } from "./components/auth-section";
 import { EndpointCard, type ParamField } from "./components/endpoint-card";
 import { ErrorTable } from "./components/error-table";
@@ -161,19 +162,23 @@ feedback = response.json()["feedback"]`,
         />
       </FadeIn>
 
-      <div className="lg:grid lg:grid-cols-[180px_minmax(0,1fr)] lg:gap-10">
+      <FadeIn delay={0.05} className="mb-16">
+        <ApiHero request={createSnippets[0]?.code ?? ""} response={createResponse} />
+      </FadeIn>
+
+      <div className="lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
         <SectionNav sections={SECTIONS} className="hidden lg:block" />
 
-        <div className="space-y-10">
-          <FadeIn delay={0.05}>
+        <div className="space-y-20">
+          <FadeIn delay={0.1}>
             <section id="authentication">
               <AuthSection keys={state.keys} onRoll={roll} isRolling={pending === "roll"} />
             </section>
           </FadeIn>
 
-          <FadeIn delay={0.1}>
+          <FadeIn delay={0.15}>
             <section id="create-feedback">
-              <h2 className="mb-3 text-lg font-semibold tracking-tight">Create feedback</h2>
+              <SectionHeading title="Create feedback" description="Submit new feedback." />
               <EndpointCard
                 method="POST"
                 path="/api/feedback"
@@ -187,9 +192,12 @@ feedback = response.json()["feedback"]`,
             </section>
           </FadeIn>
 
-          <FadeIn delay={0.15}>
+          <FadeIn delay={0.2}>
             <section id="list-feedback">
-              <h2 className="mb-3 text-lg font-semibold tracking-tight">List feedback</h2>
+              <SectionHeading
+                title="List feedback"
+                description="Retrieve stored feedback."
+              />
               <EndpointCard
                 method="GET"
                 path="/api/feedback"
@@ -202,15 +210,33 @@ feedback = response.json()["feedback"]`,
             </section>
           </FadeIn>
 
-          <FadeIn delay={0.2}>
+          <FadeIn delay={0.25}>
             <section id="errors">
-              <h2 className="mb-3 text-lg font-semibold tracking-tight">Errors</h2>
+              <SectionHeading
+                title="Errors"
+                description="Status codes returned on failure."
+              />
               <ErrorTable />
             </section>
           </FadeIn>
         </div>
       </div>
     </PageContainer>
+  );
+}
+
+function SectionHeading({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}): React.ReactElement {
+  return (
+    <div className="mb-5">
+      <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
+      <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+    </div>
   );
 }
 
@@ -222,19 +248,19 @@ function EmptyState({
   isGenerating: boolean;
 }): React.ReactElement {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
+    <div className="mx-auto flex max-w-md flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-20 text-center">
       <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-background">
         <Icons.lock className="size-5 text-muted-foreground" />
       </div>
-      <h2 className="mt-4 text-sm font-semibold">No API keys yet</h2>
-      <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+      <h2 className="mt-5 text-sm font-semibold">No API keys yet</h2>
+      <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
         Generate a publishable and secret key pair to start sending feedback.
       </p>
       <button
         type="button"
         onClick={onGenerate}
         disabled={isGenerating}
-        className="mt-6 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+        className="mt-7 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-50"
       >
         {isGenerating ? <Icons.loading className="size-3.5 animate-spin" /> : null}
         Generate API keys
