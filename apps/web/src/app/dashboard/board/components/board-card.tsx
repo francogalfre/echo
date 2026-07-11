@@ -25,7 +25,7 @@ export function BoardCardItem({
     <div
       onClick={onClick}
       className={cn(
-        "group flex flex-col gap-1.5 rounded-lg border border-border bg-card p-2.5",
+        "group flex flex-col gap-2 rounded-lg border border-border bg-card p-3",
         "transition-shadow duration-150 hover:shadow-sm motion-reduce:transition-none",
         isDragging && "shadow-md ring-2 ring-violet-400",
       )}
@@ -60,7 +60,7 @@ export function BoardCardItem({
         {item.content}
       </p>
 
-      <div className="flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1.5">
         <SentimentBadge sentiment={item.sentiment} />
         <SourceBadge source={item.source} />
         {item.tags?.slice(0, 2).map((tag) => (

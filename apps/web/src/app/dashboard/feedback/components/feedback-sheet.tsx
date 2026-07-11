@@ -45,7 +45,7 @@ export function FeedbackSheet({
       <DrawerContent className="p-0">
         {item && (
           <>
-            <DrawerHeader className="flex-row items-start justify-between gap-4 border-b pr-12">
+            <DrawerHeader className="flex-row items-start justify-between gap-4 border-b p-6 pr-14">
               <div className="flex min-w-0 items-start gap-3">
                 <Avatar className="size-10">
                   <AvatarFallback name={item.name} />
@@ -73,9 +73,9 @@ export function FeedbackSheet({
               variants={fadeInUp}
               initial="hidden"
               animate="visible"
-              className="flex flex-1 flex-col gap-5 overflow-y-auto p-6"
+              className="flex flex-1 flex-col gap-7 overflow-y-auto p-8"
             >
-              <p className="rounded-xl bg-muted/40 p-5 text-sm leading-7 text-foreground">
+              <p className="rounded-xl bg-muted/40 p-6 text-sm leading-7 text-foreground">
                 {item.feedback}
               </p>
 

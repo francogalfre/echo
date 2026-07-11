@@ -14,11 +14,11 @@ export const UpgradeCard = (): React.ReactElement | null => {
   return (
     <Link
       href={"/dashboard/settings?tab=billing" as Route}
-      className="group block rounded-lg border border-border bg-surface p-3 transition-colors hover:border-accent/40"
+      className="group block rounded-lg border border-border bg-surface p-3.5 transition-colors hover:border-accent/40"
     >
       <div className="flex items-center gap-2">
         <Icons.aiMagic className="size-4 text-accent" />
-        <p className="text-xs font-medium text-foreground">Echo Pro</p>
+        <p className="text-sm font-semibold text-foreground">Echo Pro</p>
       </div>
       <p className="mt-1 text-xs/relaxed text-muted-foreground">
         Unlimited feedback, AI summaries and webhooks.

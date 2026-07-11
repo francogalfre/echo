@@ -184,12 +184,12 @@ export default function BoardPage(): React.ReactElement {
             onMove={handleMove}
             className="flex h-full flex-col"
           >
-            <KanbanBoard className="grid flex-1 min-h-0 grid-cols-3 gap-3">
+            <KanbanBoard className="grid flex-1 min-h-0 grid-cols-3 gap-4">
               {COLUMNS.map((col) => (
                 <KanbanColumn
                   key={col.id}
                   value={col.id}
-                  className="flex h-full flex-col gap-2 rounded-xl border border-border bg-muted/30 p-2.5"
+                  className="flex h-full flex-col gap-2.5 rounded-xl border border-border bg-muted/30 p-3"
                 >
                   <div className="flex items-center gap-1.5 px-1">
                     <span
@@ -214,7 +214,7 @@ export default function BoardPage(): React.ReactElement {
 
                   <KanbanColumnContent
                     value={col.id}
-                    className="flex flex-1 min-h-0 flex-col gap-1.5 overflow-y-auto"
+                    className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto"
                   >
                     {columns[col.id].map((item) => (
                       <KanbanItem key={item.id} value={item.id}>
