@@ -1,3 +1,4 @@
+import { Badge } from "@echo/ui/components/badge";
 import { cn } from "@echo/ui/lib/utils";
 
 type ErrorRow = {
@@ -17,9 +18,9 @@ const ERRORS: readonly ErrorRow[] = [
 ];
 
 function statusTone(status: number): string {
-  if (status < 300) return "bg-success/10 text-success";
-  if (status < 500) return "bg-warning/10 text-warning";
-  return "bg-destructive/10 text-destructive";
+  if (status < 300) return "bg-pastel-green-bg text-pastel-green-text";
+  if (status < 500) return "bg-pastel-amber-bg text-pastel-amber-text";
+  return "bg-pastel-rose-bg text-pastel-rose-text";
 }
 
 export const ErrorTable = (): React.ReactElement => (
@@ -37,16 +38,11 @@ export const ErrorTable = (): React.ReactElement => (
       </thead>
       <tbody className="divide-y divide-border">
         {ERRORS.map((row) => (
-          <tr key={row.status}>
+          <tr key={row.status} className="transition-colors hover:bg-muted/30">
             <td className="px-4 py-3">
-              <span
-                className={cn(
-                  "inline-flex rounded-md px-1.5 py-0.5 font-mono text-xs font-semibold",
-                  statusTone(row.status),
-                )}
-              >
+              <Badge className={cn(statusTone(row.status), "font-mono tabular-nums")}>
                 {row.status}
-              </span>
+              </Badge>
             </td>
             <td className="px-4 py-3 text-muted-foreground">{row.meaning}</td>
           </tr>

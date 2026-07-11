@@ -1,4 +1,4 @@
-import { cn } from "@echo/ui/lib/utils";
+import { Badge } from "@echo/ui/components/badge";
 
 import type { ApiKeys } from "../hooks/use-api-keys";
 import { KeysSection } from "./keys-section";
@@ -20,13 +20,13 @@ const KEY_TYPES: readonly KeyType[] = [
   {
     prefix: "echo_pk_",
     access: "Read-only",
-    accessStyle: "bg-info/10 text-info",
+    accessStyle: "bg-pastel-blue-bg text-pastel-blue-text",
     usage: "Safe to expose in client-side code. Used to authenticate GET requests.",
   },
   {
     prefix: "echo_sk_",
     access: "Read & write",
-    accessStyle: "bg-accent/10 text-accent",
+    accessStyle: "bg-pastel-violet-bg text-pastel-violet-text",
     usage: "Server-side only, never expose it. Required to authenticate POST requests.",
   },
 ];
@@ -63,19 +63,12 @@ export const AuthSection = ({
         </thead>
         <tbody className="divide-y divide-border">
           {KEY_TYPES.map((type) => (
-            <tr key={type.prefix}>
+            <tr key={type.prefix} className="transition-colors hover:bg-muted/30">
               <td className="px-4 py-3 font-mono text-xs text-foreground">
                 {type.prefix}…
               </td>
               <td className="px-4 py-3">
-                <span
-                  className={cn(
-                    "inline-flex rounded-md px-1.5 py-0.5 text-xs font-medium",
-                    type.accessStyle,
-                  )}
-                >
-                  {type.access}
-                </span>
+                <Badge className={type.accessStyle}>{type.access}</Badge>
               </td>
               <td className="px-4 py-3 text-muted-foreground">{type.usage}</td>
             </tr>

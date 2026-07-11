@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@echo/ui/components/badge";
 import { CodeBlock } from "@echo/ui/components/code-block";
 
 type InstallMethodsProps = {
@@ -87,9 +88,7 @@ const Step = ({
       </span>
       <h2 className="text-sm font-semibold">{title}</h2>
       {badge && (
-        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-          {badge}
-        </span>
+        <Badge className="bg-pastel-green-bg text-pastel-green-text">{badge}</Badge>
       )}
     </div>
     <p className="mb-4 pl-[30px] text-xs leading-relaxed text-muted-foreground">
@@ -114,7 +113,7 @@ const PropsTable = (): React.ReactElement => (
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr className="transition-colors hover:bg-muted/30">
           <td className="px-4 py-2.5 font-mono text-xs">position</td>
           <td className="px-4 py-2.5 font-mono text-muted-foreground">'left' | 'right'</td>
           <td className="px-4 py-2.5 font-mono text-muted-foreground">'right'</td>

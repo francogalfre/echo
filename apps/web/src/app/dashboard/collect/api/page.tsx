@@ -6,6 +6,7 @@ import { Icons } from "@echo/ui/components/icons";
 
 import { PageContainer } from "../../components/page-container";
 import { DocsHeader } from "../components/docs-header";
+import { SectionHeading } from "../components/section-heading";
 import { ApiHero } from "./components/api-hero";
 import { AuthSection } from "./components/auth-section";
 import { EndpointCard, type ParamField } from "./components/endpoint-card";
@@ -222,21 +223,6 @@ feedback = response.json()["feedback"]`,
         </div>
       </div>
     </PageContainer>
-  );
-}
-
-function SectionHeading({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}): React.ReactElement {
-  return (
-    <div className="mb-5">
-      <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-      <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
-    </div>
   );
 }
 

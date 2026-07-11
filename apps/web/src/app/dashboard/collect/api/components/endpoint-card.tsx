@@ -1,3 +1,4 @@
+import { Badge } from "@echo/ui/components/badge";
 import { CodeBlock } from "@echo/ui/components/code-block";
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
@@ -24,18 +25,18 @@ type EndpointCardProps = {
   note?: string;
 };
 
-const METHOD_STYLES: Record<Method, string> = {
-  POST: "border border-accent/20 bg-accent/10 text-accent",
-  GET: "border border-info/20 bg-info/10 text-info",
+const METHOD_TONE: Record<Method, string> = {
+  POST: "bg-pastel-violet-bg text-pastel-violet-text",
+  GET: "bg-pastel-blue-bg text-pastel-blue-text",
 };
 
 const TABLE_HEAD_CELL =
   "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 function statusTone(status: number): string {
-  if (status < 300) return "bg-success/10 text-success";
-  if (status < 500) return "bg-warning/10 text-warning";
-  return "bg-destructive/10 text-destructive";
+  if (status < 300) return "bg-pastel-green-bg text-pastel-green-text";
+  if (status < 500) return "bg-pastel-amber-bg text-pastel-amber-text";
+  return "bg-pastel-rose-bg text-pastel-rose-text";
 }
 
 export const EndpointCard = ({
@@ -50,14 +51,9 @@ export const EndpointCard = ({
 }: EndpointCardProps): React.ReactElement => (
   <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
     <div className="flex items-center gap-2.5">
-      <span
-        className={cn(
-          "rounded-md px-2 py-1 font-mono text-xs font-bold tracking-wide",
-          METHOD_STYLES[method],
-        )}
-      >
+      <Badge className={cn(METHOD_TONE[method], "font-mono font-bold uppercase")}>
         {method}
-      </span>
+      </Badge>
       <span className="font-mono text-sm text-foreground">{path}</span>
     </div>
     <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{description}</p>
@@ -85,7 +81,7 @@ export const EndpointCard = ({
             </thead>
             <tbody className="divide-y divide-border">
               {params.map((field) => (
-                <tr key={field.name}>
+                <tr key={field.name} className="transition-colors hover:bg-muted/30">
                   <td className="px-4 py-3 font-mono text-xs text-foreground">
                     {field.name}
                   </td>
@@ -120,14 +116,9 @@ export const EndpointCard = ({
         <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           Response
         </p>
-        <span
-          className={cn(
-            "rounded-md px-1.5 py-0.5 font-mono text-[11px] font-semibold",
-            statusTone(responseStatus),
-          )}
-        >
+        <Badge className={cn(statusTone(responseStatus), "font-mono tabular-nums")}>
           {responseStatus}
-        </span>
+        </Badge>
       </div>
       <CodeBlock code={responseBody} language="json" />
     </div>

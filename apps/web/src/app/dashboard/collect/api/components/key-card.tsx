@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@echo/ui/components/badge";
 import { Icons } from "@echo/ui/components/icons";
 import { HoverLift } from "@echo/ui/components/motion/hover-lift";
 import { cn } from "@echo/ui/lib/utils";
@@ -9,8 +10,8 @@ import { toast } from "sonner";
 const MASK = "•".repeat(24);
 
 const BADGE_STYLES: Record<string, string> = {
-  Read: "bg-info/10 text-info",
-  Write: "bg-accent/10 text-accent",
+  Read: "bg-pastel-blue-bg text-pastel-blue-text",
+  Write: "bg-pastel-violet-bg text-pastel-violet-text",
 };
 
 type KeyCardProps = {
@@ -54,14 +55,14 @@ export const KeyCard = ({
     <HoverLift className="flex flex-col rounded-xl border border-border bg-muted/20 p-5">
       <div className="flex items-center gap-2">
         <p className="text-xs font-semibold text-foreground">{label}</p>
-        <span
+        <Badge
           className={cn(
-            "rounded px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide",
-            BADGE_STYLES[badge] ?? "bg-muted text-muted-foreground",
+            "uppercase tracking-wide",
+            BADGE_STYLES[badge] ?? "bg-pastel-slate-bg text-pastel-slate-text",
           )}
         >
           {badge}
-        </span>
+        </Badge>
       </div>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
 

@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 
 import { PageContainer } from "../../components/page-container";
 import { DocsHeader } from "../components/docs-header";
+import { SectionHeading } from "../components/section-heading";
 import { CustomizeAccent } from "./components/customize-accent";
 import { InstallMethods } from "./components/install-methods";
 import { WidgetShowcase } from "./components/widget-showcase";
@@ -111,22 +112,20 @@ export default function WidgetPage(): React.ReactElement {
         />
       </FadeIn>
 
-      <div className="space-y-16">
+      <div className="space-y-20">
         <FadeIn delay={0.05}>
           <section>
-            <h2 className="text-lg font-semibold tracking-tight">Preview</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              See how the widget looks and behaves before you install it.
-            </p>
-            <div className="mt-5">
-              <WidgetShowcase
-                publicKey={state.info.publicKey}
-                serverUrl={serverUrl}
-                accentColor={accentColor}
-                logoUrl={state.info.logo}
-                projectName={state.info.name}
-              />
-            </div>
+            <SectionHeading
+              title="Preview"
+              description="See how the widget looks and behaves before you install it."
+            />
+            <WidgetShowcase
+              publicKey={state.info.publicKey}
+              serverUrl={serverUrl}
+              accentColor={accentColor}
+              logoUrl={state.info.logo}
+              projectName={state.info.name}
+            />
           </section>
         </FadeIn>
 
@@ -139,13 +138,11 @@ export default function WidgetPage(): React.ReactElement {
 
         <FadeIn delay={0.15}>
           <section>
-            <h2 className="text-lg font-semibold tracking-tight">Install</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Choose the install method that fits your stack.
-            </p>
-            <div className="mt-5">
-              <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />
-            </div>
+            <SectionHeading
+              title="Install"
+              description="Choose the install method that fits your stack."
+            />
+            <InstallMethods orgSlug={state.info.orgSlug} serverUrl={serverUrl} />
           </section>
         </FadeIn>
       </div>

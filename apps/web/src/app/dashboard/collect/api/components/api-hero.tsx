@@ -7,7 +7,12 @@ type ApiHeroProps = {
 };
 
 export const ApiHero = ({ request, response }: ApiHeroProps): React.ReactElement => (
-  <div className="rounded-2xl border border-border bg-muted/20 p-6 sm:p-8">
+  <div
+    className={[
+      "rounded-2xl border border-border p-6 sm:p-8",
+      "bg-gradient-to-br from-pastel-violet-bg/70 via-card to-pastel-blue-bg/70",
+    ].join(" ")}
+  >
     <div className="mb-6 flex items-center gap-2">
       <span className="flex size-6 items-center justify-center rounded-md bg-accent/10 text-accent">
         <Icons.sparkles className="size-3.5" />
