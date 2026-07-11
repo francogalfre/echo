@@ -33,8 +33,8 @@ export function AiSummaryBanner({ total }: AiSummaryBannerProps): React.ReactEle
             </p>
           </div>
         </div>
-        <Button size="sm" onClick={() => setOpen(true)}>
-          <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
+        <Button size="lg" onClick={() => setOpen(true)}>
+          <Icons.aiMagic data-icon="inline-start" className="size-4" />
           View summary
         </Button>
       </div>

@@ -1,5 +1,6 @@
 import { env } from "@echo/env/web";
 import { CodeBlock } from "@echo/ui/components/code-block";
+import { Icons } from "@echo/ui/components/icons";
 import Link from "next/link";
 
 import { createMetadata } from "@/lib/metadata";
@@ -39,8 +40,11 @@ const GettingStartedPage = () => {
         <li>
           <h2 className="text-lg font-semibold tracking-tight">2. Generate API keys</h2>
           <p className="mt-2 text-muted-foreground">
-            From <span className="font-medium text-foreground">Collect → API</span> in the
-            dashboard, generate a key pair: a secret key (
+            From{" "}
+            <span className="inline-flex items-center gap-1 font-medium text-foreground">
+              Collect <Icons.arrowRight className="size-3" /> API
+            </span>{" "}
+            in the dashboard, generate a key pair: a secret key (
             <code className="rounded bg-muted px-1 py-0.5 text-xs">echo_sk_…</code>) for
             writing feedback, and a publishable key (
             <code className="rounded bg-muted px-1 py-0.5 text-xs">echo_pk_…</code>) for

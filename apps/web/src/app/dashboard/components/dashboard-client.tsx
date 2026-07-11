@@ -89,7 +89,7 @@ export function DashboardClient(): React.ReactElement {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">
-          Hello{firstName ? `, ${firstName}` : ""}! 👋
+          Hello{firstName ? `, ${firstName}` : ""}!
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Here&apos;s how your project is performing.
@@ -117,7 +117,7 @@ export function DashboardClient(): React.ReactElement {
               action={
                 <Link
                   href="/dashboard/collect"
-                  className={cn(buttonVariants({ size: "sm" }))}
+                  className={cn(buttonVariants({ size: "lg" }), "active:scale-[0.96]")}
                 >
                   Start collecting
                 </Link>

@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
+import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import Link from "next/link";
 
@@ -17,12 +18,10 @@ export function RecentFeedbackTable({
         <h2 className="text-sm font-medium">Recent feedback</h2>
         <Link
           href="/dashboard/feedback"
-          className="group text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="group flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
-          <span>View all</span>{" "}
-          <span className="inline-block transition-transform duration-150 group-hover:translate-x-0.5">
-            →
-          </span>
+          <span>View all</span>
+          <Icons.arrowRight className="size-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
         </Link>
       </div>
       <ul>

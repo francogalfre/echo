@@ -166,8 +166,11 @@ export default function BoardPage(): React.ReactElement {
               <Icons.board className="size-4.5 text-muted-foreground/50" />
             </div>
             <p className="mt-2 text-sm font-medium">Your board is empty</p>
-            <p className="text-xs text-muted-foreground">
-              Go to Feedback and click ··· → Add to board on any item.
+            <p className="inline-flex flex-wrap items-center justify-center gap-1 text-xs text-muted-foreground">
+              <span>Go to Feedback and click</span>
+              <Icons.moreHorizontal className="size-3.5" />
+              <Icons.arrowRight className="size-3.5" />
+              <span>Add to board on any item.</span>
             </p>
             <Link
               href="/dashboard/feedback"
