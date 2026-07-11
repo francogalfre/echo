@@ -42,6 +42,9 @@ export function FeedbackTableHeader({
         Source
       </span>
       <span role="columnheader" className="text-sm font-medium text-foreground/70">
+        Tags
+      </span>
+      <span role="columnheader" className="text-sm font-medium text-foreground/70">
         Date
       </span>
       <span role="columnheader" className="sr-only">

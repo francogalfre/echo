@@ -1,61 +1,70 @@
 import { Badge } from "@echo/ui/components/badge";
-import type { BadgeVariantProps } from "@echo/ui/components/badge-variants";
 import { cn } from "@echo/ui/lib/utils";
 
-const SENTIMENT_VARIANT: Record<string, NonNullable<BadgeVariantProps["variant"]>> = {
-  positive: "success",
-  negative: "destructive",
-  neutral: "outline",
+const PILL_TONE = {
+  green: "bg-pastel-green-bg text-pastel-green-text",
+  slate: "bg-pastel-slate-bg text-pastel-slate-text",
+  rose: "bg-pastel-rose-bg text-pastel-rose-text",
+  blue: "bg-pastel-blue-bg text-pastel-blue-text",
+  violet: "bg-pastel-violet-bg text-pastel-violet-text",
+  amber: "bg-pastel-amber-bg text-pastel-amber-text",
+} as const;
+
+type PillTone = keyof typeof PILL_TONE;
+
+const SENTIMENT_TONE: Record<string, PillTone> = {
+  positive: "green",
+  neutral: "slate",
+  negative: "rose",
+};
+
+const SOURCE_TONE: Record<string, PillTone> = {
+  api: "blue",
+  form: "violet",
+  widget: "amber",
+};
+
+type SentimentBadgeProps = {
+  sentiment: string | null;
+  className?: string;
 };
 
 export function SentimentBadge({
   sentiment,
   className,
-}: {
-  sentiment: string | null;
-  className?: string;
-}): React.ReactElement {
+}: SentimentBadgeProps): React.ReactElement {
   const value = sentiment ?? "neutral";
+  const tone = SENTIMENT_TONE[value] ?? "slate";
 
   return (
-    <Badge
-      dot
-      variant={SENTIMENT_VARIANT[value] ?? "outline"}
-      className={cn("capitalize", className)}
-    >
+    <Badge dot className={cn(PILL_TONE[tone], "capitalize", className)}>
       {value}
     </Badge>
   );
 }
 
-const SOURCE_DOT: Record<string, string> = {
-  api: "bg-info",
-  form: "bg-accent",
-  widget: "bg-warning",
-};
-
-export function SourceBadge({
-  source,
-  className,
-}: {
+type SourceBadgeProps = {
   source: string;
   className?: string;
-}): React.ReactElement {
+};
+
+export function SourceBadge({ source, className }: SourceBadgeProps): React.ReactElement {
+  const tone = SOURCE_TONE[source] ?? "slate";
+
   return (
-    <span
-      className={cn(
-        "inline-flex w-fit items-center gap-1.5 text-[11px] font-medium capitalize text-foreground/80",
-        className,
-      )}
-    >
-      <span
-        aria-hidden
-        className={cn(
-          "size-1.5 shrink-0 rounded-full",
-          SOURCE_DOT[source] ?? "bg-muted-foreground",
-        )}
-      />
+    <Badge dot className={cn(PILL_TONE[tone], "capitalize", className)}>
       {source}
-    </span>
+    </Badge>
+  );
+}
+
+type TagPillProps = {
+  label: string;
+  className?: string;
+};
+
+export function TagPill({ label, className }: TagPillProps): React.ReactElement {
+  return (
+    <Badge className={cn(PILL_TONE.slate, "max-w-20 truncate", className)}>{label}</Badge>
   );
 }

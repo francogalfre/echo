@@ -52,6 +52,7 @@ function FeedbackListSkeleton(): React.ReactElement {
           <Skeleton className="h-3 flex-1 rounded" />
           <Skeleton className="h-4 w-14 shrink-0 rounded-full" />
           <Skeleton className="h-4 w-12 shrink-0 rounded-full" />
+          <Skeleton className="h-4 w-10 shrink-0 rounded-full" />
           <Skeleton className="h-3 w-10 shrink-0 rounded" />
           <Skeleton className="size-4 shrink-0 rounded" />
         </div>
@@ -169,7 +170,7 @@ export function FeedbackList(): React.ReactElement {
       />
 
       <div className="overflow-x-auto overflow-y-hidden rounded-lg bg-card ring-1 ring-foreground/10">
-        <div className="min-w-[42rem]">
+        <div className="min-w-[48rem]">
           {feedbackState.status === "loading" && <FeedbackListSkeleton />}
 
           {feedbackState.status === "error" && (
@@ -186,7 +187,7 @@ export function FeedbackList(): React.ReactElement {
             <EmptyState
               icon={<Icons.message />}
               title="No feedback yet"
-              description="Feedback will appear here once received."
+              description="Once people share feedback through your API, form, or widget, it shows up here."
               action={
                 <Link
                   href="/dashboard/collect"
@@ -204,7 +205,7 @@ export function FeedbackList(): React.ReactElement {
               <EmptyState
                 icon={<Icons.search />}
                 title="No matching feedback"
-                description="Try a different search term or filter."
+                description="Nothing matches your current search or filters. Try adjusting them."
                 action={
                   <Button variant="ghost" size="sm" onClick={clearFilters}>
                     Clear filters

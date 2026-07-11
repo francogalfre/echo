@@ -15,7 +15,7 @@ import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 
-import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
+import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
 import type { FeedbackItem } from "../hooks/use-feedback";
 import {
   addToBoard,
@@ -86,6 +86,24 @@ export function FeedbackRow({
 
       <span role="cell">
         <SourceBadge source={item.source} />
+      </span>
+
+      <span role="cell" className="flex min-w-0 items-center gap-1 overflow-hidden">
+        {item.tags && item.tags.length > 0 ? (
+          <>
+            <TagPill label={item.tags[0]} />
+            {item.tags.length > 1 && (
+              <TagPill label={`+${item.tags.length - 1}`} className="tabular-nums" />
+            )}
+          </>
+        ) : item.rating ? (
+          <span className="flex items-center gap-1 text-[11px] font-medium tabular-nums text-foreground/80">
+            <Icons.star className="size-3 text-warning" />
+            {item.rating.toFixed(1)}
+          </span>
+        ) : (
+          <span className="text-[11px] text-muted-foreground/50">—</span>
+        )}
       </span>
 
       <span role="cell" className="text-[11px] tabular-nums text-muted-foreground">
