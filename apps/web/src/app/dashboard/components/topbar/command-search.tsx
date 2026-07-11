@@ -112,7 +112,7 @@ const COMMANDS: CommandItem[] = [
     title: "Contact support",
     section: "Help",
     icon: Icons.help,
-    run: openExternal("mailto:support@echo.dev"),
+    run: openExternal("mailto:francogalfre.code@gmail.com"),
   },
 ];
 

@@ -106,10 +106,10 @@ const TermsOfServicePage = () => {
           <p className="mt-2">
             Questions? Email us at{" "}
             <a
-              href="mailto:support@echo.dev"
+              href="mailto:francogalfre.code@gmail.com"
               className="font-medium text-foreground underline"
             >
-              support@echo.dev
+              francogalfre.code@gmail.com
             </a>
             .
           </p>
