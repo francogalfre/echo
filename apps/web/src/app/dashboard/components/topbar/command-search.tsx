@@ -7,7 +7,7 @@ import { durations, easings } from "@echo/ui/lib/motion";
 import { AnimatePresence, motion } from "motion/react";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type IconComponent = (typeof Icons)[keyof typeof Icons];
 
@@ -28,6 +28,13 @@ function openExternal(href: string): () => void {
   return () => globalThis.open(href, "_blank", "noopener,noreferrer");
 }
 
+function isTypingElement(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable
+  );
+}
+
 const COMMANDS: CommandItem[] = [
   {
     id: "overview",
@@ -44,31 +51,52 @@ const COMMANDS: CommandItem[] = [
     run: navigate("/dashboard/feedback"),
   },
   {
+    id: "board",
+    title: "Board",
+    section: "Navigation",
+    icon: Icons.board,
+    run: navigate("/dashboard/board"),
+  },
+  {
     id: "feedback-page",
     title: "Feedback page",
-    section: "Navigation",
+    section: "Collect",
     icon: Icons.radar,
     run: navigate("/dashboard/collect/feedback-page"),
   },
   {
     id: "api",
     title: "API keys",
-    section: "Navigation",
-    icon: Icons.radar,
+    section: "Collect",
+    icon: Icons.lock,
     run: navigate("/dashboard/collect/api"),
   },
   {
     id: "widget",
     title: "Widget",
-    section: "Navigation",
-    icon: Icons.radar,
+    section: "Collect",
+    icon: Icons.sparkles,
     run: navigate("/dashboard/collect/widget"),
+  },
+  {
+    id: "team-members",
+    title: "Team members",
+    section: "Team",
+    icon: Icons.user,
+    run: navigate("/dashboard/team/members"),
+  },
+  {
+    id: "projects",
+    title: "Projects",
+    section: "Team",
+    icon: Icons.circlePlus,
+    run: navigate("/dashboard/team/projects"),
   },
   {
     id: "settings",
     title: "Settings",
     section: "Settings",
-    icon: Icons.settings,
+    icon: Icons.slidersHorizontal,
     shortcut: "⌘ ,",
     run: navigate("/dashboard/settings"),
   },
@@ -77,7 +105,7 @@ const COMMANDS: CommandItem[] = [
     title: "Documentation",
     section: "Help",
     icon: Icons.book,
-    run: openExternal("https://docs.echo.dev"),
+    run: navigate("/docs"),
   },
   {
     id: "support",
@@ -93,6 +121,7 @@ export const CommandSearch = (): React.ReactElement => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const results = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -127,14 +156,29 @@ export const CommandSearch = (): React.ReactElement => {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((value) => !value);
-      }
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== "k") return;
+      if (isTypingElement(event.target) && event.target !== inputRef.current) return;
+      event.preventDefault();
+      setOpen((value) => !value);
     };
     globalThis.addEventListener("keydown", onKeyDown);
     return () => globalThis.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const onEscape = (event: KeyboardEvent): void => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      close();
+    };
+    globalThis.addEventListener("keydown", onEscape);
+    return () => globalThis.removeEventListener("keydown", onEscape);
+  }, [open, close]);
+
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -151,9 +195,6 @@ export const CommandSearch = (): React.ReactElement => {
       event.preventDefault();
       const item = results[activeIndex];
       if (item) select(item);
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      close();
     }
   };
 
@@ -191,6 +232,8 @@ export const CommandSearch = (): React.ReactElement => {
               <div className="flex items-center gap-2.5 border-b border-border px-4">
                 <Icons.search className="size-4 shrink-0 text-muted-foreground" />
                 <input
+                  ref={inputRef}
+                  autoFocus
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search pages, settings, help…"
