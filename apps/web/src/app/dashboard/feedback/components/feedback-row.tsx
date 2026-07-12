@@ -70,10 +70,19 @@ export function FeedbackRow({
       </span>
 
       <span role="cell" className="flex min-w-0 items-center gap-2.5">
-        <Avatar className="size-7">
+        <Avatar className="size-8">
           <AvatarFallback name={item.name} />
         </Avatar>
-        <span className="truncate text-[13px] font-medium">{item.name}</span>
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate text-[13px] font-medium leading-tight">
+            {item.name}
+          </span>
+          {item.email && (
+            <span className="truncate text-[11px] leading-tight text-muted-foreground">
+              {item.email}
+            </span>
+          )}
+        </span>
       </span>
 
       <span role="cell" className="min-w-0 truncate text-[13px] text-muted-foreground">

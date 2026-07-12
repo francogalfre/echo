@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
 import { addManyToBoard } from "../utils/feedback-actions";
 import { FeedbackRow } from "./feedback-row";
+import { FeedbackSelectionBar } from "./feedback-selection-bar";
 import { FeedbackSheet } from "./feedback-sheet";
 import { FEEDBACK_TABLE_GRID } from "./feedback-table-grid";
 import { FeedbackTableHeader } from "./feedback-table-header";
@@ -216,29 +217,11 @@ export function FeedbackList(): React.ReactElement {
 
           {feedbackState.status === "ready" && filtered.length > 0 && (
             <>
-              {selected.size > 0 ? (
-                <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
-                  <span className="text-xs font-medium">{selected.size} selected</span>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={handleBulkAddToBoard}>
-                      Add to board
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelected(new Set())}
-                    >
-                      Clear
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <FeedbackTableHeader
-                  allSelected={allSelected}
-                  someSelected={someSelected}
-                  onToggleSelectAll={toggleSelectAll}
-                />
-              )}
+              <FeedbackTableHeader
+                allSelected={allSelected}
+                someSelected={someSelected}
+                onToggleSelectAll={toggleSelectAll}
+              />
 
               <motion.div
                 role="table"
@@ -276,6 +259,12 @@ export function FeedbackList(): React.ReactElement {
           )}
         </div>
       </div>
+
+      <FeedbackSelectionBar
+        count={selected.size}
+        onAddToBoard={handleBulkAddToBoard}
+        onClear={() => setSelected(new Set())}
+      />
 
       <FeedbackSheet
         item={openItem}
