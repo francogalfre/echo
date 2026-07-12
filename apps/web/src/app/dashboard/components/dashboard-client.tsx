@@ -1,13 +1,8 @@
 "use client";
 
-import { buttonVariants } from "@echo/ui/components/button-variants";
-import { EmptyState } from "@echo/ui/components/empty-state";
-import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
-import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
-import Link from "next/link";
 import * as React from "react";
 
 import { useSession } from "@/lib/auth-client";
@@ -17,6 +12,7 @@ import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard
 
 import { AiSummaryBanner } from "./ai-summary-banner";
 import { MetricStrip } from "./metric-strip";
+import { OnboardingChecklist } from "./onboarding-checklist";
 import { RecentFeedbackTable } from "./recent-feedback-table";
 import { SentimentChartCard } from "./sentiment-chart-card";
 import { SourcesCard } from "./sources-card";
@@ -109,21 +105,7 @@ export function DashboardClient(): React.ReactElement {
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-4">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
-          <div className="rounded-lg bg-card ring-1 ring-foreground/10">
-            <EmptyState
-              icon={<Icons.message />}
-              title="No feedback yet"
-              description="Connect a source and your analytics will light up here."
-              action={
-                <Link
-                  href="/dashboard/collect"
-                  className={cn(buttonVariants({ size: "lg" }), "active:scale-[0.96]")}
-                >
-                  Start collecting
-                </Link>
-              }
-            />
-          </div>
+          <OnboardingChecklist hasFeedback={state.data.metrics.total.value > 0} />
         </div>
       )}
 
