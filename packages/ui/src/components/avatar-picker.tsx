@@ -2,7 +2,7 @@
 
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 
 export type AvatarPreset = {
   id: string;
@@ -51,50 +51,33 @@ export function AvatarPicker({ value, onChange }: AvatarPickerProps): React.Reac
   const selected = AVATAR_PRESETS.find((p) => p.id === value) ?? AVATAR_PRESETS[0];
 
   return (
-    <div className="flex flex-col items-center gap-5">
-      <div className="relative size-28">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selected.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0"
+    <div className="flex flex-wrap items-center gap-3">
+      {AVATAR_PRESETS.map((preset) => {
+        const isSelected = preset.id === selected.id;
+        return (
+          <motion.button
+            key={preset.id}
+            type="button"
+            aria-label={`Select ${preset.name}`}
+            aria-pressed={isSelected}
+            onClick={() => onChange(preset.id)}
+            whileTap={{ scale: 0.94 }}
+            className={cn(
+              "relative size-10 rounded-full outline-none transition-opacity",
+              isSelected
+                ? "opacity-100 ring-2 ring-foreground/70 ring-offset-2 ring-offset-background"
+                : "opacity-60 hover:opacity-100",
+            )}
           >
-            <AvatarOrb preset={selected} className="size-full shadow-lg shadow-black/5" />
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {AVATAR_PRESETS.map((preset) => {
-          const isSelected = preset.id === selected.id;
-          return (
-            <motion.button
-              key={preset.id}
-              type="button"
-              aria-label={`Select ${preset.name}`}
-              aria-pressed={isSelected}
-              onClick={() => onChange(preset.id)}
-              whileTap={{ scale: 0.94 }}
-              className={cn(
-                "relative size-12 rounded-full outline-none transition-opacity",
-                isSelected
-                  ? "opacity-100 ring-2 ring-foreground/70 ring-offset-2 ring-offset-background"
-                  : "opacity-60 hover:opacity-100",
-              )}
-            >
-              <AvatarOrb preset={preset} className="size-full" />
-              {isSelected && (
-                <span className="absolute -right-0.5 -bottom-0.5 flex size-4 items-center justify-center rounded-full bg-foreground text-background">
-                  <Icons.check className="size-2.5" />
-                </span>
-              )}
-            </motion.button>
-          );
-        })}
-      </div>
+            <AvatarOrb preset={preset} className="size-full" />
+            {isSelected && (
+              <span className="absolute -right-0.5 -bottom-0.5 flex size-4 items-center justify-center rounded-full bg-foreground text-background">
+                <Icons.check className="size-2.5" />
+              </span>
+            )}
+          </motion.button>
+        );
+      })}
     </div>
   );
 }
