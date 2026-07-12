@@ -1,4 +1,4 @@
-import { PageContainer } from "./components/page-container";
+import { PageContainer } from "../components/page-container";
 import { DashboardClient } from "./components/dashboard-client";
 
 const DashboardPage = (): React.ReactElement => {

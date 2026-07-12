@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import type { OverviewRecentItem } from "@echo/api/services/dashboard-overview";
 
-import { SentimentBadge, SourceBadge } from "./feedback-badges";
+import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
 
 export function RecentFeedbackTable({
   items,

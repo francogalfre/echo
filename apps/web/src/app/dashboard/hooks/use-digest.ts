@@ -6,7 +6,7 @@ import { toast } from "@echo/ui/components/toast";
 import { trpc } from "@/lib/trpc";
 import type { DigestOutput } from "@echo/ai";
 
-import { isUpgradeError } from "../../components/upgrade-error";
+import { isUpgradeError } from "../components/upgrade-error";
 
 export type DigestItem = {
   digest: DigestOutput;

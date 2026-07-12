@@ -5,7 +5,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { formatCount } from "@echo/ui/lib/format";
 import * as React from "react";
 
-import { DigestModal } from "../feedback/components/digest-modal";
+import { DigestModal } from "../../components/digest-modal";
 
 type AiSummaryBannerProps = {
   total: number;

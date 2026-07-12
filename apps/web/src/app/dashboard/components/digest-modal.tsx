@@ -15,7 +15,7 @@ import { cn } from "@echo/ui/lib/utils";
 import type { DigestOutput } from "@echo/ai";
 import { useEffect } from "react";
 
-import { UpgradeDialog } from "../../components/upgrade-dialog";
+import { UpgradeDialog } from "./upgrade-dialog";
 import { useDigest } from "../hooks/use-digest";
 
 type Props = {

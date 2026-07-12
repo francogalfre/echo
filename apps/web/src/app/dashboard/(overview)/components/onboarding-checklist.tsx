@@ -9,7 +9,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import * as React from "react";
 
-import { useApiKeys } from "../collect/api/hooks/use-api-keys";
+import { useApiKeys } from "../../collect/api/hooks/use-api-keys";
 
 type OnboardingChecklistProps = {
   hasFeedback: boolean;
