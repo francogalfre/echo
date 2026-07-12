@@ -10,7 +10,10 @@ import {
   type KanbanMoveEvent,
 } from "@echo/ui/components/reui/kanban";
 import { Button } from "@echo/ui/components/button";
+import { buttonVariants } from "@echo/ui/components/button-variants";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
+import { cn } from "@echo/ui/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "@echo/ui/components/toast";
@@ -161,23 +164,20 @@ export default function BoardPage(): React.ReactElement {
             <Icons.loading className="size-5 animate-spin text-muted-foreground" />
           </div>
         ) : totalItems === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border text-center">
-            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-              <Icons.board className="size-4.5 text-muted-foreground/50" />
-            </div>
-            <p className="mt-2 text-sm font-medium">Your board is empty</p>
-            <p className="inline-flex flex-wrap items-center justify-center gap-1 text-xs text-muted-foreground">
-              <span>Go to Feedback and click</span>
-              <Icons.moreHorizontal className="size-3.5" />
-              <Icons.arrowRight className="size-3.5" />
-              <span>Add to board on any item.</span>
-            </p>
-            <Link
-              href="/dashboard/feedback"
-              className="mt-3 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-opacity hover:opacity-80"
-            >
-              Browse feedback
-            </Link>
+          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border">
+            <EmptyState
+              icon={<Icons.board />}
+              title="Your board is empty"
+              description="Add feedback to the board from the Feedback page — open an item's menu and choose Add to board."
+              action={
+                <Link
+                  href="/dashboard/feedback"
+                  className={cn(buttonVariants({ size: "sm" }), "active:scale-[0.96]")}
+                >
+                  Browse feedback
+                </Link>
+              }
+            />
           </div>
         ) : (
           <Kanban

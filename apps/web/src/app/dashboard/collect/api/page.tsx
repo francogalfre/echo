@@ -3,6 +3,7 @@
 import { env } from "@echo/env/web";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
+import { Skeleton } from "@echo/ui/components/skeleton";
 
 import { PageContainer } from "../../components/page-container";
 import { DocsHeader } from "../components/docs-header";
@@ -48,10 +49,7 @@ export default function CollectApiPage(): React.ReactElement {
   if (state.status === "loading") {
     return (
       <PageContainer>
-        <div className="space-y-4">
-          <div className="h-44 animate-pulse rounded-2xl border border-border bg-muted/30" />
-          <div className="h-72 animate-pulse rounded-2xl border border-border bg-muted/30" />
-        </div>
+        <ApiPageSkeleton />
       </PageContainer>
     );
   }
@@ -246,11 +244,45 @@ function EmptyState({
         type="button"
         onClick={onGenerate}
         disabled={isGenerating}
-        className="mt-7 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity hover:opacity-85 disabled:opacity-50"
+        className="mt-7 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity active:scale-[0.96] hover:opacity-85 disabled:opacity-50"
       >
         {isGenerating ? <Icons.loading className="size-3.5 animate-spin" /> : null}
         Generate API keys
       </button>
+    </div>
+  );
+}
+
+function ApiPageSkeleton(): React.ReactElement {
+  return (
+    <div className="space-y-16" aria-hidden="true">
+      <div className="rounded-2xl border border-border p-6 sm:p-8">
+        <Skeleton className="mb-6 h-4 w-56" />
+        <div className="grid items-center gap-6 lg:grid-cols-[1fr_auto_1fr]">
+          <Skeleton className="h-32 w-full rounded-lg" />
+          <div className="hidden size-4 lg:block" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <div className="space-y-2.5">
+          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-3.5 w-full max-w-lg" />
+          <Skeleton className="h-3.5 w-2/3 max-w-md" />
+        </div>
+
+        <Skeleton className="h-32 w-full rounded-xl" />
+
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <Skeleton className="h-4 w-16" />
+          <Skeleton className="mt-1.5 h-3 w-72" />
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            <Skeleton className="h-32 rounded-xl" />
+            <Skeleton className="h-32 rounded-xl" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

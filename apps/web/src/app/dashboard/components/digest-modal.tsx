@@ -10,6 +10,8 @@ import {
   DrawerTitle,
 } from "@echo/ui/components/drawer";
 import { Icons } from "@echo/ui/components/icons";
+import { Skeleton } from "@echo/ui/components/skeleton";
+import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 import type { DigestOutput } from "@echo/ai";
@@ -37,22 +39,21 @@ function ThemesAndIssues({ digest }: { digest: DigestOutput }): React.ReactEleme
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Main Themes
           </p>
-          <div className="flex flex-col gap-2">
+          <Stagger className="flex flex-col gap-2">
             {digest.themes.map((theme) => (
-              <div
-                key={theme.title}
-                className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
-              >
-                <span className="mt-0.5 min-w-[1.75rem] rounded-full bg-muted px-1.5 py-0.5 text-center text-xs font-semibold text-muted-foreground">
-                  {theme.count}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">{theme.title}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{theme.insight}</p>
+              <StaggerItem key={theme.title}>
+                <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                  <span className="mt-0.5 min-w-[1.75rem] rounded-full bg-muted px-1.5 py-0.5 text-center text-xs font-semibold text-muted-foreground">
+                    {theme.count}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">{theme.title}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{theme.insight}</p>
+                  </div>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </div>
       )}
 
@@ -61,19 +62,60 @@ function ThemesAndIssues({ digest }: { digest: DigestOutput }): React.ReactEleme
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Top Issues
           </p>
-          <ul className="flex flex-col gap-1.5">
+          <Stagger className="flex flex-col gap-1.5">
             {digest.topIssues.map((issue) => (
-              <li
-                key={issue}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
-              >
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
-                {issue}
-              </li>
+              <StaggerItem key={issue}>
+                <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
+                  {issue}
+                </div>
+              </StaggerItem>
             ))}
-          </ul>
+          </Stagger>
         </div>
       )}
+    </div>
+  );
+}
+
+function DigestSkeleton(): React.ReactElement {
+  return (
+    <div className="flex flex-col gap-4" aria-hidden="true">
+      <div className="rounded-xl border border-border bg-muted/30 p-4">
+        <Skeleton className="h-3.5 w-full" />
+        <Skeleton className="mt-2 h-3.5 w-11/12" />
+        <Skeleton className="mt-2 h-3.5 w-2/3" />
+      </div>
+
+      <div>
+        <Skeleton className="mb-2 h-3 w-24" />
+        <div className="flex flex-col gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
+            >
+              <Skeleton className="mt-0.5 h-5 w-7 shrink-0 rounded-full" />
+              <div className="min-w-0 flex-1">
+                <Skeleton className="h-3.5 w-1/2" />
+                <Skeleton className="mt-1.5 h-3 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <Skeleton className="mb-2 h-3 w-20" />
+        <div className="flex flex-col gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-start gap-2">
+              <Skeleton className="mt-1.5 size-1.5 shrink-0 rounded-full" />
+              <Skeleton className="h-3.5 w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -129,11 +171,12 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
           <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
             <div className="flex flex-col gap-4">
               {(isLoading || isGenerating) && (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-6">
-                  <Icons.loading className="size-4 shrink-0 animate-spin text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                    <Icons.loading className="size-3.5 shrink-0 animate-spin" />
                     {isGenerating ? "Analyzing your feedback…" : "Loading…"}
-                  </p>
+                  </div>
+                  <DigestSkeleton />
                 </div>
               )}
 

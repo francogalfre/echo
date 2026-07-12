@@ -3,6 +3,7 @@
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
+import { Skeleton } from "@echo/ui/components/skeleton";
 import { cn } from "@echo/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
@@ -21,6 +22,7 @@ type Step = {
   href: string;
   completed: boolean;
   showCta: boolean;
+  loading: boolean;
 };
 
 function useSteps(hasFeedback: boolean): readonly Step[] {
@@ -35,6 +37,7 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
       href: "/dashboard",
       completed: true,
       showCta: false,
+      loading: false,
     },
     {
       title: "Create an API key",
@@ -42,6 +45,7 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
       href: "/dashboard/collect/api",
       completed: apiKeyReady,
       showCta: !apiKeyLoading,
+      loading: apiKeyLoading,
     },
     {
       title: "Collect your first feedback",
@@ -49,6 +53,7 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
       href: "/dashboard/collect",
       completed: hasFeedback,
       showCta: true,
+      loading: false,
     },
   ];
 }
@@ -56,10 +61,15 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
 function StepCircle({
   index,
   completed,
+  loading,
 }: {
   index: number;
   completed: boolean;
+  loading: boolean;
 }): React.ReactElement {
+  if (loading) {
+    return <Skeleton className="size-7 shrink-0 rounded-full" />;
+  }
   if (completed) {
     return (
       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
@@ -113,7 +123,7 @@ export function OnboardingChecklist({
       <Stagger className="flex flex-col gap-4">
         {steps.map((step, index) => (
           <StaggerItem key={step.title} className="flex items-center gap-3.5">
-            <StepCircle index={index} completed={step.completed} />
+            <StepCircle index={index} completed={step.completed} loading={step.loading} />
             <div className="min-w-0 flex-1">
               <p
                 className={cn(
@@ -125,6 +135,9 @@ export function OnboardingChecklist({
               </p>
               <p className="text-xs text-muted-foreground">{step.description}</p>
             </div>
+            {index === firstIncompleteIndex && step.loading && (
+              <Skeleton className="h-8 w-20 shrink-0 rounded-lg" />
+            )}
             {index === firstIncompleteIndex && step.showCta && (
               <Link
                 href={step.href as Route}
