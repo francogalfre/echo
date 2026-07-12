@@ -1,7 +1,6 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
-import type { Route } from "next";
 import Link from "next/link";
 
 import { useBillingOverview } from "../../hooks/use-billing-overview";
@@ -13,7 +12,7 @@ export const UpgradeCard = (): React.ReactElement | null => {
 
   return (
     <Link
-      href={"/dashboard/settings?tab=billing" as Route}
+      href="/dashboard/settings/billing"
       className="group block rounded-lg border border-border bg-surface p-3.5 transition-colors hover:border-accent/40"
     >
       <div className="flex items-center gap-2">
