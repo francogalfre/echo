@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@echo/ui/components/avatar";
 import {
   AVATAR_PRESETS,
   AvatarPicker,
@@ -21,6 +22,7 @@ export const ProfileSection = (): React.ReactElement => {
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState<string>(AVATAR_PRESETS[0].id);
   const [saving, setSaving] = useState(false);
+  const selectedPreset = AVATAR_PRESETS.find((p) => p.id === avatar) ?? AVATAR_PRESETS[0];
 
   useEffect(() => {
     if (session?.user.name) setName(session.user.name);
@@ -77,8 +79,17 @@ export const ProfileSection = (): React.ReactElement => {
           />
         </SettingsRow>
 
-        <SettingsRow label="Avatar" description="Pick a color to represent you.">
-          <AvatarPicker value={avatar} onChange={setAvatar} />
+        <SettingsRow
+          label="Avatar"
+          description="Pick a color. This is how you appear across Echo."
+        >
+          <div className="flex flex-wrap items-center gap-4">
+            <Avatar className="size-12">
+              <AvatarImage src={avatarDataUri(selectedPreset)} alt="" />
+              <AvatarFallback name={name} />
+            </Avatar>
+            <AvatarPicker value={avatar} onChange={setAvatar} />
+          </div>
         </SettingsRow>
       </div>
 

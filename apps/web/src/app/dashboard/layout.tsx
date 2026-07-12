@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-import { AvatarSetupModal } from "./components/avatar-setup-modal";
 import { MotionProvider } from "./components/motion-provider";
 import { Sidebar } from "./components/sidebar";
 import { Topbar } from "./components/topbar";
@@ -18,7 +17,6 @@ const DashboardLayout = ({ children }: Props): React.ReactElement => {
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>
-        <AvatarSetupModal />
       </div>
     </MotionProvider>
   );
