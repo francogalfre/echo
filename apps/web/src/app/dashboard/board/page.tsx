@@ -13,7 +13,7 @@ import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 import Link from "next/link";
 
 import { trpc } from "@/lib/trpc";

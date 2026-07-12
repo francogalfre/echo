@@ -12,7 +12,7 @@ import {
 } from "@echo/ui/components/dialog";
 import { Icons } from "@echo/ui/components/icons";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 

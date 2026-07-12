@@ -1,4 +1,4 @@
-import { Toaster } from "@echo/ui/components/sonner";
+import { Toaster } from "@echo/ui/components/toast";
 import { geistMono, geistSans, instrumentSans } from "@/utils/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";

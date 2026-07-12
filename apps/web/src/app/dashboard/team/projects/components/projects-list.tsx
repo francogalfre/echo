@@ -8,7 +8,7 @@ import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { cn } from "@echo/ui/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 

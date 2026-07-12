@@ -5,7 +5,7 @@ import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 

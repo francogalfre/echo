@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { type PathValue, useForm, useWatch } from "react-hook-form";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";

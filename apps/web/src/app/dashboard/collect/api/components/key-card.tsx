@@ -5,7 +5,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { HoverLift } from "@echo/ui/components/motion/hover-lift";
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 const MASK = "•".repeat(24);
 

@@ -9,7 +9,7 @@ import {
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient, useSession } from "@/lib/auth-client";
 

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
 

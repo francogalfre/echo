@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 import { slugify } from "@/lib/slug";

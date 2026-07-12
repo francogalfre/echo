@@ -4,7 +4,7 @@ import { env } from "@echo/env/web";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
 

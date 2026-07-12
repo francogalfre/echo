@@ -1,7 +1,7 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
-import { toast } from "sonner";
+import { toast } from "@echo/ui/components/toast";
 
 type DocsHeaderProps = {
   eyebrow: string;
