@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import { PageContainer } from "../components/page-container";
 import { PageHeader } from "../components/page-header";
 import { DigestButton } from "./components/digest-button";
@@ -11,7 +13,9 @@ const FeedbackPage = (): React.ReactElement => {
         description="All feedback from your users in one place."
         actions={<DigestButton />}
       />
-      <FeedbackList />
+      <Suspense fallback={null}>
+        <FeedbackList />
+      </Suspense>
     </PageContainer>
   );
 };
