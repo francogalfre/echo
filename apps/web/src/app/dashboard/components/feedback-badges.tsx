@@ -12,10 +12,10 @@ const PILL_TONE = {
 
 type PillTone = keyof typeof PILL_TONE;
 
-const SENTIMENT_SOLID: Record<string, string> = {
-  positive: "bg-success text-white",
-  neutral: "bg-slate-500 text-white",
-  negative: "bg-destructive text-white",
+const SENTIMENT_TONE: Record<string, PillTone> = {
+  positive: "green",
+  neutral: "slate",
+  negative: "rose",
 };
 
 const SOURCE_TONE: Record<string, PillTone> = {
@@ -34,11 +34,9 @@ export function SentimentBadge({
   className,
 }: SentimentBadgeProps): React.ReactElement {
   const value = sentiment ?? "neutral";
-  const solid = SENTIMENT_SOLID[value] ?? SENTIMENT_SOLID.neutral;
+  const tone = SENTIMENT_TONE[value] ?? "slate";
 
-  return (
-    <Badge className={cn(solid, "border-transparent capitalize", className)}>{value}</Badge>
-  );
+  return <Badge className={cn(PILL_TONE[tone], "capitalize", className)}>{value}</Badge>;
 }
 
 type SourceBadgeProps = {

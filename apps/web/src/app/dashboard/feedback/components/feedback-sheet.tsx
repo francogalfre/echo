@@ -61,9 +61,12 @@ export function FeedbackSheet({
                   )}
                 </div>
               </div>
-              <div className="flex shrink-0 flex-col items-end gap-1.5">
-                <SentimentBadge sentiment={item.sentiment} />
-                <SourceBadge source={item.source} />
+              <div className="flex shrink-0 flex-row items-center gap-2.5">
+                <SentimentBadge
+                  sentiment={item.sentiment}
+                  className="px-2.5 py-1 text-xs"
+                />
+                <SourceBadge source={item.source} className="px-2.5 py-1 text-xs" />
               </div>
             </DrawerHeader>
 

@@ -1,2 +1,2 @@
 export const FEEDBACK_TABLE_GRID =
-  "grid grid-cols-[2.5rem_minmax(9rem,14rem)_minmax(14rem,1fr)_7rem_6.5rem_9rem_4.5rem_2.5rem] items-center gap-4 px-5";
+  "grid grid-cols-[2.25rem_minmax(8rem,11rem)_minmax(13rem,1fr)_6.5rem_6rem_9rem_4rem_2.25rem] items-center gap-3 px-5";
