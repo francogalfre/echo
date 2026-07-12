@@ -31,14 +31,41 @@ export const softwareApplicationSchema = (): Record<string, unknown> => {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: siteConfig.name,
+    url: siteConfig.url,
     applicationCategory: "DeveloperApplication",
     operatingSystem: "Web",
     description: siteConfig.description,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-      category: "free",
-    },
+    featureList: [
+      "Drop-in feedback widget",
+      "REST API",
+      "Sentiment classification",
+      "AI summaries",
+      "Team collaboration",
+    ],
+    offers: [
+      {
+        "@type": "Offer",
+        name: "Free",
+        price: "0",
+        priceCurrency: "USD",
+        category: "free",
+      },
+      {
+        "@type": "Offer",
+        name: "Pro",
+        price: "12",
+        priceCurrency: "USD",
+        category: "subscription",
+      },
+    ],
+  };
+};
+
+export const webSiteSchema = (): Record<string, unknown> => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteConfig.name,
+    url: siteConfig.url,
   };
 };

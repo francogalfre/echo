@@ -4,6 +4,7 @@ import {
   JsonLd,
   organizationSchema,
   softwareApplicationSchema,
+  webSiteSchema,
 } from "./components/json-ld";
 import { FeatureGrid } from "./components/feature-grid";
 import { FinalCta } from "./components/final-cta";
@@ -20,6 +21,7 @@ const Home = () => {
     <div className="flex min-h-svh flex-col">
       <JsonLd data={organizationSchema()} />
       <JsonLd data={softwareApplicationSchema()} />
+      <JsonLd data={webSiteSchema()} />
       <LandingNav />
       <main className="flex-1">
         <Hero />
