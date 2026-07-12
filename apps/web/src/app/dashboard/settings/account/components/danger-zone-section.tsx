@@ -19,8 +19,8 @@ import { toast } from "@echo/ui/components/toast";
 
 import { authClient, signOut } from "@/lib/auth-client";
 
-import { SettingsCard } from "./settings-card";
-import { SettingsRow } from "./settings-row";
+import { SettingsCard } from "../../components/settings-card";
+import { SettingsRow } from "../../components/settings-row";
 
 export const DangerZoneSection = (): React.ReactElement => {
   const router = useRouter();

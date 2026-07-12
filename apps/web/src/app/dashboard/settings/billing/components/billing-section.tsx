@@ -4,11 +4,11 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 
-import { useBillingOverview } from "../../hooks/use-billing-overview";
+import { useBillingOverview } from "../../../hooks/use-billing-overview";
 import { BillingHistory } from "./billing-history";
 import { BillingPlanCard } from "./billing-plan-card";
 import { BillingUsageMeters } from "./billing-usage-meters";
-import { SettingsCard } from "./settings-card";
+import { SettingsCard } from "../../components/settings-card";
 
 function BillingSkeleton(): React.ReactElement {
   return (

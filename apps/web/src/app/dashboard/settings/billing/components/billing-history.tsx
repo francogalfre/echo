@@ -1,6 +1,6 @@
 import { Icons } from "@echo/ui/components/icons";
 
-import { SettingsCard } from "./settings-card";
+import { SettingsCard } from "../../components/settings-card";
 
 const COLUMNS = ["Plan", "Amount", "Date", "Status"] as const;
 

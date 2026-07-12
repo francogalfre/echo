@@ -3,11 +3,11 @@
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 
-import { InviteMemberButton } from "../../team/members/components/invite-member-button";
-import { MembersList } from "../../team/members/components/members-list";
-import { NewProjectButton } from "../../team/projects/components/new-project-button";
-import { ProjectsList } from "../../team/projects/components/projects-list";
-import { SettingsCard } from "./settings-card";
+import { InviteMemberButton } from "./invite-member-button";
+import { MembersList } from "./members-list";
+import { NewProjectButton } from "./new-project-button";
+import { ProjectsList } from "./projects-list";
+import { SettingsCard } from "../../components/settings-card";
 
 export const TeamSection = (): React.ReactElement => (
   <motion.div

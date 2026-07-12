@@ -5,8 +5,8 @@ import { cn } from "@echo/ui/lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
-import { SettingsCard } from "./settings-card";
-import { SettingsRow } from "./settings-row";
+import { SettingsCard } from "../../components/settings-card";
+import { SettingsRow } from "../../components/settings-row";
 
 type ThemeValue = "system" | "light" | "dark";
 

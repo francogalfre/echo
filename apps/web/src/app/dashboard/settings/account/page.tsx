@@ -1,4 +1,4 @@
-import { AccountSection } from "../components/account-section";
+import { AccountSection } from "./components/account-section";
 
 const AccountSettingsPage = (): React.ReactElement => <AccountSection />;
 

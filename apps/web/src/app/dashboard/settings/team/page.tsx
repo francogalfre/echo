@@ -1,4 +1,4 @@
-import { TeamSection } from "../components/team-section";
+import { TeamSection } from "./components/team-section";
 
 const TeamSettingsPage = (): React.ReactElement => <TeamSection />;
 

@@ -1,4 +1,4 @@
-import { BillingSection } from "../components/billing-section";
+import { BillingSection } from "./components/billing-section";
 
 const BillingSettingsPage = (): React.ReactElement => <BillingSection />;
 

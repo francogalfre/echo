@@ -1,8 +1,8 @@
 import { formatRelativeTime } from "@echo/ui/lib/format";
 
-import type { BillingOverviewData } from "../../hooks/use-billing-overview";
+import type { BillingOverviewData } from "../../../hooks/use-billing-overview";
 import { BillingUsageMeterRow } from "./billing-usage-meter-row";
-import { SettingsCard } from "./settings-card";
+import { SettingsCard } from "../../components/settings-card";
 
 type BillingUsageMetersProps = { overview: BillingOverviewData };
 

@@ -9,8 +9,8 @@ import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 
-import { SettingsCard } from "./settings-card";
-import { SettingsRow } from "./settings-row";
+import { SettingsCard } from "../../components/settings-card";
+import { SettingsRow } from "../../components/settings-row";
 
 export const WorkspaceSection = (): React.ReactElement => {
   const router = useRouter();

@@ -10,7 +10,7 @@ import { toast } from "@echo/ui/components/toast";
 import { authClient } from "@/lib/auth-client";
 
 import { BillingUpgradeButton } from "./billing-upgrade-button";
-import { SettingsCard } from "./settings-card";
+import { SettingsCard } from "../../components/settings-card";
 
 type PlanTier = "free" | "pro";
 

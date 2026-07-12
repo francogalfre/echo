@@ -13,8 +13,8 @@ import { toast } from "@echo/ui/components/toast";
 
 import { authClient, useSession } from "@/lib/auth-client";
 
-import { SettingsCard } from "./settings-card";
-import { SettingsRow } from "./settings-row";
+import { SettingsCard } from "../../components/settings-card";
+import { SettingsRow } from "../../components/settings-row";
 
 export const ProfileSection = (): React.ReactElement => {
   const { data: session } = useSession();
