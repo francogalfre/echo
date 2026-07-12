@@ -13,6 +13,7 @@ export type DigestItem = {
   generatedAt: Date;
   feedbackCount: number;
   canRegenerate: boolean;
+  cached: boolean;
 };
 
 export type DigestHistoryItem = {
@@ -78,6 +79,7 @@ export function useDigest(): {
           generatedAt: new Date(result.generatedAt),
           feedbackCount: result.feedbackCount,
           canRegenerate: result.canRegenerate,
+          cached: false,
         },
       });
     } catch {
@@ -100,9 +102,13 @@ export function useDigest(): {
           generatedAt: new Date(result.generatedAt),
           feedbackCount: result.feedbackCount,
           canRegenerate: false,
+          cached: result.cached,
         },
       });
       setSelectedId(null);
+      if (result.cached) {
+        toast.success("Digest is already up to date");
+      }
       void loadHistory();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Failed to generate digest.";

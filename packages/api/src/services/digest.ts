@@ -2,7 +2,7 @@ import { db } from "@echo/db";
 import { feedbackDigests } from "@echo/db/schema/feedback-digests";
 import { feedback } from "@echo/db/schema/feedback";
 import type { DigestInput, DigestOutput } from "@echo/ai";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt } from "drizzle-orm";
 
 export type DigestRecord = {
   digest: DigestOutput;
@@ -101,6 +101,18 @@ export async function getFeedbackForDigest(
   }));
 
   return sampleProportional(inputs, isPro ? PRO_MAX_ITEMS : FREE_MAX_ITEMS);
+}
+
+export async function hasFeedbackSince(
+  organizationId: string,
+  since: Date,
+): Promise<boolean> {
+  const row = await db.query.feedback.findFirst({
+    where: (f) => and(eq(f.organizationId, organizationId), gt(f.createdAt, since)),
+    columns: { id: true },
+  });
+
+  return row !== undefined;
 }
 
 export async function insertDigest(

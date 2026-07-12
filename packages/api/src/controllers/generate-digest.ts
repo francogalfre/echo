@@ -5,6 +5,7 @@ import { getUsageCount, incrementUsage } from "../services/ai-usage";
 import {
   getDigest,
   getFeedbackForDigest,
+  hasFeedbackSince,
   insertDigest,
   listDigests,
   type DigestHistoryEntry,
@@ -14,7 +15,13 @@ import { getOrgPlan } from "../services/organization";
 const DIGEST_FEATURE = "digest";
 
 type DigestResult =
-  | { success: true; digest: DigestOutput; generatedAt: Date; feedbackCount: number }
+  | {
+      success: true;
+      digest: DigestOutput;
+      generatedAt: Date;
+      feedbackCount: number;
+      cached: boolean;
+    }
   | { success: false; status: 400 | 403 | 502; error: string };
 
 type DigestState = {
@@ -90,6 +97,16 @@ export async function generateFeedbackDigest(
     }
   }
 
+  if (cached && !(await hasFeedbackSince(organizationId, cached.generatedAt))) {
+    return {
+      success: true,
+      digest: cached.digest,
+      generatedAt: cached.generatedAt,
+      feedbackCount: cached.feedbackCount,
+      cached: true,
+    };
+  }
+
   const inputs = await getFeedbackForDigest(organizationId, isPro);
 
   if (inputs.length === 0) {
@@ -113,7 +130,13 @@ export async function generateFeedbackDigest(
     incrementUsage(organizationId, DIGEST_FEATURE, day),
   ]);
 
-  return { success: true, digest, generatedAt: new Date(), feedbackCount: inputs.length };
+  return {
+    success: true,
+    digest,
+    generatedAt: new Date(),
+    feedbackCount: inputs.length,
+    cached: false,
+  };
 }
 
 export async function getDigestHistory(
