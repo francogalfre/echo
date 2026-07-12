@@ -101,7 +101,7 @@ export const RecentFeedback = ({
                     style={{ color: accentColor }}
                   >
                     {RATING_STARS.filter((star) => star <= rating).map((star) => (
-                      <span key={star}>★</span>
+                      <Icons.star key={star} className="size-3.5" />
                     ))}
                   </span>
                 )}

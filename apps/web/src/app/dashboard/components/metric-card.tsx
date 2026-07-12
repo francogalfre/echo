@@ -1,5 +1,6 @@
 import { AnimatedCounter } from "@echo/ui/components/animated-counter";
 import { Badge } from "@echo/ui/components/badge";
+import { Icons } from "@echo/ui/components/icons";
 import { Sparkline } from "@echo/ui/components/sparkline";
 import { cn } from "@echo/ui/lib/utils";
 
@@ -21,7 +22,12 @@ function TrendBadge({ growth }: { growth: number | null }): React.ReactElement {
   const positive = growth >= 0;
   return (
     <Badge variant={positive ? "success" : "destructive"} dot>
-      {positive ? "↑" : "↓"} {Math.abs(growth)}%
+      {positive ? (
+        <Icons.trendUp className="size-3" />
+      ) : (
+        <Icons.trendDown className="size-3" />
+      )}
+      {Math.abs(growth)}%
     </Badge>
   );
 }

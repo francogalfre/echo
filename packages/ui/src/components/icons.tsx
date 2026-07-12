@@ -24,6 +24,8 @@ import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   ArrowReloadHorizontalIcon,
+  ArrowUpRight01Icon,
+  ArrowDownRight01Icon,
   LockIcon,
   EyeIcon,
   EyeOffIcon,
@@ -42,6 +44,10 @@ import {
   GripVerticalIcon,
   Clock01Icon,
   SparklesIcon,
+  Sun01Icon,
+  MoonIcon,
+  ComputerIcon,
+  Delete02Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -78,6 +84,8 @@ export const Icons = {
   arrowLeft: createIcon(ArrowLeft01Icon),
   arrowRight: createIcon(ArrowRight01Icon),
   refresh: createIcon(ArrowReloadHorizontalIcon),
+  trendUp: createIcon(ArrowUpRight01Icon),
+  trendDown: createIcon(ArrowDownRight01Icon),
   lock: createIcon(LockIcon),
   eye: createIcon(EyeIcon),
   eyeOff: createIcon(EyeOffIcon),
@@ -96,4 +104,8 @@ export const Icons = {
   gripVertical: createIcon(GripVerticalIcon),
   clock: createIcon(Clock01Icon),
   sparkles: createIcon(SparklesIcon),
+  sun: createIcon(Sun01Icon),
+  moon: createIcon(MoonIcon),
+  monitor: createIcon(ComputerIcon),
+  trash: createIcon(Delete02Icon),
 };

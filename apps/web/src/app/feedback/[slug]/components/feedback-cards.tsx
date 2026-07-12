@@ -1,5 +1,6 @@
 "use client";
 
+import { Icons } from "@echo/ui/components/icons";
 import { durations, easings } from "@echo/ui/lib/motion";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
@@ -63,7 +64,7 @@ export const FeedbackCards = ({
                     style={{ color: accentColor }}
                   >
                     {RATING_STARS.filter((star) => star <= rating).map((star) => (
-                      <span key={star}>★</span>
+                      <Icons.star key={star} className="size-3.5" />
                     ))}
                   </span>
                 )}
