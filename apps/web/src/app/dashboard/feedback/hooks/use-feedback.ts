@@ -67,7 +67,7 @@ function toQueryInput(
   };
 }
 
-function mapItem(item: {
+export function mapItem(item: {
   id: string;
   name: string;
   feedback: string;

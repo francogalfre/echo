@@ -3,7 +3,11 @@ import { z } from "zod";
 
 import { generateFeedbackInsight } from "../controllers/feedback-insight";
 import { organizationProcedure, router } from "../index";
-import { countFeedbackBySentiment, listFeedback } from "../services/feedback";
+import {
+  countFeedbackBySentiment,
+  getFeedbackListItemById,
+  listFeedback,
+} from "../services/feedback";
 import { getErrorCode } from "../utils/error-map";
 import { paginateRows } from "../utils/pagination";
 
@@ -31,6 +35,12 @@ export const feedbackRouter = router({
   counts: organizationProcedure.query(({ ctx }) => {
     return countFeedbackBySentiment(ctx.organizationId);
   }),
+
+  byId: organizationProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .query(({ ctx, input }) => {
+      return getFeedbackListItemById(ctx.organizationId, input.id);
+    }),
 
   insight: organizationProcedure
     .input(z.object({ id: z.string().min(1) }))

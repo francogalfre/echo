@@ -5,14 +5,16 @@ import { buttonVariants } from "@echo/ui/components/button-variants";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
+import { toast } from "@echo/ui/components/toast";
 import { staggerContainer } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
+import { useFeedbackItem } from "../hooks/use-feedback-item";
 import { addManyToBoard } from "../utils/feedback-actions";
 import { FeedbackRow } from "./feedback-row";
 import { FeedbackSelectionBar } from "./feedback-selection-bar";
@@ -84,10 +86,19 @@ export function FeedbackList(): React.ReactElement {
   const counts: Record<SentimentFilter, number> = feedbackState.counts;
   const filtersActive = sentiment !== "all" || source !== "all" || search !== "";
 
-  const openItem = useMemo(
+  const localItem = useMemo(
     () => items.find((item) => item.id === openId) ?? null,
     [items, openId],
   );
+  const remote = useFeedbackItem(!localItem && openId ? openId : null);
+  const openItem = localItem ?? remote.item;
+
+  useEffect(() => {
+    if (remote.notFound) {
+      void setOpenId(null);
+      toast.error("That feedback could not be found");
+    }
+  }, [remote.notFound, setOpenId]);
 
   const allSelected = items.length > 0 && items.every((item) => selected.has(item.id));
   const someSelected = selected.size > 0 && !allSelected;

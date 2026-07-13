@@ -113,6 +113,29 @@ export async function setFeedbackInsight(id: string, insight: string): Promise<v
     .where(eq(feedback.id, id));
 }
 
+export async function getFeedbackListItemById(
+  organizationId: string,
+  id: string,
+): Promise<FeedbackListItem | null> {
+  const row = await db.query.feedback.findFirst({
+    where: (f) => and(eq(f.id, id), eq(f.organizationId, organizationId)),
+  });
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    name: row.authorName,
+    feedback: row.content,
+    email: row.email,
+    rating: row.rating,
+    source: row.source,
+    sentiment: row.sentiment,
+    tags: row.tags,
+    hasInsight: row.insight != null,
+    createdAt: row.createdAt,
+  };
+}
+
 export async function listFeedback(
   organizationId: string,
   options: FeedbackListFilters,
