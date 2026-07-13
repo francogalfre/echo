@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
 
@@ -10,7 +9,8 @@ import { isUpgradeError } from "../../components/upgrade-error";
 type State =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; insight: string };
+  | { status: "ready"; insight: string }
+  | { status: "error"; message: string };
 
 export function useFeedbackInsight(): {
   state: State;
@@ -31,10 +31,10 @@ export function useFeedbackInsight(): {
       const message = error instanceof Error ? error.message : "Could not generate insight";
       if (isUpgradeError(message)) {
         setUpgradeReason(message);
+        setState({ status: "idle" });
       } else {
-        toast.error(message);
+        setState({ status: "error", message });
       }
-      setState({ status: "idle" });
     }
   }, []);
 

@@ -18,8 +18,16 @@ import { cn } from "@echo/ui/lib/utils";
 import type { DigestOutput } from "@echo/ai";
 import { useEffect } from "react";
 
+import { AiThinking } from "./ai-thinking";
+import { ErrorCard } from "./error-card";
 import { UpgradeDialog } from "./upgrade-dialog";
 import { useDigest } from "../hooks/use-digest";
+
+const THINKING_PHRASES = [
+  "Reading your feedback",
+  "Grouping themes",
+  "Writing the summary",
+] as const;
 
 type Props = {
   open: boolean;
@@ -152,8 +160,8 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="p-0">
-          <DrawerHeader className="border-b">
-            <div className="flex items-center gap-2.5">
+          <DrawerHeader className="gap-1 border-b px-8 py-6">
+            <div className="flex items-center gap-3">
               <span className="flex size-8 items-center justify-center rounded-full bg-accent/10">
                 <Icons.aiMagic className="size-4 text-accent" />
               </span>
@@ -169,16 +177,19 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
             </div>
           </DrawerHeader>
 
-          <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_260px] sm:gap-6">
-            <div className="flex flex-col gap-4">
+          <div className="flex flex-1 flex-col overflow-y-auto p-8 sm:grid sm:grid-cols-[1fr_260px] sm:gap-8">
+            <div className="flex flex-col gap-5">
               {(isLoading || isGenerating) && (
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                    <Icons.loading className="size-3.5 shrink-0 animate-spin" />
-                    {isGenerating ? "Analyzing your feedback…" : "Loading…"}
-                  </div>
+                <AiThinking phrases={THINKING_PHRASES}>
                   <DigestSkeleton />
-                </div>
+                </AiThinking>
+              )}
+
+              {state.status === "error" && (
+                <ErrorCard
+                  message="We couldn't load your digest. Please try again."
+                  onRetry={() => void load()}
+                />
               )}
 
               {state.status === "idle" && !isLoading && !selectedEntry && (
@@ -198,7 +209,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               {activeDigest && !isGenerating && <ThemesAndIssues digest={activeDigest} />}
             </div>
 
-            <div className="mt-5 flex flex-col gap-4 sm:mt-0">
+            <div className="mt-6 flex flex-col gap-5 sm:mt-0">
               {activeDigest?.positiveHighlight && (
                 <div className="rounded-xl border border-success/20 bg-success/10 p-3">
                   <p className="text-xs font-semibold text-success">What users love</p>
@@ -249,7 +260,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
           </div>
 
           {activeDigest && !isGenerating && (
-            <DrawerFooter className="flex-row border-t px-6 pb-8 pt-4">
+            <DrawerFooter className="flex-row border-t px-8 pb-8 pt-5">
               {selectedEntry ? (
                 <Button variant="ghost" size="sm" onClick={() => selectHistoryEntry(null)}>
                   <Icons.arrowLeft className="size-3.5" />
