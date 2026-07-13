@@ -5,7 +5,7 @@ import { PageHeader } from "../components/page-header";
 import { DigestButton } from "./components/digest-button";
 import { FeedbackListData } from "./components/feedback-list-data";
 import { FeedbackListSkeleton } from "./components/feedback-list-skeleton";
-import type { FeedbackFilters } from "./hooks/use-feedback";
+import type { FeedbackFilters } from "./utils/map-feedback";
 
 const SENTIMENT_VALUES = ["all", "positive", "neutral", "negative"] as const;
 const SOURCE_VALUES = ["all", "api", "form", "widget"] as const;

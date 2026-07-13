@@ -1,6 +1,6 @@
 import { createServerTrpc } from "@/lib/trpc-server";
 
-import { mapItem, type FeedbackFilters } from "../hooks/use-feedback";
+import { mapItem, type FeedbackFilters } from "../utils/map-feedback";
 import { FeedbackList } from "./feedback-list";
 
 type FeedbackListDataProps = {

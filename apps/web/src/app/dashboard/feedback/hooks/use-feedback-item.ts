@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { trpc } from "@/lib/trpc";
 
-import { mapItem, type FeedbackItem } from "./use-feedback";
+import { mapItem, type FeedbackItem } from "../utils/map-feedback";
 
 type State =
   | { status: "idle" }

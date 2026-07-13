@@ -12,12 +12,8 @@ import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  useFeedback,
-  type FeedbackCounts,
-  type FeedbackFilters,
-  type FeedbackItem,
-} from "../hooks/use-feedback";
+import { useFeedback } from "../hooks/use-feedback";
+import type { FeedbackCounts, FeedbackFilters, FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackItem } from "../hooks/use-feedback-item";
 import { addManyToBoard } from "../utils/feedback-actions";
 import { FeedbackListSkeleton } from "./feedback-list-skeleton";

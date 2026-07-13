@@ -31,12 +31,6 @@ const COLUMNS: { id: keyof BoardColumns; label: string; dot: string }[] = [
   { id: "done", label: "Done", dot: "bg-success" },
 ];
 
-export type BoardItemsResult = Awaited<ReturnType<typeof trpc.board.items.query>>;
-
-export function hydrateCard(card: BoardItemsResult["backlog"][number]): BoardCard {
-  return { ...card, createdAt: new Date(card.createdAt) };
-}
-
 type BoardSectionProps = {
   readonly initialItems: BoardColumns;
 };

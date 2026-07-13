@@ -11,7 +11,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { useEffect } from "react";
 
-import type { FeedbackItem } from "../hooks/use-feedback";
+import type { FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackInsight } from "../hooks/use-feedback-insight";
 import { UpgradeDialog } from "../../components/upgrade-dialog";
 import { InsightContent } from "./insight-content";

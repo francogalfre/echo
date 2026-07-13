@@ -16,7 +16,7 @@ import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 
 import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
-import type { FeedbackItem } from "../hooks/use-feedback";
+import type { FeedbackItem } from "../utils/map-feedback";
 import {
   addToBoard,
   buildFeedbackMailto,

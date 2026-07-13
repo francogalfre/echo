@@ -19,7 +19,7 @@ import { cn } from "@echo/ui/lib/utils";
 
 import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback-badges";
 
-import type { FeedbackItem } from "../hooks/use-feedback";
+import type { FeedbackItem } from "../utils/map-feedback";
 import { addToBoard, buildFeedbackMailto, copyFeedback } from "../utils/feedback-actions";
 import { StarDisplay } from "./star-display";
 

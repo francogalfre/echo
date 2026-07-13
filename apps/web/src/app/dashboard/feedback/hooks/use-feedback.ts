@@ -5,31 +5,13 @@ import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
 
-export type FeedbackItem = {
-  id: string;
-  name: string;
-  feedback: string;
-  email: string | null;
-  rating: number | null;
-  source: string;
-  sentiment: string | null;
-  tags: string[] | null;
-  hasInsight: boolean;
-  createdAt: Date;
-};
-
-export type FeedbackCounts = {
-  all: number;
-  positive: number;
-  neutral: number;
-  negative: number;
-};
-
-export type FeedbackFilters = {
-  sentiment: "all" | "positive" | "neutral" | "negative";
-  source: "all" | "api" | "form" | "widget";
-  search: string;
-};
+import {
+  mapItem,
+  type FeedbackCounts,
+  type FeedbackFilters,
+  type FeedbackInitialData,
+  type FeedbackItem,
+} from "../utils/map-feedback";
 
 type State =
   | { status: "loading" }
@@ -43,13 +25,6 @@ type UseFeedbackResult = {
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: () => void;
-};
-
-export type FeedbackInitialData = {
-  items: FeedbackItem[];
-  hasMore: boolean;
-  counts: FeedbackCounts;
-  filters: FeedbackFilters;
 };
 
 const LIMIT = 50;
@@ -71,21 +46,6 @@ function toQueryInput(
     limit: LIMIT,
     offset,
   };
-}
-
-export function mapItem(item: {
-  id: string;
-  name: string;
-  feedback: string;
-  email: string | null;
-  rating: number | null;
-  source: string;
-  sentiment: string | null;
-  tags: string[] | null;
-  hasInsight: boolean;
-  createdAt: string | Date;
-}): FeedbackItem {
-  return { ...item, createdAt: new Date(item.createdAt) };
 }
 
 export function useFeedback(
