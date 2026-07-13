@@ -9,7 +9,7 @@ import {
 } from "@echo/ui/components/dialog";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import type { FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackInsight } from "../hooks/use-feedback-insight";
@@ -37,14 +37,20 @@ export function InsightDialog({
 }: InsightDialogProps): React.ReactElement {
   const { state, generate, reset, upgradeReason, dismissUpgrade } = useFeedbackInsight();
 
+  const requestedRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (open && item && state.status === "idle") {
+    if (!open) {
+      requestedRef.current = null;
+      reset();
+      return;
+    }
+
+    if (item && requestedRef.current !== item.id) {
+      requestedRef.current = item.id;
       void generate(item.id);
     }
-    if (!open) {
-      reset();
-    }
-  }, [open, item, state.status, generate, reset]);
+  }, [open, item, generate, reset]);
 
   return (
     <>

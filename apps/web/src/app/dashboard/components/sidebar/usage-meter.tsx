@@ -34,7 +34,7 @@ export const UsageMeter = ({ initialData }: Props): React.ReactElement | null =>
   return (
     <div className="px-2.5 py-2">
       <div className="flex items-center justify-between">
-        <p className="micro-label">Feedback</p>
+        <p className="micro-label">This month</p>
         <p className="tabular-nums text-[11px] text-muted-foreground">
           {used}/{limit}
         </p>
