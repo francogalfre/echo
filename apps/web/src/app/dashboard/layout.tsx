@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { MotionProvider } from "./components/motion-provider";
 import { Sidebar } from "./components/sidebar";
+import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";
 
 type Props = {
@@ -12,7 +13,13 @@ const DashboardLayout = ({ children }: Props): React.ReactElement => {
   return (
     <MotionProvider>
       <div className="flex h-svh">
-        <Sidebar />
+        <Sidebar
+          usageMeterSlot={
+            <Suspense fallback={<UsageMeterSkeleton />}>
+              <UsageMeterData />
+            </Suspense>
+          }
+        />
         <div className="flex min-w-0 flex-1 flex-col pl-64">
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>

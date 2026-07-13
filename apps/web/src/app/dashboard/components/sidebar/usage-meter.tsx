@@ -3,15 +3,16 @@
 import { Icons } from "@echo/ui/components/icons";
 import Link from "next/link";
 
-import { useBillingOverview } from "../../hooks/use-billing-overview";
+import type { BillingOverviewData } from "../../hooks/use-billing-overview";
 
-export const UsageMeter = (): React.ReactElement | null => {
-  const { state } = useBillingOverview();
+type Props = {
+  readonly initialData: BillingOverviewData;
+};
 
-  if (state.status !== "ready") return null;
-  if (state.data.plan === "pro") return null;
+export const UsageMeter = ({ initialData }: Props): React.ReactElement | null => {
+  if (initialData.plan === "pro") return null;
 
-  const { used, limit } = state.data.feedback;
+  const { used, limit } = initialData.feedback;
   if (limit === null) return null;
 
   const percentUsed = Math.min(100, (used / limit) * 100);

@@ -1,5 +1,12 @@
-import { BillingSection } from "./components/billing-section";
+import { Suspense } from "react";
 
-const BillingSettingsPage = (): React.ReactElement => <BillingSection />;
+import { BillingData } from "./components/billing-data";
+import { BillingSkeleton } from "./components/billing-section";
+
+const BillingSettingsPage = (): React.ReactElement => (
+  <Suspense fallback={<BillingSkeleton />}>
+    <BillingData />
+  </Suspense>
+);
 
 export default BillingSettingsPage;

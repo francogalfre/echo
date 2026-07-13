@@ -3,14 +3,24 @@
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
+import * as React from "react";
 
-import { useBillingOverview } from "../../../hooks/use-billing-overview";
+import { trpc } from "@/lib/trpc";
+
+import type { BillingOverviewData } from "../../../hooks/use-billing-overview";
+
 import { BillingHistory } from "./billing-history";
 import { BillingPlanCard } from "./billing-plan-card";
 import { BillingUsageMeters } from "./billing-usage-meters";
 import { SettingsCard } from "../../components/settings-card";
 
-function BillingSkeleton(): React.ReactElement {
+type Props = {
+  readonly initialData: BillingOverviewData;
+};
+
+type State = { status: "error" } | { status: "ready"; data: BillingOverviewData };
+
+export function BillingSkeleton(): React.ReactElement {
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -23,12 +33,15 @@ function BillingSkeleton(): React.ReactElement {
   );
 }
 
-export const BillingSection = (): React.ReactElement => {
-  const { state, reload } = useBillingOverview();
+export const BillingSection = ({ initialData }: Props): React.ReactElement => {
+  const [state, setState] = React.useState<State>({ status: "ready", data: initialData });
 
-  if (state.status === "loading") {
-    return <BillingSkeleton />;
-  }
+  const reload = (): void => {
+    trpc.billing.overview
+      .query()
+      .then((data) => setState({ status: "ready", data }))
+      .catch(() => setState({ status: "error" }));
+  };
 
   if (state.status === "error") {
     return (

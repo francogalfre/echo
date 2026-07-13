@@ -3,17 +3,15 @@
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { cn } from "@echo/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
 import Link from "next/link";
 import * as React from "react";
 
-import { useApiKeys } from "../../collect/api/hooks/use-api-keys";
-
 type OnboardingChecklistProps = {
   hasFeedback: boolean;
+  hasApiKey: boolean;
 };
 
 type Step = {
@@ -22,15 +20,10 @@ type Step = {
   href: string;
   completed: boolean;
   showCta: boolean;
-  loading: boolean;
   ctaLabel: string;
 };
 
-function useSteps(hasFeedback: boolean): readonly Step[] {
-  const { state } = useApiKeys();
-  const apiKeyLoading = state.status === "loading";
-  const apiKeyReady = state.status === "ready";
-
+function useSteps(hasFeedback: boolean, hasApiKey: boolean): readonly Step[] {
   return [
     {
       title: "Project created",
@@ -38,16 +31,14 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
       href: "/dashboard",
       completed: true,
       showCta: false,
-      loading: false,
       ctaLabel: "",
     },
     {
       title: "Generate an API key",
       description: "Needed to authenticate your widget or API requests.",
       href: "/dashboard/collect/api",
-      completed: apiKeyReady,
-      showCta: !apiKeyLoading,
-      loading: apiKeyLoading,
+      completed: hasApiKey,
+      showCta: true,
       ctaLabel: "Create API key",
     },
     {
@@ -56,7 +47,6 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
       href: "/dashboard/collect",
       completed: hasFeedback,
       showCta: true,
-      loading: false,
       ctaLabel: "Install the widget",
     },
   ];
@@ -65,15 +55,10 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
 function StepCircle({
   index,
   completed,
-  loading,
 }: {
   index: number;
   completed: boolean;
-  loading: boolean;
 }): React.ReactElement {
-  if (loading) {
-    return <Skeleton className="size-7 shrink-0 rounded-full" />;
-  }
   if (completed) {
     return (
       <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">
@@ -106,8 +91,9 @@ function ProgressBar({ completed }: { completed: number }): React.ReactElement {
 
 export function OnboardingChecklist({
   hasFeedback,
+  hasApiKey,
 }: OnboardingChecklistProps): React.ReactElement {
-  const steps = useSteps(hasFeedback);
+  const steps = useSteps(hasFeedback, hasApiKey);
   const completedCount = steps.filter((step) => step.completed).length;
   const firstIncompleteIndex = steps.findIndex((step) => !step.completed);
 
@@ -127,7 +113,7 @@ export function OnboardingChecklist({
       <Stagger className="flex flex-col gap-4">
         {steps.map((step, index) => (
           <StaggerItem key={step.title} className="flex items-center gap-3.5">
-            <StepCircle index={index} completed={step.completed} loading={step.loading} />
+            <StepCircle index={index} completed={step.completed} />
             <div className="min-w-0 flex-1">
               <p
                 className={cn(
@@ -139,9 +125,6 @@ export function OnboardingChecklist({
               </p>
               <p className="text-xs text-muted-foreground">{step.description}</p>
             </div>
-            {index === firstIncompleteIndex && step.loading && (
-              <Skeleton className="h-8 w-20 shrink-0 rounded-lg" />
-            )}
             {index === firstIncompleteIndex && step.showCta && (
               <Link
                 href={step.href as Route}

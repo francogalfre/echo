@@ -7,14 +7,13 @@ import { Icons } from "@echo/ui/components/icons";
 import type { Route } from "next";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { authClient, useSession } from "@/lib/auth-client";
 
 import { ExpandableNavLink, NavLink } from "./nav-item";
 import { OrgSwitcher } from "./org-switcher";
 import type { NavItem } from "./types";
-import { UsageMeter } from "./usage-meter";
 import { UserMenu } from "./user-menu";
 
 const navItems: NavItem[] = [
@@ -46,7 +45,11 @@ const settingsItem: NavItem = {
   icon: Icons.slidersHorizontal,
 };
 
-export const Sidebar = (): React.ReactElement => {
+type Props = {
+  usageMeterSlot: ReactNode;
+};
+
+export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -99,7 +102,7 @@ export const Sidebar = (): React.ReactElement => {
       <div className="flex-1" />
 
       <div className="flex flex-col gap-0.5 pb-3">
-        <UsageMeter />
+        {usageMeterSlot}
 
         <div className="mt-2 flex flex-col gap-0.5">
           {utilityLinks.map((item) => (

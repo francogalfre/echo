@@ -25,11 +25,12 @@ type State =
 
 type Props = {
   readonly initialData: DashboardOverview;
+  readonly hasApiKey: boolean;
 };
 
 const INITIAL_RANGE: StatsRange = "30d";
 
-export function DashboardClient({ initialData }: Props): React.ReactElement {
+export function DashboardClient({ initialData, hasApiKey }: Props): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
   const [state, setState] = React.useState<State>({
@@ -103,7 +104,10 @@ export function DashboardClient({ initialData }: Props): React.ReactElement {
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-4">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
-          <OnboardingChecklist hasFeedback={state.data.metrics.total.value > 0} />
+          <OnboardingChecklist
+            hasFeedback={state.data.metrics.total.value > 0}
+            hasApiKey={hasApiKey}
+          />
           <HowEchoWorks />
         </div>
       )}

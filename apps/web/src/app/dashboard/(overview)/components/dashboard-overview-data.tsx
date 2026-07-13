@@ -4,7 +4,10 @@ import { DashboardClient } from "./dashboard-client";
 
 export async function DashboardOverviewData(): Promise<React.ReactElement> {
   const api = await createServerTrpc();
-  const data = await api.dashboard.overview.query({ range: "30d" });
+  const [data, apiKeys] = await Promise.all([
+    api.dashboard.overview.query({ range: "30d" }),
+    api.apiKeys.get.query(),
+  ]);
 
-  return <DashboardClient initialData={data} />;
+  return <DashboardClient initialData={data} hasApiKey={apiKeys !== null} />;
 }
