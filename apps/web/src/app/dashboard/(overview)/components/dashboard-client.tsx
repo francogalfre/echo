@@ -1,6 +1,5 @@
 "use client";
 
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 import * as React from "react";
@@ -11,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
 import { AiSummaryBanner } from "./ai-summary-banner";
+import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
@@ -23,31 +23,28 @@ type State =
   | { status: "error" }
   | { status: "ready"; data: DashboardOverview; pending: boolean };
 
-function DashboardSkeleton(): React.ReactElement {
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Skeleton className="h-36 rounded-lg" />
-        <Skeleton className="h-36 rounded-lg" />
-        <Skeleton className="h-36 rounded-lg" />
-        <Skeleton className="h-36 rounded-lg" />
-      </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Skeleton className="h-80 rounded-lg lg:col-span-2" />
-        <Skeleton className="h-80 rounded-lg" />
-      </div>
-      <Skeleton className="h-[4.5rem] rounded-lg" />
-      <Skeleton className="h-64 rounded-lg" />
-    </div>
-  );
-}
+type Props = {
+  readonly initialData: DashboardOverview;
+};
 
-export function DashboardClient(): React.ReactElement {
+const INITIAL_RANGE: StatsRange = "30d";
+
+export function DashboardClient({ initialData }: Props): React.ReactElement {
   const { data: session } = useSession();
-  const [range, setRange] = React.useState<StatsRange>("30d");
-  const [state, setState] = React.useState<State>({ status: "loading" });
+  const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
+  const [state, setState] = React.useState<State>({
+    status: "ready",
+    data: initialData,
+    pending: false,
+  });
+  const isFirstRender = React.useRef(true);
 
   React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     let cancelled = false;
     let attempt = 0;
     const maxAttempts = 3;

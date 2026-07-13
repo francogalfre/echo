@@ -1,10 +1,15 @@
+import { Suspense } from "react";
+
 import { PageContainer } from "../components/page-container";
-import { DashboardClient } from "./components/dashboard-client";
+import { DashboardOverviewData } from "./components/dashboard-overview-data";
+import { DashboardSkeleton } from "./components/dashboard-skeleton";
 
 const DashboardPage = (): React.ReactElement => {
   return (
     <PageContainer>
-      <DashboardClient />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardOverviewData />
+      </Suspense>
     </PageContainer>
   );
 };
