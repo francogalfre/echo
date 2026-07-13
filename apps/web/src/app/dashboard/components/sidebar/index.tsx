@@ -14,7 +14,7 @@ import { authClient, useSession } from "@/lib/auth-client";
 import { ExpandableNavLink, NavLink } from "./nav-item";
 import { OrgSwitcher } from "./org-switcher";
 import type { NavItem } from "./types";
-import { UpgradeCard } from "./upgrade-card";
+import { UsageMeter } from "./usage-meter";
 import { UserMenu } from "./user-menu";
 
 const navItems: NavItem[] = [
@@ -99,7 +99,7 @@ export const Sidebar = (): React.ReactElement => {
       <div className="flex-1" />
 
       <div className="flex flex-col gap-0.5 pb-3">
-        <UpgradeCard />
+        <UsageMeter />
 
         <div className="mt-2 flex flex-col gap-0.5">
           {utilityLinks.map((item) => (
