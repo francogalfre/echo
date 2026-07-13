@@ -3,12 +3,33 @@ import { z } from "zod";
 
 import { generateFeedbackInsight } from "../controllers/feedback-insight";
 import { organizationProcedure, router } from "../index";
-import { listFeedback } from "../services/feedback";
+import { countFeedbackBySentiment, listFeedback } from "../services/feedback";
 import { getErrorCode } from "../utils/error-map";
+import { paginateRows } from "../utils/pagination";
+
+const ListFeedbackInput = z.object({
+  sentiment: z.enum(["positive", "neutral", "negative"]).optional(),
+  source: z.enum(["api", "form", "widget"]).optional(),
+  search: z.string().max(200).optional(),
+  limit: z.number().int().min(1).max(100).default(50),
+  offset: z.number().int().min(0).default(0),
+});
 
 export const feedbackRouter = router({
-  list: organizationProcedure.query(({ ctx }) => {
-    return listFeedback(ctx.organizationId);
+  list: organizationProcedure.input(ListFeedbackInput).query(async ({ ctx, input }) => {
+    const rows = await listFeedback(ctx.organizationId, {
+      sentiment: input.sentiment,
+      source: input.source,
+      search: input.search,
+      limit: input.limit + 1,
+      offset: input.offset,
+    });
+
+    return paginateRows(rows, input.limit);
+  }),
+
+  counts: organizationProcedure.query(({ ctx }) => {
+    return countFeedbackBySentiment(ctx.organizationId);
   }),
 
   insight: organizationProcedure

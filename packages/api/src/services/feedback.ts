@@ -1,6 +1,21 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { and, count, desc, eq, gte } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, or, sql, type SQLWrapper } from "drizzle-orm";
+
+export type FeedbackListFilters = {
+  sentiment?: "positive" | "neutral" | "negative";
+  source?: "api" | "form" | "widget";
+  search?: string;
+  limit: number;
+  offset: number;
+};
+
+export type FeedbackSentimentCounts = {
+  all: number;
+  positive: number;
+  neutral: number;
+  negative: number;
+};
 
 export type InsertFeedback = {
   organizationId: string;
@@ -100,12 +115,30 @@ export async function setFeedbackInsight(id: string, insight: string): Promise<v
 
 export async function listFeedback(
   organizationId: string,
-  limit = 50,
+  options: FeedbackListFilters,
 ): Promise<FeedbackListItem[]> {
+  const conditions: (SQLWrapper | undefined)[] = [
+    eq(feedback.organizationId, organizationId),
+  ];
+
+  if (options.sentiment) {
+    conditions.push(eq(feedback.sentiment, options.sentiment));
+  }
+  if (options.source) {
+    conditions.push(eq(feedback.source, options.source));
+  }
+  if (options.search) {
+    const pattern = `%${options.search}%`;
+    conditions.push(
+      or(ilike(feedback.authorName, pattern), ilike(feedback.content, pattern)),
+    );
+  }
+
   const rows = await db.query.feedback.findMany({
-    where: (f) => eq(f.organizationId, organizationId),
+    where: and(...conditions),
     orderBy: [desc(feedback.createdAt)],
-    limit,
+    limit: options.limit,
+    offset: options.offset,
   });
 
   return rows.map((r) => ({
@@ -120,4 +153,27 @@ export async function listFeedback(
     hasInsight: r.insight != null,
     createdAt: r.createdAt,
   }));
+}
+
+export async function countFeedbackBySentiment(
+  organizationId: string,
+): Promise<FeedbackSentimentCounts> {
+  const [row] = await db
+    .select({
+      all: count(),
+      positive: count(sql`case when ${feedback.sentiment} = 'positive' then 1 end`),
+      neutral: count(sql`case when ${feedback.sentiment} = 'neutral' then 1 end`),
+      negative: count(sql`case when ${feedback.sentiment} = 'negative' then 1 end`),
+    })
+    .from(feedback)
+    .where(eq(feedback.organizationId, organizationId));
+
+  return (
+    row ?? {
+      all: 0,
+      positive: 0,
+      neutral: 0,
+      negative: 0,
+    }
+  );
 }

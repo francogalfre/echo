@@ -10,7 +10,7 @@ import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
 import { addManyToBoard } from "../utils/feedback-actions";
@@ -63,7 +63,6 @@ function FeedbackListSkeleton(): React.ReactElement {
 }
 
 export function FeedbackList(): React.ReactElement {
-  const feedbackState = useFeedback();
   const [sentiment, setSentiment] = useQueryState(
     "sentiment",
     parseAsStringLiteral(SENTIMENT_VALUES).withDefault("all"),
@@ -76,54 +75,21 @@ export function FeedbackList(): React.ReactElement {
     "q",
     parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
   );
+  const feedbackState = useFeedback({ sentiment, source, search });
   const [openId, setOpenId] = useQueryState("feedback");
   const [insightItem, setInsightItem] = useState<FeedbackItem | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [visibleCount, setVisibleCount] = useState(20);
 
-  const items = useMemo(
-    () => (feedbackState.status === "ready" ? feedbackState.items : []),
-    [feedbackState],
-  );
+  const items = feedbackState.items;
+  const counts: Record<SentimentFilter, number> = feedbackState.counts;
+  const filtersActive = sentiment !== "all" || source !== "all" || search !== "";
 
   const openItem = useMemo(
     () => items.find((item) => item.id === openId) ?? null,
     [items, openId],
   );
 
-  const counts: Record<SentimentFilter, number> = useMemo(
-    () => ({
-      all: items.length,
-      positive: items.filter((item) => item.sentiment === "positive").length,
-      neutral: items.filter((item) => item.sentiment === "neutral").length,
-      negative: items.filter((item) => item.sentiment === "negative").length,
-    }),
-    [items],
-  );
-
-  const filtered = useMemo(
-    () =>
-      items.filter((item) => {
-        const matchesSentiment = sentiment === "all" || item.sentiment === sentiment;
-        const matchesSource = source === "all" || item.source === source;
-        const query = search.toLowerCase();
-        const matchesSearch =
-          !query ||
-          item.name.toLowerCase().includes(query) ||
-          item.feedback.toLowerCase().includes(query);
-        return matchesSentiment && matchesSource && matchesSearch;
-      }),
-    [items, sentiment, source, search],
-  );
-
-  useEffect(() => {
-    setVisibleCount(20);
-  }, [sentiment, source, search]);
-
-  const visibleItems = filtered.slice(0, visibleCount);
-
-  const allSelected =
-    filtered.length > 0 && filtered.every((item) => selected.has(item.id));
+  const allSelected = items.length > 0 && items.every((item) => selected.has(item.id));
   const someSelected = selected.size > 0 && !allSelected;
 
   const clearFilters = (): void => {
@@ -149,7 +115,7 @@ export function FeedbackList(): React.ReactElement {
       setSelected(new Set());
       return;
     }
-    setSelected(new Set(filtered.map((item) => item.id)));
+    setSelected(new Set(items.map((item) => item.id)));
   };
 
   const handleBulkAddToBoard = (): void => {
@@ -184,7 +150,7 @@ export function FeedbackList(): React.ReactElement {
             </div>
           )}
 
-          {feedbackState.status === "ready" && items.length === 0 && (
+          {feedbackState.status === "ready" && counts.all === 0 && (
             <EmptyState
               icon={<Icons.message />}
               title="No feedback yet"
@@ -200,22 +166,20 @@ export function FeedbackList(): React.ReactElement {
             />
           )}
 
-          {feedbackState.status === "ready" &&
-            items.length > 0 &&
-            filtered.length === 0 && (
-              <EmptyState
-                icon={<Icons.search />}
-                title="No matching feedback"
-                description="Nothing matches your current search or filters. Try adjusting them."
-                action={
-                  <Button variant="ghost" size="sm" onClick={clearFilters}>
-                    Clear filters
-                  </Button>
-                }
-              />
-            )}
+          {feedbackState.status === "ready" && counts.all > 0 && items.length === 0 && (
+            <EmptyState
+              icon={<Icons.search />}
+              title="No matching feedback"
+              description="Nothing matches your current search or filters. Try adjusting them."
+              action={
+                <Button variant="ghost" size="sm" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          )}
 
-          {feedbackState.status === "ready" && filtered.length > 0 && (
+          {feedbackState.status === "ready" && items.length > 0 && (
             <>
               <FeedbackTableHeader
                 allSelected={allSelected}
@@ -229,7 +193,7 @@ export function FeedbackList(): React.ReactElement {
                 initial="hidden"
                 animate="visible"
               >
-                {visibleItems.map((item) => (
+                {items.map((item) => (
                   <FeedbackRow
                     key={item.id}
                     item={item}
@@ -241,16 +205,22 @@ export function FeedbackList(): React.ReactElement {
                 ))}
               </motion.div>
 
-              {filtered.length > visibleCount && (
+              {feedbackState.hasMore && (
                 <div className="flex flex-col items-center gap-2 border-t border-border py-4">
                   <span className="text-xs text-muted-foreground">
-                    Showing {visibleItems.length} of {filtered.length}
+                    {filtersActive
+                      ? `Showing ${items.length}`
+                      : `Showing ${items.length} of ${counts.all}`}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setVisibleCount((c) => c + 20)}
+                    disabled={feedbackState.loadingMore}
+                    onClick={feedbackState.loadMore}
                   >
+                    {feedbackState.loadingMore && (
+                      <Icons.loading className="size-4 animate-spin" />
+                    )}
                     Load more
                   </Button>
                 </div>

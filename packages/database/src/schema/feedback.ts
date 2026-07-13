@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { desc, relations } from "drizzle-orm";
 import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { organization } from "./auth";
@@ -48,7 +48,10 @@ export const feedback = pgTable(
 
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (t) => [index("feedback_org_idx").on(t.organizationId)],
+  (t) => [
+    index("feedback_org_idx").on(t.organizationId),
+    index("feedback_org_created_idx").on(t.organizationId, desc(t.createdAt)),
+  ],
 );
 
 export const apiKeys = pgTable("api_keys", {

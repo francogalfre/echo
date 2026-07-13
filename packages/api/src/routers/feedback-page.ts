@@ -9,7 +9,7 @@ export const feedbackPageRouter = router({
   }),
 
   recentFeedback: organizationProcedure.query(async ({ ctx }) => {
-    const items = await listFeedback(ctx.organizationId, 12);
+    const items = await listFeedback(ctx.organizationId, { limit: 12, offset: 0 });
     return items.map((item) => ({
       id: item.id,
       authorName: item.name,

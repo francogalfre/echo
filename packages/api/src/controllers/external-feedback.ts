@@ -95,5 +95,8 @@ export async function getFeedback(input: {
   const organizationId = lookup?.organizationId;
   if (!organizationId) return { success: false, status: 401, error: "Invalid API key" };
 
-  return { success: true, feedback: await listFeedback(organizationId) };
+  return {
+    success: true,
+    feedback: await listFeedback(organizationId, { limit: 50, offset: 0 }),
+  };
 }
