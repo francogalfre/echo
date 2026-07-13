@@ -14,13 +14,14 @@ import { type PathValue, useWatch, type UseFormReturn } from "react-hook-form";
 
 import { BannerPicker } from "./banner-picker";
 import { EditableText } from "./editable-text";
-import { RecentFeedback } from "./recent-feedback";
+import { RecentFeedback, type FeedbackItem } from "./recent-feedback";
 import { DEFAULT_CONFIG, type ConfigValues } from "./types";
 
 type EditorCanvasProps = {
   form: UseFormReturn<ConfigValues>;
   orgLogo: string | null;
   orgId: string;
+  recentFeedback: FeedbackItem[];
 };
 
 const ADDABLE_FIELD_META: Record<
@@ -75,6 +76,7 @@ export const EditorCanvas = ({
   form,
   orgLogo,
   orgId,
+  recentFeedback,
 }: EditorCanvasProps): React.ReactElement => {
   const { control, setValue } = form;
   const config = useWatch({ control, defaultValue: DEFAULT_CONFIG }) as ConfigValues;
@@ -249,7 +251,9 @@ export const EditorCanvas = ({
             </div>
           </div>
 
-          {config.showFeedback && <RecentFeedback accentColor={accentColor} />}
+          {config.showFeedback && (
+            <RecentFeedback accentColor={accentColor} items={recentFeedback} />
+          )}
         </div>
       </div>
     </div>

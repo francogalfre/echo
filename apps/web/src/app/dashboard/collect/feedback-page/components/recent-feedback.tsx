@@ -3,11 +3,8 @@
 import { Icons } from "@echo/ui/components/icons";
 import { durations, easings } from "@echo/ui/lib/motion";
 import { motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
 
-import { trpc } from "@/lib/trpc";
-
-type FeedbackItem = {
+export type FeedbackItem = {
   id: string;
   authorName: string;
   content: string;
@@ -19,52 +16,27 @@ const PREVIEW_LIMIT = 3;
 
 type RecentFeedbackProps = {
   accentColor: string;
+  items: FeedbackItem[];
 };
 
 export const RecentFeedback = ({
   accentColor,
+  items,
 }: RecentFeedbackProps): React.ReactElement => {
-  const [items, setItems] = useState<FeedbackItem[] | null>(null);
-  const [hasError, setHasError] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    trpc.feedbackPage.recentFeedback
-      .query()
-      .then(setItems)
-      .catch(() => {
-        setHasError(true);
-        setItems([]);
-      });
-  }, []);
 
   return (
     <aside className="pt-14">
       <div className="mb-3 flex items-center justify-between px-1">
         <p className="text-sm font-semibold text-foreground">Recent feedback</p>
-        {items !== null && items.length > 0 && (
+        {items.length > 0 && (
           <span className="rounded-full bg-foreground/5 px-2 py-0.5 text-xs text-muted-foreground">
             {items.length}
           </span>
         )}
       </div>
 
-      {items === null && (
-        <div className="flex justify-center py-8">
-          <Icons.loading className="size-4 animate-spin text-muted-foreground" />
-        </div>
-      )}
-
-      {hasError && (
-        <div className="rounded-xl border border-dashed border-destructive/40 px-4 py-10 text-center">
-          <p className="text-sm font-medium text-foreground">Couldn&apos;t load feedback</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Please try again in a moment.
-          </p>
-        </div>
-      )}
-
-      {!hasError && items !== null && items.length === 0 && (
+      {items.length === 0 && (
         <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center">
           <p className="text-sm font-medium text-foreground">No feedback yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -74,7 +46,7 @@ export const RecentFeedback = ({
       )}
 
       <div className="space-y-3">
-        {items?.slice(0, PREVIEW_LIMIT).map((item) => {
+        {items.slice(0, PREVIEW_LIMIT).map((item) => {
           const rating = item.rating;
           return (
             <motion.div
@@ -114,7 +86,7 @@ export const RecentFeedback = ({
         })}
       </div>
 
-      {items !== null && items.length > PREVIEW_LIMIT && (
+      {items.length > PREVIEW_LIMIT && (
         <button
           type="button"
           aria-disabled="true"

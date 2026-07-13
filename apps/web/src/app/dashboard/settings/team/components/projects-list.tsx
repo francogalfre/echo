@@ -12,7 +12,7 @@ import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
 
-import { useBillingOverview } from "../../../hooks/use-billing-overview";
+import type { BillingOverviewData } from "../../../hooks/use-billing-overview";
 
 const SKELETON_COUNT = 4;
 
@@ -109,11 +109,14 @@ function ProjectsListSkeleton(): React.ReactElement {
   );
 }
 
-export function ProjectsList(): React.ReactElement {
+type ProjectsListProps = {
+  readonly initialData: BillingOverviewData;
+};
+
+export function ProjectsList({ initialData }: ProjectsListProps): React.ReactElement {
   const router = useRouter();
   const { data: organizations, isPending } = authClient.useListOrganizations();
   const { data: activeOrg } = authClient.useActiveOrganization();
-  const { state: billing } = useBillingOverview();
   const [switchingId, setSwitchingId] = useState<string | null>(null);
 
   if (isPending) {
@@ -136,7 +139,7 @@ export function ProjectsList(): React.ReactElement {
     router.refresh();
   };
 
-  const activePlan = billing.status === "ready" ? billing.data.plan : undefined;
+  const activePlan = initialData.plan;
 
   return (
     <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2">

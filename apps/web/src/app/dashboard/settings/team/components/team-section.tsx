@@ -3,13 +3,20 @@
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
 
+import type { BillingOverviewData } from "../../../hooks/use-billing-overview";
 import { InviteMemberButton } from "./invite-member-button";
 import { MembersList } from "./members-list";
 import { NewProjectButton } from "./new-project-button";
 import { ProjectsList } from "./projects-list";
 import { SettingsCard } from "../../components/settings-card";
 
-export const TeamSection = (): React.ReactElement => (
+type TeamSectionProps = {
+  readonly initialBillingOverview: BillingOverviewData;
+};
+
+export const TeamSection = ({
+  initialBillingOverview,
+}: TeamSectionProps): React.ReactElement => (
   <motion.div
     variants={staggerContainer()}
     initial="hidden"
@@ -28,7 +35,7 @@ export const TeamSection = (): React.ReactElement => (
           <NewProjectButton />
         </div>
         <div className="mt-6">
-          <ProjectsList />
+          <ProjectsList initialData={initialBillingOverview} />
         </div>
       </SettingsCard>
     </motion.div>
