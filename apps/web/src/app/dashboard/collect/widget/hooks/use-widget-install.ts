@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
@@ -13,6 +13,8 @@ export type WidgetInstall = {
   accentColor: string;
 };
 
+export type WidgetInstallInitial = { info: WidgetInstall | null } | { error: true };
+
 type State =
   | { status: "loading" }
   | { status: "empty" }
@@ -23,25 +25,25 @@ type UseWidgetInstallResult = State & { retry: () => void };
 
 const RETRY_DELAYS_MS = [400, 800] as const;
 
-export function useWidgetInstall(): UseWidgetInstallResult {
-  const [state, setState] = useState<State>({ status: "loading" });
-  const [reloadToken, setReloadToken] = useState(0);
+function toState(initial: WidgetInstallInitial): State {
+  if ("error" in initial) return { status: "error" };
+  return initial.info ? { status: "ready", info: initial.info } : { status: "empty" };
+}
 
-  useEffect(() => {
-    let cancelled = false;
+export function useWidgetInstall(initial: WidgetInstallInitial): UseWidgetInstallResult {
+  const [state, setState] = useState<State>(() => toState(initial));
+
+  const retry = (): void => {
     let attempt = 0;
-
     setState({ status: "loading" });
 
     const load = (): void => {
       trpc.widget.getInstallInfo
         .query()
         .then((info) => {
-          if (cancelled) return;
           setState(info ? { status: "ready", info } : { status: "empty" });
         })
         .catch(() => {
-          if (cancelled) return;
           const delay = RETRY_DELAYS_MS[attempt];
           attempt += 1;
           if (delay !== undefined) {
@@ -54,15 +56,7 @@ export function useWidgetInstall(): UseWidgetInstallResult {
     };
 
     load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [reloadToken]);
-
-  const retry = useCallback((): void => {
-    setReloadToken((token) => token + 1);
-  }, []);
+  };
 
   return { ...state, retry };
 }

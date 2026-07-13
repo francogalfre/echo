@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
@@ -12,45 +12,34 @@ export type ApiKeys = {
   justGenerated: boolean;
 };
 
-type State =
-  | { status: "loading" }
-  | { status: "empty" }
-  | { status: "ready"; keys: ApiKeys };
+export type ApiKeysInitial = { publicKey: string; hasSecret: boolean } | null;
+
+type State = { status: "empty" } | { status: "ready"; keys: ApiKeys };
 
 type Pending = "generate" | "roll" | null;
 
-export function useApiKeys(): {
+function toState(initial: ApiKeysInitial): State {
+  return initial
+    ? {
+        status: "ready",
+        keys: {
+          publicKey: initial.publicKey,
+          secretKey: null,
+          hasSecret: true,
+          justGenerated: false,
+        },
+      }
+    : { status: "empty" };
+}
+
+export function useApiKeys(initial: ApiKeysInitial): {
   state: State;
   pending: Pending;
   generate: () => Promise<void>;
   roll: () => Promise<void>;
 } {
-  const [state, setState] = useState<State>({ status: "loading" });
+  const [state, setState] = useState<State>(() => toState(initial));
   const [pending, setPending] = useState<Pending>(null);
-
-  useEffect(() => {
-    trpc.apiKeys.get
-      .query()
-      .then((data) => {
-        setState(
-          data
-            ? {
-                status: "ready",
-                keys: {
-                  publicKey: data.publicKey,
-                  secretKey: null,
-                  hasSecret: true,
-                  justGenerated: false,
-                },
-              }
-            : { status: "empty" },
-        );
-      })
-      .catch(() => {
-        toast.error("Failed to load API keys");
-        setState({ status: "empty" });
-      });
-  }, []);
 
   const issue = async (action: "generate" | "roll"): Promise<void> => {
     setPending(action);
