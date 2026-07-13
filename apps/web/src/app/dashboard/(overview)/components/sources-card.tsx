@@ -81,7 +81,7 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
               value={total}
               className="text-2xl font-semibold tracking-tight"
             />
-            <span className="text-xs text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground">
               across {sources.length} sources
             </span>
           </div>

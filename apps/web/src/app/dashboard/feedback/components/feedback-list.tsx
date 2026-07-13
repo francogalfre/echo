@@ -16,6 +16,7 @@ import { useFeedback } from "../hooks/use-feedback";
 import type { FeedbackCounts, FeedbackFilters, FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackItem } from "../hooks/use-feedback-item";
 import { addManyToBoard } from "../utils/feedback-actions";
+import { ErrorCard } from "../../components/error-card";
 import { FeedbackListSkeleton } from "./feedback-list-skeleton";
 import { FeedbackRow } from "./feedback-row";
 import { FeedbackSelectionBar } from "./feedback-selection-bar";
@@ -150,13 +151,11 @@ export function FeedbackList({
           {feedbackState.status === "loading" && <FeedbackListSkeleton />}
 
           {feedbackState.status === "error" && (
-            <div className="px-4 py-16 text-center">
-              <Icons.alertCircle className="mx-auto size-8 text-destructive/50" />
-              <p className="mt-2 text-sm font-medium text-foreground">
-                Could not load feedback
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">Please refresh the page.</p>
-            </div>
+            <ErrorCard
+              title="Could not load feedback"
+              message="Please refresh the page."
+              className="rounded-none ring-0"
+            />
           )}
 
           {feedbackState.status === "ready" && counts.all === 0 && (

@@ -9,6 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@echo/ui/components/drawer";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
@@ -181,19 +182,17 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               )}
 
               {state.status === "idle" && !isLoading && !selectedEntry && (
-                <div className="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border p-8 text-center">
-                  <Icons.aiMagic className="size-8 text-muted-foreground/40" />
-                  <div>
-                    <p className="text-sm font-medium">No digest yet</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Generate an AI summary of your feedback. Free plan refreshes weekly.
-                    </p>
-                  </div>
-                  <Button size="sm" onClick={() => void generate()}>
-                    <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
-                    Generate Digest
-                  </Button>
-                </div>
+                <EmptyState
+                  icon={<Icons.aiMagic />}
+                  title="No digest yet"
+                  description="Generate an AI summary of your feedback. Free plan refreshes weekly."
+                  action={
+                    <Button size="sm" onClick={() => void generate()}>
+                      <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
+                      Generate Digest
+                    </Button>
+                  }
+                />
               )}
 
               {activeDigest && !isGenerating && <ThemesAndIssues digest={activeDigest} />}

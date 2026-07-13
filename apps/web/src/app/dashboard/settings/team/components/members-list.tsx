@@ -3,6 +3,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@echo/ui/components/avatar";
 import { Badge } from "@echo/ui/components/badge";
 import type { BadgeVariantProps } from "@echo/ui/components/badge-variants";
+import { EmptyState } from "@echo/ui/components/empty-state";
+import { Icons } from "@echo/ui/components/icons";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { Skeleton } from "@echo/ui/components/skeleton";
 
@@ -34,9 +36,11 @@ function MembersListSkeleton(): React.ReactElement {
 
 function MembersEmptyState(): React.ReactElement {
   return (
-    <div className="rounded-xl border border-dashed border-border p-8 text-center">
-      <p className="text-sm text-muted-foreground">No members found.</p>
-    </div>
+    <EmptyState
+      icon={<Icons.user />}
+      title="No members found"
+      description="Invite teammates with the button above to start collaborating."
+    />
   );
 }
 

@@ -10,6 +10,7 @@ import { trpc } from "@/lib/trpc";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
 import { AiSummaryBanner } from "./ai-summary-banner";
+import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
 import { MetricStrip } from "./metric-strip";
@@ -94,11 +95,7 @@ export function DashboardClient({ initialData, hasApiKey }: Props): React.ReactE
       {state.status === "loading" && <DashboardSkeleton />}
 
       {state.status === "error" && (
-        <div className="rounded-lg bg-card px-5 py-10 text-center ring-1 ring-foreground/10">
-          <p className="text-sm text-muted-foreground">
-            Failed to load dashboard. Refresh to retry.
-          </p>
-        </div>
+        <ErrorCard message="We couldn't load your dashboard. Refresh the page to retry." />
       )}
 
       {state.status === "ready" && state.data.recent.length === 0 && (

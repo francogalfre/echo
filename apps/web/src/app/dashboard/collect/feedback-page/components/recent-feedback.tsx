@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { durations, easings } from "@echo/ui/lib/motion";
 import { motion, useReducedMotion } from "motion/react";
@@ -37,11 +38,12 @@ export const RecentFeedback = ({
       </div>
 
       {items.length === 0 && (
-        <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center">
-          <p className="text-sm font-medium text-foreground">No feedback yet</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Responses to your page will show up here.
-          </p>
+        <div className="rounded-xl border border-dashed border-border">
+          <EmptyState
+            icon={<Icons.message />}
+            title="No feedback yet"
+            description="Responses to your page will show up here."
+          />
         </div>
       )}
 

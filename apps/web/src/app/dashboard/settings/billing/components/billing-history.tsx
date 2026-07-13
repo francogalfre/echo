@@ -1,3 +1,4 @@
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 
 import { SettingsCard } from "../../components/settings-card";
@@ -21,16 +22,12 @@ export const BillingHistory = (): React.ReactElement => (
       ))}
     </div>
 
-    <div className="flex flex-col items-center justify-center gap-3 border-t border-border px-6 py-14 text-center sm:px-8">
-      <div className="flex size-11 items-center justify-center rounded-2xl bg-muted">
-        <Icons.creditCard className="size-5 text-muted-foreground" />
-      </div>
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-foreground">No invoices yet</p>
-        <p className="text-xs text-muted-foreground">
-          Your first invoice will show up here once you're billed.
-        </p>
-      </div>
+    <div className="border-t border-border">
+      <EmptyState
+        icon={<Icons.creditCard />}
+        title="No invoices yet"
+        description="Your first invoice will show up here once you're billed."
+      />
     </div>
   </SettingsCard>
 );

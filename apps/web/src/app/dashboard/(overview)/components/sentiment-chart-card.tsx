@@ -13,6 +13,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@echo/ui/components/chart";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import {
   Select,
@@ -174,9 +175,8 @@ export function SentimentChartCard({
             </BarChart>
           </ChartContainer>
           {isEmpty ? (
-            <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5">
-              <Icons.message className="size-5 text-muted-foreground/60" />
-              <p className="text-xs text-muted-foreground">No feedback in this period</p>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <EmptyState icon={<Icons.message />} title="No feedback in this period" />
             </div>
           ) : null}
         </div>

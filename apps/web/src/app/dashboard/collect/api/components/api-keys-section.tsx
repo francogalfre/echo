@@ -1,6 +1,8 @@
 "use client";
 
 import { env } from "@echo/env/web";
+import { Button } from "@echo/ui/components/button";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
 
@@ -49,7 +51,22 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
   if (state.status === "empty") {
-    return <EmptyState onGenerate={generate} isGenerating={pending === "generate"} />;
+    return (
+      <EmptyState
+        icon={<Icons.lock />}
+        title="No API keys yet"
+        description="Generate a publishable and secret key pair to start sending feedback."
+        className="mx-auto max-w-md py-20"
+        action={
+          <Button size="sm" onClick={generate} disabled={pending === "generate"}>
+            {pending === "generate" ? (
+              <Icons.loading className="size-3.5 animate-spin" />
+            ) : null}
+            Generate API keys
+          </Button>
+        }
+      />
+    );
   }
 
   const pk = state.keys.publicKey || `echo_pk_${"•".repeat(16)}`;
@@ -211,34 +228,5 @@ feedback = response.json()["feedback"]`,
         </div>
       </div>
     </>
-  );
-}
-
-function EmptyState({
-  onGenerate,
-  isGenerating,
-}: {
-  onGenerate: () => void;
-  isGenerating: boolean;
-}): React.ReactElement {
-  return (
-    <div className="mx-auto flex max-w-md flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-20 text-center">
-      <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-background">
-        <Icons.lock className="size-5 text-muted-foreground" />
-      </div>
-      <h2 className="mt-5 text-sm font-semibold">No API keys yet</h2>
-      <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
-        Generate a publishable and secret key pair to start sending feedback.
-      </p>
-      <button
-        type="button"
-        onClick={onGenerate}
-        disabled={isGenerating}
-        className="mt-7 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity active:scale-[0.96] hover:opacity-85 disabled:opacity-50"
-      >
-        {isGenerating ? <Icons.loading className="size-3.5 animate-spin" /> : null}
-        Generate API keys
-      </button>
-    </div>
   );
 }

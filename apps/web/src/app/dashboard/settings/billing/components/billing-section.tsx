@@ -8,11 +8,11 @@ import * as React from "react";
 import { trpc } from "@/lib/trpc";
 
 import type { BillingOverviewData } from "../../../hooks/use-billing-overview";
+import { ErrorCard } from "../../../components/error-card";
 
 import { BillingHistory } from "./billing-history";
 import { BillingPlanCard } from "./billing-plan-card";
 import { BillingUsageMeters } from "./billing-usage-meters";
-import { SettingsCard } from "../../components/settings-card";
 
 type Props = {
   readonly initialData: BillingOverviewData;
@@ -44,18 +44,7 @@ export const BillingSection = ({ initialData }: Props): React.ReactElement => {
   };
 
   if (state.status === "error") {
-    return (
-      <SettingsCard className="py-10 text-center">
-        <p className="text-sm text-muted-foreground">Failed to load billing information.</p>
-        <button
-          type="button"
-          onClick={reload}
-          className="mt-3 text-sm font-medium text-accent hover:underline"
-        >
-          Try again
-        </button>
-      </SettingsCard>
-    );
+    return <ErrorCard message="Failed to load billing information." onRetry={reload} />;
   }
 
   return (

@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@echo/ui/components/button";
-import { Icons } from "@echo/ui/components/icons";
+import { ErrorCard } from "./components/error-card";
 
 type Props = {
   readonly error: Error & { digest?: string };
@@ -10,18 +9,11 @@ type Props = {
 
 const DashboardError = ({ reset }: Props): React.ReactElement => {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-xl bg-card px-5 py-16 text-center ring-1 ring-foreground/10">
-      <span className="flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-        <Icons.alertCircle className="size-5" />
-      </span>
-      <div>
-        <p className="text-sm font-medium">Something went wrong</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          We couldn&apos;t load your dashboard. Please try again.
-        </p>
-      </div>
-      <Button onClick={reset}>Try again</Button>
-    </div>
+    <ErrorCard
+      message="We couldn't load your dashboard. Please try again."
+      onRetry={reset}
+      className="py-16"
+    />
   );
 };
 

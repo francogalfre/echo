@@ -1,13 +1,18 @@
 "use client";
 
 import { env } from "@echo/env/web";
+import { buttonVariants } from "@echo/ui/components/button-variants";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
 import { toast } from "@echo/ui/components/toast";
+import { cn } from "@echo/ui/lib/utils";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { trpc } from "@/lib/trpc";
 
+import { ErrorCard } from "../../../components/error-card";
 import { DocsHeader } from "../../components/docs-header";
 import { SectionHeading } from "../../components/section-heading";
 import { useWidgetInstall, type WidgetInstallInitial } from "../hooks/use-widget-install";
@@ -40,37 +45,29 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
 
   if (state.status === "error") {
     return (
-      <StatusCard
-        icon={<Icons.alertCircle className="size-5 text-muted-foreground" />}
+      <ErrorCard
         title="Couldn't load the widget"
-        description="Something went wrong while fetching your widget configuration."
-        action={
-          <button
-            type="button"
-            onClick={state.retry}
-            className="mt-6 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity active:scale-[0.96] hover:opacity-85"
-          >
-            <Icons.refresh className="size-3.5" />
-            Retry
-          </button>
-        }
+        message="Something went wrong while fetching your widget configuration."
+        onRetry={state.retry}
+        className="mx-auto max-w-md"
       />
     );
   }
 
   if (state.status === "empty") {
     return (
-      <StatusCard
-        icon={<Icons.lock className="size-5 text-muted-foreground" />}
+      <EmptyState
+        icon={<Icons.lock />}
         title="No API keys yet"
         description="Generate your API keys to enable the widget."
+        className="mx-auto max-w-md"
         action={
-          <a
+          <Link
             href="/dashboard/collect/api"
-            className="mt-6 flex h-9 items-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background transition-opacity active:scale-[0.96] hover:opacity-85"
+            className={cn(buttonVariants({ size: "sm" }))}
           >
             Go to API keys
-          </a>
+          </Link>
         }
       />
     );
@@ -140,30 +137,5 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
         </FadeIn>
       </div>
     </>
-  );
-}
-
-type StatusCardProps = {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  action: React.ReactNode;
-};
-
-function StatusCard({
-  icon,
-  title,
-  description,
-  action,
-}: StatusCardProps): React.ReactElement {
-  return (
-    <div className="mx-auto flex max-w-md flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/20 px-6 py-16 text-center">
-      <div className="flex size-12 items-center justify-center rounded-xl border border-border bg-background">
-        {icon}
-      </div>
-      <h2 className="mt-4 text-sm font-semibold">{title}</h2>
-      <p className="mt-1 max-w-xs text-sm text-muted-foreground">{description}</p>
-      {action}
-    </div>
   );
 }
