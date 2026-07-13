@@ -1,0 +1,10 @@
+import { PageContainer } from "../components/page-container";
+import { DashboardSkeleton } from "./components/dashboard-skeleton";
+
+const DashboardLoading = (): React.ReactElement => (
+  <PageContainer>
+    <DashboardSkeleton />
+  </PageContainer>
+);
+
+export default DashboardLoading;
