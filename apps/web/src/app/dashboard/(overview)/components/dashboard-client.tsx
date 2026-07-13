@@ -11,6 +11,7 @@ import { trpc } from "@/lib/trpc";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
 import { AiSummaryBanner } from "./ai-summary-banner";
+import { HowEchoWorks } from "./how-echo-works";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { RecentFeedbackTable } from "./recent-feedback-table";
@@ -106,6 +107,7 @@ export function DashboardClient(): React.ReactElement {
         <div className="flex flex-col gap-4">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           <OnboardingChecklist hasFeedback={state.data.metrics.total.value > 0} />
+          <HowEchoWorks />
         </div>
       )}
 

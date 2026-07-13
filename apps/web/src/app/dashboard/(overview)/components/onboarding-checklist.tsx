@@ -23,6 +23,7 @@ type Step = {
   completed: boolean;
   showCta: boolean;
   loading: boolean;
+  ctaLabel: string;
 };
 
 function useSteps(hasFeedback: boolean): readonly Step[] {
@@ -32,28 +33,31 @@ function useSteps(hasFeedback: boolean): readonly Step[] {
 
   return [
     {
-      title: "Create your project",
+      title: "Project created",
       description: "Your workspace is ready.",
       href: "/dashboard",
       completed: true,
       showCta: false,
       loading: false,
+      ctaLabel: "",
     },
     {
-      title: "Create an API key",
-      description: "Authenticate your widget or API requests.",
+      title: "Generate an API key",
+      description: "Needed to authenticate your widget or API requests.",
       href: "/dashboard/collect/api",
       completed: apiKeyReady,
       showCta: !apiKeyLoading,
       loading: apiKeyLoading,
+      ctaLabel: "Create API key",
     },
     {
-      title: "Collect your first feedback",
-      description: "Install the widget or POST to the API.",
+      title: "Send your first feedback",
+      description: "Install the widget, POST to the API, or share your feedback page.",
       href: "/dashboard/collect",
       completed: hasFeedback,
       showCta: true,
       loading: false,
+      ctaLabel: "Install the widget",
     },
   ];
 }
@@ -143,7 +147,7 @@ export function OnboardingChecklist({
                 href={step.href as Route}
                 className={cn(buttonVariants({ size: "sm" }), "active:scale-[0.96]")}
               >
-                Continue
+                {step.ctaLabel}
               </Link>
             )}
           </StaggerItem>
