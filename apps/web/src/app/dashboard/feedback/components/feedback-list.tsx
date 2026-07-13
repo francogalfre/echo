@@ -4,7 +4,6 @@ import { Button } from "@echo/ui/components/button";
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { toast } from "@echo/ui/components/toast";
 import { staggerContainer } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
@@ -13,13 +12,18 @@ import Link from "next/link";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo, useState } from "react";
 
-import { useFeedback, type FeedbackItem } from "../hooks/use-feedback";
+import {
+  useFeedback,
+  type FeedbackCounts,
+  type FeedbackFilters,
+  type FeedbackItem,
+} from "../hooks/use-feedback";
 import { useFeedbackItem } from "../hooks/use-feedback-item";
 import { addManyToBoard } from "../utils/feedback-actions";
+import { FeedbackListSkeleton } from "./feedback-list-skeleton";
 import { FeedbackRow } from "./feedback-row";
 import { FeedbackSelectionBar } from "./feedback-selection-bar";
 import { FeedbackSheet } from "./feedback-sheet";
-import { FEEDBACK_TABLE_GRID } from "./feedback-table-grid";
 import { FeedbackTableHeader } from "./feedback-table-header";
 import {
   FeedbackToolbar,
@@ -42,29 +46,19 @@ const SOURCE_VALUES = [
   "widget",
 ] as const satisfies readonly SourceFilter[];
 
-function FeedbackListSkeleton(): React.ReactElement {
-  return (
-    <div>
-      {Array.from({ length: 8 }, (_, index) => (
-        <div
-          key={index}
-          className={cn(FEEDBACK_TABLE_GRID, "border-b border-border py-4 last:border-0")}
-        >
-          <Skeleton className="size-4 shrink-0 rounded-sm" />
-          <Skeleton className="h-3 w-24 shrink-0 rounded" />
-          <Skeleton className="h-3 flex-1 rounded" />
-          <Skeleton className="h-4 w-14 shrink-0 rounded-full" />
-          <Skeleton className="h-4 w-12 shrink-0 rounded-full" />
-          <Skeleton className="h-4 w-10 shrink-0 rounded-full" />
-          <Skeleton className="h-3 w-10 shrink-0 rounded" />
-          <Skeleton className="size-4 shrink-0 rounded" />
-        </div>
-      ))}
-    </div>
-  );
-}
+type FeedbackListProps = {
+  readonly initialItems: FeedbackItem[];
+  readonly initialHasMore: boolean;
+  readonly initialCounts: FeedbackCounts;
+  readonly initialFilters: FeedbackFilters;
+};
 
-export function FeedbackList(): React.ReactElement {
+export function FeedbackList({
+  initialItems,
+  initialHasMore,
+  initialCounts,
+  initialFilters,
+}: FeedbackListProps): React.ReactElement {
   const [sentiment, setSentiment] = useQueryState(
     "sentiment",
     parseAsStringLiteral(SENTIMENT_VALUES).withDefault("all"),
@@ -77,7 +71,15 @@ export function FeedbackList(): React.ReactElement {
     "q",
     parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
   );
-  const feedbackState = useFeedback({ sentiment, source, search });
+  const feedbackState = useFeedback(
+    { sentiment, source, search },
+    {
+      items: initialItems,
+      hasMore: initialHasMore,
+      counts: initialCounts,
+      filters: initialFilters,
+    },
+  );
   const [openId, setOpenId] = useQueryState("feedback");
   const [insightItem, setInsightItem] = useState<FeedbackItem | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());

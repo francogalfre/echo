@@ -45,8 +45,14 @@ type UseFeedbackResult = {
   loadMore: () => void;
 };
 
+export type FeedbackInitialData = {
+  items: FeedbackItem[];
+  hasMore: boolean;
+  counts: FeedbackCounts;
+  filters: FeedbackFilters;
+};
+
 const LIMIT = 50;
-const DEFAULT_COUNTS: FeedbackCounts = { all: 0, positive: 0, neutral: 0, negative: 0 };
 
 function toQueryInput(
   filters: FeedbackFilters,
@@ -82,15 +88,27 @@ export function mapItem(item: {
   return { ...item, createdAt: new Date(item.createdAt) };
 }
 
-export function useFeedback(filters: FeedbackFilters): UseFeedbackResult {
+export function useFeedback(
+  filters: FeedbackFilters,
+  initial: FeedbackInitialData,
+): UseFeedbackResult {
   const { sentiment, source, search } = filters;
-  const [state, setState] = useState<State>({ status: "loading" });
-  const [hasMore, setHasMore] = useState(false);
+  const [state, setState] = useState<State>({ status: "ready", items: initial.items });
+  const [hasMore, setHasMore] = useState(initial.hasMore);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [counts, setCounts] = useState<FeedbackCounts>(DEFAULT_COUNTS);
+  const [counts, setCounts] = useState<FeedbackCounts>(initial.counts);
   const offsetRef = useRef(0);
+  const initialFiltersRef = useRef(initial.filters);
 
   useEffect(() => {
+    const initialFilters = initialFiltersRef.current;
+    const isInitialFilters =
+      sentiment === initialFilters.sentiment &&
+      source === initialFilters.source &&
+      search === initialFilters.search;
+
+    if (isInitialFilters) return;
+
     let cancelled = false;
     let attempt = 0;
     const maxAttempts = 3;
