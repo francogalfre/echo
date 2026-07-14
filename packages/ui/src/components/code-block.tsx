@@ -147,7 +147,7 @@ export function CodeBlock({
           type="button"
           onClick={handleCopy}
           whileTap={{ scale: 0.95 }}
-          className="absolute top-2 right-2 z-10 flex items-center gap-1.5 rounded-lg border border-border bg-background/80 px-2 py-1.5 text-xs font-medium text-muted-foreground opacity-70 backdrop-blur-sm transition-all duration-150 group-hover:opacity-100 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="absolute top-2 right-2 z-10 flex items-center gap-1.5 rounded-lg border border-border bg-background/80 px-2 py-1.5 text-xs font-medium text-muted-foreground opacity-70 backdrop-blur-sm transition-[opacity,background-color,color,box-shadow] duration-150 group-hover:opacity-100 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
           aria-label="Copy code"
         >
           <span className="relative size-3.5">

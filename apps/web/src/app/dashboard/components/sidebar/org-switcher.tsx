@@ -63,7 +63,7 @@ export const OrgSwitcher = (): React.ReactElement => {
         <DropdownMenuContent className="px-2 py-2.5 shadow-xs" side="bottom" align="start">
           {organizations?.map((org) => (
             <DropdownMenuItem
-              className="text-sm transition-all duration-300"
+              className="text-sm transition-[background-color,color] duration-300"
               key={org.id}
               onClick={() => switchOrg(org.id)}
             >
@@ -77,7 +77,7 @@ export const OrgSwitcher = (): React.ReactElement => {
           ))}
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
-            className="text-sm text-muted-foreground transition-all duration-300"
+            className="text-sm text-muted-foreground transition-[background-color,color] duration-300"
             onClick={() => setCreateOpen(true)}
           >
             <Icons.circlePlus className="size-4 text-muted-foreground" />

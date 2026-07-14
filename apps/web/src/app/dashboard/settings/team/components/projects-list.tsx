@@ -49,7 +49,7 @@ function ProjectCard({
         disabled={isActive || isSwitching}
         className={cn(
           "group flex w-full items-center gap-3 rounded-xl border border-border bg-card",
-          "p-4 text-left transition-all duration-150",
+          "p-4 text-left transition-[translate,border-color] duration-150",
           isActive
             ? "cursor-default"
             : "cursor-pointer hover:-translate-y-0.5 hover:border-foreground/15",

@@ -207,7 +207,7 @@ export const EditorCanvas = ({
 
               {addableFields.length > 0 && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="group flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border py-3 text-sm font-medium text-muted-foreground outline-none transition-all duration-150 hover:border-accent/40 hover:bg-accent/5 hover:text-accent aria-expanded:border-accent/40 aria-expanded:bg-accent/5 aria-expanded:text-accent">
+                  <DropdownMenuTrigger className="group flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-border py-3 text-sm font-medium text-muted-foreground outline-none transition-[border-color,background-color,color] duration-150 hover:border-accent/40 hover:bg-accent/5 hover:text-accent aria-expanded:border-accent/40 aria-expanded:bg-accent/5 aria-expanded:text-accent">
                     <span className="flex size-6 items-center justify-center rounded-full bg-muted transition-colors group-hover:bg-accent/10 group-aria-expanded:bg-accent/10">
                       <Icons.circlePlus className="size-3.5" />
                     </span>

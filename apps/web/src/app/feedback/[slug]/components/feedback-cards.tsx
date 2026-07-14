@@ -46,7 +46,7 @@ export const FeedbackCards = ({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: durations.slow, ease: easings.out }}
-              className="rounded-xl border border-black/5 bg-white p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-black/10 dark:bg-card dark:hover:border-white/10"
+              className="rounded-xl border border-black/5 bg-white p-4 transition-[translate,border-color] duration-150 hover:-translate-y-0.5 hover:border-black/10 dark:bg-card dark:hover:border-white/10"
             >
               <div className="flex items-center gap-2.5">
                 <span

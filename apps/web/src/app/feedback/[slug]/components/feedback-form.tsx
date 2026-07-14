@@ -51,7 +51,7 @@ export const FeedbackForm = ({
 
   const inputClassName =
     "h-11 w-full rounded-lg border border-input bg-background px-3.5 text-sm outline-none " +
-    "transition-all duration-150 focus:ring-2 focus:ring-[var(--accent-color)]/25 " +
+    "transition-[border-color,box-shadow] duration-150 focus:ring-2 focus:ring-[var(--accent-color)]/25 " +
     "focus:border-[var(--accent-color)]/70";
 
   const onSubmit = handleSubmit(async (values) => {
@@ -131,7 +131,7 @@ export const FeedbackForm = ({
         <textarea
           id="content"
           rows={6}
-          className="field-sizing-content h-full max-h-80 min-h-32 w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-all duration-150 focus:border-[var(--accent-color)]/70 focus:ring-2 focus:ring-[var(--accent-color)]/25"
+          className="field-sizing-content h-full max-h-80 min-h-32 w-full resize-none rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition-[border-color,box-shadow] duration-150 focus:border-[var(--accent-color)]/70 focus:ring-2 focus:ring-[var(--accent-color)]/25"
           placeholder="Tell us what you think..."
           {...register("content")}
         />
