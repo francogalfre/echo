@@ -20,6 +20,7 @@ export const env = createEnv({
     GITHUB_CLIENT_SECRET: z.string().min(1),
 
     POLAR_ACCESS_TOKEN: z.string().min(1),
+    POLAR_SERVER: z.enum(["sandbox", "production"]).default("sandbox"),
     POLAR_SUCCESS_URL: z.url(),
     POLAR_WEBHOOK_SECRET: z.string().min(1),
     POLAR_PRO_PRODUCT_ID: z.string().min(1),
