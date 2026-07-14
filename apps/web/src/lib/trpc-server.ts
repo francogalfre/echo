@@ -17,7 +17,7 @@ export async function createServerTrpc(): Promise<
       httpLink({
         url: `${env.NEXT_PUBLIC_SERVER_URL}/trpc`,
         headers: () => ({ cookie: cookieHeader }),
-        fetch: (url, options) => fetch(url, { ...options, credentials: "include" }),
+        fetch: (url, options) => fetch(url, { ...options, cache: "no-store" }),
       }),
     ],
   });

@@ -16,6 +16,7 @@
   },
   "ignorePatterns": [
     "**/.agents/**",
+    "**/.claude/**",
     "**/dist/**",
     "**/.expo/**",
     "**/.turbo/**",
