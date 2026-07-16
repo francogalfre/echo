@@ -7,12 +7,14 @@ import * as React from "react";
 import { useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
 
+import type { DigestOutput } from "@echo/ai";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
 import { AiSummaryBanner } from "./ai-summary-banner";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
+import { InsightsCard } from "./insights-card";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { RecentFeedbackTable } from "./recent-feedback-table";
@@ -24,14 +26,25 @@ type State =
   | { status: "error" }
   | { status: "ready"; data: DashboardOverview; pending: boolean };
 
+type InitialDigest = {
+  readonly digest: DigestOutput | null;
+  readonly generatedAt: Date | null;
+  readonly feedbackCount: number;
+};
+
 type Props = {
   readonly initialData: DashboardOverview;
   readonly hasApiKey: boolean;
+  readonly initialDigest: InitialDigest;
 };
 
 const INITIAL_RANGE: StatsRange = "30d";
 
-export function DashboardClient({ initialData, hasApiKey }: Props): React.ReactElement {
+export function DashboardClient({
+  initialData,
+  hasApiKey,
+  initialDigest,
+}: Props): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
   const [state, setState] = React.useState<State>({
@@ -131,6 +144,13 @@ export function DashboardClient({ initialData, hasApiKey }: Props): React.ReactE
           </motion.div>
           <motion.div variants={fadeInUp}>
             <AiSummaryBanner total={state.data.metrics.total.value} />
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <InsightsCard
+              digest={initialDigest.digest}
+              generatedAt={initialDigest.generatedAt}
+              feedbackCount={initialDigest.feedbackCount}
+            />
           </motion.div>
           <motion.div variants={fadeInUp}>
             <RecentFeedbackTable items={state.data.recent} />
