@@ -9,14 +9,23 @@ export type GuardResult = Allowed | Blocked;
 
 const ipLimiter = new Ratelimit({
   redis,
+  analytics: true,
   limiter: Ratelimit.slidingWindow(5, "1 h"),
   prefix: "echo:rl:ip",
 });
 
 const slugLimiter = new Ratelimit({
   redis,
+  analytics: true,
   limiter: Ratelimit.slidingWindow(500, "1 h"),
   prefix: "echo:rl:slug",
+});
+
+const keyLimiter = new Ratelimit({
+  redis,
+  analytics: true,
+  limiter: Ratelimit.slidingWindow(60, "1 m"),
+  prefix: "echo:rl:key",
 });
 
 function hashContent(ip: string, content: string): string {
@@ -56,6 +65,22 @@ export async function guardSubmission(
 
   if (isNew === null) {
     return { allowed: false, silent: true, message: "" };
+  }
+
+  return { allowed: true };
+}
+
+export async function guardKeySubmission(key: string): Promise<GuardResult> {
+  if (!redis || !keyLimiter) return { allowed: true };
+
+  const result = await keyLimiter.limit(key);
+
+  if (!result.success) {
+    return {
+      allowed: false,
+      silent: false,
+      message: "Too many requests for this API key. Please slow down.",
+    };
   }
 
   return { allowed: true };
