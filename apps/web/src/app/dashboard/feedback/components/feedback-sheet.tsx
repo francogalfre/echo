@@ -21,20 +21,19 @@ import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback
 
 import type { FeedbackItem } from "../utils/map-feedback";
 import { addToBoard, buildFeedbackMailto, copyFeedback } from "../utils/feedback-actions";
+import { InsightPanel } from "./insight-panel";
 import { StarDisplay } from "./star-display";
 
 type FeedbackSheetProps = {
   item: FeedbackItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onExplainWithAi: (item: FeedbackItem) => void;
 };
 
 export function FeedbackSheet({
   item,
   open,
   onOpenChange,
-  onExplainWithAi,
 }: FeedbackSheetProps): React.ReactElement {
   const mailto = item ? buildFeedbackMailto(item) : null;
 
@@ -103,6 +102,10 @@ export function FeedbackSheet({
                   )}
                 </div>
               </StaggerItem>
+
+              <StaggerItem>
+                <InsightPanel item={item} active={open} />
+              </StaggerItem>
             </Stagger>
 
             <DrawerFooter className="flex-row flex-wrap gap-2 border-t px-6 pb-8 pt-4">
@@ -123,10 +126,6 @@ export function FeedbackSheet({
                   Send email
                 </a>
               )}
-              <Button size="lg" className="ml-auto" onClick={() => onExplainWithAi(item)}>
-                <Icons.aiMagic className="size-4" />
-                Explain with AI
-              </Button>
             </DrawerFooter>
           </>
         )}

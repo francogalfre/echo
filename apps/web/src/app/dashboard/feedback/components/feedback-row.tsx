@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@echo/ui/components/tooltip";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
@@ -31,7 +32,6 @@ type FeedbackRowProps = {
   selected: boolean;
   onToggleSelect: (id: string) => void;
   onViewDetails: (item: FeedbackItem) => void;
-  onExplainWithAi: (item: FeedbackItem) => void;
 };
 
 export function FeedbackRow({
@@ -39,7 +39,6 @@ export function FeedbackRow({
   selected,
   onToggleSelect,
   onViewDetails,
-  onExplainWithAi,
 }: FeedbackRowProps): React.ReactElement {
   const mailto = buildFeedbackMailto(item);
   const email = item.email;
@@ -74,8 +73,19 @@ export function FeedbackRow({
           <AvatarFallback name={item.name} />
         </Avatar>
         <span className="flex min-w-0 flex-col">
-          <span className="truncate text-[13px] font-medium leading-tight">
-            {item.name}
+          <span className="flex items-center gap-1.5 truncate text-[13px] font-medium leading-tight">
+            <span className="truncate">{item.name}</span>
+            {item.hasInsight && (
+              <Tooltip>
+                <TooltipTrigger
+                  render={<span className="inline-flex shrink-0 text-accent" />}
+                >
+                  <Icons.aiMagic className="size-3" />
+                  <span className="sr-only">AI insight ready</span>
+                </TooltipTrigger>
+                <TooltipContent>AI insight ready</TooltipContent>
+              </Tooltip>
+            )}
           </span>
           {item.email && (
             <span className="truncate text-[11px] leading-tight text-muted-foreground">
@@ -132,7 +142,7 @@ export function FeedbackRow({
               <Icons.eye className="size-4" />
               View details
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onExplainWithAi(item)}>
+            <DropdownMenuItem onClick={() => onViewDetails(item)}>
               <Icons.aiMagic className="size-4 text-accent" />
               Explain with AI
             </DropdownMenuItem>

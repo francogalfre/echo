@@ -27,7 +27,6 @@ import {
   type SentimentFilter,
   type SourceFilter,
 } from "./feedback-toolbar";
-import { InsightDialog } from "./insight-dialog";
 
 const SENTIMENT_VALUES = [
   "all",
@@ -78,7 +77,6 @@ export function FeedbackList({
     },
   );
   const [openId, setOpenId] = useQueryState("feedback");
-  const [insightItem, setInsightItem] = useState<FeedbackItem | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const items = feedbackState.items;
@@ -208,7 +206,6 @@ export function FeedbackList({
                     selected={selected.has(item.id)}
                     onToggleSelect={toggleSelect}
                     onViewDetails={(selectedItem) => void setOpenId(selectedItem.id)}
-                    onExplainWithAi={(selectedItem) => setInsightItem(selectedItem)}
                   />
                 ))}
               </motion.div>
@@ -250,13 +247,6 @@ export function FeedbackList({
         onOpenChange={(open) => {
           if (!open) void setOpenId(null);
         }}
-        onExplainWithAi={(item) => setInsightItem(item)}
-      />
-
-      <InsightDialog
-        item={insightItem}
-        open={insightItem !== null}
-        onOpenChange={(open) => !open && setInsightItem(null)}
       />
     </div>
   );
