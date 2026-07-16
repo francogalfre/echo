@@ -16,7 +16,7 @@ type SiteConfig = {
 
 export const siteConfig: SiteConfig = {
   name: "Echo",
-  title: "Echo — Feedback infrastructure for developers",
+  title: "Echo - Feedback infrastructure for developers",
   description:
     "Echo is developer-first feedback infrastructure. Collect, classify, and act on user " +
     "feedback with a drop-in widget, REST API, and a clean dashboard.",
