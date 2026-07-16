@@ -10,13 +10,13 @@ import { trpc } from "@/lib/trpc";
 import type { DigestOutput } from "@echo/ai";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
-import { AiSummaryBanner } from "./ai-summary-banner";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
-import { InsightsCard } from "./insights-card";
+import { InsightsHero } from "./insights-hero";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
+import { ProductFlowStrip } from "./product-flow-strip";
 import { RecentFeedbackTable } from "./recent-feedback-table";
 import { SentimentChartCard } from "./sentiment-chart-card";
 import { SourcesCard } from "./sources-card";
@@ -93,6 +93,10 @@ export function DashboardClient({
   }, [range]);
 
   const firstName = session?.user.name?.split(" ")[0] ?? "";
+  const hasFeedback = state.status === "ready" && state.data.metrics.total.value > 0;
+  const hasInsights =
+    initialDigest.digest !== null &&
+    (initialDigest.digest.topIssues.length > 0 || initialDigest.digest.themes.length > 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -114,6 +118,11 @@ export function DashboardClient({
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-4">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
+          <ProductFlowStrip
+            variant="full"
+            hasFeedback={hasFeedback}
+            hasInsights={hasInsights}
+          />
           <OnboardingChecklist
             hasFeedback={state.data.metrics.total.value > 0}
             hasApiKey={hasApiKey}
@@ -132,6 +141,13 @@ export function DashboardClient({
           <motion.div variants={fadeInUp}>
             <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           </motion.div>
+          <motion.div variants={fadeInUp}>
+            <InsightsHero
+              digest={initialDigest.digest}
+              generatedAt={initialDigest.generatedAt}
+              feedbackCount={initialDigest.feedbackCount}
+            />
+          </motion.div>
           <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
             <SentimentChartCard
               series={state.data.series}
@@ -143,17 +159,14 @@ export function DashboardClient({
             <SourcesCard sources={state.data.sources} />
           </motion.div>
           <motion.div variants={fadeInUp}>
-            <AiSummaryBanner total={state.data.metrics.total.value} />
-          </motion.div>
-          <motion.div variants={fadeInUp}>
-            <InsightsCard
-              digest={initialDigest.digest}
-              generatedAt={initialDigest.generatedAt}
-              feedbackCount={initialDigest.feedbackCount}
-            />
-          </motion.div>
-          <motion.div variants={fadeInUp}>
             <RecentFeedbackTable items={state.data.recent} />
+          </motion.div>
+          <motion.div variants={fadeInUp}>
+            <ProductFlowStrip
+              variant="compact"
+              hasFeedback={hasFeedback}
+              hasInsights={hasInsights}
+            />
           </motion.div>
         </motion.div>
       )}
