@@ -16,7 +16,7 @@ export function findMembership(
 export async function findFirstOrganizationId(userId: string): Promise<string | undefined> {
   const membership = await db.query.member.findFirst({
     where: (m) => eq(m.userId, userId),
-    orderBy: (m, { asc }) => asc(m.createdAt),
+    orderBy: (m, { asc }) => [asc(m.createdAt), asc(m.id)],
     columns: { organizationId: true },
   });
 

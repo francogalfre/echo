@@ -22,7 +22,7 @@ export function createAuth() {
           before: async (session) => {
             const membership = await db.query.member.findFirst({
               where: eq(schema.member.userId, session.userId),
-              orderBy: asc(schema.member.createdAt),
+              orderBy: [asc(schema.member.createdAt), asc(schema.member.id)],
               columns: { organizationId: true },
             });
 
