@@ -87,7 +87,7 @@ export const EditorDock = ({
           initial={shouldReduceMotion ? false : "hidden"}
           animate="visible"
           variants={fadeInUp}
-          className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-border bg-card/95 p-1.5 shadow-lg ring-1 ring-foreground/10 backdrop-blur-sm"
+          className="pointer-events-auto flex items-center gap-1 rounded-2xl border border-border bg-card/95 py-1.5 px-3 shadow-lg ring-1 ring-foreground/10 backdrop-blur-sm"
         >
           <Tooltip>
             <TooltipTrigger render={<span className="inline-flex" />}>
@@ -119,7 +119,7 @@ export const EditorDock = ({
                 animate={{ opacity: 1, scale: 1, width: "auto" }}
                 exit={{ opacity: 0, scale: 0.9, width: 0 }}
                 transition={{ duration: 0.15 }}
-                className="flex items-center gap-1 overflow-hidden"
+                className="flex items-center gap-2 overflow-hidden"
               >
                 <DockDivider />
                 <DockIconButton onClick={onCopyLink} icon={Icons.copy} label="Copy link" />
