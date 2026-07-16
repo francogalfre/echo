@@ -1,6 +1,13 @@
 "use client";
 
 import { Button } from "@echo/ui/components/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@echo/ui/components/card";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
@@ -15,27 +22,59 @@ type InsightsHeroProps = {
   readonly digest: DigestOutput | null;
   readonly generatedAt: Date | null;
   readonly feedbackCount: number;
+  readonly className?: string;
 };
 
-type EmptyHeroProps = {
-  readonly onGenerate: () => void;
-};
-
-function InsightsHeroEmpty({ onGenerate }: EmptyHeroProps): React.ReactElement {
+function HeaderChip(): React.ReactElement {
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-pastel-violet-bg/50 via-card to-pastel-blue-bg/30 p-6 ring-1 ring-foreground/10 sm:p-10">
-      <EmptyState
-        icon={<Icons.aiMagic />}
-        title="Your AI summary is one click away"
-        description="Generate an executive summary, the top requested changes, and recurring
-          themes distilled from your feedback."
-        action={
-          <Button onClick={onGenerate}>
-            <Icons.aiMagic data-icon="inline-start" className="size-4" />
-            Generate first summary
-          </Button>
-        }
-      />
+    <span className="flex size-6 items-center justify-center rounded-md bg-accent/10">
+      <Icons.aiMagic className="size-3.5 text-accent" />
+    </span>
+  );
+}
+
+function TopIssues({ issues }: { issues: readonly string[] }): React.ReactElement {
+  return (
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        What users want changed
+      </p>
+      <Stagger className="mt-2.5 flex flex-col gap-2" stagger={0.04}>
+        {issues.map((issue) => (
+          <StaggerItem
+            key={issue}
+            className="flex items-start gap-2 text-[13px] leading-snug text-foreground/85"
+          >
+            <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive/80" />
+            {issue}
+          </StaggerItem>
+        ))}
+      </Stagger>
+    </div>
+  );
+}
+
+function MainThemes({ themes }: { themes: DigestOutput["themes"] }): React.ReactElement {
+  return (
+    <div>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        Main themes
+      </p>
+      <Stagger className="mt-2.5 flex flex-col gap-2" stagger={0.04}>
+        {themes.map((theme) => (
+          <StaggerItem key={theme.title} className="flex items-start gap-2.5">
+            <span className="mt-px min-w-6 rounded-md bg-muted px-1 py-0.5 text-center text-[11px] font-semibold tabular-nums text-muted-foreground">
+              {theme.count}
+            </span>
+            <div className="min-w-0">
+              <p className="text-[13px] font-medium leading-snug">{theme.title}</p>
+              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                {theme.insight}
+              </p>
+            </div>
+          </StaggerItem>
+        ))}
+      </Stagger>
     </div>
   );
 }
@@ -44,6 +83,7 @@ export function InsightsHero({
   digest,
   generatedAt,
   feedbackCount,
+  className,
 }: InsightsHeroProps): React.ReactElement {
   const [open, setOpen] = React.useState(false);
   const hasTopIssues = digest !== null && digest.topIssues.length > 0;
@@ -53,7 +93,22 @@ export function InsightsHero({
   if (isEmpty) {
     return (
       <>
-        <InsightsHeroEmpty onGenerate={() => setOpen(true)} />
+        <Card className={className}>
+          <CardContent className="flex flex-1 items-center justify-center py-10">
+            <EmptyState
+              icon={<Icons.aiMagic />}
+              title="Your AI summary is one click away"
+              description="Distill an executive summary, the top requested changes, and recurring
+                themes from your feedback."
+              action={
+                <Button size="sm" onClick={() => setOpen(true)}>
+                  <Icons.aiMagic data-icon="inline-start" className="size-4" />
+                  Generate summary
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
         <DigestModal open={open} onOpenChange={setOpen} />
       </>
     );
@@ -61,92 +116,46 @@ export function InsightsHero({
 
   return (
     <>
-      <div className="rounded-2xl bg-gradient-to-br from-pastel-violet-bg/40 via-card to-pastel-blue-bg/20 p-6 ring-1 ring-foreground/10 sm:p-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
-              <Icons.aiMagic className="size-4 text-accent" />
-            </span>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                AI Summary
-              </p>
-              {generatedAt && (
-                <p className="text-xs tabular-nums text-muted-foreground/80">
-                  {formatCount(feedbackCount)} feedbacks ·{" "}
-                  {formatRelativeTime(generatedAt.toISOString())}
-                </p>
-              )}
-            </div>
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <HeaderChip />
+            AI Summary
+          </CardTitle>
+          <CardAction>
+            <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+              View full summary
+            </Button>
+          </CardAction>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          <p className="text-[13px] leading-relaxed text-muted-foreground">
+            {digest.executiveSummary}
+          </p>
+
+          <div className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            {hasTopIssues && <TopIssues issues={digest.topIssues} />}
+            {hasThemes && <MainThemes themes={digest.themes} />}
           </div>
-          <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-            View full summary
-            <Icons.arrowRight data-icon="inline-end" className="size-3.5" />
-          </Button>
-        </div>
-
-        <p className="mt-6 text-balance text-lg font-medium leading-relaxed text-foreground sm:text-xl">
-          {digest.executiveSummary}
-        </p>
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr_240px]">
-          {hasTopIssues && (
-            <div>
-              <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                What users want changed
-              </p>
-              <Stagger className="flex flex-col gap-1.5" stagger={0.05}>
-                {digest.topIssues.map((issue) => (
-                  <StaggerItem
-                    key={issue}
-                    className="flex items-start gap-2 text-sm text-foreground/90"
-                  >
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
-                    {issue}
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </div>
-          )}
-
-          {hasThemes && (
-            <div>
-              <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Main themes
-              </p>
-              <Stagger className="flex flex-col gap-2" stagger={0.05}>
-                {digest.themes.map((theme) => (
-                  <StaggerItem
-                    key={theme.title}
-                    className="flex items-start gap-3 rounded-lg bg-muted/30 p-2.5"
-                  >
-                    <span className="mt-0.5 min-w-[1.75rem] rounded-full bg-muted px-1.5 py-0.5 text-center text-xs font-semibold tabular-nums text-muted-foreground">
-                      {theme.count}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{theme.title}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {theme.insight}
-                      </p>
-                    </div>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </div>
-          )}
 
           {digest.positiveHighlight && (
-            <div className="rounded-xl bg-success/10 p-4 ring-1 ring-success/20">
-              <p className="text-xs font-semibold uppercase tracking-wider text-success/80">
-                What users love
-              </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-success">
+            <div className="flex items-start gap-2 border-t pt-4 text-[13px] leading-snug text-muted-foreground">
+              <Icons.circleCheck className="mt-px size-4 shrink-0 text-success" />
+              <span>
+                <span className="font-medium text-foreground">Users love: </span>
                 {digest.positiveHighlight}
-              </p>
+              </span>
             </div>
           )}
-        </div>
-      </div>
+
+          {generatedAt && (
+            <p className="text-[11px] tabular-nums text-muted-foreground/70">
+              {formatCount(feedbackCount)} feedback · updated{" "}
+              {formatRelativeTime(generatedAt.toISOString())}
+            </p>
+          )}
+        </CardContent>
+      </Card>
       <DigestModal open={open} onOpenChange={setOpen} />
     </>
   );

@@ -141,14 +141,16 @@ export function DashboardClient({
           <motion.div variants={fadeInUp}>
             <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           </motion.div>
-          <motion.div variants={fadeInUp}>
+          <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
             <InsightsHero
+              className="lg:col-span-2"
               digest={initialDigest.digest}
               generatedAt={initialDigest.generatedAt}
               feedbackCount={initialDigest.feedbackCount}
             />
+            <SourcesCard sources={state.data.sources} />
           </motion.div>
-          <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
+          <motion.div variants={fadeInUp}>
             <SentimentChartCard
               series={state.data.series}
               granularity={state.data.granularity}
@@ -156,17 +158,9 @@ export function DashboardClient({
               onRangeChange={setRange}
               pending={state.pending}
             />
-            <SourcesCard sources={state.data.sources} />
           </motion.div>
           <motion.div variants={fadeInUp}>
             <RecentFeedbackTable items={state.data.recent} />
-          </motion.div>
-          <motion.div variants={fadeInUp}>
-            <ProductFlowStrip
-              variant="compact"
-              hasFeedback={hasFeedback}
-              hasInsights={hasInsights}
-            />
           </motion.div>
         </motion.div>
       )}
