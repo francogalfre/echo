@@ -8,6 +8,8 @@ import type { ReactNode } from "react";
 
 import { createMetadata } from "@/lib/metadata";
 
+import { PostHogProvider } from "./providers/posthog-provider";
+
 import "../index.css";
 
 export const metadata = createMetadata();
@@ -26,7 +28,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable}`}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <PostHogProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </PostHogProvider>
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>
