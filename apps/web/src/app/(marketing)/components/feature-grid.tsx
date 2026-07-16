@@ -13,22 +13,25 @@ const FEATURES: readonly Feature[] = [
     icon: "star",
     title: "Widget",
     description:
-      "A drop-in React widget for a sentiment-first 1–5 star rating and comment.",
+      "Start collecting 1–5 star ratings and comments today — drop it in, no backend work needed.",
   },
   {
     icon: "externalLink",
     title: "REST API",
-    description: "Authenticated endpoints to send and read feedback from your own backend.",
+    description:
+      "Send and read feedback from your own backend with authenticated endpoints.",
   },
   {
     icon: "aiMagic",
     title: "AI sentiment & summaries",
-    description: "Every submission is classified automatically, then summarized for Pro.",
+    description:
+      "Know how users feel without reading every comment — sentiment is automatic, summaries are one click.",
   },
   {
     icon: "board",
     title: "Triage board",
-    description: "Move feedback through a Kanban board built for fast, focused review.",
+    description:
+      "Turn a pile of comments into a prioritized queue your team works through fast.",
   },
 ];
 

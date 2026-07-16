@@ -9,6 +9,7 @@ import {
 import { FeatureGrid } from "./components/feature-grid";
 import { FinalCta } from "./components/final-cta";
 import { Hero } from "./components/hero";
+import { HowItWorks } from "./components/how-it-works";
 import { LandingFooter } from "./components/landing-footer";
 import { LandingNav } from "./components/landing-nav";
 import { PricingTeaser } from "./components/pricing-teaser";
@@ -26,6 +27,7 @@ const Home = () => {
       <main className="flex-1">
         <Hero />
         <FeatureGrid />
+        <HowItWorks />
         <Showcase />
         <PricingTeaser />
         <FinalCta />
