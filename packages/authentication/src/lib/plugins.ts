@@ -2,6 +2,7 @@ import { env } from "@echo/env/server";
 import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
 import { lastLoginMethod, organization } from "better-auth/plugins";
 
+import { sendInvitationEmail } from "./invitation-email";
 import { polarClient } from "./payments";
 import {
   hasReachedOrganizationLimit,
@@ -38,6 +39,7 @@ export const plugins = [
     organizationHooks: {
       afterCreateOrganization: inheritPlanForNewOrganization,
     },
+    sendInvitationEmail,
   }),
   lastLoginMethod(),
 ];

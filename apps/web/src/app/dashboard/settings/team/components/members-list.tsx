@@ -10,6 +10,8 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 
 import { authClient } from "@/lib/auth-client";
 
+import { PendingInvitations } from "./pending-invitations";
+
 const SKELETON_COUNT = 4;
 
 type MemberRole = "owner" | "admin" | "member";
@@ -92,23 +94,33 @@ export function MembersList(): React.ReactElement {
   }
 
   const members = activeOrg?.members ?? [];
+  const pendingInvitations = (activeOrg?.invitations ?? [])
+    .filter((invitation) => invitation.status === "pending")
+    .map((invitation) => ({
+      id: invitation.id,
+      email: invitation.email,
+      role: invitation.role,
+    }));
 
-  if (members.length === 0) {
+  if (members.length === 0 && pendingInvitations.length === 0) {
     return <MembersEmptyState />;
   }
 
   return (
-    <Stagger className="flex flex-col gap-3">
-      {members.map((member) => (
-        <MemberRow
-          key={member.id}
-          name={member.user.name}
-          email={member.user.email}
-          image={member.user.image}
-          role={member.role}
-          isCurrentUser={session?.user.id === member.userId}
-        />
-      ))}
-    </Stagger>
+    <div className="flex flex-col gap-3">
+      <Stagger className="flex flex-col gap-3">
+        {members.map((member) => (
+          <MemberRow
+            key={member.id}
+            name={member.user.name}
+            email={member.user.email}
+            image={member.user.image}
+            role={member.role}
+            isCurrentUser={session?.user.id === member.userId}
+          />
+        ))}
+      </Stagger>
+      <PendingInvitations invitations={pendingInvitations} />
+    </div>
   );
 }
