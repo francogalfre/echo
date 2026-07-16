@@ -13,6 +13,16 @@ export function findMembership(
   });
 }
 
+export async function findFirstOrganizationId(userId: string): Promise<string | undefined> {
+  const membership = await db.query.member.findFirst({
+    where: (m) => eq(m.userId, userId),
+    orderBy: (m, { asc }) => asc(m.createdAt),
+    columns: { organizationId: true },
+  });
+
+  return membership?.organizationId;
+}
+
 export async function updateOrganizationLogo(
   organizationId: string,
   logo: string,
