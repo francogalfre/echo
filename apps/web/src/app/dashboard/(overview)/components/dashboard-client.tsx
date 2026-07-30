@@ -104,9 +104,9 @@ export function DashboardClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-medium font-pixel">
             Hello{firstName ? `, ${firstName}` : ""}!
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -116,10 +116,10 @@ export function DashboardClient({
         <Button
           variant="default"
           size="lg"
-          className="shadow-[0_0_24px_-6px_var(--accent)] hover:shadow-[0_0_28px_-4px_var(--accent)]"
+          className="group h-11 gap-2 px-5 text-sm transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
           onClick={() => setDigestOpen(true)}
         >
-          <Icons.aiMagic className="size-4" />
+          <Icons.aiMagic className="size-4 transition-transform duration-200 group-hover:rotate-12" />
           AI Analysis
         </Button>
       </div>

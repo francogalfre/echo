@@ -42,9 +42,9 @@ const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
 ];
 
 const chartConfig: ChartConfig = {
-  positive: { label: "Positive", color: "green" },
-  neutral: { label: "Neutral", color: "blue" },
-  negative: { label: "Negative", color: "red" },
+  positive: { label: "Positive", color: "accent" },
+  neutral: { label: "Neutral", color: "accentMuted" },
+  negative: { label: "Negative", color: "accentDeep" },
 };
 
 type SentimentChartCardProps = {
@@ -110,7 +110,7 @@ export function SentimentChartCard({
       <CardContent>
         <div
           className={cn(
-            "relative h-80 w-full transition-opacity duration-200",
+            "relative h-80 w-full overflow-hidden rounded-lg transition-opacity duration-200",
             pending && "opacity-60",
           )}
         >

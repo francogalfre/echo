@@ -39,7 +39,7 @@ export function MetricCard({
   value,
   growth,
   sparklineData,
-  sparklineColor = "purple",
+  sparklineColor = "accent",
 }: MetricCardProps): React.ReactElement {
   return (
     <div className="flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
@@ -51,12 +51,14 @@ export function MetricCard({
         value={value}
         className="font-pixel text-3xl font-medium tracking-tight"
       />
-      <Sparkline
-        data={[...sparklineData]}
-        color={sparklineColor}
-        variant="gradient"
-        className="mt-1 h-32 w-full"
-      />
+      <div className="mt-1 overflow-hidden rounded-lg">
+        <Sparkline
+          data={[...sparklineData]}
+          color={sparklineColor}
+          variant="gradient"
+          className="h-32 w-full"
+        />
+      </div>
     </div>
   );
 }

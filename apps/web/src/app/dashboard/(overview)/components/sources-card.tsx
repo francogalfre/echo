@@ -24,9 +24,9 @@ const SOURCE_LABELS: Record<SourceCount["source"], string> = {
 };
 
 const chartConfig: ChartConfig = {
-  api: { label: SOURCE_LABELS.api, color: "purple" },
-  form: { label: SOURCE_LABELS.form, color: "blue" },
-  widget: { label: SOURCE_LABELS.widget, color: "orange" },
+  api: { label: SOURCE_LABELS.api, color: "accent" },
+  form: { label: SOURCE_LABELS.form, color: "accentSoft" },
+  widget: { label: SOURCE_LABELS.widget, color: "accentDeep" },
 };
 
 export function SourcesCard({ sources }: { sources: SourceCount[] }): React.ReactElement {
@@ -94,7 +94,8 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
                         className="size-2 rounded-full"
                         style={{
                           backgroundColor: rgb(
-                            seedOfColor(chartConfig[item.source]?.color ?? "grey").fill,
+                            seedOfColor(chartConfig[item.source]?.color ?? "accentMuted")
+                              .fill,
                           ),
                         }}
                       />

@@ -21,21 +21,21 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
         value={metrics.total.value}
         growth={metrics.total.growth}
         sparklineData={totalSeries}
-        sparklineColor="purple"
+        sparklineColor="accent"
       />
       <MetricCard
         label="Positive"
         value={metrics.positive.value}
         growth={metrics.positive.growth}
         sparklineData={positiveSeries}
-        sparklineColor="green"
+        sparklineColor="accentSoft"
       />
       <MetricCard
         label="Negative"
         value={metrics.negative.value}
         growth={metrics.negative.growth}
         sparklineData={negativeSeries}
-        sparklineColor="red"
+        sparklineColor="accentDeep"
       />
     </div>
   );
