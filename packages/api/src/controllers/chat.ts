@@ -183,6 +183,8 @@ export async function streamChatTurn(
       },
     });
 
+    response.headers.set("X-Conversation-Id", conversation.id);
+
     return { success: true, response, conversationId: conversation.id };
   } catch (error) {
     console.error("[echo:ai] chat stream failed", error);

@@ -45,10 +45,18 @@ const dashboardCors = cors({
   credentials: true,
 });
 
+const chatCors = cors({
+  origin: env.CORS_ORIGIN,
+  allowMethods: ["GET", "POST", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization"],
+  exposeHeaders: ["X-Conversation-Id"],
+  credentials: true,
+});
+
 app.use("/trpc/*", dashboardCors);
 app.use("/api/auth/*", dashboardCors);
 app.use("/api/projects/*", dashboardCors);
-app.use("/api/chat/*", dashboardCors);
+app.use("/api/chat/*", chatCors);
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
