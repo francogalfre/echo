@@ -1,4 +1,4 @@
-import { PageContainer } from "../components/page-container";
+import { PageContainer } from "../components/layout/page-container";
 import { DashboardSkeleton } from "./components/dashboard-skeleton";
 
 const DashboardLoading = (): React.ReactElement => (

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { PageContainer } from "../../components/page-container";
+import { PageContainer } from "../../components/layout/page-container";
 import { ApiData } from "./components/api-data";
 import { ApiPageSkeleton } from "./components/api-page-skeleton";
 

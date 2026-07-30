@@ -4,7 +4,7 @@ import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { useState } from "react";
 
-import { DigestModal } from "../../components/digest-modal";
+import { DigestModal } from "../../components/ai/digest-modal";
 
 export function DigestButton(): React.ReactElement {
   const [open, setOpen] = useState(false);

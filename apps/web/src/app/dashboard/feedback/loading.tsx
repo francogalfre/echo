@@ -1,7 +1,7 @@
 import { Skeleton } from "@echo/ui/components/skeleton";
 
-import { PageContainer } from "../components/page-container";
-import { PageHeader } from "../components/page-header";
+import { PageContainer } from "../components/layout/page-container";
+import { PageHeader } from "../components/layout/page-header";
 import { FeedbackListSkeleton } from "./components/feedback-list-skeleton";
 
 const FeedbackLoading = (): React.ReactElement => (

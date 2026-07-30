@@ -11,14 +11,14 @@ import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useChatConversations } from "../hooks/use-chat-conversations";
-import { useChatThread } from "../hooks/use-chat-thread";
-import { useChatUsage } from "../hooks/use-chat-usage";
+import { useChatConversations } from "../../hooks/use-chat-conversations";
+import { useChatThread } from "../../hooks/use-chat-thread";
+import { useChatUsage } from "../../hooks/use-chat-usage";
+import { ErrorCard } from "../error-card";
+import { UpgradeDialog } from "../dialogs/upgrade-dialog";
 import { AGENT_PERSONAS } from "./agent-personas";
 import { AgentChatHistory } from "./agent-chat-history";
 import { AgentChatMessages } from "./agent-chat-messages";
-import { ErrorCard } from "./error-card";
-import { UpgradeDialog } from "./upgrade-dialog";
 
 type AgentChatProps = {
   readonly open: boolean;

@@ -1,4 +1,4 @@
-import { PageContainer } from "../../components/page-container";
+import { PageContainer } from "../../components/layout/page-container";
 import { ApiPageSkeleton } from "./components/api-page-skeleton";
 
 const CollectApiLoading = (): React.ReactElement => (

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
-import { PageContainer } from "../components/page-container";
-import { PageHeader } from "../components/page-header";
+import { PageContainer } from "../components/layout/page-container";
+import { PageHeader } from "../components/layout/page-header";
 import { DigestButton } from "./components/digest-button";
 import { FeedbackListData } from "./components/feedback-list-data";
 import { FeedbackListSkeleton } from "./components/feedback-list-skeleton";

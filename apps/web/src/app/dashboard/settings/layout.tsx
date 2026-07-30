@@ -1,8 +1,8 @@
 import { FadeIn } from "@echo/ui/components/fade-in";
 import type { ReactNode } from "react";
 
-import { PageContainer } from "../components/page-container";
-import { PageHeader } from "../components/page-header";
+import { PageContainer } from "../components/layout/page-container";
+import { PageHeader } from "../components/layout/page-header";
 import { SettingsNav } from "./components/settings-nav";
 
 type SettingsLayoutProps = {

@@ -2,7 +2,7 @@ import { cn } from "@echo/ui/lib/utils";
 import type { UIMessage } from "@ai-sdk/react";
 import { isDynamicToolUIPart, isToolUIPart } from "ai";
 
-import { AiThinking } from "./ai-thinking";
+import { AiThinking } from "../ai/ai-thinking";
 import type { AgentPersona } from "./agent-personas";
 import { ChatMarkdown } from "./chat-markdown";
 

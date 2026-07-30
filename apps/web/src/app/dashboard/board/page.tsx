@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { PageContainer } from "../components/page-container";
+import { PageContainer } from "../components/layout/page-container";
 import { BoardData } from "./components/board-data";
 import { BoardSkeleton } from "./components/board-skeleton";
 

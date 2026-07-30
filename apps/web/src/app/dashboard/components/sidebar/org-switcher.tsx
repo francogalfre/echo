@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
-import { CreateProjectModal } from "../create-project-modal";
+import { CreateProjectModal } from "../dialogs/create-project-modal";
 
 type OrgAvatarProps = { logo?: string | null; name?: string | null };
 
