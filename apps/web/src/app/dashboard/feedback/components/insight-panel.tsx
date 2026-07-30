@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
+import { durations, easings } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 
 import type { FeedbackItem } from "../utils/map-feedback";
@@ -14,6 +16,8 @@ import { ErrorCard } from "../../components/error-card";
 import { UpgradeDialog } from "../../components/upgrade-dialog";
 import { InsightContent } from "./insight-content";
 import { AGENT_PERSONAS } from "../../components/agent-personas";
+
+const PHASE_TRANSITION = { duration: durations.base, ease: easings.out };
 
 const THINKING_PHRASES = [
   "Reading your feedback",
@@ -65,36 +69,71 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
         </div>
       </div>
 
-      {isLoading && (
-        <AiThinking phrases={THINKING_PHRASES}>
-          <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-4">
-            <Skeleton className="h-3 w-full rounded" />
-            <Skeleton className="h-3 w-4/5 rounded" />
-            <Skeleton className="h-3 w-3/5 rounded" />
-          </div>
-        </AiThinking>
-      )}
+      <AnimatePresence mode="wait" initial={false}>
+        {isLoading && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={PHASE_TRANSITION}
+          >
+            <AiThinking phrases={THINKING_PHRASES}>
+              <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-4">
+                <Skeleton className="h-3 w-full rounded" />
+                <Skeleton className="h-3 w-4/5 rounded" />
+                <Skeleton className="h-3 w-3/5 rounded" />
+              </div>
+            </AiThinking>
+          </motion.div>
+        )}
 
-      {state.status === "ready" && <InsightContent insight={state.insight} agent={agent} />}
+        {state.status === "ready" && (
+          <motion.div
+            key="ready"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={PHASE_TRANSITION}
+          >
+            <InsightContent insight={state.insight} agent={agent} />
+          </motion.div>
+        )}
 
-      {state.status === "error" && (
-        <ErrorCard
-          message="We couldn't generate this insight. Please try again."
-          onRetry={() => void generate(item.id)}
-        />
-      )}
+        {state.status === "error" && (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={PHASE_TRANSITION}
+          >
+            <ErrorCard
+              message="We couldn't generate this insight. Please try again."
+              onRetry={() => void generate(item.id)}
+            />
+          </motion.div>
+        )}
 
-      {!item.hasInsight && state.status === "idle" && (
-        <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border/80 bg-background/50 p-4">
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Generate a quick AI summary of what this feedback means.
-          </p>
-          <Button size="sm" onClick={() => void generate(item.id)}>
-            <Icons.aiMagic className="size-4" />
-            Generate insight
-          </Button>
-        </div>
-      )}
+        {!item.hasInsight && state.status === "idle" && (
+          <motion.div
+            key="idle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={PHASE_TRANSITION}
+            className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border/80 bg-background/50 p-4"
+          >
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Generate a quick AI summary of what this feedback means.
+            </p>
+            <Button size="sm" onClick={() => void generate(item.id)}>
+              <Icons.aiMagic className="size-4" />
+              Generate insight
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <UpgradeDialog
         open={upgradeReason !== null}
