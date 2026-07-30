@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { generateFeedbackInsight } from "../controllers/feedback-insight";
+import { QuotaExceededError } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
 import {
   countFeedbackBySentiment,
@@ -51,6 +52,7 @@ export const feedbackRouter = router({
         throw new TRPCError({
           code: getErrorCode(result.status as 403 | 404 | 502),
           message: result.error,
+          cause: new QuotaExceededError(result.error, result.upgrade),
         });
       }
 

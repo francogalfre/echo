@@ -20,4 +20,4 @@ export type UploadLogoResult =
 
 export type InsightResult =
   | { success: true; insight: string; cached: boolean }
-  | Failure<403 | 404 | 502>;
+  | (Failure<403 | 404 | 502> & { upgrade: boolean });

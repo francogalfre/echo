@@ -1,16 +1,9 @@
-import { generateInsight } from "@echo/ai";
+import { AGENT_VERSIONS, generateInsight } from "@echo/ai";
 
-import { FREE_INSIGHT_DAILY_LIMIT, PRO_INSIGHT_DAILY_LIMIT } from "../lib/plan-limits";
-import { getUsageCount, incrementUsage } from "../services/ai-usage";
+import { enforceQuota } from "./quota";
+import { recordAiEvent } from "../services/ai-events";
 import { getFeedbackById, setFeedbackInsight } from "../services/feedback";
-import { getOrgPlan } from "../services/organization";
 import type { InsightResult } from "../types";
-
-const INSIGHT_FEATURE = "insight";
-
-function todayKey(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export async function generateFeedbackInsight(
   organizationId: string,
@@ -18,43 +11,69 @@ export async function generateFeedbackInsight(
 ): Promise<InsightResult> {
   const target = await getFeedbackById(feedbackId, organizationId);
   if (!target) {
-    return { success: false, status: 404, error: "Feedback not found" };
+    return { success: false, status: 404, error: "Feedback not found", upgrade: false };
   }
 
   if (target.insight) {
     return { success: true, insight: target.insight, cached: true };
   }
 
-  const plan = await getOrgPlan(organizationId);
-  const isPro = plan === "pro";
-  const day = todayKey();
-  const limit = isPro ? PRO_INSIGHT_DAILY_LIMIT : FREE_INSIGHT_DAILY_LIMIT;
-
-  const used = await getUsageCount(organizationId, INSIGHT_FEATURE, day);
-  if (used >= limit) {
+  const decision = await enforceQuota(organizationId, "insight");
+  if (!decision.allowed) {
     return {
       success: false,
       status: 403,
-      error: isPro
-        ? `Daily insight limit (${PRO_INSIGHT_DAILY_LIMIT}) reached.`
-        : `Daily insight limit reached. Upgrade to Pro for more.`,
+      error: decision.message,
+      upgrade: decision.upgrade,
     };
   }
 
-  let insight: string;
+  const startedAt = Date.now();
 
   try {
-    insight = await generateInsight({
+    const { insight, usage } = await generateInsight({
       content: target.content,
       sentiment: target.sentiment,
     });
+
+    await setFeedbackInsight(feedbackId, insight);
+    await recordAiEvent({
+      organizationId,
+      feature: "insight",
+      agent: "insight",
+      model: usage.model,
+      promptVersion: AGENT_VERSIONS.insight,
+      cacheHit: usage.cacheHit,
+      inputTokens: usage.inputTokens,
+      outputTokens: usage.outputTokens,
+      costMicroUsd: usage.costMicroUsd,
+      latencyMs: Date.now() - startedAt,
+      status: "ok",
+    });
+
+    return { success: true, insight, cached: false };
   } catch (error) {
     console.error(`[echo:ai] failed to generate insight for ${feedbackId}`, error);
-    return { success: false, status: 502, error: "Could not generate insight, try again." };
+    await decision.release();
+    await recordAiEvent({
+      organizationId,
+      feature: "insight",
+      agent: "insight",
+      model: "unknown",
+      promptVersion: AGENT_VERSIONS.insight,
+      cacheHit: false,
+      inputTokens: 0,
+      outputTokens: 0,
+      costMicroUsd: 0,
+      latencyMs: Date.now() - startedAt,
+      status: "error",
+    });
+
+    return {
+      success: false,
+      status: 502,
+      error: "Could not generate insight, try again.",
+      upgrade: false,
+    };
   }
-
-  await setFeedbackInsight(feedbackId, insight);
-  await incrementUsage(organizationId, INSIGHT_FEATURE, day);
-
-  return { success: true, insight, cached: false };
 }

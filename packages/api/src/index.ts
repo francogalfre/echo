@@ -1,5 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 
+import { QuotaExceededError } from "./controllers/quota";
 import type { Context } from "./context";
 import { findFirstOrganizationId, findMembership } from "./services/organization";
 
@@ -14,7 +15,13 @@ function toOrgRole(role: string): OrgRole {
   return "member";
 }
 
-export const t = initTRPC.context<Context>().create();
+export const t = initTRPC.context<Context>().create({
+  errorFormatter({ shape, error }) {
+    const upgrade = error.cause instanceof QuotaExceededError ? error.cause.upgrade : false;
+
+    return { ...shape, data: { ...shape.data, upgrade } };
+  },
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;

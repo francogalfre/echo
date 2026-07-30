@@ -1,7 +1,9 @@
-import { generateDigest, type DigestOutput } from "@echo/ai";
+import { AGENT_VERSIONS, generateDigest, type DigestOutput } from "@echo/ai";
 
+import { enforceInterval, enforceQuota, todayKey } from "./quota";
 import { FREE_DIGEST_INTERVAL_MS, PRO_DIGEST_DAILY_LIMIT } from "../lib/plan-limits";
-import { getUsageCount, incrementUsage } from "../services/ai-usage";
+import { recordAiEvent } from "../services/ai-events";
+import { getUsageCount } from "../services/ai-usage";
 import {
   getDigest,
   getFeedbackForDigest,
@@ -12,8 +14,6 @@ import {
 } from "../services/digest";
 import { getOrgPlan } from "../services/organization";
 
-const DIGEST_FEATURE = "digest";
-
 type DigestResult =
   | {
       success: true;
@@ -22,7 +22,7 @@ type DigestResult =
       feedbackCount: number;
       cached: boolean;
     }
-  | { success: false; status: 400 | 403 | 502; error: string };
+  | { success: false; status: 400 | 403 | 502; error: string; upgrade: boolean };
 
 type DigestState = {
   digest: DigestOutput | null;
@@ -30,10 +30,6 @@ type DigestState = {
   feedbackCount: number;
   canRegenerate: boolean;
 };
-
-function todayKey(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export async function getFeedbackDigest(organizationId: string): Promise<DigestState> {
   const [plan, cached] = await Promise.all([
@@ -49,7 +45,7 @@ export async function getFeedbackDigest(organizationId: string): Promise<DigestS
 
   let canRegenerate: boolean;
   if (isPro) {
-    const used = await getUsageCount(organizationId, DIGEST_FEATURE, todayKey());
+    const used = await getUsageCount(organizationId, "digest", todayKey());
     canRegenerate = used < PRO_DIGEST_DAILY_LIMIT;
   } else {
     const ageMs = Date.now() - cached.generatedAt.getTime();
@@ -73,31 +69,37 @@ export async function generateFeedbackDigest(
   ]);
 
   const isPro = plan === "pro";
-  const day = todayKey();
+  let releaseQuota: (() => Promise<void>) | null = null;
 
   if (isPro) {
-    const used = await getUsageCount(organizationId, DIGEST_FEATURE, day);
-    if (used >= PRO_DIGEST_DAILY_LIMIT) {
+    const decision = await enforceQuota(organizationId, "digest");
+    if (!decision.allowed) {
       return {
         success: false,
         status: 403,
-        error: `Daily digest limit (${PRO_DIGEST_DAILY_LIMIT}) reached. Resets tomorrow.`,
+        error: decision.message,
+        upgrade: decision.upgrade,
       };
     }
+    releaseQuota = decision.release;
   } else {
-    if (cached) {
-      const ageMs = Date.now() - cached.generatedAt.getTime();
-      if (ageMs < FREE_DIGEST_INTERVAL_MS) {
-        return {
-          success: false,
-          status: 403,
-          error: "Free plan allows 1 digest per week. Upgrade to Pro for more.",
-        };
-      }
+    const decision = await enforceInterval(
+      FREE_DIGEST_INTERVAL_MS,
+      cached?.generatedAt ?? null,
+    );
+    if (!decision.allowed) {
+      return {
+        success: false,
+        status: 403,
+        error: decision.message,
+        upgrade: decision.upgrade,
+      };
     }
   }
 
   if (cached && !(await hasFeedbackSince(organizationId, cached.generatedAt))) {
+    await releaseQuota?.();
+
     return {
       success: true,
       digest: cached.digest,
@@ -110,25 +112,63 @@ export async function generateFeedbackDigest(
   const inputs = await getFeedbackForDigest(organizationId, isPro);
 
   if (inputs.length === 0) {
-    return { success: false, status: 400, error: "No feedback yet to analyze." };
+    await releaseQuota?.();
+
+    return {
+      success: false,
+      status: 400,
+      error: "No feedback yet to analyze.",
+      upgrade: false,
+    };
   }
+
+  const startedAt = Date.now();
 
   let digest: DigestOutput;
   try {
-    digest = await generateDigest(inputs);
+    const result = await generateDigest(inputs);
+    digest = result.digest;
+
+    await Promise.all([
+      insertDigest(organizationId, digest, inputs.length),
+      recordAiEvent({
+        organizationId,
+        feature: "digest",
+        agent: "digest",
+        model: result.usage.model,
+        promptVersion: AGENT_VERSIONS.digest,
+        cacheHit: result.usage.cacheHit,
+        inputTokens: result.usage.inputTokens,
+        outputTokens: result.usage.outputTokens,
+        costMicroUsd: result.usage.costMicroUsd,
+        latencyMs: Date.now() - startedAt,
+        status: "ok",
+      }),
+    ]);
   } catch (error) {
     console.error("[echo:ai] digest generation failed", error);
+    await releaseQuota?.();
+    await recordAiEvent({
+      organizationId,
+      feature: "digest",
+      agent: "digest",
+      model: "unknown",
+      promptVersion: AGENT_VERSIONS.digest,
+      cacheHit: false,
+      inputTokens: 0,
+      outputTokens: 0,
+      costMicroUsd: 0,
+      latencyMs: Date.now() - startedAt,
+      status: "error",
+    });
+
     return {
       success: false,
       status: 502,
       error: "Could not generate digest, please try again.",
+      upgrade: false,
     };
   }
-
-  await Promise.all([
-    insertDigest(organizationId, digest, inputs.length),
-    incrementUsage(organizationId, DIGEST_FEATURE, day),
-  ]);
 
   return {
     success: true,

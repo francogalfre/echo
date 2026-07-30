@@ -1,3 +1,4 @@
+import { todayKey } from "./quota";
 import {
   FREE_INSIGHT_DAILY_LIMIT,
   FREE_MONTHLY_FEEDBACK_LIMIT,
@@ -13,10 +14,6 @@ import { getDigest } from "../services/digest";
 import { countFeedbackThisMonth } from "../services/feedback";
 import { countOwnedOrganizations, getOrgPlan } from "../services/organization";
 
-const INSIGHT_FEATURE = "insight";
-const DIGEST_FEATURE = "digest";
-const CHAT_FEATURE = "chat";
-
 export type BillingOverview = {
   plan: string;
   feedback: { used: number; limit: number | null };
@@ -25,10 +22,6 @@ export type BillingOverview = {
   projects: { used: number; limit: number };
   chat: { used: number; limit: number };
 };
-
-function todayKey(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export async function getBillingOverview(
   organizationId: string,
@@ -40,16 +33,14 @@ export async function getBillingOverview(
     await Promise.all([
       getOrgPlan(organizationId),
       countFeedbackThisMonth(organizationId),
-      getUsageCount(organizationId, INSIGHT_FEATURE, day),
+      getUsageCount(organizationId, "insight", day),
       getDigest(organizationId),
       countOwnedOrganizations(userId),
-      getUsageCount(organizationId, CHAT_FEATURE, day),
+      getUsageCount(organizationId, "chat", day),
     ]);
 
   const isPro = plan === "pro";
-  const digestsUsed = isPro
-    ? await getUsageCount(organizationId, DIGEST_FEATURE, day)
-    : null;
+  const digestsUsed = isPro ? await getUsageCount(organizationId, "digest", day) : null;
 
   return {
     plan: plan ?? "free",

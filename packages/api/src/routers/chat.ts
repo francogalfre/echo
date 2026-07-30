@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { chatWithAgent } from "../controllers/chat";
+import { todayKey } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
 
 const messageSchema = z.object({
@@ -33,7 +34,7 @@ export const chatRouter = router({
 
     const plan = await getOrgPlan(ctx.organizationId);
     const isPro = plan === "pro";
-    const day = new Date().toISOString().slice(0, 10);
+    const day = todayKey();
     const used = await getUsageCount(ctx.organizationId, "chat", day);
     const limit = isPro ? PRO_CHAT_DAILY_LIMIT : FREE_CHAT_DAILY_LIMIT;
 

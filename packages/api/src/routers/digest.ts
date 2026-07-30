@@ -5,6 +5,7 @@ import {
   getDigestHistory,
   getFeedbackDigest,
 } from "../controllers/generate-digest";
+import { QuotaExceededError } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
 import { getErrorCode } from "../utils/error-map";
 
@@ -24,6 +25,7 @@ export const digestRouter = router({
       throw new TRPCError({
         code: getErrorCode(result.status),
         message: result.error,
+        cause: new QuotaExceededError(result.error, result.upgrade),
       });
     }
 

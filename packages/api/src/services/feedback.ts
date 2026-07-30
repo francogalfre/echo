@@ -90,6 +90,15 @@ export async function insertFeedback(data: InsertFeedback): Promise<string> {
   return id;
 }
 
+export async function getFeedbackOrganizationId(id: string): Promise<string | undefined> {
+  const row = await db.query.feedback.findFirst({
+    where: (f) => eq(f.id, id),
+    columns: { organizationId: true },
+  });
+
+  return row?.organizationId;
+}
+
 export async function setFeedbackEnrichment(
   id: string,
   data: FeedbackEnrichment,
