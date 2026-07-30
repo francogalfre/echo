@@ -17,10 +17,11 @@ export {
 export { generateDigest } from "./agents/digest";
 export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest/types";
 
-export { generateChatResponse } from "./agents/chat";
+export { streamChatResponse, type ChatStreamResult } from "./agents/chat";
+export type { ChatStreamInput } from "./agents/chat/types";
 export type {
-  ChatInput,
-  ChatOutput,
-  ChatMessage,
-  ChatFeedbackContext,
-} from "./agents/chat/types";
+  CachedDigest,
+  FeedbackRetriever,
+  SearchHit,
+  SeriesPoint,
+} from "./agents/chat/tools";

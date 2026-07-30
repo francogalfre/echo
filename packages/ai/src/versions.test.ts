@@ -13,7 +13,7 @@ function hash(value: string): string {
 
 const RECORDED_PROMPT_HASHES: Record<keyof typeof AGENT_VERSIONS, string> = {
   analyze: "81ffdcf588fe83eed9e281aff93de607d861ca67085458922846dfda1edf3dd0",
-  chat: "be324b1a5f8f3483cc5ee0d0f967edb59d7384d9690dbc867956376f681c5895",
+  chat: "8a641f74f61239fb86fdd95d91b7089f067e19a153da964a348924a04c7947c9",
   digest: "57454f46916716f3229345a080067a86025422148b697af1d6f0f63da6a10f7e",
   insight: "fd2daaf3c630931cc712e0e4fa42b5af00680b8ab2a7baa0943c0bac5d664016",
 };
