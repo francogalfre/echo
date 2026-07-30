@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 
-import { organizationProcedure, router } from "../index";
+import { organizationProcedure, ownerProcedure, router } from "../index";
 import { generateRawKey, getApiKeys, hashKey, upsertApiKeys } from "../services/api-keys";
 
 function createKeyPair(): { publicKey: string; secretKey: string } {
@@ -18,13 +18,13 @@ export const apiKeysRouter = router({
     return { publicKey: keys.publicKey, hasSecret: true, createdAt: keys.createdAt };
   }),
 
-  generate: organizationProcedure.mutation(async ({ ctx }) => {
+  generate: ownerProcedure.mutation(async ({ ctx }) => {
     const { publicKey, secretKey } = createKeyPair();
     await upsertApiKeys(ctx.organizationId, publicKey, hashKey(secretKey));
     return { publicKey, secretKey };
   }),
 
-  roll: organizationProcedure.mutation(async ({ ctx }) => {
+  roll: ownerProcedure.mutation(async ({ ctx }) => {
     if (!(await getApiKeys(ctx.organizationId))) {
       throw new TRPCError({ code: "NOT_FOUND", message: "No API keys to roll" });
     }

@@ -1,4 +1,5 @@
 import { createContext } from "@echo/api/context";
+import { hasRedis } from "@echo/api/lib/redis";
 import { appRouter } from "@echo/api/routers/index";
 import { auth } from "@echo/auth";
 import { env } from "@echo/env/server";
@@ -11,20 +12,32 @@ import { feedbackRoutes } from "./routes/feedback";
 import { projectRoutes } from "./routes/projects";
 import { widgetRoutes } from "./routes/widget";
 
+if (env.NODE_ENV === "production" && !hasRedis) {
+  throw new Error(
+    "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production",
+  );
+}
+
+if (!hasRedis) {
+  console.warn("Redis is not configured — rate limiting is disabled");
+}
+
 const app = new Hono();
 
 app.onError((_err, c) => c.json({ error: "Internal server error" }, 500));
 
 app.use(logger());
-app.use(
-  "/*",
-  cors({
-    origin: env.CORS_ORIGIN,
-    allowMethods: ["GET", "POST", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-);
+
+const dashboardCors = cors({
+  origin: env.CORS_ORIGIN,
+  allowMethods: ["GET", "POST", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+});
+
+app.use("/trpc/*", dashboardCors);
+app.use("/api/auth/*", dashboardCors);
+app.use("/api/projects/*", dashboardCors);
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 

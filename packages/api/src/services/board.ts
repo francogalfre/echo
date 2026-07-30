@@ -61,13 +61,28 @@ export async function addBoardItem(
 
 export async function moveBoardItem(
   id: string,
+  organizationId: string,
   column: "backlog" | "in_progress" | "done",
-): Promise<void> {
-  await db.update(boardItems).set({ column }).where(eq(boardItems.id, id));
+): Promise<boolean> {
+  const rows = await db
+    .update(boardItems)
+    .set({ column })
+    .where(and(eq(boardItems.id, id), eq(boardItems.organizationId, organizationId)))
+    .returning({ id: boardItems.id });
+
+  return rows.length > 0;
 }
 
-export async function removeBoardItem(id: string): Promise<void> {
-  await db.delete(boardItems).where(eq(boardItems.id, id));
+export async function removeBoardItem(
+  id: string,
+  organizationId: string,
+): Promise<boolean> {
+  const rows = await db
+    .delete(boardItems)
+    .where(and(eq(boardItems.id, id), eq(boardItems.organizationId, organizationId)))
+    .returning({ id: boardItems.id });
+
+  return rows.length > 0;
 }
 
 export async function clearBoardColumn(

@@ -83,17 +83,22 @@ export async function getFeedback(input: {
   const token = extractBearer(input.authorization);
   if (!token) return { success: false, status: 401, error: "Missing Bearer token" };
 
-  const kind = token.startsWith("echo_pk_")
-    ? PUBLIC_KEY
-    : token.startsWith("echo_sk_")
-      ? SECRET_KEY
-      : null;
+  if (token.startsWith(PUBLIC_KEY.prefix)) {
+    return { success: false, status: 403, error: `Requires a ${SECRET_KEY.prefix} key` };
+  }
 
-  if (!kind) return { success: false, status: 401, error: "Invalid API key format" };
+  if (!token.startsWith(SECRET_KEY.prefix)) {
+    return { success: false, status: 401, error: "Invalid API key format" };
+  }
 
-  const lookup = await kind.lookup(token);
-  const organizationId = lookup?.organizationId;
+  const keyRow = await SECRET_KEY.lookup(token);
+  const organizationId = keyRow?.organizationId;
   if (!organizationId) return { success: false, status: 401, error: "Invalid API key" };
+
+  const guard = await guardKeySubmission(hashKey(token));
+  if (!guard.allowed) {
+    return { success: false, status: 429, error: guard.message };
+  }
 
   return {
     success: true,

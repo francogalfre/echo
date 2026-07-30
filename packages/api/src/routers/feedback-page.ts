@@ -1,4 +1,4 @@
-import { organizationProcedure, router } from "../index";
+import { adminProcedure, organizationProcedure, router } from "../index";
 import { feedbackPageConfigSchema } from "../schemas";
 import { listFeedback } from "../services/feedback";
 import { getFeedbackPageConfig, upsertFeedbackPageConfig } from "../services/feedback-page";
@@ -24,7 +24,7 @@ export const feedbackPageRouter = router({
       await upsertFeedbackPageConfig(ctx.organizationId, input);
     }),
 
-  publish: organizationProcedure.mutation(async ({ ctx }) => {
+  publish: adminProcedure.mutation(async ({ ctx }) => {
     await upsertFeedbackPageConfig(ctx.organizationId, { published: true });
   }),
 });

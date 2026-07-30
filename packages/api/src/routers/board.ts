@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { organizationProcedure, router } from "../index";
+import { adminProcedure, organizationProcedure, router } from "../index";
 import {
   addBoardItem,
   clearBoardColumn,
@@ -30,17 +30,23 @@ export const boardRouter = router({
 
   move: organizationProcedure
     .input(z.object({ id: z.string().min(1), column: z.enum(COLUMNS) }))
-    .mutation(({ input }) => {
-      return moveBoardItem(input.id, input.column);
+    .mutation(async ({ input, ctx }) => {
+      const moved = await moveBoardItem(input.id, ctx.organizationId, input.column);
+      if (!moved) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Board item not found" });
+      }
     }),
 
   remove: organizationProcedure
     .input(z.object({ id: z.string().min(1) }))
-    .mutation(({ input }) => {
-      return removeBoardItem(input.id);
+    .mutation(async ({ input, ctx }) => {
+      const removed = await removeBoardItem(input.id, ctx.organizationId);
+      if (!removed) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Board item not found" });
+      }
     }),
 
-  clearColumn: organizationProcedure
+  clearColumn: adminProcedure
     .input(z.object({ column: z.enum(COLUMNS) }))
     .mutation(({ input, ctx }) => {
       return clearBoardColumn(ctx.organizationId, input.column);

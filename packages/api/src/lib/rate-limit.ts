@@ -7,29 +7,39 @@ type Allowed = { allowed: true };
 type Blocked = { allowed: false; silent: boolean; message: string };
 export type GuardResult = Allowed | Blocked;
 
-const ipLimiter = new Ratelimit({
-  redis,
-  analytics: true,
-  limiter: Ratelimit.slidingWindow(5, "1 h"),
-  prefix: "echo:rl:ip",
-});
+const ipLimiter = redis
+  ? new Ratelimit({
+      redis,
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(5, "1 h"),
+      prefix: "echo:rl:ip",
+    })
+  : null;
 
-const slugLimiter = new Ratelimit({
-  redis,
-  analytics: true,
-  limiter: Ratelimit.slidingWindow(500, "1 h"),
-  prefix: "echo:rl:slug",
-});
+const slugLimiter = redis
+  ? new Ratelimit({
+      redis,
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(500, "1 h"),
+      prefix: "echo:rl:slug",
+    })
+  : null;
 
-const keyLimiter = new Ratelimit({
-  redis,
-  analytics: true,
-  limiter: Ratelimit.slidingWindow(60, "1 m"),
-  prefix: "echo:rl:key",
-});
+const keyLimiter = redis
+  ? new Ratelimit({
+      redis,
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(60, "1 m"),
+      prefix: "echo:rl:key",
+    })
+  : null;
 
 function hashContent(ip: string, content: string): string {
   return createHash("sha256").update(`${ip}:${content.trim().toLowerCase()}`).digest("hex");
+}
+
+function logRedisFailure(context: string, error: unknown): void {
+  console.error(`redis rate-limit transport error in ${context}, failing open`, error);
 }
 
 export async function guardSubmission(
@@ -39,32 +49,41 @@ export async function guardSubmission(
 ): Promise<GuardResult> {
   if (!redis || !ipLimiter || !slugLimiter) return { allowed: true };
 
-  const [ipResult, slugResult] = await Promise.all([
-    ipLimiter.limit(ip),
-    slugLimiter.limit(slug),
-  ]);
+  try {
+    const [ipResult, slugResult] = await Promise.all([
+      ipLimiter.limit(ip),
+      slugLimiter.limit(slug),
+    ]);
 
-  if (!ipResult.success) {
-    return {
-      allowed: false,
-      silent: false,
-      message: "Too many submissions. Please wait before trying again.",
-    };
+    if (!ipResult.success) {
+      return {
+        allowed: false,
+        silent: false,
+        message: "Too many submissions. Please wait before trying again.",
+      };
+    }
+
+    if (!slugResult.success) {
+      return {
+        allowed: false,
+        silent: false,
+        message: "This page is receiving too many submissions right now.",
+      };
+    }
+  } catch (error) {
+    logRedisFailure("guardSubmission.limit", error);
+    return { allowed: true };
   }
 
-  if (!slugResult.success) {
-    return {
-      allowed: false,
-      silent: false,
-      message: "This page is receiving too many submissions right now.",
-    };
-  }
+  try {
+    const dedupKey = `echo:dedup:${hashContent(ip, content)}`;
+    const isNew = await redis.set(dedupKey, "1", { nx: true, ex: 86400 });
 
-  const dedupKey = `echo:dedup:${hashContent(ip, content)}`;
-  const isNew = await redis.set(dedupKey, "1", { nx: true, ex: 86400 });
-
-  if (isNew === null) {
-    return { allowed: false, silent: true, message: "" };
+    if (isNew === null) {
+      return { allowed: false, silent: true, message: "" };
+    }
+  } catch (error) {
+    logRedisFailure("guardSubmission.set", error);
   }
 
   return { allowed: true };
@@ -73,14 +92,19 @@ export async function guardSubmission(
 export async function guardKeySubmission(key: string): Promise<GuardResult> {
   if (!redis || !keyLimiter) return { allowed: true };
 
-  const result = await keyLimiter.limit(key);
+  try {
+    const result = await keyLimiter.limit(key);
 
-  if (!result.success) {
-    return {
-      allowed: false,
-      silent: false,
-      message: "Too many requests for this API key. Please slow down.",
-    };
+    if (!result.success) {
+      return {
+        allowed: false,
+        silent: false,
+        message: "Too many requests for this API key. Please slow down.",
+      };
+    }
+  } catch (error) {
+    logRedisFailure("guardKeySubmission.limit", error);
+    return { allowed: true };
   }
 
   return { allowed: true };

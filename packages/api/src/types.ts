@@ -4,7 +4,9 @@ type Failure<Status extends number> = { success: false; status: Status; error: s
 
 export type SubmitResult = { success: true } | Failure<400 | 401 | 403 | 429>;
 
-export type ListResult = { success: true; feedback: FeedbackListItem[] } | Failure<401>;
+export type ListResult =
+  | { success: true; feedback: FeedbackListItem[] }
+  | Failure<401 | 403 | 429>;
 
 export type ComponentResult = { success: true; code: string } | Failure<404>;
 
