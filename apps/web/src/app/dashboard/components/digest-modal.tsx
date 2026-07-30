@@ -15,7 +15,9 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
+import { durations, easings } from "@echo/ui/lib/motion";
 import type { DigestOutput } from "@echo/ai";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 import { AiThinking } from "./ai-thinking";
@@ -29,6 +31,9 @@ const SECTION_THINKING_PHRASES = [
   "Finding patterns",
   "Analyzing mood",
 ] as const;
+
+const SECTION_TRANSITION = { duration: durations.fast, ease: easings.out };
+const HISTORY_ACTIVE_SPRING = { type: "spring", stiffness: 500, damping: 40 } as const;
 
 type Props = {
   open: boolean;
@@ -223,11 +228,19 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               )}
 
               {activeDigest && !isGenerating && (
-                <>
-                  {activeSection === "issues" && <IssuesContent digest={activeDigest} />}
-                  {activeSection === "themes" && <ThemesContent digest={activeDigest} />}
-                  {activeSection === "mood" && <MoodContent digest={activeDigest} />}
-                </>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={activeSection}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={SECTION_TRANSITION}
+                  >
+                    {activeSection === "issues" && <IssuesContent digest={activeDigest} />}
+                    {activeSection === "themes" && <ThemesContent digest={activeDigest} />}
+                    {activeSection === "mood" && <MoodContent digest={activeDigest} />}
+                  </motion.div>
+                </AnimatePresence>
               )}
             </div>
 
@@ -240,30 +253,47 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
                       type="button"
                       onClick={() => selectHistoryEntry(null)}
                       className={cn(
-                        "rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-muted",
-                        selectedId === null && "bg-muted font-medium",
+                        "relative rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
+                        selectedId === null ? "font-medium" : "hover:bg-muted",
                       )}
                     >
-                      Latest
+                      {selectedId === null && (
+                        <motion.span
+                          layoutId="digest-history-active"
+                          transition={HISTORY_ACTIVE_SPRING}
+                          className="absolute inset-0 rounded-lg bg-muted"
+                        />
+                      )}
+                      <span className="relative">Latest</span>
                     </button>
-                    {history.map((entry) => (
-                      <button
-                        key={entry.id}
-                        type="button"
-                        onClick={() => selectHistoryEntry(entry.id)}
-                        className={cn(
-                          "flex flex-col items-start rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted",
-                          selectedId === entry.id && "bg-muted",
-                        )}
-                      >
-                        <span className="text-sm">
-                          {formatRelativeTime(entry.generatedAt.toISOString())}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {entry.feedbackCount} feedbacks
-                        </span>
-                      </button>
-                    ))}
+                    {history.map((entry) => {
+                      const isActive = selectedId === entry.id;
+                      return (
+                        <button
+                          key={entry.id}
+                          type="button"
+                          onClick={() => selectHistoryEntry(entry.id)}
+                          className={cn(
+                            "relative flex flex-col items-start rounded-lg px-2 py-1.5 text-left transition-colors",
+                            !isActive && "hover:bg-muted",
+                          )}
+                        >
+                          {isActive && (
+                            <motion.span
+                              layoutId="digest-history-active"
+                              transition={HISTORY_ACTIVE_SPRING}
+                              className="absolute inset-0 rounded-lg bg-muted"
+                            />
+                          )}
+                          <span className="relative text-sm">
+                            {formatRelativeTime(entry.generatedAt.toISOString())}
+                          </span>
+                          <span className="relative text-xs text-muted-foreground">
+                            {entry.feedbackCount} feedbacks
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -280,7 +310,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               ) : (
                 data?.canRegenerate && (
                   <Button variant="outline" size="sm" onClick={() => void generate()}>
-                    <Icons.loading className="size-3.5" />
+                    <Icons.refresh className="size-3.5" />
                     Regenerate
                   </Button>
                 )
