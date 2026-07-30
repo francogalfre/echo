@@ -7,44 +7,68 @@ type Props = {
   agent?: AgentPersona;
 };
 
+type Block = { type: "paragraph"; text: string } | { type: "list"; items: string[] };
+
+function parseBlocks(insight: string): Block[] {
+  const lines = insight
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const blocks: Block[] = [];
+  for (const line of lines) {
+    const isListItem = line.startsWith("- ");
+    const last = blocks.at(-1);
+    if (isListItem && last?.type === "list") {
+      last.items.push(line.slice(2).trim());
+    } else if (isListItem) {
+      blocks.push({ type: "list", items: [line.slice(2).trim()] });
+    } else {
+      blocks.push({ type: "paragraph", text: line });
+    }
+  }
+  return blocks;
+}
+
+function renderInline(text: string): React.ReactNode {
+  const nodes: React.ReactNode[] = [];
+  let cursor = 0;
+
+  for (const match of text.matchAll(/\*\*[^*]+\*\*/g)) {
+    const start = match.index;
+    if (start > cursor) nodes.push(text.slice(cursor, start));
+    const bold = match[0].slice(2, -2);
+    nodes.push(<strong key={`${bold}-${start}`}>{bold}</strong>);
+    cursor = start + match[0].length;
+  }
+  if (cursor < text.length) nodes.push(text.slice(cursor));
+
+  return nodes;
+}
+
 export function InsightContent({ insight, agent }: Props): React.ReactElement {
   const AgentIcon = agent?.icon;
+  const blocks = parseBlocks(insight);
 
   return (
     <div
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed",
-        "[&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_ul]:text-muted-foreground [&_li]:text-muted-foreground",
+        "[&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_li]:text-muted-foreground",
         agent && "border-accent/20",
       )}
     >
-      {insight.split("\n").map((line, i) => {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
-        if (trimmed.startsWith("**") && trimmed.endsWith("**")) {
-          return (
-            <p key={i} className="font-semibold text-foreground">
-              {trimmed.slice(2, -2)}
-            </p>
-          );
-        }
-        if (trimmed.startsWith("- **")) {
-          const colonIdx = trimmed.indexOf("**:", 4);
-          const heading = colonIdx > 0 ? trimmed.slice(4, colonIdx) : null;
-          const rest = colonIdx > 0 ? trimmed.slice(colonIdx + 3).trim() : trimmed.slice(2);
-          return (
-            <p key={i} className="text-muted-foreground">
-              {heading && <strong className="text-foreground">{heading}: </strong>}
-              {rest}
-            </p>
-          );
-        }
-        return (
-          <p key={i} className="text-muted-foreground">
-            {trimmed}
-          </p>
-        );
-      })}
+      {blocks.map((block) =>
+        block.type === "list" ? (
+          <ul key={block.items.join("|")} className="list-disc space-y-1 pl-4">
+            {block.items.map((item) => (
+              <li key={item}>{renderInline(item)}</li>
+            ))}
+          </ul>
+        ) : (
+          <p key={block.text}>{renderInline(block.text)}</p>
+        ),
+      )}
 
       {agent && AgentIcon && (
         <div className="mt-3 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
