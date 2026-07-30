@@ -11,9 +11,9 @@ import {
   type ApiKeyRow,
 } from "../services/api-keys";
 
-const GRACE_PERIOD_MS = 24 * 60 * 60 * 1000;
-const DEFAULT_KEY_NAME = "Default";
-const DEFAULT_SCOPES = ["feedback:write"] as const;
+const gracePeriodMs = 24 * 60 * 60 * 1000;
+const defaultKeyName = "Default";
+const defaultScopes = ["feedback:write", "feedback:read"] as const;
 
 type ApiKeyListItem = {
   id: string;
@@ -61,7 +61,7 @@ async function issueNamedKey(
     publicKeyHash: hashKey(publicKey),
     secretKeyHash,
     secretKeyPrefix: secretKeyHash.slice(0, 12),
-    scopes: DEFAULT_SCOPES,
+    scopes: defaultScopes,
     createdBy,
   });
 
@@ -75,7 +75,7 @@ export const apiKeysRouter = router({
   }),
 
   generate: ownerProcedure
-    .input(z.object({ name: z.string().min(1).max(100).default(DEFAULT_KEY_NAME) }))
+    .input(z.object({ name: z.string().min(1).max(100).default(defaultKeyName) }))
     .mutation(async ({ ctx, input }) => {
       const existing = await findKeysByOrganization(ctx.organizationId);
       if (existing.some((row) => row.name === input.name && isLive(row))) {
@@ -100,7 +100,7 @@ export const apiKeysRouter = router({
       await revokeApiKey(
         target.id,
         ctx.organizationId,
-        new Date(Date.now() + GRACE_PERIOD_MS),
+        new Date(Date.now() + gracePeriodMs),
       );
 
       return issueNamedKey(ctx.organizationId, ctx.session.user.id, target.name);

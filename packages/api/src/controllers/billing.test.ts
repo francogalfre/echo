@@ -67,6 +67,7 @@ describe("getBillingOverview", () => {
         lastGeneratedAt: new Date("2026-07-01T00:00:00.000Z"),
       },
       projects: { used: 1, limit: 1 },
+      chat: { used: 2, limit: 5 },
     });
   });
 
@@ -85,6 +86,7 @@ describe("getBillingOverview", () => {
       insights: { used: 4, limit: 50 },
       digests: { used: 4, limit: 10, lastGeneratedAt: null },
       projects: { used: 3, limit: 5 },
+      chat: { used: 4, limit: 100 },
     });
   });
 });
