@@ -2,7 +2,7 @@ import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 
-import type { ConversationItem } from "../hooks/use-chat-conversations";
+import type { ConversationItem } from "../../hooks/use-chat-conversations";
 
 type AgentChatHistoryProps = {
   conversations: readonly ConversationItem[];

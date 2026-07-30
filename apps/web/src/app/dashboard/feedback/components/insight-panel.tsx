@@ -11,11 +11,11 @@ import { cn } from "@echo/ui/lib/utils";
 
 import type { FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackInsight } from "../hooks/use-feedback-insight";
-import { AiThinking } from "../../components/ai-thinking";
+import { AiThinking } from "../../components/ai/ai-thinking";
 import { ErrorCard } from "../../components/error-card";
-import { UpgradeDialog } from "../../components/upgrade-dialog";
+import { UpgradeDialog } from "../../components/dialogs/upgrade-dialog";
 import { InsightContent } from "./insight-content";
-import { AGENT_PERSONAS } from "../../components/agent-personas";
+import { AGENT_PERSONAS } from "../../components/chat/agent-personas";
 
 const PHASE_TRANSITION = { duration: durations.base, ease: easings.out };
 

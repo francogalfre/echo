@@ -1,7 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 
-import { AgentChatButton } from "./components/agent-chat-button";
-import { MotionProvider } from "./components/motion-provider";
+import { AgentChatButton } from "./components/chat/agent-chat-button";
+import { MotionProvider } from "./components/layout/motion-provider";
 import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";

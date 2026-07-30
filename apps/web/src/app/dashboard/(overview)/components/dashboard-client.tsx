@@ -13,7 +13,7 @@ import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 
-import { DigestModal } from "../../components/digest-modal";
+import { DigestModal } from "../../components/ai/digest-modal";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";

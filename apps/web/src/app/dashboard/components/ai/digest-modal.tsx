@@ -23,10 +23,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { AiThinking } from "./ai-thinking";
-import { ErrorCard } from "./error-card";
-import { UpgradeDialog } from "./upgrade-dialog";
-import { useDigest } from "../hooks/use-digest";
-import { DIGEST_SECTIONS, type DigestSectionId } from "./agent-personas";
+import { ErrorCard } from "../error-card";
+import { UpgradeDialog } from "../dialogs/upgrade-dialog";
+import { useDigest } from "../../hooks/use-digest";
+import { DIGEST_SECTIONS, type DigestSectionId } from "../chat/agent-personas";
 
 const SECTION_THINKING_PHRASES = [
   "Reading feedback",

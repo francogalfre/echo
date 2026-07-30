@@ -1,6 +1,6 @@
 import { cn } from "@echo/ui/lib/utils";
 
-import type { AgentPersona } from "../../components/agent-personas";
+import type { AgentPersona } from "../../components/chat/agent-personas";
 
 type Props = {
   insight: string;

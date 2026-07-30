@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { PageContainer } from "../../components/page-container";
+import { PageContainer } from "../../components/layout/page-container";
 import { WidgetData } from "./components/widget-data";
 import { WidgetPageSkeleton } from "./components/widget-page-skeleton";
 

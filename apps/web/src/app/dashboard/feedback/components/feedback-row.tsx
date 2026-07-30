@@ -17,7 +17,7 @@ import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 
 import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
-import { AGENT_PERSONAS } from "../../components/agent-personas";
+import { AGENT_PERSONAS } from "../../components/chat/agent-personas";
 import type { FeedbackItem } from "../utils/map-feedback";
 import {
   addToBoard,
