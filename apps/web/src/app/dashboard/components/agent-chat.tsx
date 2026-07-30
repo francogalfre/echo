@@ -11,16 +11,14 @@ import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { trpc } from "@/lib/trpc";
-
-import { getAgent } from "./agent-personas";
-
-type Message = {
-  readonly id: string;
-  readonly role: "user" | "assistant";
-  readonly content: string;
-  readonly timestamp: Date;
-};
+import { useChatConversations } from "../hooks/use-chat-conversations";
+import { useChatThread } from "../hooks/use-chat-thread";
+import { useChatUsage } from "../hooks/use-chat-usage";
+import { AGENT_PERSONAS } from "./agent-personas";
+import { AgentChatHistory } from "./agent-chat-history";
+import { AgentChatMessages } from "./agent-chat-messages";
+import { ErrorCard } from "./error-card";
+import { UpgradeDialog } from "./upgrade-dialog";
 
 type AgentChatProps = {
   readonly open: boolean;
@@ -30,228 +28,199 @@ type AgentChatProps = {
 const SUGGESTED_QUESTIONS = [
   "What do users dislike most?",
   "What features are requested the most?",
-  "What do users love about the product?",
+  "How many negative reviews mention billing?",
   "What are the biggest pain points?",
 ];
 
 export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactElement {
-  const [messages, setMessages] = useState<readonly Message[]>([]);
   const [input, setInput] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [view, setView] = useState<"chat" | "history">("chat");
+  const [usageReloadKey, setUsageReloadKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const echo = getAgent("echo");
+  const echo = AGENT_PERSONAS.echo;
   const EchoIcon = echo.icon;
 
-  const scrollToBottom = useCallback(() => {
+  const thread = useChatThread();
+  const conversations = useChatConversations();
+  const usage = useChatUsage(usageReloadKey);
+
+  const isBusy = thread.status === "submitted" || thread.status === "streaming";
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  }, [thread.messages]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
+  useEffect(() => {
+    if (thread.status === "ready") setUsageReloadKey((key) => key + 1);
+  }, [thread.status]);
+
   const sendMessage = useCallback(
-    async (content: string) => {
-      if (!content.trim() || isGenerating) return;
-
-      const userMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: content.trim(),
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, userMessage]);
+    (text: string) => {
+      if (!text.trim() || isBusy) return;
+      thread.send(text);
       setInput("");
-      setIsGenerating(true);
-
-      try {
-        const allMessages = [...messages, userMessage].map((m) => ({
-          role: m.role,
-          content: m.content,
-          timestamp: m.timestamp.toISOString(),
-        }));
-
-        const result = await trpc.chat.send.mutate({ messages: allMessages });
-
-        if (result.success) {
-          const assistantMessage: Message = {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: result.response,
-            timestamp: new Date(),
-          };
-          setMessages((prev) => [...prev, assistantMessage]);
-        } else {
-          const errorMessage: Message = {
-            id: crypto.randomUUID(),
-            role: "assistant",
-            content: `Sorry, ${result.error.toLowerCase()}`,
-            timestamp: new Date(),
-          };
-          setMessages((prev) => [...prev, errorMessage]);
-        }
-      } catch {
-        const errorMessage: Message = {
-          id: crypto.randomUUID(),
-          role: "assistant",
-          content: "Sorry, something went wrong. Please try again.",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, errorMessage]);
-      } finally {
-        setIsGenerating(false);
-      }
     },
-    [messages, isGenerating],
+    [thread, isBusy],
   );
+
+  const openHistory = useCallback(async (): Promise<void> => {
+    setView("history");
+    await conversations.refresh();
+  }, [conversations]);
+
+  const selectConversation = useCallback(
+    async (id: string): Promise<void> => {
+      const priorMessages = await conversations.loadMessages(id);
+      thread.resumeConversation(id, priorMessages);
+      setView("chat");
+    },
+    [conversations, thread],
+  );
+
+  const startNewConversation = useCallback((): void => {
+    thread.startNewConversation();
+    setView("chat");
+  }, [thread]);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    void sendMessage(input);
+    sendMessage(input);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void sendMessage(input);
+      sendMessage(input);
     }
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="p-0">
-        <DrawerHeader className="border-b px-6 py-4">
-          <div className="flex items-center gap-3">
-            <span
-              className={cn(
-                "flex size-8 items-center justify-center rounded-full",
-                echo.avatarBg,
-              )}
-            >
-              <EchoIcon className={cn("size-4", echo.avatarText)} />
-            </span>
-            <div>
-              <DrawerTitle className="flex items-center gap-2">
-                {echo.name}
-                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
-                  Pro
-                </span>
-              </DrawerTitle>
-              <p className="text-xs text-muted-foreground">{echo.role}</p>
-            </div>
-          </div>
-        </DrawerHeader>
-
-        <div className="flex h-[400px] flex-col overflow-y-auto p-6">
-          {messages.length === 0 && (
-            <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-              <span
-                className={cn(
-                  "flex size-12 items-center justify-center rounded-full",
-                  echo.avatarBg,
-                )}
-              >
-                <EchoIcon className={cn("size-6", echo.avatarText)} />
-              </span>
-              <div>
-                <p className="text-sm font-medium">Ask Echo anything</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Echo reads all your feedback and answers questions like a real user.
-                </p>
-              </div>
-              <div className="flex flex-wrap justify-center gap-2">
-                {SUGGESTED_QUESTIONS.map((question) => (
-                  <Button
-                    key={question}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => void sendMessage(question)}
-                    disabled={isGenerating}
-                  >
-                    {question}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
-              >
-                {message.role === "assistant" && (
-                  <span
-                    className={cn(
-                      "flex size-7 shrink-0 items-center justify-center rounded-full",
-                      echo.avatarBg,
-                    )}
-                  >
-                    <EchoIcon className={cn("size-3.5", echo.avatarText)} />
-                  </span>
-                )}
-                <div
-                  className={cn(
-                    "max-w-[80%] rounded-xl px-4 py-2.5 text-sm",
-                    message.role === "user"
-                      ? "bg-accent text-accent-foreground"
-                      : "bg-muted",
-                  )}
-                >
-                  {message.content}
-                </div>
-              </div>
-            ))}
-
-            {isGenerating && (
-              <div className="flex gap-3">
+    <>
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="p-0">
+          <DrawerHeader className="border-b px-6 py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
                 <span
                   className={cn(
-                    "flex size-7 shrink-0 items-center justify-center rounded-full",
+                    "flex size-8 items-center justify-center rounded-full",
                     echo.avatarBg,
                   )}
                 >
-                  <EchoIcon className={cn("size-3.5", echo.avatarText)} />
+                  <EchoIcon className={cn("size-4", echo.avatarText)} />
                 </span>
-                <div className="flex items-center gap-2 rounded-xl bg-muted px-4 py-2.5">
-                  <Icons.loading className="size-4 animate-spin text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Thinking...</span>
+                <div>
+                  <DrawerTitle>{echo.name}</DrawerTitle>
+                  <p className="text-xs text-muted-foreground">
+                    {usage.state.status === "ready"
+                      ? `${usage.state.data.used}/${usage.state.data.limit} messages today`
+                      : echo.role}
+                  </p>
                 </div>
               </div>
-            )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => void openHistory()}
+                aria-label="Chat history"
+              >
+                <Icons.clock className="size-4" />
+              </Button>
+            </div>
+          </DrawerHeader>
 
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        <div className="border-t p-4">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask about your feedback..."
-              className="flex-1 resize-none rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-              rows={1}
-              disabled={isGenerating}
+          {view === "history" ? (
+            <AgentChatHistory
+              conversations={conversations.conversations}
+              loading={conversations.loading}
+              activeId={thread.conversationId}
+              onSelect={(id) => void selectConversation(id)}
+              onNewConversation={startNewConversation}
             />
-            <Button type="submit" size="icon" disabled={!input.trim() || isGenerating}>
-              <Icons.arrowRight className="size-4" />
-            </Button>
-          </form>
-        </div>
-      </DrawerContent>
-    </Drawer>
+          ) : (
+            <div className="flex h-[400px] flex-col overflow-y-auto p-6">
+              {thread.messages.length === 0 && (
+                <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+                  <span
+                    className={cn(
+                      "flex size-12 items-center justify-center rounded-full",
+                      echo.avatarBg,
+                    )}
+                  >
+                    <EchoIcon className={cn("size-6", echo.avatarText)} />
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium">Ask Echo anything</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Echo reads all your feedback and answers questions with real numbers.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {SUGGESTED_QUESTIONS.map((question) => (
+                      <Button
+                        key={question}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => sendMessage(question)}
+                        disabled={isBusy}
+                      >
+                        {question}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <AgentChatMessages messages={thread.messages} isBusy={isBusy} agent={echo} />
+
+              {thread.status === "error" && thread.error && (
+                <ErrorCard
+                  className="mt-4"
+                  message={
+                    thread.error.message || "Something went wrong. Please try again."
+                  }
+                />
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+
+          {view === "chat" && (
+            <div className="border-t p-4">
+              <form onSubmit={handleSubmit} className="flex gap-2">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Ask about your feedback..."
+                  className="flex-1 resize-none rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
+                  rows={1}
+                  disabled={isBusy}
+                />
+                <Button type="submit" size="icon" disabled={!input.trim() || isBusy}>
+                  <Icons.arrowRight className="size-4" />
+                </Button>
+              </form>
+            </div>
+          )}
+        </DrawerContent>
+      </Drawer>
+
+      <UpgradeDialog
+        open={thread.upgradeReason !== null}
+        onOpenChange={(next) => {
+          if (!next) thread.dismissUpgrade();
+        }}
+        reason={thread.upgradeReason ?? ""}
+      />
+    </>
   );
 }
