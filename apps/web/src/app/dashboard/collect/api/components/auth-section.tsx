@@ -1,12 +1,14 @@
 import { Badge } from "@echo/ui/components/badge";
 
-import type { ApiKeys } from "../hooks/use-api-keys";
+import type { ApiKeyEntry } from "../hooks/use-api-keys";
 import { KeysSection } from "./keys-section";
 
 type AuthSectionProps = {
-  keys: ApiKeys;
-  onRoll: () => void;
-  isRolling: boolean;
+  keys: ApiKeyEntry[];
+  onRoll: (id: string) => void;
+  onRevoke: (id: string) => void;
+  rollingId: string | null;
+  revokingId: string | null;
 };
 
 type KeyType = {
@@ -37,7 +39,9 @@ const TABLE_HEAD_CELL =
 export const AuthSection = ({
   keys,
   onRoll,
-  isRolling,
+  onRevoke,
+  rollingId,
+  revokingId,
 }: AuthSectionProps): React.ReactElement => (
   <div className="space-y-6">
     <div>
@@ -77,6 +81,12 @@ export const AuthSection = ({
       </table>
     </div>
 
-    <KeysSection keys={keys} onRoll={onRoll} isRolling={isRolling} />
+    <KeysSection
+      keys={keys}
+      onRoll={onRoll}
+      onRevoke={onRevoke}
+      rollingId={rollingId}
+      revokingId={revokingId}
+    />
   </div>
 );

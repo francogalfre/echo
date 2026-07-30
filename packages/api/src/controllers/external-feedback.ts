@@ -3,6 +3,7 @@ import {
   findByPublicKey,
   findBySecretKeyHash,
   hashKey,
+  touchLastUsed,
   type ApiKeyRow,
 } from "../services/api-keys";
 import { listFeedback } from "../services/feedback";
@@ -20,6 +21,7 @@ type FeedbackInput = {
 type KeyKind = {
   prefix: "echo_sk_" | "echo_pk_";
   source: "api" | "widget";
+  requiredScope?: string;
   lookup: (token: string) => Promise<ApiKeyRow | undefined>;
 };
 
@@ -32,12 +34,17 @@ const SECRET_KEY: KeyKind = {
 const PUBLIC_KEY: KeyKind = {
   prefix: "echo_pk_",
   source: "widget",
+  requiredScope: "feedback:write",
   lookup: findByPublicKey,
 };
 
 function extractBearer(header: string | undefined): string | null {
   if (!header?.startsWith("Bearer ")) return null;
   return header.slice(7).trim() || null;
+}
+
+function isKeyLive(keyRow: ApiKeyRow): boolean {
+  return keyRow.revokedAt === null || keyRow.revokedAt > new Date();
 }
 
 async function createFeedbackWithKey(
@@ -52,12 +59,20 @@ async function createFeedbackWithKey(
   }
 
   const keyRow = await kind.lookup(token);
-  if (!keyRow) return { success: false, status: 401, error: "Invalid API key" };
+  if (!keyRow || !isKeyLive(keyRow)) {
+    return { success: false, status: 401, error: "Invalid API key" };
+  }
+
+  if (kind.requiredScope && !keyRow.scopes.includes(kind.requiredScope)) {
+    return { success: false, status: 403, error: "Key is missing required scope" };
+  }
 
   const guard = await guardKeySubmission(hashKey(token));
   if (!guard.allowed) {
     return { success: false, status: 429, error: guard.message };
   }
+
+  void touchLastUsed(keyRow.id);
 
   return createFeedback({
     organizationId: keyRow.organizationId,
@@ -92,16 +107,23 @@ export async function getFeedback(input: {
   }
 
   const keyRow = await SECRET_KEY.lookup(token);
-  const organizationId = keyRow?.organizationId;
-  if (!organizationId) return { success: false, status: 401, error: "Invalid API key" };
+  if (!keyRow || !isKeyLive(keyRow)) {
+    return { success: false, status: 401, error: "Invalid API key" };
+  }
+
+  if (!keyRow.scopes.includes("feedback:read")) {
+    return { success: false, status: 403, error: "Key is missing required scope" };
+  }
 
   const guard = await guardKeySubmission(hashKey(token));
   if (!guard.allowed) {
     return { success: false, status: 429, error: guard.message };
   }
 
+  void touchLastUsed(keyRow.id);
+
   return {
     success: true,
-    feedback: await listFeedback(organizationId, { limit: 50, offset: 0 }),
+    feedback: await listFeedback(keyRow.organizationId, { limit: 50, offset: 0 }),
   };
 }
