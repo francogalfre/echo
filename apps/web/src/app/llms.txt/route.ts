@@ -17,7 +17,6 @@ usage-based volume, AI summaries, and team features.
 - [Documentation](${absolute(siteConfig.links.docs)})
 - [API reference](${absolute("/docs/api")})
 - [Widget install](${absolute("/docs/widget")})
-- [Pricing](${absolute("/#pricing")})
 - [Privacy](${absolute(siteConfig.links.privacy)})
 - [Terms](${absolute(siteConfig.links.terms)})
 `;

@@ -7,11 +7,6 @@ const buildUrl = (path: string): string => new URL(path, siteConfig.url).toStrin
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: buildUrl("/"),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
       url: buildUrl("/docs"),
       changeFrequency: "weekly",
       priority: 0.8,
