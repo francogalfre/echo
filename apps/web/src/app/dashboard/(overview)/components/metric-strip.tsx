@@ -13,11 +13,9 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
   const totalSeries = trend.map((point) => point.positive + point.neutral + point.negative);
   const positiveSeries = trend.map((point) => point.positive);
   const negativeSeries = trend.map((point) => point.negative);
-  // "This week" has no distinct daily series server-side, so it reuses the total trend
-  const thisWeekSeries = totalSeries;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-3">
       <MetricCard
         label="Total feedback"
         value={metrics.total.value}
@@ -41,14 +39,6 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
         caption="vs last 30 days"
         sparklineData={negativeSeries}
         sparklineColor="var(--destructive)"
-      />
-      <MetricCard
-        label="This week"
-        value={metrics.thisWeek.value}
-        growth={metrics.thisWeek.growth}
-        caption="vs last week"
-        sparklineData={thisWeekSeries}
-        sparklineColor="var(--info)"
       />
     </div>
   );

@@ -10,10 +10,13 @@ import { trpc } from "@/lib/trpc";
 import type { DigestOutput } from "@echo/ai";
 import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
 
+import { Button } from "@echo/ui/components/button";
+import { Icons } from "@echo/ui/components/icons";
+
+import { DigestModal } from "../../components/digest-modal";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
-import { InsightsHero } from "./insights-hero";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { ProductFlowStrip } from "./product-flow-strip";
@@ -47,6 +50,7 @@ export function DashboardClient({
 }: Props): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
+  const [digestOpen, setDigestOpen] = React.useState(false);
   const [state, setState] = React.useState<State>({
     status: "ready",
     data: initialData,
@@ -100,14 +104,22 @@ export function DashboardClient({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Hello{firstName ? `, ${firstName}` : ""}!
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Here&apos;s how your project is performing.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Hello{firstName ? `, ${firstName}` : ""}!
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Here&apos;s how your project is performing.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={() => setDigestOpen(true)}>
+          <Icons.aiMagic className="size-3.5" />
+          AI Analysis
+        </Button>
       </div>
+
+      <DigestModal open={digestOpen} onOpenChange={setDigestOpen} />
 
       {state.status === "loading" && <DashboardSkeleton />}
 
@@ -142,15 +154,6 @@ export function DashboardClient({
             <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           </motion.div>
           <motion.div variants={fadeInUp} className="grid gap-4 lg:grid-cols-3">
-            <InsightsHero
-              className="lg:col-span-2"
-              digest={initialDigest.digest}
-              generatedAt={initialDigest.generatedAt}
-              feedbackCount={initialDigest.feedbackCount}
-            />
-            <SourcesCard sources={state.data.sources} />
-          </motion.div>
-          <motion.div variants={fadeInUp}>
             <SentimentChartCard
               series={state.data.series}
               granularity={state.data.granularity}
@@ -158,6 +161,7 @@ export function DashboardClient({
               onRangeChange={setRange}
               pending={state.pending}
             />
+            <SourcesCard sources={state.data.sources} />
           </motion.div>
           <motion.div variants={fadeInUp}>
             <RecentFeedbackTable items={state.data.recent} />
