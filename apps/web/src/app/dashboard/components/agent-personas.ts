@@ -1,4 +1,6 @@
+import echoIdle from "@echo/assets/character/idle.webp";
 import { Icons } from "@echo/ui/components/icons";
+import type { StaticImageData } from "next/image";
 
 export type AgentPersona = {
   readonly id: string;
@@ -6,6 +8,7 @@ export type AgentPersona = {
   readonly role: string;
   readonly description: string;
   readonly icon: React.ComponentType<{ className?: string }>;
+  readonly avatarImage: StaticImageData;
   readonly color: string;
   readonly bgColor: string;
   readonly avatarBg: string;
@@ -20,6 +23,7 @@ export const AGENT_PERSONAS = {
     role: "Reads your feedback and explains it",
     description: "Reads all feedback and answers your questions about it.",
     icon: Icons.message,
+    avatarImage: echoIdle,
     color: "text-accent",
     bgColor: "bg-accent/8",
     avatarBg: "bg-accent",

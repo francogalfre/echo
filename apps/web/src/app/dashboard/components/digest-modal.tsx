@@ -1,5 +1,6 @@
 "use client";
 
+import echoIdle from "@echo/assets/character/idle.webp";
 import { Button } from "@echo/ui/components/button";
 import {
   Drawer,
@@ -18,6 +19,7 @@ import { cn } from "@echo/ui/lib/utils";
 import { durations, easings } from "@echo/ui/lib/motion";
 import type { DigestOutput } from "@echo/ai";
 import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { AiThinking } from "./ai-thinking";
@@ -163,7 +165,12 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
           <DrawerHeader className="border-b px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Icons.aiMagic className="size-4 text-accent" />
+                <Image
+                  src={echoIdle}
+                  alt="Echo"
+                  className="size-8 shrink-0 rounded-full object-cover"
+                  priority
+                />
                 <div>
                   <DrawerTitle>AI Analysis</DrawerTitle>
                   {feedbackCount !== undefined && generatedAt && (
