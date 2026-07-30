@@ -31,7 +31,16 @@ export function RecentFeedbackTable({
             className="flex items-center gap-3.5 border-b border-border px-5 py-3.5 transition-colors duration-150 last:border-0 hover:bg-muted/30"
           >
             <Avatar className="size-7 ring-1 ring-border">
-              <AvatarFallback name={item.name} />
+              <AvatarFallback
+                name={item.name}
+                style={
+                  {
+                    "--avatar-bg": "oklch(0.6 0.14 282.7 / 0.16)",
+                    "--avatar-fg-light": "oklch(0.45 0.13 282.7)",
+                    "--avatar-fg-dark": "oklch(0.82 0.09 282.7)",
+                  } as React.CSSProperties
+                }
+              />
             </Avatar>
             <span className="w-32 shrink-0 truncate text-[13px] font-medium">
               {item.name}
