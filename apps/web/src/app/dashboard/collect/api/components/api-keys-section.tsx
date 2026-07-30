@@ -47,10 +47,10 @@ type ApiKeysSectionProps = {
 };
 
 export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.ReactElement {
-  const { state, pending, generate, roll } = useApiKeys(initialData);
+  const { keys, pending, generate, roll, revoke } = useApiKeys(initialData);
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
-  if (state.status === "empty") {
+  if (keys.length === 0) {
     return (
       <EmptyState
         icon={<Icons.lock />}
@@ -58,8 +58,8 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
         description="Generate a publishable and secret key pair to start sending feedback."
         className="mx-auto max-w-md py-20"
         action={
-          <Button size="sm" onClick={generate} disabled={pending === "generate"}>
-            {pending === "generate" ? (
+          <Button size="sm" onClick={generate} disabled={pending?.action === "generate"}>
+            {pending?.action === "generate" ? (
               <Icons.loading className="size-3.5 animate-spin" />
             ) : null}
             Generate API keys
@@ -69,7 +69,7 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
     );
   }
 
-  const pk = state.keys.publicKey || `echo_pk_${"•".repeat(16)}`;
+  const pk = keys[0]?.publicKey ?? `echo_pk_${"•".repeat(16)}`;
 
   const createSnippets: LanguageSnippet[] = [
     {
@@ -178,7 +178,13 @@ feedback = response.json()["feedback"]`,
         <div className="space-y-20">
           <FadeIn delay={0.1}>
             <section id="authentication">
-              <AuthSection keys={state.keys} onRoll={roll} isRolling={pending === "roll"} />
+              <AuthSection
+                keys={keys}
+                onRoll={roll}
+                onRevoke={revoke}
+                rollingId={pending?.action === "roll" ? pending.id : null}
+                revokingId={pending?.action === "revoke" ? pending.id : null}
+              />
             </section>
           </FadeIn>
 

@@ -13,7 +13,7 @@ export async function DashboardOverviewData(): Promise<React.ReactElement> {
   return (
     <DashboardClient
       initialData={data}
-      hasApiKey={apiKeys !== null}
+      hasApiKey={apiKeys.length > 0}
       initialDigest={{
         digest: digestState.digest,
         generatedAt: digestState.generatedAt ? new Date(digestState.generatedAt) : null,
