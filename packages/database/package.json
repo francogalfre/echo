@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed-demo": "bun run src/seed-demo.ts"
+    "db:seed-demo": "bun run src/seed-demo.ts",
+    "db:backfill-key-hashes": "bun run scripts/backfill-key-hashes.ts"
   },
   "dependencies": {
     "@echo/env": "workspace:*",
