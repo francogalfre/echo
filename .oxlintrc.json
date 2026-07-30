@@ -17,6 +17,7 @@
   "ignorePatterns": [
     "**/.agents/**",
     "**/.claude/**",
+    "**/dither-kit/**",
     "**/dist/**",
     "**/.expo/**",
     "**/.turbo/**",
