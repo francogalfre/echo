@@ -29,7 +29,7 @@ type InsightPanelProps = {
 export function InsightPanel({ item, active }: InsightPanelProps): React.ReactElement {
   const { state, generate, reset, upgradeReason, dismissUpgrade } = useFeedbackInsight();
   const requestedIdRef = useRef<string | null>(null);
-  const agent = AGENT_PERSONAS.pulse;
+  const agent = AGENT_PERSONAS.echo;
 
   useEffect(() => {
     if (!active) {

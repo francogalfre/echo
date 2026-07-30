@@ -83,17 +83,17 @@ export function FeedbackRow({
                     <span
                       className={cn(
                         "inline-flex shrink-0 rounded-md p-1",
-                        AGENT_PERSONAS.pulse.bgColor,
+                        AGENT_PERSONAS.echo.bgColor,
                       )}
                     />
                   }
                 >
-                  <AGENT_PERSONAS.pulse.icon
-                    className={cn("size-2.5", AGENT_PERSONAS.pulse.color)}
+                  <AGENT_PERSONAS.echo.icon
+                    className={cn("size-2.5", AGENT_PERSONAS.echo.color)}
                   />
-                  <span className="sr-only">Analyzed by Pulse</span>
+                  <span className="sr-only">Analyzed by Echo</span>
                 </TooltipTrigger>
-                <TooltipContent>Analyzed by {AGENT_PERSONAS.pulse.name}</TooltipContent>
+                <TooltipContent>Analyzed by {AGENT_PERSONAS.echo.name}</TooltipContent>
               </Tooltip>
             )}
           </span>
@@ -153,10 +153,10 @@ export function FeedbackRow({
               View details
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewDetails(item)}>
-              <AGENT_PERSONAS.pulse.icon
-                className={cn("size-4", AGENT_PERSONAS.pulse.color)}
+              <AGENT_PERSONAS.echo.icon
+                className={cn("size-4", AGENT_PERSONAS.echo.color)}
               />
-              Explain with {AGENT_PERSONAS.pulse.name}
+              Explain with {AGENT_PERSONAS.echo.name}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => copyFeedback(item.feedback)}>

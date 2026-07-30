@@ -15,9 +15,7 @@ export function InsightContent({ insight, agent }: Props): React.ReactElement {
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed",
         "[&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_ul]:text-muted-foreground [&_li]:text-muted-foreground",
-        agent?.color === "text-destructive" && "border-destructive/20",
-        agent?.color === "text-info" && "border-info/20",
-        agent?.color === "text-success" && "border-success/20",
+        agent && "border-accent/20",
       )}
     >
       {insight.split("\n").map((line, i) => {

@@ -14,46 +14,10 @@ export type AgentPersona = {
 };
 
 export const AGENT_PERSONAS = {
-  sentinel: {
-    id: "sentinel",
-    name: "Sentinel",
-    role: "Finds problems",
-    description: "Scans feedback to find bugs, complaints, and urgent issues.",
-    icon: Icons.radar,
-    color: "text-destructive",
-    bgColor: "bg-destructive/8",
-    avatarBg: "bg-destructive",
-    avatarText: "text-white",
-    thinkingPhrases: ["Scanning for issues", "Finding problems", "Checking for bugs"],
-  },
-  compass: {
-    id: "compass",
-    name: "Compass",
-    role: "Finds patterns",
-    description: "Groups similar feedback to reveal what users actually want.",
-    icon: Icons.search,
-    color: "text-info",
-    bgColor: "bg-info/8",
-    avatarBg: "bg-info",
-    avatarText: "text-white",
-    thinkingPhrases: ["Grouping feedback", "Finding patterns", "Identifying themes"],
-  },
-  pulse: {
-    id: "pulse",
-    name: "Pulse",
-    role: "Reads emotions",
-    description: "Understands how users feel about your product.",
-    icon: Icons.trendUp,
-    color: "text-success",
-    bgColor: "bg-success/8",
-    avatarBg: "bg-success",
-    avatarText: "text-white",
-    thinkingPhrases: ["Reading sentiment", "Measuring feelings", "Analyzing mood"],
-  },
   echo: {
     id: "echo",
     name: "Echo",
-    role: "Answers questions",
+    role: "Reads your feedback and explains it",
     description: "Reads all feedback and answers your questions about it.",
     icon: Icons.message,
     color: "text-accent",
@@ -65,40 +29,47 @@ export const AGENT_PERSONAS = {
 } as const;
 
 export type AgentId = keyof typeof AGENT_PERSONAS;
-export type AnalysisAgentId = "sentinel" | "compass" | "pulse";
-
-export const ANALYSIS_AGENTS: readonly AnalysisAgentId[] = ["sentinel", "compass", "pulse"];
-export const ALL_AGENTS: readonly AgentId[] = ["sentinel", "compass", "pulse", "echo"];
 
 export function getAgent(agentId: AgentId): AgentPersona {
   return AGENT_PERSONAS[agentId];
 }
 
-export function getAgentSummary(
-  agentId: AgentId,
+export type DigestSectionId = "issues" | "themes" | "mood";
+
+export type DigestSection = {
+  readonly id: DigestSectionId;
+  readonly label: string;
+  readonly icon: React.ComponentType<{ className?: string }>;
+};
+
+export const DIGEST_SECTIONS: readonly DigestSection[] = [
+  { id: "issues", label: "Issues", icon: Icons.radar },
+  { id: "themes", label: "Themes", icon: Icons.search },
+  { id: "mood", label: "Mood", icon: Icons.trendUp },
+];
+
+export function getDigestSectionSummary(
+  sectionId: DigestSectionId,
   digest: {
     topIssues?: readonly string[];
     themes?: readonly { title: string; count: number; insight: string }[];
     positiveHighlight?: string;
   },
 ): string {
-  switch (agentId) {
-    case "sentinel": {
+  switch (sectionId) {
+    case "issues": {
       const count = digest.topIssues?.length ?? 0;
       if (count === 0) return "No issues found";
       return `${count} ${count === 1 ? "issue" : "issues"} need attention`;
     }
-    case "compass": {
+    case "themes": {
       const count = digest.themes?.length ?? 0;
       if (count === 0) return "No themes yet";
       return `${count} ${count === 1 ? "theme" : "themes"} identified`;
     }
-    case "pulse": {
+    case "mood": {
       if (!digest.positiveHighlight) return "Analyzing sentiment";
       return "Users are satisfied";
-    }
-    case "echo": {
-      return "Ask me anything";
     }
   }
 }

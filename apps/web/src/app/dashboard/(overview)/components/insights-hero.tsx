@@ -16,12 +16,7 @@ import * as React from "react";
 import type { DigestOutput } from "@echo/ai";
 
 import { DigestModal } from "../../components/digest-modal";
-import {
-  ANALYSIS_AGENTS,
-  getAgent,
-  getAgentSummary,
-  type AnalysisAgentId,
-} from "../../components/agent-personas";
+import { DIGEST_SECTIONS, getDigestSectionSummary } from "../../components/agent-personas";
 
 type InsightsHeroProps = {
   readonly digest: DigestOutput | null;
@@ -30,33 +25,7 @@ type InsightsHeroProps = {
   readonly className?: string;
 };
 
-function AgentCard({
-  agentId,
-  digest,
-}: {
-  agentId: AnalysisAgentId;
-  digest: DigestOutput;
-}): React.ReactElement {
-  const agent = getAgent(agentId);
-  const AgentIcon = agent.icon;
-  const summary = getAgentSummary(agentId, digest);
-
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3">
-      <span
-        className={`flex size-9 shrink-0 items-center justify-center rounded-full ${agent.avatarBg}`}
-      >
-        <AgentIcon className={`size-4 ${agent.avatarText}`} />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{agent.name}</p>
-        <p className="text-xs text-muted-foreground">{summary}</p>
-      </div>
-    </div>
-  );
-}
-
-function EmptyAgentState({
+function EmptyDigestState({
   onGenerate,
   className,
 }: {
@@ -82,7 +51,7 @@ function EmptyAgentState({
   );
 }
 
-function AgentInsightsCard({
+function DigestSummaryCard({
   digest,
   generatedAt,
   feedbackCount,
@@ -110,18 +79,21 @@ function AgentInsightsCard({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {ANALYSIS_AGENTS.map((agentId) => (
-            <AgentCard key={agentId} agentId={agentId} digest={digest} />
+        <div className="grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-background">
+          {DIGEST_SECTIONS.map((section) => (
+            <div key={section.id} className="flex items-center gap-2 px-4 py-3">
+              <section.icon className="size-4 shrink-0 text-muted-foreground" />
+              <p className="min-w-0 truncate text-xs text-muted-foreground">
+                {getDigestSectionSummary(section.id, digest)}
+              </p>
+            </div>
           ))}
         </div>
 
         {digest.positiveHighlight && (
-          <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-background px-4 py-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success">
-              <Icons.circleCheck className="size-4 text-white" />
-            </span>
-            <p className="text-sm">{digest.positiveHighlight}</p>
+          <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-success/8 px-3.5 py-3">
+            <Icons.circleCheck className="mt-0.5 size-3.5 shrink-0 text-success" />
+            <p className="text-sm text-muted-foreground">{digest.positiveHighlight}</p>
           </div>
         )}
 
@@ -150,7 +122,7 @@ export function InsightsHero({
   if (!hasContent) {
     return (
       <>
-        <EmptyAgentState className={className} onGenerate={() => setOpen(true)} />
+        <EmptyDigestState className={className} onGenerate={() => setOpen(true)} />
         <DigestModal open={open} onOpenChange={setOpen} />
       </>
     );
@@ -158,7 +130,7 @@ export function InsightsHero({
 
   return (
     <>
-      <AgentInsightsCard
+      <DigestSummaryCard
         className={className}
         digest={digest}
         generatedAt={generatedAt}

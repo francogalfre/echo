@@ -22,15 +22,20 @@ import { AiThinking } from "./ai-thinking";
 import { ErrorCard } from "./error-card";
 import { UpgradeDialog } from "./upgrade-dialog";
 import { useDigest } from "../hooks/use-digest";
-import { ANALYSIS_AGENTS, getAgent } from "./agent-personas";
-import type { AgentId } from "./agent-personas";
+import { DIGEST_SECTIONS, type DigestSectionId } from "./agent-personas";
+
+const SECTION_THINKING_PHRASES = [
+  "Reading feedback",
+  "Finding patterns",
+  "Analyzing mood",
+] as const;
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-function SentinelContent({ digest }: { digest: DigestOutput }): React.ReactElement {
+function IssuesContent({ digest }: { digest: DigestOutput }): React.ReactElement {
   return (
     <div className="flex flex-col gap-3">
       {digest.topIssues.length > 0 ? (
@@ -51,7 +56,7 @@ function SentinelContent({ digest }: { digest: DigestOutput }): React.ReactEleme
   );
 }
 
-function CompassContent({ digest }: { digest: DigestOutput }): React.ReactElement {
+function ThemesContent({ digest }: { digest: DigestOutput }): React.ReactElement {
   return (
     <div className="flex flex-col gap-3">
       {digest.themes.length > 0 ? (
@@ -77,7 +82,7 @@ function CompassContent({ digest }: { digest: DigestOutput }): React.ReactElemen
   );
 }
 
-function PulseContent({ digest }: { digest: DigestOutput }): React.ReactElement {
+function MoodContent({ digest }: { digest: DigestOutput }): React.ReactElement {
   return (
     <div className="flex flex-col gap-3">
       {digest.positiveHighlight ? (
@@ -129,7 +134,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
     upgradeReason,
     dismissUpgrade,
   } = useDigest();
-  const [activeAgent, setActiveAgent] = useState<AgentId>("sentinel");
+  const [activeSection, setActiveSection] = useState<DigestSectionId>("issues");
 
   useEffect(() => {
     if (open) void load();
@@ -169,40 +174,29 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
 
           {activeDigest && !isGenerating && (
             <div className="flex gap-1 border-b px-6">
-              {ANALYSIS_AGENTS.map((agentId) => {
-                const agent = getAgent(agentId);
-                const AgentIcon = agent.icon;
-                return (
-                  <button
-                    key={agentId}
-                    type="button"
-                    onClick={() => setActiveAgent(agentId)}
-                    className={cn(
-                      "flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
-                      activeAgent === agentId
-                        ? "border-accent text-foreground"
-                        : "border-transparent text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    <span
-                      className={`flex size-5 items-center justify-center rounded-full ${agent.avatarBg}`}
-                    >
-                      <AgentIcon className={`size-2.5 ${agent.avatarText}`} />
-                    </span>
-                    <span>{agent.name}</span>
-                    <span className="hidden text-xs text-muted-foreground sm:inline">
-                      · {agent.role}
-                    </span>
-                  </button>
-                );
-              })}
+              {DIGEST_SECTIONS.map((section) => (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => setActiveSection(section.id)}
+                  className={cn(
+                    "flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
+                    activeSection === section.id
+                      ? "border-accent text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <section.icon className="size-4" />
+                  <span>{section.label}</span>
+                </button>
+              ))}
             </div>
           )}
 
           <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_200px] sm:gap-6">
             <div className="flex flex-col gap-4">
               {(isLoading || isGenerating) && (
-                <AiThinking phrases={getAgent(activeAgent).thinkingPhrases}>
+                <AiThinking phrases={SECTION_THINKING_PHRASES}>
                   <DigestSkeleton />
                 </AiThinking>
               )}
@@ -230,9 +224,9 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
 
               {activeDigest && !isGenerating && (
                 <>
-                  {activeAgent === "sentinel" && <SentinelContent digest={activeDigest} />}
-                  {activeAgent === "compass" && <CompassContent digest={activeDigest} />}
-                  {activeAgent === "pulse" && <PulseContent digest={activeDigest} />}
+                  {activeSection === "issues" && <IssuesContent digest={activeDigest} />}
+                  {activeSection === "themes" && <ThemesContent digest={activeDigest} />}
+                  {activeSection === "mood" && <MoodContent digest={activeDigest} />}
                 </>
               )}
             </div>
