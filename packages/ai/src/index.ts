@@ -1,4 +1,6 @@
 export { AIError, type AIErrorCode } from "./errors";
+export type { AgentUsage } from "./usage";
+export { AGENT_VERSIONS, type AgentName } from "./versions";
 
 export { generateInsight } from "./agents/insight";
 export type { InsightInput } from "./agents/insight/types";

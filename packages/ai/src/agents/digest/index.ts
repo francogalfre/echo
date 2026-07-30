@@ -2,6 +2,7 @@ import { generateObject } from "ai";
 import { z } from "zod";
 
 import { AIError } from "../../errors";
+import { buildAgentUsage, type AgentUsage } from "../../usage";
 import { digestModel } from "./models";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
 import type { DigestInput, DigestOutput } from "./types";
@@ -24,8 +25,10 @@ const digestSchema = z.object({
   positiveHighlight: z.string(),
 });
 
-async function attemptGeneration(inputs: DigestInput[]): Promise<DigestOutput> {
-  const { object } = await generateObject({
+async function attemptGeneration(
+  inputs: DigestInput[],
+): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
+  const result = await generateObject({
     model: digestModel,
     schema: digestSchema,
     system: DIGEST_SYSTEM_PROMPT,
@@ -36,13 +39,24 @@ async function attemptGeneration(inputs: DigestInput[]): Promise<DigestOutput> {
     providerOptions: {
       openrouter: {
         reasoning: { enabled: false, exclude: true, effort: "none" },
+        usage: { include: true },
       },
     },
   });
-  return object;
+
+  return {
+    digest: result.object,
+    usage: buildAgentUsage({
+      model: result.response.modelId,
+      usage: result.usage,
+      providerMetadata: result.providerMetadata,
+    }),
+  };
 }
 
-export async function generateDigest(inputs: DigestInput[]): Promise<DigestOutput> {
+export async function generateDigest(
+  inputs: DigestInput[],
+): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
   if (inputs.length === 0) {
     throw new AIError("GENERATION_FAILED", "No feedback to digest");
   }
