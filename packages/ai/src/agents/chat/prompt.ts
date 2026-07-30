@@ -1,5 +1,7 @@
 import type { ChatInput } from "./types";
 
+export const PROMPT_VERSION = 1 as const;
+
 export const CHAT_SYSTEM_PROMPT = `You are Echo, a virtual user who has experienced the product based on real user feedback. You speak on behalf of users, answering questions about their experiences.
 
 Rules:

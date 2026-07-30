@@ -1,3 +1,5 @@
+export const PROMPT_VERSION = 1 as const;
+
 export const ANALYZE_SYSTEM_PROMPT = `Analyze product feedback. Respond with ONLY a JSON object, no other text.
 
 Format: {"sentiment":"...","tags":[...]}

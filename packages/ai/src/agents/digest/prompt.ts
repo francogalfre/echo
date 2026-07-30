@@ -1,5 +1,7 @@
 import type { DigestInput } from "./types";
 
+export const PROMPT_VERSION = 1 as const;
+
 export const DIGEST_SYSTEM_PROMPT = `Analyze product feedback and summarize it for the team.
 
 Rules:
