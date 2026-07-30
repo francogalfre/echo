@@ -7,12 +7,10 @@ type CreateMetadataInput = {
   description?: string;
   path?: string;
   noIndex?: boolean;
-  ogImage?: string;
 };
 
 export const createMetadata = (input?: CreateMetadataInput): Metadata => {
   const description = input?.description ?? siteConfig.description;
-  const image = input?.ogImage ?? siteConfig.ogImage;
   const url = input?.path ? new URL(input.path, siteConfig.url).toString() : siteConfig.url;
 
   const title = input?.title
@@ -29,13 +27,11 @@ export const createMetadata = (input?: CreateMetadataInput): Metadata => {
       title: input?.title ?? siteConfig.title,
       description,
       url,
-      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title: input?.title ?? siteConfig.title,
       description,
-      images: [image],
       creator: siteConfig.twitter,
       site: siteConfig.twitter,
     },

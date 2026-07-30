@@ -5,7 +5,6 @@ type SiteConfig = {
   title: string;
   description: string;
   url: string;
-  ogImage: string;
   twitter: string;
   links: {
     docs: string;
@@ -21,7 +20,6 @@ export const siteConfig: SiteConfig = {
     "Echo is developer-first feedback infrastructure. Collect, classify, and act on user " +
     "feedback with a drop-in widget, REST API, and a clean dashboard.",
   url: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
-  ogImage: "/opengraph-image",
   twitter: "@echo",
   links: {
     docs: "/docs",
