@@ -11,6 +11,7 @@ import { logger } from "hono/logger";
 import { feedbackRoutes } from "./routes/feedback";
 import { projectRoutes } from "./routes/projects";
 import { widgetRoutes } from "./routes/widget";
+import { startWorker } from "./worker";
 
 if (env.NODE_ENV === "production" && !hasRedis) {
   throw new Error(
@@ -20,6 +21,14 @@ if (env.NODE_ENV === "production" && !hasRedis) {
 
 if (!hasRedis) {
   console.warn("Redis is not configured — rate limiting is disabled");
+}
+
+if (env.WORKER_ENABLED) {
+  void startWorker({
+    concurrency: 5,
+    pollIntervalMs: 2000,
+    workerId: `dev-${process.pid}`,
+  }).then(() => console.warn("[echo:worker] embedded worker started"));
 }
 
 const app = new Hono();

@@ -6,7 +6,7 @@ import {
 } from "../services/feedback";
 import { getOrgPlan } from "../services/organization";
 import type { SubmitResult } from "../types";
-import { enrichFeedback } from "./enrich-feedback";
+import { enqueue } from "./enqueue";
 
 export async function createFeedback(data: InsertFeedback): Promise<SubmitResult> {
   const plan = await getOrgPlan(data.organizationId);
@@ -22,7 +22,11 @@ export async function createFeedback(data: InsertFeedback): Promise<SubmitResult
   }
 
   const id = await insertFeedback(data);
-  void enrichFeedback(id, data.content);
+  await enqueue(
+    "feedback.enrich",
+    { feedbackId: id, content: data.content },
+    { organizationId: data.organizationId, dedupeKey: id },
+  );
 
   return { success: true };
 }

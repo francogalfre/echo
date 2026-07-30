@@ -38,6 +38,12 @@ export const env = createEnv({
     // Server
     CORS_ORIGIN: z.url(),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+
+    // Jobs
+    WORKER_ENABLED: z
+      .string()
+      .optional()
+      .transform((v) => v === "true"),
   },
   runtimeEnv: process.env,
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
