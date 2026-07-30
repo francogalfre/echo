@@ -64,11 +64,13 @@ function sampleProportional(items: DigestInput[], max: number): DigestInput[] {
   }
 
   const buckets = [...byTag.values(), untagged].filter((b) => b.length > 0);
-  const perBucket = Math.floor(max / buckets.length);
+  const perBucket = Math.max(1, Math.floor(max / buckets.length));
   const result: DigestInput[] = [];
 
   for (const bucket of buckets) {
-    result.push(...bucket.slice(0, perBucket));
+    const capacity = max - result.length;
+    if (capacity <= 0) break;
+    result.push(...bucket.slice(0, Math.min(perBucket, capacity)));
   }
 
   const remaining = max - result.length;
