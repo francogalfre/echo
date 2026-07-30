@@ -1,5 +1,5 @@
 export { AIError, type AIErrorCode } from "./errors";
-export type { AgentUsage } from "./usage";
+export { buildAgentUsage, type AgentUsage } from "./usage";
 export { AGENT_VERSIONS, type AgentName } from "./versions";
 
 export { generateInsight } from "./agents/insight";
@@ -17,6 +17,7 @@ export {
 export { generateDigest } from "./agents/digest";
 export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest/types";
 
+export type { UIMessage } from "ai";
 export { streamChatResponse, type ChatStreamResult } from "./agents/chat";
 export type { ChatStreamInput } from "./agents/chat/types";
 export type {

@@ -1,29 +1,24 @@
 import { z } from "zod";
 
-import { chatWithAgent } from "../controllers/chat";
+import { getChatMessages, listChatConversations } from "../controllers/chat";
 import { todayKey } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
 
-const messageSchema = z.object({
-  role: z.enum(["user", "assistant"]),
-  content: z.string(),
-  timestamp: z.string().datetime(),
-});
-
 export const chatRouter = router({
-  send: organizationProcedure
-    .input(
-      z.object({
-        messages: z.array(messageSchema),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const messages = input.messages.map((m) => ({
-        ...m,
-        timestamp: new Date(m.timestamp),
-      }));
+  listConversations: organizationProcedure.query(async ({ ctx }) => {
+    return listChatConversations(ctx.organizationId, ctx.session.user.id);
+  }),
 
-      return chatWithAgent(ctx.organizationId, messages);
+  getMessages: organizationProcedure
+    .input(z.object({ conversationId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const messages = await getChatMessages(
+        ctx.organizationId,
+        ctx.session.user.id,
+        input.conversationId,
+      );
+
+      return { messages: messages ?? [] };
     }),
 
   getUsage: organizationProcedure.query(async ({ ctx }) => {
