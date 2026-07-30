@@ -1,5 +1,7 @@
 import { Geist, Geist_Mono, Instrument_Sans } from "next/font/google";
 
+export { GeistPixelSquare as geistPixel } from "geist/font/pixel";
+
 export const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
