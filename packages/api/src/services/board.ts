@@ -63,14 +63,38 @@ export async function moveBoardItem(
   id: string,
   organizationId: string,
   column: "backlog" | "in_progress" | "done",
+  position: number,
 ): Promise<boolean> {
   const rows = await db
     .update(boardItems)
-    .set({ column })
+    .set({ column, position })
     .where(and(eq(boardItems.id, id), eq(boardItems.organizationId, organizationId)))
     .returning({ id: boardItems.id });
 
   return rows.length > 0;
+}
+
+export async function reindexColumn(
+  organizationId: string,
+  column: string,
+  orderedIds: readonly string[],
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    await Promise.all(
+      orderedIds.map((id, position) =>
+        tx
+          .update(boardItems)
+          .set({ position })
+          .where(
+            and(
+              eq(boardItems.id, id),
+              eq(boardItems.organizationId, organizationId),
+              eq(boardItems.column, column as "backlog" | "in_progress" | "done"),
+            ),
+          ),
+      ),
+    );
+  });
 }
 
 export async function removeBoardItem(

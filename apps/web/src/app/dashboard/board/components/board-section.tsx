@@ -13,8 +13,11 @@ import { Button } from "@echo/ui/components/button";
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
+import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
+import { durations, easings } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useState } from "react";
 import { toast } from "@echo/ui/components/toast";
 import Link from "next/link";
@@ -31,6 +34,8 @@ const COLUMNS: { id: keyof BoardColumns; label: string; dot: string }[] = [
   { id: "done", label: "Done", dot: "bg-success" },
 ];
 
+const REMOVE_FADE_MS = 200;
+
 type BoardSectionProps = {
   readonly initialItems: BoardColumns;
 };
@@ -38,61 +43,97 @@ type BoardSectionProps = {
 export function BoardSection({ initialItems }: BoardSectionProps): React.ReactElement {
   const [columns, setColumns] = useState<BoardColumns>(initialItems);
   const [selected, setSelected] = useState<BoardCard | null>(null);
+  const [removingIds, setRemovingIds] = useState<ReadonlySet<string>>(new Set());
+  const shouldReduceMotion = useReducedMotion();
 
   const handleMove = useCallback(
     ({ activeContainer, activeIndex, overContainer, overIndex }: KanbanMoveEvent) => {
-      const item = columns[activeContainer as keyof BoardColumns]?.[activeIndex];
+      const fromColumn = activeContainer as keyof BoardColumns;
+      const toColumn = overContainer as keyof BoardColumns;
+      const item = columns[fromColumn]?.[activeIndex];
       if (!item) return;
 
-      if (activeContainer === overContainer) {
-        setColumns((prev) => ({
-          ...prev,
-          [activeContainer]: arrayMove(
-            prev[activeContainer as keyof BoardColumns],
-            activeIndex,
-            overIndex,
-          ),
-        }));
+      if (fromColumn === toColumn) {
+        const reordered = arrayMove(columns[fromColumn], activeIndex, overIndex);
+        setColumns((prev) => ({ ...prev, [fromColumn]: reordered }));
+
+        trpc.board.reorder
+          .mutate({ column: fromColumn, orderedIds: reordered.map((i) => i.id) })
+          .catch(() => toast.error("Failed to reorder board"));
         return;
       }
 
-      setColumns((prev) => {
-        const fromItems = [...prev[activeContainer as keyof BoardColumns]];
-        fromItems.splice(activeIndex, 1);
-        const toItems = [...prev[overContainer as keyof BoardColumns]];
-        toItems.splice(overIndex, 0, item);
-        return { ...prev, [activeContainer]: fromItems, [overContainer]: toItems };
-      });
+      const fromItems = [...columns[fromColumn]];
+      fromItems.splice(activeIndex, 1);
+      const toItems = [...columns[toColumn]];
+      toItems.splice(overIndex, 0, item);
+
+      setColumns((prev) => ({ ...prev, [fromColumn]: fromItems, [toColumn]: toItems }));
 
       trpc.board.move
-        .mutate({
-          id: item.id,
-          column: overContainer as "backlog" | "in_progress" | "done",
-        })
+        .mutate({ id: item.id, column: toColumn, position: overIndex })
+        .then(() =>
+          Promise.all([
+            trpc.board.reorder.mutate({
+              column: fromColumn,
+              orderedIds: fromItems.map((i) => i.id),
+            }),
+            trpc.board.reorder.mutate({
+              column: toColumn,
+              orderedIds: toItems.map((i) => i.id),
+            }),
+          ]),
+        )
         .catch(() => toast.error("Failed to move item"));
     },
     [columns],
   );
 
-  const handleRemove = useCallback((item: BoardCard) => {
-    setColumns((prev) => {
-      const next = { ...prev };
-      for (const col of Object.keys(next) as (keyof BoardColumns)[]) {
-        next[col] = next[col].filter((i) => i.id !== item.id);
+  const removeIds = useCallback(
+    (ids: readonly string[]) => {
+      const idSet = new Set(ids);
+      setRemovingIds((prev) => new Set([...prev, ...ids]));
+
+      const commit = (): void => {
+        setColumns((prev) => {
+          const next = { ...prev };
+          for (const col of Object.keys(next) as (keyof BoardColumns)[]) {
+            next[col] = next[col].filter((i) => !idSet.has(i.id));
+          }
+          return next;
+        });
+        setRemovingIds((prev) => {
+          const next = new Set(prev);
+          for (const id of ids) next.delete(id);
+          return next;
+        });
+      };
+
+      if (shouldReduceMotion) {
+        commit();
+      } else {
+        setTimeout(commit, REMOVE_FADE_MS);
       }
-      return next;
-    });
-    trpc.board.remove
-      .mutate({ id: item.id })
-      .catch(() => toast.error("Failed to remove item"));
-  }, []);
+    },
+    [shouldReduceMotion],
+  );
+
+  const handleRemove = useCallback(
+    (item: BoardCard) => {
+      removeIds([item.id]);
+      trpc.board.remove
+        .mutate({ id: item.id })
+        .catch(() => toast.error("Failed to remove item"));
+    },
+    [removeIds],
+  );
 
   const handleClearDone = useCallback(() => {
-    setColumns((prev) => ({ ...prev, done: [] }));
+    removeIds(columns.done.map((item) => item.id));
     trpc.board.clearColumn
       .mutate({ column: "done" })
       .catch(() => toast.error("Failed to clear done"));
-  }, []);
+  }, [columns.done, removeIds]);
 
   const totalItems = Object.values(columns).reduce((acc, arr) => acc + arr.length, 0);
 
@@ -171,25 +212,39 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
 
                   <KanbanColumnContent
                     value={col.id}
-                    className="flex flex-1 min-h-0 flex-col gap-2 overflow-y-auto"
+                    className="flex-1 min-h-0 overflow-y-auto"
                   >
-                    {columns[col.id].map((item) => (
-                      <KanbanItem key={item.id} value={item.id}>
-                        <BoardCardItem
-                          item={item}
-                          onRemove={() => handleRemove(item)}
-                          onClick={() => setSelected(item)}
-                        />
-                      </KanbanItem>
-                    ))}
+                    <Stagger className="flex flex-col gap-2" stagger={0.04}>
+                      {columns[col.id].map((item) => (
+                        <StaggerItem key={item.id}>
+                          <KanbanItem value={item.id}>
+                            <BoardCardItem
+                              item={item}
+                              onRemove={() => handleRemove(item)}
+                              onClick={() => setSelected(item)}
+                              isRemoving={removingIds.has(item.id)}
+                            />
+                          </KanbanItem>
+                        </StaggerItem>
+                      ))}
+                    </Stagger>
                   </KanbanColumnContent>
 
-                  {columns[col.id].length === 0 && (
-                    <div className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 py-8 text-center">
-                      <Icons.board className="size-4 text-muted-foreground/30" />
-                      <p className="text-xs text-muted-foreground/60">Drop cards here</p>
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {columns[col.id].length === 0 && (
+                      <motion.div
+                        key="empty-hint"
+                        initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+                        transition={{ duration: durations.fast, ease: easings.out }}
+                        className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 py-8 text-center"
+                      >
+                        <Icons.board className="size-4 text-muted-foreground/30" />
+                        <p className="text-xs text-muted-foreground/60">Drop cards here</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </KanbanColumn>
               ))}
             </KanbanBoard>

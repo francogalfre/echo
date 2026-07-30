@@ -7,6 +7,7 @@ import {
   clearBoardColumn,
   getBoardItems,
   moveBoardItem,
+  reindexColumn,
   removeBoardItem,
 } from "../services/board";
 
@@ -29,12 +30,29 @@ export const boardRouter = router({
     }),
 
   move: organizationProcedure
-    .input(z.object({ id: z.string().min(1), column: z.enum(COLUMNS) }))
+    .input(
+      z.object({
+        id: z.string().min(1),
+        column: z.enum(COLUMNS),
+        position: z.number().int().min(0),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
-      const moved = await moveBoardItem(input.id, ctx.organizationId, input.column);
+      const moved = await moveBoardItem(
+        input.id,
+        ctx.organizationId,
+        input.column,
+        input.position,
+      );
       if (!moved) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Board item not found" });
       }
+    }),
+
+  reorder: organizationProcedure
+    .input(z.object({ column: z.enum(COLUMNS), orderedIds: z.array(z.string().min(1)) }))
+    .mutation(({ input, ctx }) => {
+      return reindexColumn(ctx.organizationId, input.column, input.orderedIds);
     }),
 
   remove: organizationProcedure

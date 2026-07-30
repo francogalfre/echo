@@ -71,6 +71,13 @@
       "when": 1785384865375,
       "tag": "0009_dapper_darkhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1785386032981,
+      "tag": "0010_curvy_dexter_bennett",
+      "breakpoints": true
     }
   ]
 }

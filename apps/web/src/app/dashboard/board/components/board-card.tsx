@@ -12,6 +12,7 @@ type Props = {
   item: BoardCard;
   onRemove: () => void;
   isDragging?: boolean;
+  isRemoving?: boolean;
   onClick?: () => void;
 };
 
@@ -19,6 +20,7 @@ export function BoardCardItem({
   item,
   onRemove,
   isDragging,
+  isRemoving,
   onClick,
 }: Props): React.ReactElement {
   return (
@@ -26,8 +28,10 @@ export function BoardCardItem({
       onClick={onClick}
       className={cn(
         "group flex flex-col gap-3 rounded-xl border border-border bg-card p-4",
-        "transition-shadow duration-150 hover:shadow-sm motion-reduce:transition-none",
-        isDragging && "shadow-md ring-2 ring-violet-400",
+        "transition-[box-shadow,transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+        !isDragging && !isRemoving && "hover:shadow-sm",
+        isDragging && "scale-[1.02] rotate-1 shadow-md ring-2 ring-accent/50",
+        isRemoving && "pointer-events-none scale-95 opacity-0",
       )}
     >
       <div className="flex items-center gap-1">
