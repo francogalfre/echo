@@ -1,6 +1,18 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { and, count, desc, eq, gte, ilike, or, sql, type SQLWrapper } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  isNull,
+  lt,
+  or,
+  sql,
+  type SQLWrapper,
+} from "drizzle-orm";
 
 export type FeedbackListFilters = {
   sentiment?: "positive" | "neutral" | "negative";
@@ -85,7 +97,7 @@ export async function setFeedbackEnrichment(
   await db
     .update(feedback)
     .set({ sentiment: data.sentiment, tags: data.tags, enrichedAt: new Date() })
-    .where(eq(feedback.id, id));
+    .where(and(eq(feedback.id, id), isNull(feedback.enrichedAt)));
 }
 
 export async function getFeedbackById(
@@ -199,4 +211,20 @@ export async function countFeedbackBySentiment(
       negative: 0,
     }
   );
+}
+
+export type UnenrichedFeedback = {
+  id: string;
+  content: string;
+};
+
+export async function listUnenrichedFeedback(
+  olderThan: Date,
+  limit: number,
+): Promise<UnenrichedFeedback[]> {
+  return db
+    .select({ id: feedback.id, content: feedback.content })
+    .from(feedback)
+    .where(and(isNull(feedback.enrichedAt), lt(feedback.createdAt, olderThan)))
+    .limit(limit);
 }

@@ -1,5 +1,6 @@
 import { db } from "@echo/db";
 import { member, organization } from "@echo/db/schema/auth";
+import { feedback } from "@echo/db/schema/feedback";
 import { and, count, eq } from "drizzle-orm";
 
 type Member = typeof member.$inferSelect;
@@ -47,4 +48,12 @@ export async function countOwnedOrganizations(userId: string): Promise<number> {
     .where(and(eq(member.userId, userId), eq(member.role, "owner")));
 
   return row?.count ?? 0;
+}
+
+export async function listOrganizationIdsWithFeedback(): Promise<string[]> {
+  const rows = await db
+    .selectDistinct({ organizationId: feedback.organizationId })
+    .from(feedback);
+
+  return rows.map((r) => r.organizationId);
 }
