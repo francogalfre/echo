@@ -8,6 +8,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
+import { chatRoutes } from "./routes/chat";
 import { feedbackRoutes } from "./routes/feedback";
 import { projectRoutes } from "./routes/projects";
 import { widgetRoutes } from "./routes/widget";
@@ -44,15 +45,25 @@ const dashboardCors = cors({
   credentials: true,
 });
 
+const chatCors = cors({
+  origin: env.CORS_ORIGIN,
+  allowMethods: ["GET", "POST", "OPTIONS"],
+  allowHeaders: ["Content-Type", "Authorization"],
+  exposeHeaders: ["X-Conversation-Id"],
+  credentials: true,
+});
+
 app.use("/trpc/*", dashboardCors);
 app.use("/api/auth/*", dashboardCors);
 app.use("/api/projects/*", dashboardCors);
+app.use("/api/chat/*", chatCors);
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/api/projects", projectRoutes);
 app.route("/api/feedback", feedbackRoutes);
 app.route("/api/widget", widgetRoutes);
+app.route("/api/chat", chatRoutes);
 
 app.use(
   "/trpc/*",

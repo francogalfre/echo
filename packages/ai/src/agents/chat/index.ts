@@ -1,56 +1,33 @@
-import { generateText } from "ai";
+import { convertToModelMessages, stepCountIs, streamText, type ToolSet } from "ai";
 
-import { AIError } from "../../errors";
-import { buildAgentUsage, type AgentUsage } from "../../usage";
 import { chatModel } from "./models";
-import { buildChatPrompt, CHAT_SYSTEM_PROMPT } from "./prompt";
-import type { ChatInput, ChatOutput } from "./types";
+import { buildChatSystemPrompt } from "./prompt";
+import { buildFeedbackTools } from "./tools";
+import type { ChatStreamInput } from "./types";
 
-const TIMEOUT_MS = 30_000;
-const MAX_OUTPUT_TOKENS = 512;
+export type ChatStreamResult = ReturnType<typeof streamText<ToolSet>>;
 
-export async function generateChatResponse(
-  input: ChatInput,
-): Promise<{ output: ChatOutput; usage: AgentUsage }> {
-  if (input.feedbackContext.length === 0) {
-    throw new AIError("GENERATION_FAILED", "No feedback context available");
-  }
+const timeoutMs = 60_000;
+const maxOutputTokens = 800;
+const stepLimit = 6;
+const toolsDisabledFromStep = 4;
 
-  try {
-    const result = await generateText({
-      model: chatModel,
-      system: CHAT_SYSTEM_PROMPT,
-      prompt: buildChatPrompt(input),
-      temperature: 0.7,
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      abortSignal: AbortSignal.timeout(TIMEOUT_MS),
-      providerOptions: { openrouter: { usage: { include: true } } },
-    });
+export async function streamChatResponse(
+  input: ChatStreamInput,
+): Promise<ChatStreamResult> {
+  const messages = await convertToModelMessages([...input.messages]);
 
-    const response = result.text.trim();
-
-    if (!response) {
-      throw new AIError("GENERATION_FAILED", "Empty chat response");
-    }
-
-    return {
-      output: {
-        response,
-        sources: input.feedbackContext.slice(0, 3).map((f) => ({
-          excerpt: f.content.slice(0, 100),
-          sentiment: f.sentiment,
-        })),
-      },
-      usage: buildAgentUsage({
-        model: result.response.modelId,
-        usage: result.usage,
-        providerMetadata: result.providerMetadata,
-      }),
-    };
-  } catch (error) {
-    if (error instanceof AIError) throw error;
-    throw new AIError("GENERATION_FAILED", "Chat response generation failed", {
-      cause: error,
-    });
-  }
+  return streamText({
+    model: chatModel,
+    system: buildChatSystemPrompt(input.digestSummary),
+    messages,
+    tools: buildFeedbackTools(input.retriever, input.spendBudget),
+    stopWhen: stepCountIs(stepLimit),
+    prepareStep: ({ stepNumber }) =>
+      stepNumber >= toolsDisabledFromStep ? { activeTools: [] } : {},
+    temperature: 0.4,
+    maxOutputTokens,
+    abortSignal: AbortSignal.timeout(timeoutMs),
+    providerOptions: { openrouter: { usage: { include: true } } },
+  });
 }

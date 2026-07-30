@@ -1,24 +1,10 @@
-export type ChatMessage = {
-  readonly role: "user" | "assistant";
-  readonly content: string;
-  readonly timestamp: Date;
-};
+import type { UIMessage } from "ai";
 
-export type ChatFeedbackContext = {
-  readonly content: string;
-  readonly sentiment: string;
-  readonly tags: readonly string[];
-};
+import type { FeedbackRetriever } from "./tools";
 
-export type ChatInput = {
-  readonly messages: readonly ChatMessage[];
-  readonly feedbackContext: readonly ChatFeedbackContext[];
-};
-
-export type ChatOutput = {
-  readonly response: string;
-  readonly sources: readonly {
-    readonly excerpt: string;
-    readonly sentiment: string;
-  }[];
+export type ChatStreamInput = {
+  readonly messages: readonly UIMessage[];
+  readonly digestSummary: string | null;
+  readonly retriever: FeedbackRetriever;
+  readonly spendBudget: (chars: number) => boolean;
 };

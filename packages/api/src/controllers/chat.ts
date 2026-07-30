@@ -1,24 +1,83 @@
-import { AGENT_VERSIONS, generateChatResponse, type ChatMessage } from "@echo/ai";
+import {
+  AGENT_VERSIONS,
+  buildAgentUsage,
+  streamChatResponse,
+  type UIMessage,
+} from "@echo/ai";
 
+import {
+  buildFeedbackRetriever,
+  createBudget,
+  summarizeDigestForPrompt,
+} from "./chat-retriever";
 import { enforceQuota } from "./quota";
 import { recordAiEvent } from "../services/ai-events";
-import { getFeedbackForDigest } from "../services/digest";
-import { getOrgPlan } from "../services/organization";
+import {
+  appendMessage,
+  createConversation,
+  findConversation,
+  listConversations,
+  listMessages,
+  nextSeq,
+  type ChatConversationSummary,
+} from "../services/chat-conversations";
+import { getDigest } from "../services/digest";
+import { findFirstOrganizationId, findMembership } from "../services/organization";
 
-type ChatResult =
-  | {
-      success: true;
-      response: string;
-      sources: { excerpt: string; sentiment: string }[];
-    }
-  | { success: false; status: 403 | 502; error: string; upgrade: boolean };
+const chatToolBudgetChars = 24_000;
 
-export async function chatWithAgent(
+export type ChatOrganizationContext = { organizationId: string };
+
+export type ChatTurnResult =
+  | { success: true; response: Response; conversationId: string }
+  | { success: false; status: 403 | 404 | 502; error: string; upgrade: boolean };
+
+function toUIMessage(row: {
+  id: string;
+  role: string;
+  parts: UIMessage["parts"];
+}): UIMessage {
+  return { id: row.id, role: row.role === "user" ? "user" : "assistant", parts: row.parts };
+}
+
+export async function resolveChatOrganization(
+  userId: string,
+  activeOrganizationId: string | null | undefined,
+): Promise<ChatOrganizationContext | null> {
+  const organizationId = activeOrganizationId ?? (await findFirstOrganizationId(userId));
+  if (!organizationId) return null;
+
+  const membership = await findMembership(userId, organizationId);
+  if (!membership) return null;
+
+  return { organizationId };
+}
+
+export async function listChatConversations(
   organizationId: string,
-  messages: readonly ChatMessage[],
-): Promise<ChatResult> {
-  const isPro = (await getOrgPlan(organizationId)) === "pro";
+  userId: string,
+): Promise<ChatConversationSummary[]> {
+  return listConversations(organizationId, userId);
+}
 
+export async function getChatMessages(
+  organizationId: string,
+  userId: string,
+  conversationId: string,
+): Promise<UIMessage[] | null> {
+  const conversation = await findConversation(organizationId, userId, conversationId);
+  if (!conversation) return null;
+
+  const rows = await listMessages(organizationId, conversationId);
+  return rows.map(toUIMessage);
+}
+
+export async function streamChatTurn(
+  organizationId: string,
+  userId: string,
+  conversationId: string | null,
+  messageText: string,
+): Promise<ChatTurnResult> {
   const decision = await enforceQuota(organizationId, "chat");
   if (!decision.allowed) {
     return {
@@ -29,69 +88,107 @@ export async function chatWithAgent(
     };
   }
 
-  const feedbackContext = await getFeedbackForDigest(organizationId, isPro);
-
-  if (feedbackContext.length === 0) {
-    await decision.release();
-
-    return {
-      success: false,
-      status: 403,
-      error: "No feedback available to chat about.",
-      upgrade: false,
-    };
-  }
-
   const startedAt = Date.now();
 
   try {
-    const result = await generateChatResponse({
-      messages,
-      feedbackContext: feedbackContext.map((f) => ({
-        content: f.content,
-        sentiment: f.sentiment ?? "neutral",
-        tags: f.tags ?? [],
-      })),
-    });
+    const conversation = conversationId
+      ? await findConversation(organizationId, userId, conversationId)
+      : await createConversation(organizationId, userId);
 
-    await recordAiEvent({
-      organizationId,
-      feature: "chat",
-      agent: "chat",
-      model: result.usage.model,
-      promptVersion: AGENT_VERSIONS.chat,
-      cacheHit: result.usage.cacheHit,
-      inputTokens: result.usage.inputTokens,
-      outputTokens: result.usage.outputTokens,
-      costMicroUsd: result.usage.costMicroUsd,
-      latencyMs: Date.now() - startedAt,
-      status: "ok",
-    });
+    if (!conversation) {
+      await decision.release();
+      return {
+        success: false,
+        status: 404,
+        error: "Conversation not found.",
+        upgrade: false,
+      };
+    }
 
-    return {
-      success: true,
-      response: result.output.response,
-      sources: result.output.sources.map((s) => ({
-        excerpt: s.excerpt,
-        sentiment: s.sentiment,
-      })),
+    const priorMessages = (await listMessages(organizationId, conversation.id)).map(
+      toUIMessage,
+    );
+    const userSeq = await nextSeq(conversation.id);
+    const userMessage: UIMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      parts: [{ type: "text", text: messageText }],
     };
-  } catch (error) {
-    console.error("[echo:ai] chat generation failed", error);
-    await decision.release();
-    await recordAiEvent({
+
+    await appendMessage({
+      id: userMessage.id,
+      conversationId: conversation.id,
       organizationId,
-      feature: "chat",
-      agent: "chat",
-      model: "unknown",
-      promptVersion: AGENT_VERSIONS.chat,
-      cacheHit: false,
-      inputTokens: 0,
-      outputTokens: 0,
-      costMicroUsd: 0,
-      latencyMs: Date.now() - startedAt,
-      status: "error",
+      role: "user",
+      parts: userMessage.parts,
+      seq: userSeq,
     });
+
+    const digestRecord = await getDigest(organizationId);
+    const digestSummary = digestRecord
+      ? summarizeDigestForPrompt(digestRecord.digest)
+      : null;
+    const allMessages = [...priorMessages, userMessage];
+
+    const streamResult = await streamChatResponse({
+      messages: allMessages,
+      digestSummary,
+      retriever: buildFeedbackRetriever(organizationId),
+      spendBudget: createBudget(chatToolBudgetChars),
+    });
+
+    const response = streamResult.toUIMessageStreamResponse({
+      originalMessages: allMessages,
+      generateMessageId: () => crypto.randomUUID(),
+      onFinish: async ({ responseMessage }) => {
+        try {
+          const [usage, modelResponse, providerMetadata] = await Promise.all([
+            streamResult.totalUsage,
+            streamResult.response,
+            streamResult.providerMetadata,
+          ]);
+          const agentUsage = buildAgentUsage({
+            model: modelResponse.modelId,
+            usage,
+            providerMetadata,
+          });
+
+          await appendMessage({
+            id: responseMessage.id,
+            conversationId: conversation.id,
+            organizationId,
+            role: "assistant",
+            parts: responseMessage.parts,
+            seq: userSeq + 1,
+            inputTokens: agentUsage.inputTokens,
+            outputTokens: agentUsage.outputTokens,
+          });
+
+          await recordAiEvent({
+            organizationId,
+            feature: "chat",
+            agent: "chat",
+            model: agentUsage.model,
+            promptVersion: AGENT_VERSIONS.chat,
+            cacheHit: agentUsage.cacheHit,
+            inputTokens: agentUsage.inputTokens,
+            outputTokens: agentUsage.outputTokens,
+            costMicroUsd: agentUsage.costMicroUsd,
+            latencyMs: Date.now() - startedAt,
+            status: "ok",
+          });
+        } catch (persistError) {
+          console.error("[echo:ai] failed to persist chat turn", persistError);
+        }
+      },
+    });
+
+    response.headers.set("X-Conversation-Id", conversation.id);
+
+    return { success: true, response, conversationId: conversation.id };
+  } catch (error) {
+    console.error("[echo:ai] chat stream failed", error);
+    await decision.release();
 
     return {
       success: false,
