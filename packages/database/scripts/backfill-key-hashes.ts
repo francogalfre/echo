@@ -2,8 +2,7 @@ import { createHash } from "node:crypto";
 
 import { db } from "@echo/db";
 import { apiKeys } from "@echo/db/schema/feedback";
-import type { InferSelectModel } from "drizzle-orm";
-import { eq } from "drizzle-orm";
+import { eq, type InferSelectModel } from "drizzle-orm";
 
 function sha256(value: string): string {
   return createHash("sha256").update(value).digest("hex");
