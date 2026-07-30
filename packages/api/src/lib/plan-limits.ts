@@ -5,3 +5,5 @@ export const FREE_DIGEST_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 export const PRO_DIGEST_DAILY_LIMIT = 10;
 export const FREE_PROJECT_LIMIT = 1;
 export const PRO_PROJECT_LIMIT = 5;
+export const FREE_CHAT_DAILY_LIMIT = 5;
+export const PRO_CHAT_DAILY_LIMIT = 100;

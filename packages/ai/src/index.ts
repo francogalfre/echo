@@ -14,3 +14,11 @@ export {
 
 export { generateDigest } from "./agents/digest";
 export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest/types";
+
+export { generateChatResponse } from "./agents/chat";
+export type {
+  ChatInput,
+  ChatOutput,
+  ChatMessage,
+  ChatFeedbackContext,
+} from "./agents/chat/types";
