@@ -8,7 +8,6 @@ import type { DigestInput, DigestOutput } from "./types";
 
 const TIMEOUT_MS = 20_000;
 const MAX_OUTPUT_TOKENS = 2000;
-const PARALLEL_ATTEMPTS = 4;
 
 const digestSchema = z.object({
   executiveSummary: z.string(),
@@ -49,9 +48,7 @@ export async function generateDigest(inputs: DigestInput[]): Promise<DigestOutpu
   }
 
   try {
-    return await Promise.any(
-      Array.from({ length: PARALLEL_ATTEMPTS }, () => attemptGeneration(inputs)),
-    );
+    return await attemptGeneration(inputs);
   } catch (error) {
     throw new AIError("GENERATION_FAILED", "Digest generation failed", { cause: error });
   }
