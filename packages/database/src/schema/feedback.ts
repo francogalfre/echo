@@ -1,7 +1,15 @@
-import { desc, relations } from "drizzle-orm";
-import { boolean, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { desc, relations, sql } from "drizzle-orm";
+import {
+  boolean,
+  index,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
-import { organization } from "./auth";
+import { organization, user } from "./auth";
 
 export const feedbackPageConfig = pgTable("feedback_page_config", {
   id: text("id").primaryKey(),
@@ -54,20 +62,37 @@ export const feedback = pgTable(
   ],
 );
 
-export const apiKeys = pgTable("api_keys", {
-  id: text("id").primaryKey(),
-  organizationId: text("organization_id")
-    .notNull()
-    .references(() => organization.id, { onDelete: "cascade" })
-    .unique(),
-  publicKey: text("public_key").notNull().unique(),
-  secretKeyHash: text("secret_key_hash").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => new Date())
-    .notNull(),
-});
+export const apiKeys = pgTable(
+  "api_keys",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, { onDelete: "cascade" }),
+    name: text("name").notNull().default("Default"),
+    publicKey: text("public_key").notNull().unique(),
+    publicKeyHash: text("public_key_hash"),
+    secretKeyHash: text("secret_key_hash").notNull().unique(),
+    secretKeyPrefix: text("secret_key_prefix"),
+    scopes: text("scopes").array().notNull().default(["feedback:write"]),
+    lastUsedAt: timestamp("last_used_at"),
+    expiresAt: timestamp("expires_at"),
+    revokedAt: timestamp("revoked_at"),
+    createdBy: text("created_by").references(() => user.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (t) => [
+    index("api_keys_org_idx").on(t.organizationId),
+    uniqueIndex("api_keys_org_name_live_idx")
+      .on(t.organizationId, t.name)
+      .where(sql`${t.revokedAt} is null`),
+    uniqueIndex("api_keys_public_key_hash_idx").on(t.publicKeyHash),
+  ],
+);
 
 export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
   organization: one(organization, {

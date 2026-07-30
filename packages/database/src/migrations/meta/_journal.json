@@ -78,6 +78,13 @@
       "when": 1785386032981,
       "tag": "0010_curvy_dexter_bennett",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1785386667336,
+      "tag": "0011_organic_killraven",
+      "breakpoints": true
     }
   ]
 }
