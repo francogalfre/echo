@@ -1,0 +1,20 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["bun", "run", "dist/index.mjs"]
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["bun", "run", "dist/worker.mjs"]
+    env_file:
+      - .env
+    restart: unless-stopped
