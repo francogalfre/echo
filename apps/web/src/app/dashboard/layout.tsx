@@ -1,5 +1,6 @@
 import { Suspense, type ReactNode } from "react";
 
+import { AgentChatButton } from "./components/agent-chat-button";
 import { MotionProvider } from "./components/motion-provider";
 import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
@@ -24,6 +25,7 @@ const DashboardLayout = ({ children }: Props): React.ReactElement => {
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>
+        <AgentChatButton />
       </div>
     </MotionProvider>
   );

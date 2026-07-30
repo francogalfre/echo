@@ -1,10 +1,25 @@
+import { cn } from "@echo/ui/lib/utils";
+
+import type { AgentPersona } from "../../components/agent-personas";
+
 type Props = {
   insight: string;
+  agent?: AgentPersona;
 };
 
-export function InsightContent({ insight }: Props): React.ReactElement {
+export function InsightContent({ insight, agent }: Props): React.ReactElement {
+  const AgentIcon = agent?.icon;
+
   return (
-    <div className="prose prose-sm dark:prose-invert max-w-none rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed [&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_ul]:text-muted-foreground [&_li]:text-muted-foreground">
+    <div
+      className={cn(
+        "prose prose-sm dark:prose-invert max-w-none rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed",
+        "[&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_ul]:text-muted-foreground [&_li]:text-muted-foreground",
+        agent?.color === "text-destructive" && "border-destructive/20",
+        agent?.color === "text-info" && "border-info/20",
+        agent?.color === "text-success" && "border-success/20",
+      )}
+    >
       {insight.split("\n").map((line, i) => {
         const trimmed = line.trim();
         if (!trimmed) return null;
@@ -32,6 +47,17 @@ export function InsightContent({ insight }: Props): React.ReactElement {
           </p>
         );
       })}
+
+      {agent && AgentIcon && (
+        <div className="mt-3 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+          <span
+            className={`flex size-5 items-center justify-center rounded-full ${agent.avatarBg}`}
+          >
+            <AgentIcon className={`size-2.5 ${agent.avatarText}`} />
+          </span>
+          <span>Analyzed by {agent.name}</span>
+        </div>
+      )}
     </div>
   );
 }

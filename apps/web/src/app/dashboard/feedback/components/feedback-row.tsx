@@ -17,6 +17,7 @@ import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 
 import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
+import { AGENT_PERSONAS } from "../../components/agent-personas";
 import type { FeedbackItem } from "../utils/map-feedback";
 import {
   addToBoard,
@@ -78,12 +79,21 @@ export function FeedbackRow({
             {item.hasInsight && (
               <Tooltip>
                 <TooltipTrigger
-                  render={<span className="inline-flex shrink-0 text-accent" />}
+                  render={
+                    <span
+                      className={cn(
+                        "inline-flex shrink-0 rounded-md p-1",
+                        AGENT_PERSONAS.pulse.bgColor,
+                      )}
+                    />
+                  }
                 >
-                  <Icons.aiMagic className="size-3" />
-                  <span className="sr-only">AI insight ready</span>
+                  <AGENT_PERSONAS.pulse.icon
+                    className={cn("size-2.5", AGENT_PERSONAS.pulse.color)}
+                  />
+                  <span className="sr-only">Analyzed by Pulse</span>
                 </TooltipTrigger>
-                <TooltipContent>AI insight ready</TooltipContent>
+                <TooltipContent>Analyzed by {AGENT_PERSONAS.pulse.name}</TooltipContent>
               </Tooltip>
             )}
           </span>
@@ -143,8 +153,10 @@ export function FeedbackRow({
               View details
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewDetails(item)}>
-              <Icons.aiMagic className="size-4 text-accent" />
-              Explain with AI
+              <AGENT_PERSONAS.pulse.icon
+                className={cn("size-4", AGENT_PERSONAS.pulse.color)}
+              />
+              Explain with {AGENT_PERSONAS.pulse.name}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => copyFeedback(item.feedback)}>

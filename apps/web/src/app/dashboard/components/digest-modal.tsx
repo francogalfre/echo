@@ -16,72 +16,77 @@ import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 import type { DigestOutput } from "@echo/ai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { AiThinking } from "./ai-thinking";
 import { ErrorCard } from "./error-card";
 import { UpgradeDialog } from "./upgrade-dialog";
 import { useDigest } from "../hooks/use-digest";
-
-const THINKING_PHRASES = [
-  "Reading your feedback",
-  "Grouping themes",
-  "Writing the summary",
-] as const;
+import { ANALYSIS_AGENTS, getAgent } from "./agent-personas";
+import type { AgentId } from "./agent-personas";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-function ThemesAndIssues({ digest }: { digest: DigestOutput }): React.ReactElement {
+function SentinelContent({ digest }: { digest: DigestOutput }): React.ReactElement {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="rounded-xl border border-border bg-muted/30 p-4">
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {digest.executiveSummary}
-        </p>
-      </div>
-
-      {digest.themes.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Main Themes
-          </p>
-          <Stagger className="flex flex-col gap-2">
-            {digest.themes.map((theme) => (
-              <StaggerItem key={theme.title}>
-                <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
-                  <span className="mt-0.5 min-w-[1.75rem] rounded-full bg-muted px-1.5 py-0.5 text-center text-xs font-semibold text-muted-foreground">
-                    {theme.count}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium">{theme.title}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{theme.insight}</p>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
-        </div>
+    <div className="flex flex-col gap-3">
+      {digest.topIssues.length > 0 ? (
+        <Stagger className="flex flex-col gap-2" stagger={0.04}>
+          {digest.topIssues.map((issue) => (
+            <StaggerItem key={issue}>
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
+                <p className="text-sm text-muted-foreground">{issue}</p>
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      ) : (
+        <p className="text-sm text-muted-foreground">No issues detected.</p>
       )}
+    </div>
+  );
+}
 
-      {digest.topIssues.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Top Issues
-          </p>
-          <Stagger className="flex flex-col gap-1.5">
-            {digest.topIssues.map((issue) => (
-              <StaggerItem key={issue}>
-                <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-destructive" />
-                  {issue}
+function CompassContent({ digest }: { digest: DigestOutput }): React.ReactElement {
+  return (
+    <div className="flex flex-col gap-3">
+      {digest.themes.length > 0 ? (
+        <Stagger className="flex flex-col gap-2" stagger={0.04}>
+          {digest.themes.map((theme) => (
+            <StaggerItem key={theme.title}>
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-background p-3">
+                <span className="mt-0.5 min-w-[1.75rem] rounded-md bg-muted px-1.5 py-0.5 text-center text-xs font-medium tabular-nums text-muted-foreground">
+                  {theme.count}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{theme.title}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{theme.insight}</p>
                 </div>
-              </StaggerItem>
-            ))}
-          </Stagger>
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      ) : (
+        <p className="text-sm text-muted-foreground">No themes identified yet.</p>
+      )}
+    </div>
+  );
+}
+
+function PulseContent({ digest }: { digest: DigestOutput }): React.ReactElement {
+  return (
+    <div className="flex flex-col gap-3">
+      {digest.positiveHighlight ? (
+        <div className="rounded-lg border border-border bg-background p-3">
+          <p className="text-xs text-muted-foreground">What users love</p>
+          <p className="mt-1 text-sm">{digest.positiveHighlight}</p>
         </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">No sentiment data yet.</p>
       )}
     </div>
   );
@@ -90,40 +95,24 @@ function ThemesAndIssues({ digest }: { digest: DigestOutput }): React.ReactEleme
 function DigestSkeleton(): React.ReactElement {
   return (
     <div className="flex flex-col gap-4" aria-hidden="true">
-      <div className="rounded-xl border border-border bg-muted/30 p-4">
-        <Skeleton className="h-3.5 w-full" />
-        <Skeleton className="mt-2 h-3.5 w-11/12" />
-        <Skeleton className="mt-2 h-3.5 w-2/3" />
+      <div className="flex gap-2">
+        {[0, 1, 2].map((i) => (
+          <Skeleton key={i} className="h-8 w-24 rounded-lg" />
+        ))}
       </div>
-
-      <div>
-        <Skeleton className="mb-2 h-3 w-24" />
-        <div className="flex flex-col gap-2">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
-            >
-              <Skeleton className="mt-0.5 h-5 w-7 shrink-0 rounded-full" />
-              <div className="min-w-0 flex-1">
-                <Skeleton className="h-3.5 w-1/2" />
-                <Skeleton className="mt-1.5 h-3 w-full" />
-              </div>
+      <div className="flex flex-col gap-2">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
+          >
+            <Skeleton className="mt-0.5 h-5 w-7 shrink-0 rounded-md" />
+            <div className="min-w-0 flex-1">
+              <Skeleton className="h-3.5 w-1/2" />
+              <Skeleton className="mt-1.5 h-3 w-full" />
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <Skeleton className="mb-2 h-3 w-20" />
-        <div className="flex flex-col gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-start gap-2">
-              <Skeleton className="mt-1.5 size-1.5 shrink-0 rounded-full" />
-              <Skeleton className="h-3.5 w-full" />
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -140,6 +129,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
     upgradeReason,
     dismissUpgrade,
   } = useDigest();
+  const [activeAgent, setActiveAgent] = useState<AgentId>("sentinel");
 
   useEffect(() => {
     if (open) void load();
@@ -159,35 +149,67 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="p-0">
-          <DrawerHeader className="gap-1 border-b px-8 py-6">
-            <div className="flex items-center gap-3">
-              <span className="flex size-8 items-center justify-center rounded-full bg-accent/10">
+        <DrawerContent className="max-h-[90vh] sm:max-h-[85vh]">
+          <DrawerHeader className="border-b px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <Icons.aiMagic className="size-4 text-accent" />
-              </span>
-              <div>
-                <DrawerTitle>AI Summary</DrawerTitle>
-                {feedbackCount !== undefined && generatedAt && (
-                  <DrawerDescription>
-                    {feedbackCount} feedbacks ·{" "}
-                    {formatRelativeTime(generatedAt.toISOString())}
-                  </DrawerDescription>
-                )}
+                <div>
+                  <DrawerTitle>AI Analysis</DrawerTitle>
+                  {feedbackCount !== undefined && generatedAt && (
+                    <DrawerDescription>
+                      {feedbackCount} feedbacks ·{" "}
+                      {formatRelativeTime(generatedAt.toISOString())}
+                    </DrawerDescription>
+                  )}
+                </div>
               </div>
             </div>
           </DrawerHeader>
 
-          <div className="flex flex-1 flex-col overflow-y-auto p-8 sm:grid sm:grid-cols-[1fr_260px] sm:gap-8">
-            <div className="flex flex-col gap-5">
+          {activeDigest && !isGenerating && (
+            <div className="flex gap-1 border-b px-6">
+              {ANALYSIS_AGENTS.map((agentId) => {
+                const agent = getAgent(agentId);
+                const AgentIcon = agent.icon;
+                return (
+                  <button
+                    key={agentId}
+                    type="button"
+                    onClick={() => setActiveAgent(agentId)}
+                    className={cn(
+                      "flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
+                      activeAgent === agentId
+                        ? "border-accent text-foreground"
+                        : "border-transparent text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <span
+                      className={`flex size-5 items-center justify-center rounded-full ${agent.avatarBg}`}
+                    >
+                      <AgentIcon className={`size-2.5 ${agent.avatarText}`} />
+                    </span>
+                    <span>{agent.name}</span>
+                    <span className="hidden text-xs text-muted-foreground sm:inline">
+                      · {agent.role}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_200px] sm:gap-6">
+            <div className="flex flex-col gap-4">
               {(isLoading || isGenerating) && (
-                <AiThinking phrases={THINKING_PHRASES}>
+                <AiThinking phrases={getAgent(activeAgent).thinkingPhrases}>
                   <DigestSkeleton />
                 </AiThinking>
               )}
 
               {state.status === "error" && (
                 <ErrorCard
-                  message="We couldn't load your digest. Please try again."
+                  message="Could not load analysis. Please try again."
                   onRetry={() => void load()}
                 />
               )}
@@ -195,35 +217,30 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
               {state.status === "idle" && !isLoading && !selectedEntry && (
                 <EmptyState
                   icon={<Icons.aiMagic />}
-                  title="No digest yet"
-                  description="Generate an AI summary of your feedback. Free plan refreshes weekly."
+                  title="No analysis yet"
+                  description="Generate an AI analysis of your feedback."
                   action={
                     <Button size="sm" onClick={() => void generate()}>
                       <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
-                      Generate Digest
+                      Generate Analysis
                     </Button>
                   }
                 />
               )}
 
-              {activeDigest && !isGenerating && <ThemesAndIssues digest={activeDigest} />}
+              {activeDigest && !isGenerating && (
+                <>
+                  {activeAgent === "sentinel" && <SentinelContent digest={activeDigest} />}
+                  {activeAgent === "compass" && <CompassContent digest={activeDigest} />}
+                  {activeAgent === "pulse" && <PulseContent digest={activeDigest} />}
+                </>
+              )}
             </div>
 
-            <div className="mt-6 flex flex-col gap-5 sm:mt-0">
-              {activeDigest?.positiveHighlight && (
-                <div className="rounded-xl border border-success/20 bg-success/10 p-3">
-                  <p className="text-xs font-semibold text-success">What users love</p>
-                  <p className="mt-1 text-sm text-success">
-                    {activeDigest.positiveHighlight}
-                  </p>
-                </div>
-              )}
-
+            <div className="mt-4 flex flex-col gap-4 sm:mt-0">
               {history.length > 0 && (
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    History
-                  </p>
+                  <p className="mb-2 text-xs text-muted-foreground">History</p>
                   <div className="flex flex-col gap-1">
                     <button
                       type="button"
@@ -260,7 +277,7 @@ export function DigestModal({ open, onOpenChange }: Props): React.ReactElement {
           </div>
 
           {activeDigest && !isGenerating && (
-            <DrawerFooter className="flex-row border-t px-8 pb-8 pt-5">
+            <DrawerFooter className="flex-row border-t px-6 pb-6 pt-4">
               {selectedEntry ? (
                 <Button variant="ghost" size="sm" onClick={() => selectHistoryEntry(null)}>
                   <Icons.arrowLeft className="size-3.5" />

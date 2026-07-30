@@ -14,11 +14,11 @@ type MetricCardProps = {
 
 function TrendBadge({ growth }: { growth: number | null }): React.ReactElement {
   if (growth === null) {
-    return <span className="text-[11px] font-medium text-muted-foreground/70">—</span>;
+    return <span className="text-xs text-muted-foreground">--</span>;
   }
   const positive = growth >= 0;
   return (
-    <Badge variant={positive ? "success" : "destructive"} dot>
+    <Badge variant={positive ? "success" : "destructive"}>
       {positive ? (
         <Icons.trendUp className="size-3" />
       ) : (
@@ -38,12 +38,12 @@ export function MetricCard({
   sparklineColor,
 }: MetricCardProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-3 rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:ring-foreground/15">
-      <p className="micro-label">{label}</p>
-      <AnimatedCounter value={value} className="text-3xl font-semibold tracking-tight" />
-      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+    <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <AnimatedCounter value={value} className="text-2xl font-semibold tracking-tight" />
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <TrendBadge growth={growth} />
-        {caption}
+        <span>{caption}</span>
       </div>
       <Sparkline data={sparklineData} color={sparklineColor} className="mt-1" />
     </div>

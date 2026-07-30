@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
+import { cn } from "@echo/ui/lib/utils";
 
 import type { FeedbackItem } from "../utils/map-feedback";
 import { useFeedbackInsight } from "../hooks/use-feedback-insight";
@@ -12,6 +13,7 @@ import { AiThinking } from "../../components/ai-thinking";
 import { ErrorCard } from "../../components/error-card";
 import { UpgradeDialog } from "../../components/upgrade-dialog";
 import { InsightContent } from "./insight-content";
+import { AGENT_PERSONAS } from "../../components/agent-personas";
 
 const THINKING_PHRASES = [
   "Reading your feedback",
@@ -27,6 +29,7 @@ type InsightPanelProps = {
 export function InsightPanel({ item, active }: InsightPanelProps): React.ReactElement {
   const { state, generate, reset, upgradeReason, dismissUpgrade } = useFeedbackInsight();
   const requestedIdRef = useRef<string | null>(null);
+  const agent = AGENT_PERSONAS.pulse;
 
   useEffect(() => {
     if (!active) {
@@ -46,12 +49,20 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
     state.status === "loading" || (item.hasInsight && state.status === "idle");
 
   return (
-    <div className="flex flex-col gap-3.5 rounded-xl border border-accent/15 bg-accent/[0.04] p-5">
+    <div className="flex flex-col gap-3.5 rounded-lg border border-border bg-background p-4">
       <div className="flex items-center gap-2.5">
-        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-accent/10">
-          <Icons.aiMagic className="size-3.5 text-accent" />
+        <span
+          className={cn(
+            "flex size-7 shrink-0 items-center justify-center rounded-lg",
+            agent.bgColor,
+          )}
+        >
+          <agent.icon className={cn("size-3.5", agent.color)} />
         </span>
-        <p className="text-sm font-semibold text-foreground">AI Insight</p>
+        <div>
+          <p className="text-sm font-medium">{agent.name}</p>
+          <p className="text-xs text-muted-foreground">{agent.role}</p>
+        </div>
       </div>
 
       {isLoading && (
@@ -64,7 +75,7 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
         </AiThinking>
       )}
 
-      {state.status === "ready" && <InsightContent insight={state.insight} />}
+      {state.status === "ready" && <InsightContent insight={state.insight} agent={agent} />}
 
       {state.status === "error" && (
         <ErrorCard
