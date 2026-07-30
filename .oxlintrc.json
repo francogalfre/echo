@@ -107,6 +107,12 @@
       }
     },
     {
+      "files": ["packages/ai/**/*.ts"],
+      "rules": {
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
       "files": ["apps/server/**/*.ts"],
       "rules": {
         "no-console": "off",
