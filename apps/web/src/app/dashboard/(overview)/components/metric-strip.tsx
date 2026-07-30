@@ -20,7 +20,6 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
         label="Total feedback"
         value={metrics.total.value}
         growth={metrics.total.growth}
-        caption="vs last 30 days"
         sparklineData={totalSeries}
         sparklineColor="purple"
       />
@@ -28,7 +27,6 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
         label="Positive"
         value={metrics.positive.value}
         growth={metrics.positive.growth}
-        caption="vs last 30 days"
         sparklineData={positiveSeries}
         sparklineColor="green"
       />
@@ -36,7 +34,6 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
         label="Negative"
         value={metrics.negative.value}
         growth={metrics.negative.growth}
-        caption="vs last 30 days"
         sparklineData={negativeSeries}
         sparklineColor="red"
       />

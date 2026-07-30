@@ -113,8 +113,13 @@ export function DashboardClient({
             Here&apos;s how your project is performing.
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setDigestOpen(true)}>
-          <Icons.aiMagic className="size-3.5" />
+        <Button
+          variant="default"
+          size="lg"
+          className="shadow-[0_0_24px_-6px_var(--accent)] hover:shadow-[0_0_28px_-4px_var(--accent)]"
+          onClick={() => setDigestOpen(true)}
+        >
+          <Icons.aiMagic className="size-4" />
           AI Analysis
         </Button>
       </div>

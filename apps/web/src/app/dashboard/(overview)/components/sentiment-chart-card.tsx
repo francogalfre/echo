@@ -1,5 +1,13 @@
 "use client";
 
+import { Bar } from "@echo/ui/components/dither-kit/bar";
+import { BarChart } from "@echo/ui/components/dither-kit/bar-chart";
+import type { ChartConfig } from "@echo/ui/components/dither-kit/chart-context";
+import { Grid } from "@echo/ui/components/dither-kit/grid";
+import { rgb, seedOfColor } from "@echo/ui/components/dither-kit/palette";
+import { Tooltip } from "@echo/ui/components/dither-kit/tooltip";
+import { XAxis } from "@echo/ui/components/dither-kit/x-axis";
+import { YAxis } from "@echo/ui/components/dither-kit/y-axis";
 import {
   Card,
   CardAction,
@@ -7,12 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@echo/ui/components/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@echo/ui/components/chart";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import {
@@ -24,7 +26,6 @@ import {
 } from "@echo/ui/components/select";
 import { formatBucket, formatCompact } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import type {
   SeriesGranularity,
@@ -41,9 +42,9 @@ const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
 ];
 
 const chartConfig: ChartConfig = {
-  positive: { label: "Positive", color: "var(--chart-1)" },
-  neutral: { label: "Neutral", color: "var(--chart-2)" },
-  negative: { label: "Negative", color: "var(--chart-3)" },
+  positive: { label: "Positive", color: "green" },
+  neutral: { label: "Neutral", color: "blue" },
+  negative: { label: "Negative", color: "red" },
 };
 
 type SentimentChartCardProps = {
@@ -85,7 +86,7 @@ export function SentimentChartCard({
                   <span
                     aria-hidden
                     className="size-2 rounded-full"
-                    style={{ backgroundColor: item.color }}
+                    style={{ backgroundColor: rgb(seedOfColor(item.color).fill) }}
                   />
                   {item.label}
                 </span>
@@ -107,78 +108,35 @@ export function SentimentChartCard({
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="relative">
-          <ChartContainer
-            config={chartConfig}
-            className={cn(
-              "h-64 w-full transition-opacity duration-200 aspect-auto",
-              pending && "opacity-60",
-            )}
-          >
-            <BarChart
-              key={granularity}
-              data={series}
-              margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="bucket"
-                tickLine={false}
-                axisLine={false}
-                minTickGap={24}
-                tickMargin={8}
-                tickFormatter={(value: string) => formatBucket(value, granularity)}
-              />
-              <YAxis
-                width={36}
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                tickFormatter={(value: number) => formatCompact(value)}
-              />
-              {isEmpty ? null : (
-                <ChartTooltip
-                  cursor={{ fillOpacity: 0.4 }}
-                  content={
-                    <ChartTooltipContent
-                      config={chartConfig}
-                      labelFormatter={(label) => formatBucket(label, granularity)}
-                    />
-                  }
-                />
-              )}
-              {isEmpty ? null : (
-                <Bar
-                  dataKey="positive"
-                  stackId="sentiment"
-                  fill="var(--color-positive)"
-                  maxBarSize={28}
-                />
-              )}
-              {isEmpty ? null : (
-                <Bar
-                  dataKey="neutral"
-                  stackId="sentiment"
-                  fill="var(--color-neutral)"
-                  maxBarSize={28}
-                />
-              )}
-              {isEmpty ? null : (
-                <Bar
-                  dataKey="negative"
-                  stackId="sentiment"
-                  fill="var(--color-negative)"
-                  maxBarSize={28}
-                  radius={[3, 3, 0, 0]}
-                />
-              )}
-            </BarChart>
-          </ChartContainer>
+        <div
+          className={cn(
+            "relative h-80 w-full transition-opacity duration-200",
+            pending && "opacity-60",
+          )}
+        >
           {isEmpty ? (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="flex h-full items-center justify-center">
               <EmptyState icon={<Icons.message />} title="No feedback in this period" />
             </div>
-          ) : null}
+          ) : (
+            <BarChart
+              data={series}
+              config={chartConfig}
+              stackType="stacked"
+              margins={{ left: 32, bottom: 24 }}
+            >
+              <Grid horizontal />
+              <Bar dataKey="positive" />
+              <Bar dataKey="neutral" />
+              <Bar dataKey="negative" />
+              <XAxis
+                dataKey="bucket"
+                tickFormatter={(value) => formatBucket(String(value), granularity)}
+              />
+              <YAxis tickFormatter={(value) => formatCompact(value)} />
+              <Tooltip labelKey="bucket" valueFormatter={(value) => formatCompact(value)} />
+            </BarChart>
+          )}
         </div>
       </CardContent>
     </Card>
