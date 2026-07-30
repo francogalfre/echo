@@ -135,7 +135,8 @@ export function useChartPart(
 ): ChartContextValue {
   const ctx = use(ChartContext);
   if (!ctx) {
-    const where = kind ? ROOT_OF[Array.isArray(kind) ? kind[0] : kind] : "a chart root";
+    const firstKind = Array.isArray(kind) ? kind[0] : kind;
+    const where = firstKind ? ROOT_OF[firstKind] : "a chart root";
     throw new Error(`<${part} /> must be used within ${where}.`);
   }
   if (kind) {

@@ -66,7 +66,7 @@ function CartesianSeries({
       parts.push(`${i === 0 ? "M" : "L"}${ctx.xCenter(i)},${ctx.y(b[1])}`);
     });
     for (let i = band.length - 1; i >= 0; i -= 1) {
-      parts.push(`L${ctx.xCenter(i)},${ctx.y(band[i][0])}`);
+      parts.push(`L${ctx.xCenter(i)},${ctx.y(band[i]?.[0] ?? 0)}`);
     }
     hitPath = `${parts.join(" ")} Z`;
   }

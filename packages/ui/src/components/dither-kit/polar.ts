@@ -17,10 +17,11 @@ export function pieSlices(data: Row[], dataKey: string, nameKey: string): PieSli
   const total = vals.reduce((a, b) => a + b, 0) || 1;
   let a = TOP;
   return data.map((r, i) => {
-    const span = (vals[i] / total) * TAU;
+    const value = vals[i] ?? 0;
+    const span = (value / total) * TAU;
     const slice = {
       name: String(r[nameKey] ?? i),
-      value: vals[i],
+      value,
       start: a,
       end: a + span,
       mid: a + span / 2,
@@ -73,10 +74,10 @@ export function pointInPolygon(px: number, py: number, poly: number[]): boolean 
   let inside = false;
   const n = poly.length / 2;
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    const xi = poly[i * 2];
-    const yi = poly[i * 2 + 1];
-    const xj = poly[j * 2];
-    const yj = poly[j * 2 + 1];
+    const xi = poly[i * 2] ?? 0;
+    const yi = poly[i * 2 + 1] ?? 0;
+    const xj = poly[j * 2] ?? 0;
+    const yj = poly[j * 2 + 1] ?? 0;
     if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) {
       inside = !inside;
     }
@@ -90,10 +91,10 @@ export function distToPolygonEdge(px: number, py: number, poly: number[]): numbe
   let best = Infinity;
   const n = poly.length / 2;
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    const xi = poly[i * 2];
-    const yi = poly[i * 2 + 1];
-    const xj = poly[j * 2];
-    const yj = poly[j * 2 + 1];
+    const xi = poly[i * 2] ?? 0;
+    const yi = poly[i * 2 + 1] ?? 0;
+    const xj = poly[j * 2] ?? 0;
+    const yj = poly[j * 2 + 1] ?? 0;
     const dx = xj - xi;
     const dy = yj - yi;
     const len2 = dx * dx + dy * dy || 1;

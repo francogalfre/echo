@@ -71,7 +71,8 @@ export function paintColumn(
     if (stacked) density = 0.5 + 0.5 * density;
     if (variant === "hatched" && ((x + y) & 3) >= 2) continue;
     const lit =
-      variant === "solid" || density > BAYER[y & 3][x & 3] - 0.1 * intensity - bias;
+      variant === "solid" ||
+      density > (BAYER[y & 3]?.[x & 3] ?? 0) - 0.1 * intensity - bias;
     // "dotted" keeps real gaps for its open look; every other variant covers
     // the cell and lets the dither ride the alpha (on = full tier, off = a
     // faint tint) so nothing shows the background through as white.

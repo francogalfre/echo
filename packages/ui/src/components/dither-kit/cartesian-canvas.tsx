@@ -152,15 +152,19 @@ function startCartesianLoop({
         continue;
       }
       for (let x = 0; x < cols; x++) {
-        const dt = t.top[x] - cur.top[x];
-        const df = t.floor[x] - cur.floor[x];
+        const tTop = t.top[x] ?? 0;
+        const tFloor = t.floor[x] ?? 0;
+        const curTop = cur.top[x] ?? 0;
+        const curFloor = cur.floor[x] ?? 0;
+        const dt = tTop - curTop;
+        const df = tFloor - curFloor;
         if (Math.abs(dt) > 0.01 || Math.abs(df) > 0.01) {
-          cur.top[x] += dt * EASE;
-          cur.floor[x] += df * EASE;
+          cur.top[x] = curTop + dt * EASE;
+          cur.floor[x] = curFloor + df * EASE;
           moving = true;
         } else {
-          cur.top[x] = t.top[x];
-          cur.floor[x] = t.floor[x];
+          cur.top[x] = tTop;
+          cur.floor[x] = tFloor;
         }
       }
     }
@@ -305,7 +309,7 @@ export function CartesianCanvas() {
       const line = (seriesSpecs[key]?.kind ?? defaultKind) === "line";
       const top = band.map((b) => (y(b[1]) / h) * (rows - 1));
       const floor = band.map((b, i) =>
-        line ? Math.min(rows - 1, top[i] + glow) : (y(b[0]) / h) * (rows - 1),
+        line ? Math.min(rows - 1, (top[i] ?? 0) + glow) : (y(b[0]) / h) * (rows - 1),
       );
       out[key] = { top: resample(top, cols), floor: resample(floor, cols) };
     }
