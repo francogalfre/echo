@@ -4,7 +4,7 @@ pre-commit:
     lint:
       glob: "*.{ts,tsx,js,jsx}"
       exclude: "**/*.d.ts"
-      run: bunx oxlint {staged_files}
+      run: bunx oxlint --no-error-on-unmatched-pattern {staged_files}
     format:
       glob: "*.{ts,tsx,js,jsx,json,md,yml,yaml,toml}"
       exclude: "{.agents/**,**/src/migrations/**}"

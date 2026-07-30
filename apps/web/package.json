@@ -19,6 +19,7 @@
     "ai": "6.0.238",
     "babel-plugin-react-compiler": "^1.0.0",
     "better-auth": "catalog:",
+    "geist": "^1.7.2",
     "next": "^16.2.0",
     "nuqs": "^2.9.0",
     "posthog-js": "^1.402.3",

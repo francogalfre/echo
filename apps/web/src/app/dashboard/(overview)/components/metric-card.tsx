@@ -1,7 +1,8 @@
 import { AnimatedCounter } from "@echo/ui/components/animated-counter";
 import { Badge } from "@echo/ui/components/badge";
+import type { DitherColor } from "@echo/ui/components/dither-kit/palette";
+import { Sparkline } from "@echo/ui/components/dither-kit/sparkline";
 import { Icons } from "@echo/ui/components/icons";
-import { Sparkline } from "@echo/ui/components/sparkline";
 
 type MetricCardProps = {
   label: string;
@@ -9,7 +10,7 @@ type MetricCardProps = {
   growth: number | null;
   caption: string;
   sparklineData: readonly number[];
-  sparklineColor?: string;
+  sparklineColor?: DitherColor;
 };
 
 function TrendBadge({ growth }: { growth: number | null }): React.ReactElement {
@@ -35,17 +36,27 @@ export function MetricCard({
   growth,
   caption,
   sparklineData,
-  sparklineColor,
+  sparklineColor = "purple",
 }: MetricCardProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <AnimatedCounter value={value} className="text-2xl font-semibold tracking-tight" />
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <TrendBadge growth={growth} />
-        <span>{caption}</span>
+    <div className="flex flex-col gap-3 overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
+      <div className="flex flex-col gap-1.5">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <div className="flex items-baseline gap-2">
+          <AnimatedCounter
+            value={value}
+            className="font-pixel text-3xl font-medium tracking-tight"
+          />
+          <TrendBadge growth={growth} />
+        </div>
+        <p className="text-xs text-muted-foreground">{caption}</p>
       </div>
-      <Sparkline data={sparklineData} color={sparklineColor} className="mt-1" />
+      <Sparkline
+        data={[...sparklineData]}
+        color={sparklineColor}
+        variant="gradient"
+        className="h-20 w-full"
+      />
     </div>
   );
 }
