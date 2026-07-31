@@ -7,7 +7,7 @@ import {
 } from "../controllers/generate-digest";
 import { QuotaExceededError } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
-import { getErrorCode } from "../utils/error-map";
+import { getErrorCode } from "../lib/error-map";
 
 export const digestRouter = router({
   get: organizationProcedure.query(async ({ ctx }) => {

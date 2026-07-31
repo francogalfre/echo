@@ -1,3 +1,4 @@
+import { isKeyLive } from "../lib/api-key";
 import { guardKeySubmission } from "../lib/rate-limit";
 import {
   findByPublicKey,
@@ -43,10 +44,6 @@ function extractBearer(header: string | undefined): string | null {
   return header.slice(7).trim() || null;
 }
 
-function isKeyLive(keyRow: ApiKeyRow): boolean {
-  return keyRow.revokedAt === null || keyRow.revokedAt > new Date();
-}
-
 async function createFeedbackWithKey(
   input: FeedbackInput,
   kind: KeyKind,
@@ -72,7 +69,7 @@ async function createFeedbackWithKey(
     return { success: false, status: 429, error: guard.message };
   }
 
-  void touchLastUsed(keyRow.id);
+  touchLastUsed(keyRow.id).catch(console.error);
 
   return createFeedback({
     organizationId: keyRow.organizationId,
@@ -120,7 +117,7 @@ export async function getFeedback(input: {
     return { success: false, status: 429, error: guard.message };
   }
 
-  void touchLastUsed(keyRow.id);
+  touchLastUsed(keyRow.id).catch(console.error);
 
   return {
     success: true,

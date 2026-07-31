@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DigestOutput } from "@echo/ai";
 
-import { getBillingOverview } from "./billing";
+import { getBillingOverview } from "../billing";
 
 const SAMPLE_DIGEST: DigestOutput = {
   executiveSummary: "Users like the new dashboard.",
@@ -10,27 +10,27 @@ const SAMPLE_DIGEST: DigestOutput = {
   positiveHighlight: "Fast onboarding.",
 };
 
-vi.mock("../services/ai-usage", () => ({
+vi.mock("../../services/ai-usage", () => ({
   getUsageCount: vi.fn(),
 }));
 
-vi.mock("../services/digest", () => ({
+vi.mock("../../services/digest", () => ({
   getDigest: vi.fn(),
 }));
 
-vi.mock("../services/feedback", () => ({
+vi.mock("../../services/feedback", () => ({
   countFeedbackThisMonth: vi.fn(),
 }));
 
-vi.mock("../services/organization", () => ({
+vi.mock("../../services/organization", () => ({
   getOrgPlan: vi.fn(),
   countOwnedOrganizations: vi.fn(),
 }));
 
-const { getUsageCount } = await import("../services/ai-usage");
-const { getDigest } = await import("../services/digest");
-const { countFeedbackThisMonth } = await import("../services/feedback");
-const { getOrgPlan, countOwnedOrganizations } = await import("../services/organization");
+const { getUsageCount } = await import("../../services/ai-usage");
+const { getDigest } = await import("../../services/digest");
+const { countFeedbackThisMonth } = await import("../../services/feedback");
+const { getOrgPlan, countOwnedOrganizations } = await import("../../services/organization");
 
 const ORG_ID = "org_1";
 const USER_ID = "user_1";

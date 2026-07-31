@@ -1,4 +1,4 @@
-import { todayKey } from "./quota";
+import { dayKey } from "../lib/dates";
 import {
   FREE_INSIGHT_DAILY_LIMIT,
   FREE_MONTHLY_FEEDBACK_LIMIT,
@@ -8,7 +8,8 @@ import {
   PRO_PROJECT_LIMIT,
   FREE_CHAT_DAILY_LIMIT,
   PRO_CHAT_DAILY_LIMIT,
-} from "../lib/plan-limits";
+  isPro,
+} from "../lib/plan";
 import { getUsageCount } from "../services/ai-usage";
 import { getDigest } from "../services/digest";
 import { countFeedbackThisMonth } from "../services/feedback";
@@ -27,7 +28,7 @@ export async function getBillingOverview(
   organizationId: string,
   userId: string,
 ): Promise<BillingOverview> {
-  const day = todayKey();
+  const day = dayKey(new Date());
 
   const [plan, feedbackUsed, insightsUsed, cachedDigest, projectsUsed, chatUsed] =
     await Promise.all([
@@ -39,31 +40,31 @@ export async function getBillingOverview(
       getUsageCount(organizationId, "chat", day),
     ]);
 
-  const isPro = plan === "pro";
-  const digestsUsed = isPro ? await getUsageCount(organizationId, "digest", day) : null;
+  const pro = isPro(plan);
+  const digestsUsed = pro ? await getUsageCount(organizationId, "digest", day) : null;
 
   return {
     plan: plan ?? "free",
     feedback: {
       used: feedbackUsed,
-      limit: isPro ? null : FREE_MONTHLY_FEEDBACK_LIMIT,
+      limit: pro ? null : FREE_MONTHLY_FEEDBACK_LIMIT,
     },
     insights: {
       used: insightsUsed,
-      limit: isPro ? PRO_INSIGHT_DAILY_LIMIT : FREE_INSIGHT_DAILY_LIMIT,
+      limit: pro ? PRO_INSIGHT_DAILY_LIMIT : FREE_INSIGHT_DAILY_LIMIT,
     },
     digests: {
       used: digestsUsed,
-      limit: isPro ? PRO_DIGEST_DAILY_LIMIT : null,
+      limit: pro ? PRO_DIGEST_DAILY_LIMIT : null,
       lastGeneratedAt: cachedDigest?.generatedAt ?? null,
     },
     projects: {
       used: projectsUsed,
-      limit: isPro ? PRO_PROJECT_LIMIT : FREE_PROJECT_LIMIT,
+      limit: pro ? PRO_PROJECT_LIMIT : FREE_PROJECT_LIMIT,
     },
     chat: {
       used: chatUsed,
-      limit: isPro ? PRO_CHAT_DAILY_LIMIT : FREE_CHAT_DAILY_LIMIT,
+      limit: pro ? PRO_CHAT_DAILY_LIMIT : FREE_CHAT_DAILY_LIMIT,
     },
   };
 }

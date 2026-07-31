@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { paginateRows } from "./pagination";
+import { paginateRows } from "../pagination";
 
 describe("paginateRows", () => {
   it("should report hasMore true and trim the extra row when one comes back", () => {

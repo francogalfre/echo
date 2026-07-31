@@ -16,7 +16,7 @@ vi.mock("@echo/db", () => ({
 }));
 
 const { countFeedbackBySentiment, getFeedbackListItemById, listFeedback } =
-  await import("./feedback");
+  await import("../feedback/queries");
 
 const dialect = new PgDialect();
 const ORG_ID = "org_1";

@@ -3,6 +3,8 @@ import { boardItems } from "@echo/db/schema/board-items";
 import { feedback } from "@echo/db/schema/feedback";
 import { and, asc, eq } from "drizzle-orm";
 
+import type { BoardColumn } from "../types";
+
 export type BoardCard = {
   id: string;
   feedbackId: string;
@@ -62,7 +64,7 @@ export async function addBoardItem(
 export async function moveBoardItem(
   id: string,
   organizationId: string,
-  column: "backlog" | "in_progress" | "done",
+  column: BoardColumn,
   position: number,
 ): Promise<boolean> {
   const rows = await db
@@ -89,7 +91,7 @@ export async function reindexColumn(
             and(
               eq(boardItems.id, id),
               eq(boardItems.organizationId, organizationId),
-              eq(boardItems.column, column as "backlog" | "in_progress" | "done"),
+              eq(boardItems.column, column as BoardColumn),
             ),
           ),
       ),
@@ -111,7 +113,7 @@ export async function removeBoardItem(
 
 export async function clearBoardColumn(
   organizationId: string,
-  column: "backlog" | "in_progress" | "done",
+  column: BoardColumn,
 ): Promise<void> {
   await db
     .delete(boardItems)

@@ -1,17 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { addBoardItemForFeedback } from "../controllers/board";
 import { adminProcedure, organizationProcedure, router } from "../index";
+import { getErrorCode } from "../lib/error-map";
 import {
-  addBoardItem,
   clearBoardColumn,
   getBoardItems,
   moveBoardItem,
   reindexColumn,
   removeBoardItem,
 } from "../services/board";
-
-const COLUMNS = ["backlog", "in_progress", "done"] as const;
+import { BOARD_COLUMN_VALUES } from "../types";
 
 export const boardRouter = router({
   items: organizationProcedure.query(({ ctx }) => {
@@ -21,11 +21,9 @@ export const boardRouter = router({
   add: organizationProcedure
     .input(z.object({ feedbackId: z.string().min(1) }))
     .mutation(async ({ input, ctx }) => {
-      const id = crypto.randomUUID();
-      try {
-        await addBoardItem(ctx.organizationId, input.feedbackId, id);
-      } catch {
-        throw new TRPCError({ code: "CONFLICT", message: "Already on board" });
+      const result = await addBoardItemForFeedback(ctx.organizationId, input.feedbackId);
+      if (!result.success) {
+        throw new TRPCError({ code: getErrorCode(result.status), message: result.error });
       }
     }),
 
@@ -33,7 +31,7 @@ export const boardRouter = router({
     .input(
       z.object({
         id: z.string().min(1),
-        column: z.enum(COLUMNS),
+        column: z.enum(BOARD_COLUMN_VALUES),
         position: z.number().int().min(0),
       }),
     )
@@ -50,7 +48,12 @@ export const boardRouter = router({
     }),
 
   reorder: organizationProcedure
-    .input(z.object({ column: z.enum(COLUMNS), orderedIds: z.array(z.string().min(1)) }))
+    .input(
+      z.object({
+        column: z.enum(BOARD_COLUMN_VALUES),
+        orderedIds: z.array(z.string().min(1)),
+      }),
+    )
     .mutation(({ input, ctx }) => {
       return reindexColumn(ctx.organizationId, input.column, input.orderedIds);
     }),
@@ -65,7 +68,7 @@ export const boardRouter = router({
     }),
 
   clearColumn: adminProcedure
-    .input(z.object({ column: z.enum(COLUMNS) }))
+    .input(z.object({ column: z.enum(BOARD_COLUMN_VALUES) }))
     .mutation(({ input, ctx }) => {
       return clearBoardColumn(ctx.organizationId, input.column);
     }),

@@ -25,7 +25,7 @@ vi.mock("@echo/db", () => ({
 }));
 
 const { insertApiKey, revokeApiKey, findKeysByOrganization, touchLastUsed } =
-  await import("./api-keys");
+  await import("../api-keys");
 
 const dialect = new PgDialect();
 const ORG_ID = "org_1";

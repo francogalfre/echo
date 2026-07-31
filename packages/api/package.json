@@ -5,8 +5,17 @@
     ".": {
       "default": "./src/index.ts"
     },
-    "./*": {
-      "default": "./src/*.ts"
+    "./context": {
+      "default": "./src/context.ts"
+    },
+    "./types": {
+      "default": "./src/types.ts"
+    },
+    "./routers/index": {
+      "default": "./src/routers/index.ts"
+    },
+    "./lib/redis": {
+      "default": "./src/lib/redis.ts"
     }
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { getChatMessages, listChatConversations } from "../controllers/chat";
-import { todayKey } from "../controllers/quota";
+import { readQuota } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
 
 export const chatRouter = router({
@@ -22,17 +22,8 @@ export const chatRouter = router({
     }),
 
   getUsage: organizationProcedure.query(async ({ ctx }) => {
-    const { getUsageCount } = await import("../services/ai-usage");
-    const { getOrgPlan } = await import("../services/organization");
-    const { FREE_CHAT_DAILY_LIMIT, PRO_CHAT_DAILY_LIMIT } =
-      await import("../lib/plan-limits");
+    const { used, limit, plan } = await readQuota(ctx.organizationId, "chat");
 
-    const plan = await getOrgPlan(ctx.organizationId);
-    const isPro = plan === "pro";
-    const day = todayKey();
-    const used = await getUsageCount(ctx.organizationId, "chat", day);
-    const limit = isPro ? PRO_CHAT_DAILY_LIMIT : FREE_CHAT_DAILY_LIMIT;
-
-    return { used, limit, plan: plan ?? "free" };
+    return { used, limit, plan };
   }),
 });

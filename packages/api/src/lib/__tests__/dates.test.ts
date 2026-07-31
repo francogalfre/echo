@@ -8,7 +8,7 @@ import {
   monthKey,
   rangeWindow,
   zeroFillSeries,
-} from "./dashboard-range";
+} from "../dates";
 
 const NOW = new Date("2026-07-02T15:30:00.000Z");
 

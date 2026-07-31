@@ -2,6 +2,8 @@ import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
 import { and, desc, eq, gte, inArray, or, sql } from "drizzle-orm";
 
+import { sinceFor } from "../lib/dates";
+
 export type FeedbackSearchRow = {
   id: string;
   content: string;
@@ -99,16 +101,6 @@ export async function listFeedbackByIds(
     .where(
       and(eq(feedback.organizationId, organizationId), inArray(feedback.id, [...ids])),
     );
-}
-
-const bucketMs: Record<"day" | "week" | "month", number> = {
-  day: 24 * 60 * 60 * 1000,
-  week: 7 * 24 * 60 * 60 * 1000,
-  month: 30 * 24 * 60 * 60 * 1000,
-};
-
-function sinceFor(bucket: "day" | "week" | "month", limit: number): Date {
-  return new Date(Date.now() - bucketMs[bucket] * limit);
 }
 
 export async function feedbackTimeSeries(

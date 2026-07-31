@@ -2,11 +2,16 @@ import { db } from "@echo/db";
 import { feedback, feedbackPageConfig } from "@echo/db/schema/feedback";
 import { and, desc, eq } from "drizzle-orm";
 
-import type { organization } from "@echo/db/schema/auth";
-
 export type FeedbackPageConfig = typeof feedbackPageConfig.$inferSelect;
 export type FeedbackRow = typeof feedback.$inferSelect;
-type OrgRow = typeof organization.$inferSelect;
+
+export type PublicOrganization = {
+  id: string;
+  name: string;
+  slug: string;
+  logo: string | null;
+  plan: string;
+};
 
 export type PublicFeedbackItem = {
   id: string;
@@ -42,12 +47,13 @@ export async function upsertFeedbackPageConfig(
 }
 
 export async function getFeedbackPageBySlug(slug: string): Promise<{
-  org: OrgRow;
+  org: PublicOrganization;
   config: FeedbackPageConfig;
   feedback: PublicFeedbackItem[];
 } | null> {
   const org = await db.query.organization.findFirst({
     where: (o) => eq(o.slug, slug),
+    columns: { id: true, name: true, slug: true, logo: true, plan: true },
   });
 
   if (!org) return null;

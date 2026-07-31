@@ -1,7 +1,8 @@
-import { AGENT_VERSIONS, generateDigest, type DigestOutput } from "@echo/ai";
+import { generateDigest, type DigestOutput } from "@echo/ai";
 
-import { enforceInterval, enforceQuota, todayKey } from "./quota";
-import { FREE_DIGEST_INTERVAL_MS, PRO_DIGEST_DAILY_LIMIT } from "../lib/plan-limits";
+import { enforceInterval, enforceQuota } from "./quota";
+import { dayKey } from "../lib/dates";
+import { FREE_DIGEST_INTERVAL_MS, PRO_DIGEST_DAILY_LIMIT, isPro } from "../lib/plan";
 import { recordAiEvent } from "../services/ai-events";
 import { getUsageCount } from "../services/ai-usage";
 import {
@@ -13,6 +14,9 @@ import {
   type DigestHistoryEntry,
 } from "../services/digest";
 import { getOrgPlan } from "../services/organization";
+
+const freeDigestMaxItems = 100;
+const proDigestMaxItems = 500;
 
 type DigestResult =
   | {
@@ -41,11 +45,9 @@ export async function getFeedbackDigest(organizationId: string): Promise<DigestS
     return { digest: null, generatedAt: null, feedbackCount: 0, canRegenerate: true };
   }
 
-  const isPro = plan === "pro";
-
   let canRegenerate: boolean;
-  if (isPro) {
-    const used = await getUsageCount(organizationId, "digest", todayKey());
+  if (isPro(plan)) {
+    const used = await getUsageCount(organizationId, "digest", dayKey(new Date()));
     canRegenerate = used < PRO_DIGEST_DAILY_LIMIT;
   } else {
     const ageMs = Date.now() - cached.generatedAt.getTime();
@@ -68,10 +70,10 @@ export async function generateFeedbackDigest(
     getDigest(organizationId),
   ]);
 
-  const isPro = plan === "pro";
+  const pro = isPro(plan);
   let releaseQuota: (() => Promise<void>) | null = null;
 
-  if (isPro) {
+  if (pro) {
     const decision = await enforceQuota(organizationId, "digest");
     if (!decision.allowed) {
       return {
@@ -109,7 +111,8 @@ export async function generateFeedbackDigest(
     };
   }
 
-  const inputs = await getFeedbackForDigest(organizationId, isPro);
+  const maxItems = pro ? proDigestMaxItems : freeDigestMaxItems;
+  const inputs = await getFeedbackForDigest(organizationId, maxItems);
 
   if (inputs.length === 0) {
     await releaseQuota?.();
@@ -136,7 +139,7 @@ export async function generateFeedbackDigest(
         feature: "digest",
         agent: "digest",
         model: result.usage.model,
-        promptVersion: AGENT_VERSIONS.digest,
+        promptVersion: 1,
         cacheHit: result.usage.cacheHit,
         inputTokens: result.usage.inputTokens,
         outputTokens: result.usage.outputTokens,
@@ -153,7 +156,7 @@ export async function generateFeedbackDigest(
       feature: "digest",
       agent: "digest",
       model: "unknown",
-      promptVersion: AGENT_VERSIONS.digest,
+      promptVersion: 1,
       cacheHit: false,
       inputTokens: 0,
       outputTokens: 0,

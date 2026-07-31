@@ -4,17 +4,18 @@ import { z } from "zod";
 import { generateFeedbackInsight } from "../controllers/feedback-insight";
 import { QuotaExceededError } from "../controllers/quota";
 import { organizationProcedure, router } from "../index";
+import { getErrorCode } from "../lib/error-map";
+import { paginateRows } from "../lib/pagination";
 import {
   countFeedbackBySentiment,
   getFeedbackListItemById,
   listFeedback,
 } from "../services/feedback";
-import { getErrorCode } from "../utils/error-map";
-import { paginateRows } from "../utils/pagination";
+import { FEEDBACK_SOURCE_VALUES, SENTIMENT_VALUES } from "../types";
 
 const ListFeedbackInput = z.object({
-  sentiment: z.enum(["positive", "neutral", "negative"]).optional(),
-  source: z.enum(["api", "form", "widget"]).optional(),
+  sentiment: z.enum(SENTIMENT_VALUES).optional(),
+  source: z.enum(FEEDBACK_SOURCE_VALUES).optional(),
   search: z.string().max(200).optional(),
   limit: z.number().int().min(1).max(100).default(50),
   offset: z.number().int().min(0).default(0),

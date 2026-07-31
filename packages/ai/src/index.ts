@@ -1,4 +1,5 @@
 export { AIError, type AIErrorCode } from "./errors";
+export { buildAgentUsage } from "./lib/usage";
 
 export { analyzeFeedback } from "./agents/analyze";
 export { SENTIMENT_VALUES, type FeedbackAnalysis, type Sentiment } from "./agents/analyze";

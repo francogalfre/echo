@@ -1,4 +1,4 @@
-import { protectedProcedure, publicProcedure, router } from "../index";
+import { router } from "../index";
 import { apiKeysRouter } from "./api-keys";
 import { billingRouter } from "./billing";
 import { boardRouter } from "./board";
@@ -21,11 +21,6 @@ export const appRouter = router({
   feedbackPage: feedbackPageRouter,
   publicFeedback: publicFeedbackRouter,
   widget: widgetRouter,
-  healthCheck: publicProcedure.query(() => "OK"),
-  privateData: protectedProcedure.query(({ ctx }) => ({
-    message: "This is private",
-    user: ctx.session.user,
-  })),
 });
 
 export type AppRouter = typeof appRouter;

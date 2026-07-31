@@ -1,4 +1,4 @@
-import { FREE_MONTHLY_FEEDBACK_LIMIT } from "../lib/plan-limits";
+import { FREE_MONTHLY_FEEDBACK_LIMIT } from "../lib/plan";
 import {
   countFeedbackThisMonth,
   insertFeedback,

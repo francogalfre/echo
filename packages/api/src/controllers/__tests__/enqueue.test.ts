@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../services/jobs", () => ({
+vi.mock("../../services/jobs", () => ({
   insertJob: vi.fn(),
 }));
 
-const { insertJob } = await import("../services/jobs");
-const { enqueue } = await import("./enqueue");
+const { insertJob } = await import("../../services/jobs");
+const { enqueue } = await import("../enqueue");
 
 describe("enqueue", () => {
   beforeEach(() => {

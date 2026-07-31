@@ -1,9 +1,4 @@
-import {
-  AGENT_VERSIONS,
-  buildAgentUsage,
-  streamChatResponse,
-  type UIMessage,
-} from "@echo/ai";
+import { buildAgentUsage, streamChatResponse, type UIMessage } from "@echo/ai";
 
 import {
   buildFeedbackRetriever,
@@ -11,6 +6,7 @@ import {
   summarizeDigestForPrompt,
 } from "./chat-retriever";
 import { enforceQuota } from "./quota";
+import { resolveOrganizationContext } from "../lib/organization";
 import { recordAiEvent } from "../services/ai-events";
 import {
   appendMessage,
@@ -22,7 +18,6 @@ import {
   type ChatConversationSummary,
 } from "../services/chat-conversations";
 import { getDigest } from "../services/digest";
-import { findFirstOrganizationId, findMembership } from "../services/organization";
 
 const chatToolBudgetChars = 24_000;
 
@@ -44,13 +39,8 @@ export async function resolveChatOrganization(
   userId: string,
   activeOrganizationId: string | null | undefined,
 ): Promise<ChatOrganizationContext | null> {
-  const organizationId = activeOrganizationId ?? (await findFirstOrganizationId(userId));
-  if (!organizationId) return null;
-
-  const membership = await findMembership(userId, organizationId);
-  if (!membership) return null;
-
-  return { organizationId };
+  const context = await resolveOrganizationContext(userId, activeOrganizationId);
+  return context ? { organizationId: context.organizationId } : null;
 }
 
 export async function listChatConversations(
@@ -169,7 +159,7 @@ export async function streamChatTurn(
             feature: "chat",
             agent: "chat",
             model: agentUsage.model,
-            promptVersion: AGENT_VERSIONS.chat,
+            promptVersion: 1,
             cacheHit: agentUsage.cacheHit,
             inputTokens: agentUsage.inputTokens,
             outputTokens: agentUsage.outputTokens,

@@ -21,3 +21,51 @@ export type UploadLogoResult =
 export type InsightResult =
   | { success: true; insight: string; cached: boolean }
   | (Failure<403 | 404 | 502> & { upgrade: boolean });
+
+export const SENTIMENT_VALUES = ["positive", "neutral", "negative"] as const;
+export type Sentiment = (typeof SENTIMENT_VALUES)[number];
+
+export const FEEDBACK_SOURCE_VALUES = ["api", "form", "widget"] as const;
+export type FeedbackSource = (typeof FEEDBACK_SOURCE_VALUES)[number];
+
+export const BOARD_COLUMN_VALUES = ["backlog", "in_progress", "done"] as const;
+export type BoardColumn = (typeof BOARD_COLUMN_VALUES)[number];
+
+export type SeriesGranularity = "day" | "month";
+export type StatsRange = "7d" | "30d" | "6m" | "1y" | "all";
+
+export type SeriesPoint = {
+  bucket: string;
+  positive: number;
+  neutral: number;
+  negative: number;
+};
+
+export type MetricValue = { value: number; growth: number | null };
+
+export type SourceCount = { source: FeedbackSource; count: number };
+
+export type OverviewRecentItem = {
+  id: string;
+  name: string;
+  content: string;
+  sentiment: string | null;
+  source: string;
+  createdAt: string;
+};
+
+export type DashboardOverview = {
+  metrics: {
+    total: MetricValue;
+    positive: MetricValue;
+    negative: MetricValue;
+    thisWeek: MetricValue;
+  };
+  granularity: SeriesGranularity;
+  series: SeriesPoint[];
+  trend: SeriesPoint[];
+  sources: SourceCount[];
+  recent: OverviewRecentItem[];
+};
+
+export type { BoardCard, BoardColumns } from "./services/board";

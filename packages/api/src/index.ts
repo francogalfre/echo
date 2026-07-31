@@ -2,13 +2,13 @@ import { initTRPC, TRPCError } from "@trpc/server";
 
 import { QuotaExceededError } from "./controllers/quota";
 import type { Context } from "./context";
-import { findFirstOrganizationId, findMembership } from "./services/organization";
+import { resolveOrganizationContext } from "./lib/organization";
 
 export type { AppRouter } from "./routers/index";
 
 type SessionWithOrg = { activeOrganizationId?: string | null };
 
-export type OrgRole = "owner" | "admin" | "member";
+type OrgRole = "owner" | "admin" | "member";
 
 function toOrgRole(role: string): OrgRole {
   if (role === "owner" || role === "admin") return role;
@@ -17,9 +17,11 @@ function toOrgRole(role: string): OrgRole {
 
 export const t = initTRPC.context<Context>().create({
   errorFormatter({ shape, error }) {
-    const upgrade = error.cause instanceof QuotaExceededError ? error.cause.upgrade : false;
+    const isQuotaExceeded = error.cause instanceof QuotaExceededError;
+    const upgrade = isQuotaExceeded ? error.cause.upgrade : false;
+    const code = isQuotaExceeded ? "QUOTA_EXCEEDED" : undefined;
 
-    return { ...shape, data: { ...shape.data, upgrade } };
+    return { ...shape, data: { ...shape.data, upgrade, code } };
   },
 });
 
@@ -40,16 +42,12 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 
 export const organizationProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   const { activeOrganizationId } = ctx.session.session as SessionWithOrg;
-  const organizationId =
-    activeOrganizationId ?? (await findFirstOrganizationId(ctx.session.user.id));
+  const result = await resolveOrganizationContext(
+    ctx.session.user.id,
+    activeOrganizationId,
+  );
 
-  if (!organizationId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization" });
-  }
-
-  const membership = await findMembership(ctx.session.user.id, organizationId);
-
-  if (!membership) {
+  if (!result) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Not a member of this organization",
@@ -57,7 +55,7 @@ export const organizationProcedure = protectedProcedure.use(async ({ ctx, next }
   }
 
   return next({
-    ctx: { ...ctx, organizationId, role: toOrgRole(membership.role) },
+    ctx: { ...ctx, organizationId: result.organizationId, role: toOrgRole(result.role) },
   });
 });
 

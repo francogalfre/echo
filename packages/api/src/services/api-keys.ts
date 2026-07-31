@@ -1,8 +1,10 @@
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 
 import { db } from "@echo/db";
 import { apiKeys } from "@echo/db/schema/feedback";
 import { and, desc, eq, isNull, lt, or } from "drizzle-orm";
+
+import { sha256 } from "../lib/crypto";
 
 export type ApiKeyRow = typeof apiKeys.$inferSelect;
 
@@ -41,7 +43,7 @@ export function generateRawKey(prefix: "echo_pk_" | "echo_sk_"): string {
 }
 
 export function hashKey(key: string): string {
-  return createHash("sha256").update(key).digest("hex");
+  return sha256(key);
 }
 
 export async function insertApiKey(input: InsertApiKeyInput): Promise<ApiKeyRow> {
@@ -106,7 +108,7 @@ export async function touchLastUsed(id: string): Promise<void> {
 
 export function findByPublicKey(publicKey: string): Promise<ApiKeyRow | undefined> {
   return db.query.apiKeys.findFirst({
-    where: (k) => eq(k.publicKey, publicKey),
+    where: (k) => eq(k.publicKeyHash, sha256(publicKey)),
   });
 }
 

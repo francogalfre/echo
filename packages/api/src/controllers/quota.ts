@@ -1,11 +1,13 @@
+import { dayKey } from "../lib/dates";
 import {
   FREE_CHAT_DAILY_LIMIT,
   FREE_INSIGHT_DAILY_LIMIT,
   PRO_CHAT_DAILY_LIMIT,
   PRO_DIGEST_DAILY_LIMIT,
   PRO_INSIGHT_DAILY_LIMIT,
-} from "../lib/plan-limits";
-import { reserveUsage, releaseUsage } from "../services/ai-usage";
+  isPro,
+} from "../lib/plan";
+import { reserveUsage, releaseUsage, getUsageCount } from "../services/ai-usage";
 import { getOrgPlan } from "../services/organization";
 
 export class QuotaExceededError extends Error {
@@ -56,19 +58,15 @@ const quotaConfig: Record<QuotaFeature, QuotaConfig> = {
   },
 };
 
-export function todayKey(date: Date = new Date()): string {
-  return date.toISOString().slice(0, 10);
-}
-
 export async function enforceQuota(
   organizationId: string,
   feature: QuotaFeature,
 ): Promise<QuotaDecision> {
   const plan = await getOrgPlan(organizationId);
-  const isPro = plan === "pro";
-  const day = todayKey();
+  const pro = isPro(plan);
+  const day = dayKey(new Date());
   const config = quotaConfig[feature];
-  const limit = isPro ? config.proLimit : config.freeLimit;
+  const limit = pro ? config.proLimit : config.freeLimit;
 
   const { reserved, used } = await reserveUsage(organizationId, feature, day, limit);
 
@@ -77,8 +75,8 @@ export async function enforceQuota(
       allowed: false,
       used,
       limit,
-      upgrade: !isPro,
-      message: isPro ? config.proMessage : config.freeMessage,
+      upgrade: !pro,
+      message: pro ? config.proMessage : config.freeMessage,
     };
   }
 
@@ -104,4 +102,18 @@ export async function enforceInterval(
     upgrade: true,
     message: "Free plan allows 1 digest per week. Upgrade to Pro for more.",
   };
+}
+
+export async function readQuota(
+  organizationId: string,
+  feature: QuotaFeature,
+): Promise<{ used: number; limit: number; plan: string }> {
+  const plan = await getOrgPlan(organizationId);
+  const pro = isPro(plan);
+  const day = dayKey(new Date());
+  const config = quotaConfig[feature];
+  const limit = pro ? config.proLimit : config.freeLimit;
+  const used = await getUsageCount(organizationId, feature, day);
+
+  return { used, limit, plan: plan ?? "free" };
 }

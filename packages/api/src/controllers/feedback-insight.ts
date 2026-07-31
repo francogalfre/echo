@@ -1,4 +1,4 @@
-import { AGENT_VERSIONS, generateInsight } from "@echo/ai";
+import { generateInsight } from "@echo/ai";
 
 import { enforceQuota } from "./quota";
 import { recordAiEvent } from "../services/ai-events";
@@ -42,7 +42,7 @@ export async function generateFeedbackInsight(
       feature: "insight",
       agent: "insight",
       model: usage.model,
-      promptVersion: AGENT_VERSIONS.insight,
+      promptVersion: 1,
       cacheHit: usage.cacheHit,
       inputTokens: usage.inputTokens,
       outputTokens: usage.outputTokens,
@@ -60,7 +60,7 @@ export async function generateFeedbackInsight(
       feature: "insight",
       agent: "insight",
       model: "unknown",
-      promptVersion: AGENT_VERSIONS.insight,
+      promptVersion: 1,
       cacheHit: false,
       inputTokens: 0,
       outputTokens: 0,

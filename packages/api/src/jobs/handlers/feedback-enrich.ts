@@ -1,4 +1,4 @@
-import { AGENT_VERSIONS, analyzeFeedback } from "@echo/ai";
+import { analyzeFeedback } from "@echo/ai";
 
 import { feedbackEnrichPayloadSchema } from "../kinds";
 import { recordAiEvent } from "../../services/ai-events";
@@ -22,7 +22,7 @@ export async function handleFeedbackEnrich(payload: unknown): Promise<void> {
         feature: "analyze",
         agent: "analyze",
         model: usage.model,
-        promptVersion: AGENT_VERSIONS.analyze,
+        promptVersion: 1,
         cacheHit: usage.cacheHit,
         inputTokens: usage.inputTokens,
         outputTokens: usage.outputTokens,
@@ -38,7 +38,7 @@ export async function handleFeedbackEnrich(payload: unknown): Promise<void> {
         feature: "analyze",
         agent: "analyze",
         model: "unknown",
-        promptVersion: AGENT_VERSIONS.analyze,
+        promptVersion: 1,
         cacheHit: false,
         inputTokens: 0,
         outputTokens: 0,

@@ -1,6 +1,6 @@
-import { createHash } from "crypto";
-
 import { Ratelimit } from "@upstash/ratelimit";
+
+import { sha256 } from "./crypto";
 import { redis } from "./redis";
 
 type Allowed = { allowed: true };
@@ -35,7 +35,7 @@ const keyLimiter = redis
   : null;
 
 function hashContent(ip: string, content: string): string {
-  return createHash("sha256").update(`${ip}:${content.trim().toLowerCase()}`).digest("hex");
+  return sha256(`${ip}:${content.trim().toLowerCase()}`);
 }
 
 function logRedisFailure(context: string, error: unknown): void {

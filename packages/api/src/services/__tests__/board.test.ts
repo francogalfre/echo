@@ -22,7 +22,7 @@ vi.mock("@echo/db", () => ({
   },
 }));
 
-const { moveBoardItem, reindexColumn } = await import("./board");
+const { moveBoardItem, reindexColumn } = await import("../board");
 
 const dialect = new PgDialect();
 const ORG_ID = "org_1";

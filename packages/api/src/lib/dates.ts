@@ -92,3 +92,20 @@ export function growthPercent(current: number, previous: number): number | null 
   if (previous === 0) return null;
   return Math.round(((current - previous) / previous) * 100);
 }
+
+export function startOfCurrentMonthUtc(): Date {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+type SeriesBucket = "day" | "week" | "month";
+
+const bucketMs: Record<SeriesBucket, number> = {
+  day: DAY_MS,
+  week: 7 * DAY_MS,
+  month: 30 * DAY_MS,
+};
+
+export function sinceFor(bucket: SeriesBucket, limit: number): Date {
+  return new Date(Date.now() - bucketMs[bucket] * limit);
+}

@@ -14,16 +14,18 @@ export const feedbackPageConfigSchema = z.object({
   showFeedback: z.boolean().optional(),
 });
 
+export const feedbackContentSchema = z.string().min(1).max(1000);
+
 export const publicFeedbackSchema = z.object({
-  slug: z.string().min(1),
+  slug: z.string().min(1).max(100),
   authorName: z.string().min(1).max(100),
-  content: z.string().min(1).max(1000),
+  content: feedbackContentSchema,
   email: z.email().optional(),
   rating: z.number().int().min(1).max(5).optional(),
   _hp: z.string().optional(),
 });
 
-export const slugSchema = z.object({ slug: z.string().min(1) });
+export const slugSchema = z.object({ slug: z.string().min(1).max(100) });
 
 export type FeedbackPageConfigInput = z.infer<typeof feedbackPageConfigSchema>;
 export type PublicFeedbackInput = z.infer<typeof publicFeedbackSchema>;
