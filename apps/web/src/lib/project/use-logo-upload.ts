@@ -3,7 +3,7 @@
 import { env } from "@echo/env/web";
 import { useRef, useState } from "react";
 
-type UseLogoUploadReturn = {
+export type UseLogoUploadReturn = {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   preview: string | null;
   error: string | null;

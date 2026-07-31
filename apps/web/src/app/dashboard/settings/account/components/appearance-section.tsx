@@ -1,26 +1,13 @@
 "use client";
 
-import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
+import { themeOptions, type ThemeValue } from "@/lib/theme";
+
 import { SettingsCard } from "../../components/settings-card";
 import { SettingsRow } from "../../components/settings-row";
-
-type ThemeValue = "system" | "light" | "dark";
-
-type ThemeOption = {
-  value: ThemeValue;
-  label: string;
-  icon: typeof Icons.sun;
-};
-
-const THEME_OPTIONS: readonly ThemeOption[] = [
-  { value: "system", label: "System", icon: Icons.monitor },
-  { value: "light", label: "Light", icon: Icons.sun },
-  { value: "dark", label: "Dark", icon: Icons.moon },
-];
 
 type PreviewTone = "light" | "dark";
 
@@ -106,7 +93,7 @@ export const AppearanceSection = (): React.ReactElement => {
           <fieldset>
             <legend className="sr-only">Theme</legend>
             <div className="grid grid-cols-3 gap-3">
-              {THEME_OPTIONS.map((option) => {
+              {themeOptions.map((option) => {
                 const Icon = option.icon;
                 const active = mounted && theme === option.value;
 

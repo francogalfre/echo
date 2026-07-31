@@ -4,7 +4,6 @@ import imagotipoDark from "@echo/assets/imagotipo/dark.png";
 import imagotipoLight from "@echo/assets/imagotipo/light.png";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Icons } from "@echo/ui/components/icons";
-import type { Route } from "next";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
@@ -62,7 +61,7 @@ export const Sidebar = ({ usageMeterSlot }: SidebarProps): React.ReactElement =>
 
   useEffect(() => {
     if (!orgsPending && organizations && organizations.length === 0) {
-      router.replace("/new-project" as Route);
+      router.replace("/onboarding");
     }
   }, [orgsPending, organizations, router]);
 

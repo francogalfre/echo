@@ -25,7 +25,7 @@ export const RegisterForm = () => {
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
     await signUp.email(values, {
-      onSuccess: () => router.push("/dashboard"),
+      onSuccess: () => router.push("/onboarding"),
       onError: ({ error }) => setServerError(error.message),
     });
   });

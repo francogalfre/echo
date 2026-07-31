@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
       { source: "/dashboard/:path*", headers: frameProtectionHeaders },
       { source: "/login", headers: frameProtectionHeaders },
       { source: "/register", headers: frameProtectionHeaders },
-      { source: "/new-project", headers: frameProtectionHeaders },
+      { source: "/onboarding", headers: frameProtectionHeaders },
     ];
   },
 };
