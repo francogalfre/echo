@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
-import { createSubmitHandler } from "../lib/submit";
+import { createSubmitHandler } from "@/lib/submit";
 
 function buildApp(submit: Parameters<typeof createSubmitHandler>[0]): Hono {
   const app = new Hono();

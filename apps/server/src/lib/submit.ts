@@ -1,7 +1,7 @@
 import type { SubmitResult } from "@echo/api/types";
 import type { Context } from "hono";
 
-import { submitFeedbackSchema } from "../schemas";
+import { submitFeedbackSchema } from "@/schemas";
 
 type SubmitFn = (input: {
   authorization: string | undefined;

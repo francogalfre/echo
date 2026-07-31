@@ -2,7 +2,7 @@ import { resolveChatOrganization, streamChatTurn } from "@echo/api/controllers/c
 import { Hono } from "hono";
 import { z } from "zod";
 
-import { authenticate } from "../middleware/auth";
+import { authenticate } from "@/middleware/auth";
 
 type SessionWithOrg = { activeOrganizationId?: string | null };
 

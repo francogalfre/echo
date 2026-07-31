@@ -5,10 +5,10 @@ import {
 } from "@echo/api/controllers/widget";
 import { Hono } from "hono";
 
-import { createSubmitHandler } from "../lib/submit";
-import { getWidgetUrl } from "../lib/widget-url";
-import { dashboardCors, widgetCors } from "../middleware/cors";
-import { widgetReadRateLimit } from "../middleware/rate-limit";
+import { createSubmitHandler } from "@/lib/submit";
+import { getWidgetUrl } from "@/lib/widget-url";
+import { dashboardCors, widgetCors } from "@/middleware/cors";
+import { widgetReadRateLimit } from "@/middleware/rate-limit";
 
 export const widgetRoutes = new Hono();
 

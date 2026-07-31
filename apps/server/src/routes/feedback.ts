@@ -1,7 +1,7 @@
 import { getFeedback, submitFeedback } from "@echo/api/controllers/feedback/external";
 import { Hono } from "hono";
 
-import { createSubmitHandler } from "../lib/submit";
+import { createSubmitHandler } from "@/lib/submit";
 
 export const feedbackRoutes = new Hono();
 
