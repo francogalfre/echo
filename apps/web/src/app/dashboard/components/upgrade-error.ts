@@ -1,3 +1,13 @@
+function readNestedQuotaCode(error: unknown): string | undefined {
+  if (!error || typeof error !== "object" || !("data" in error)) return undefined;
+
+  const data = (error as { data?: unknown }).data;
+  if (!data || typeof data !== "object" || !("code" in data)) return undefined;
+
+  const code = (data as { code?: unknown }).code;
+  return typeof code === "string" ? code : undefined;
+}
+
 function readNestedUpgradeFlag(error: unknown): boolean | undefined {
   if (!error || typeof error !== "object" || !("data" in error)) return undefined;
 
@@ -15,14 +25,9 @@ function readDirectUpgradeFlag(error: unknown): boolean | undefined {
   return typeof upgrade === "boolean" ? upgrade : undefined;
 }
 
-function readUpgradeFlag(error: unknown): boolean | undefined {
-  return readNestedUpgradeFlag(error) ?? readDirectUpgradeFlag(error);
-}
-
 export function isUpgradeError(error: unknown): boolean {
-  const upgrade = readUpgradeFlag(error);
-  if (upgrade !== undefined) return upgrade;
+  const code = readNestedQuotaCode(error);
+  if (code !== undefined) return code === "QUOTA_EXCEEDED";
 
-  const message = error instanceof Error ? error.message : String(error);
-  return message.includes("Upgrade to Pro");
+  return readNestedUpgradeFlag(error) ?? readDirectUpgradeFlag(error) ?? false;
 }

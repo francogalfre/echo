@@ -1,6 +1,6 @@
 "use client";
 
-import type { DashboardOverview, SeriesPoint } from "@echo/api/services/dashboard-overview";
+import type { DashboardOverview, SeriesPoint } from "@echo/api/types";
 
 import { MetricCard } from "./metric-card";
 

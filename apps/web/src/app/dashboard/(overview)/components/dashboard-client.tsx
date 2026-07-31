@@ -8,9 +8,10 @@ import * as React from "react";
 
 import { useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 import type { DigestOutput } from "@echo/ai";
-import type { DashboardOverview, StatsRange } from "@echo/api/services/dashboard-overview";
+import type { DashboardOverview, StatsRange } from "@echo/api/types";
 
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
@@ -26,18 +27,13 @@ import { RecentFeedbackTable } from "./recent-feedback-table";
 import { SentimentChartCard } from "./sentiment-chart-card";
 import { SourcesCard } from "./sources-card";
 
-type State =
-  | { status: "loading" }
-  | { status: "error" }
-  | { status: "ready"; data: DashboardOverview; pending: boolean };
-
 type InitialDigest = {
   readonly digest: DigestOutput | null;
   readonly generatedAt: Date | null;
   readonly feedbackCount: number;
 };
 
-type Props = {
+type DashboardClientProps = {
   readonly initialData: DashboardOverview;
   readonly hasApiKey: boolean;
   readonly initialDigest: InitialDigest;
@@ -49,54 +45,14 @@ export function DashboardClient({
   initialData,
   hasApiKey,
   initialDigest,
-}: Props): React.ReactElement {
+}: DashboardClientProps): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
   const [digestOpen, setDigestOpen] = React.useState(false);
-  const [state, setState] = React.useState<State>({
-    status: "ready",
-    data: initialData,
-    pending: false,
+  const { state } = useAsyncResource(() => trpc.dashboard.overview.query({ range }), {
+    initialData,
+    deps: [range],
   });
-  const isFirstRender = React.useRef(true);
-
-  React.useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    let cancelled = false;
-    let attempt = 0;
-    const maxAttempts = 3;
-
-    setState((prev) =>
-      prev.status === "ready" ? { ...prev, pending: true } : { status: "loading" },
-    );
-
-    const load = (): void => {
-      trpc.dashboard.overview
-        .query({ range })
-        .then((data) => {
-          if (!cancelled) setState({ status: "ready", data, pending: false });
-        })
-        .catch(() => {
-          if (cancelled) return;
-          attempt += 1;
-          if (attempt < maxAttempts) {
-            setTimeout(load, attempt * 800);
-          } else {
-            setState({ status: "error" });
-          }
-        });
-    };
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [range]);
 
   const firstName = session?.user.name?.split(" ")[0] ?? "";
   const hasFeedback = state.status === "ready" && state.data.metrics.total.value > 0;
@@ -139,7 +95,10 @@ export function DashboardClient({
       {state.status === "loading" && <DashboardSkeleton />}
 
       {state.status === "error" && (
-        <ErrorCard message="We couldn't load your dashboard. Refresh the page to retry." />
+        <ErrorCard
+          message="We couldn't load your dashboard. Refresh the page to retry."
+          onRetry={state.retry}
+        />
       )}
 
       {state.status === "ready" && state.data.recent.length === 0 && (

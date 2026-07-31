@@ -15,7 +15,7 @@ import { formatCount } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 import Link from "next/link";
 
-import type { SourceCount } from "@echo/api/services/dashboard-overview";
+import type { SourceCount } from "@echo/api/types";
 
 const SOURCE_LABELS: Record<SourceCount["source"], string> = {
   api: "API",

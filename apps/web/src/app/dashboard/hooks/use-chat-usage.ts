@@ -1,36 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 export type ChatUsage = Awaited<ReturnType<typeof trpc.chat.getUsage.query>>;
 
-type State =
+type ChatUsageState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ready"; data: ChatUsage };
 
-export function useChatUsage(reloadKey: number): { state: State } {
-  const [state, setState] = useState<State>({ status: "loading" });
+export function useChatUsage(reloadKey: number): { state: ChatUsageState } {
+  const { state } = useAsyncResource(() => trpc.chat.getUsage.query(), {
+    deps: [reloadKey],
+  });
 
-  useEffect(() => {
-    let cancelled = false;
-    setState({ status: "loading" });
+  const mapped: ChatUsageState =
+    state.status === "error"
+      ? { status: "error" }
+      : state.status === "ready"
+        ? { status: "ready", data: state.data }
+        : { status: "loading" };
 
-    trpc.chat.getUsage
-      .query()
-      .then((data) => {
-        if (!cancelled) setState({ status: "ready", data });
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: "error" });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [reloadKey]);
-
-  return { state };
+  return { state: mapped };
 }

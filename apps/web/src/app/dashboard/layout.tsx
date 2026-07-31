@@ -6,11 +6,11 @@ import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";
 
-type Props = {
+type DashboardLayoutProps = {
   children: ReactNode;
 };
 
-const DashboardLayout = ({ children }: Props): React.ReactElement => {
+const DashboardLayout = ({ children }: DashboardLayoutProps): React.ReactElement => {
   return (
     <MotionProvider>
       <div className="flex h-svh">

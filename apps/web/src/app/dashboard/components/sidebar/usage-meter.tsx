@@ -5,11 +5,11 @@ import Link from "next/link";
 
 import type { BillingOverviewData } from "../../hooks/use-billing-overview";
 
-type Props = {
+type UsageMeterProps = {
   readonly initialData: BillingOverviewData;
 };
 
-export const UsageMeter = ({ initialData }: Props): React.ReactElement | null => {
+export const UsageMeter = ({ initialData }: UsageMeterProps): React.ReactElement | null => {
   if (initialData.plan === "pro") return null;
 
   const { used, limit } = initialData.feedback;

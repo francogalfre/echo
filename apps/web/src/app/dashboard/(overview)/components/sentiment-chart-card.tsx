@@ -27,11 +27,7 @@ import {
 import { formatBucket, formatCompact } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 
-import type {
-  SeriesGranularity,
-  SeriesPoint,
-  StatsRange,
-} from "@echo/api/services/dashboard-overview";
+import type { SeriesGranularity, SeriesPoint, StatsRange } from "@echo/api/types";
 
 const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
   { value: "7d", label: "Last 7 days" },

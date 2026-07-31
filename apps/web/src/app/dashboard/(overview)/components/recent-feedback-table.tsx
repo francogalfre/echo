@@ -2,7 +2,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import Link from "next/link";
 
-import type { OverviewRecentItem } from "@echo/api/services/dashboard-overview";
+import type { OverviewRecentItem } from "@echo/api/types";
 
 import { AccentAvatar } from "../../components/accent-avatar";
 import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";

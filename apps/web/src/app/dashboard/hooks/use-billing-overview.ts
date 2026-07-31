@@ -1,52 +1,24 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 export type BillingOverviewData = Awaited<ReturnType<typeof trpc.billing.overview.query>>;
 
-type State =
+type BillingOverviewState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ready"; data: BillingOverviewData };
 
-export function useBillingOverview(): { state: State; reload: () => void } {
-  const [state, setState] = useState<State>({ status: "loading" });
-  const [reloadKey, setReloadKey] = useState(0);
+export function useBillingOverview(): { state: BillingOverviewState; reload: () => void } {
+  const { state, refresh } = useAsyncResource(() => trpc.billing.overview.query());
 
-  const reload = useCallback((): void => setReloadKey((key) => key + 1), []);
+  const mapped: BillingOverviewState =
+    state.status === "error"
+      ? { status: "error" }
+      : state.status === "ready"
+        ? { status: "ready", data: state.data }
+        : { status: "loading" };
 
-  useEffect(() => {
-    let cancelled = false;
-    let attempt = 0;
-    const maxAttempts = 3;
-
-    setState({ status: "loading" });
-
-    const load = (): void => {
-      trpc.billing.overview
-        .query()
-        .then((data) => {
-          if (!cancelled) setState({ status: "ready", data });
-        })
-        .catch(() => {
-          if (cancelled) return;
-          attempt += 1;
-          if (attempt < maxAttempts) {
-            setTimeout(load, attempt * 800);
-          } else {
-            setState({ status: "error" });
-          }
-        });
-    };
-
-    load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [reloadKey]);
-
-  return { state, reload };
+  return { state: mapped, reload: refresh };
 }

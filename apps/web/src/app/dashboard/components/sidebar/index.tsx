@@ -45,11 +45,11 @@ const settingsItem: NavItem = {
   icon: Icons.slidersHorizontal,
 };
 
-type Props = {
+type SidebarProps = {
   usageMeterSlot: ReactNode;
 };
 
-export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
+export const Sidebar = ({ usageMeterSlot }: SidebarProps): React.ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
 
