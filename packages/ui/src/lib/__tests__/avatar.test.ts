@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { avatarHue, initials } from "./avatar";
+import { avatarHue, initials } from "../avatar";
 
 describe("initials", () => {
   it("should take first and last word initials", () => {

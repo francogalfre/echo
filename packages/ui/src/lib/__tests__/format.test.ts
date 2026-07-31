@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatBucket, formatCompact, formatCount, formatRelativeTime } from "./format";
+import { formatBucket, formatCompact, formatCount, formatRelativeTime } from "../format";
 
 describe("formatCount", () => {
   it("should group thousands", () => {
@@ -53,5 +53,9 @@ describe("formatRelativeTime", () => {
 
   it("should fall back to a short date after a week", () => {
     expect(formatRelativeTime("2026-06-12T12:00:00.000Z", now)).toBe("Jun 12");
+  });
+
+  it("should accept a Date instance", () => {
+    expect(formatRelativeTime(new Date("2026-07-02T11:45:00.000Z"), now)).toBe("15m ago");
   });
 });

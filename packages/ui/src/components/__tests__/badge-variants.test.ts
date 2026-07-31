@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { badgeVariants } from "./badge-variants";
+import { badgeVariants } from "../badge-variants";
 
 describe("badgeVariants", () => {
   it("should default to the neutral variant", () => {

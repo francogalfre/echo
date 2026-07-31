@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { durations, easings, fadeIn, fadeInUp, scaleIn, staggerContainer } from "./motion";
+import { durations, easings, fadeIn, fadeInUp, scaleIn, staggerContainer } from "../motion";
 
 describe("motion presets", () => {
   it("should define the standard duration scale", () => {
