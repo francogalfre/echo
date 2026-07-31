@@ -10,11 +10,11 @@ const SAMPLE_DIGEST: DigestOutput = {
   positiveHighlight: "Fast onboarding.",
 };
 
-vi.mock("../../services/ai-usage", () => ({
+vi.mock("../../services/ai/usage", () => ({
   getUsageCount: vi.fn(),
 }));
 
-vi.mock("../../services/digest", () => ({
+vi.mock("../../services/feedback/digest", () => ({
   getDigest: vi.fn(),
 }));
 
@@ -27,8 +27,8 @@ vi.mock("../../services/organization", () => ({
   countOwnedOrganizations: vi.fn(),
 }));
 
-const { getUsageCount } = await import("../../services/ai-usage");
-const { getDigest } = await import("../../services/digest");
+const { getUsageCount } = await import("../../services/ai/usage");
+const { getDigest } = await import("../../services/feedback/digest");
 const { countFeedbackThisMonth } = await import("../../services/feedback");
 const { getOrgPlan, countOwnedOrganizations } = await import("../../services/organization");
 

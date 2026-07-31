@@ -1,6 +1,6 @@
 import { createFeedback } from "./create";
 import { guardSubmission } from "../../lib/rate-limit";
-import { getFeedbackPageBySlug } from "../../services/feedback-page";
+import { getFeedbackPageBySlug } from "../../services/feedback/page";
 import type { PublicFeedbackInput } from "../../schemas";
 
 type Failure<Status extends number> = { success: false; status: Status; error: string };

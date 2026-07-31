@@ -3,8 +3,8 @@ import { generateDigest, type DigestOutput } from "@echo/ai";
 import { enforceInterval, enforceQuota } from "../quota";
 import { dayKey } from "../../lib/dates";
 import { FREE_DIGEST_INTERVAL_MS, PRO_DIGEST_DAILY_LIMIT, isPro } from "../../lib/plan";
-import { recordAiEvent } from "../../services/ai-events";
-import { getUsageCount } from "../../services/ai-usage";
+import { recordAiEvent } from "../../services/ai/events";
+import { getUsageCount } from "../../services/ai/usage";
 import {
   getDigest,
   getFeedbackForDigest,
@@ -12,7 +12,7 @@ import {
   insertDigest,
   listDigests,
   type DigestHistoryEntry,
-} from "../../services/digest";
+} from "../../services/feedback/digest";
 import { getOrgPlan } from "../../services/organization";
 
 const freeDigestMaxItems = 100;

@@ -1,7 +1,7 @@
 import { generateInsight } from "@echo/ai";
 
 import { enforceQuota } from "../quota";
-import { recordAiEvent } from "../../services/ai-events";
+import { recordAiEvent } from "../../services/ai/events";
 import { getFeedbackById, setFeedbackInsight } from "../../services/feedback";
 import type { InsightResult } from "../../types";
 

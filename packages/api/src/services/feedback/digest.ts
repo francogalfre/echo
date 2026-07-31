@@ -4,7 +4,7 @@ import { feedback } from "@echo/db/schema/feedback";
 import type { DigestInput, DigestOutput } from "@echo/ai";
 import { and, desc, eq, gt } from "drizzle-orm";
 
-import { sampleProportional } from "../lib/sampling";
+import { sampleProportional } from "../../lib/sampling";
 
 export type DigestRecord = {
   digest: DigestOutput;

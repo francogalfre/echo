@@ -4,7 +4,7 @@ import { listFeedback } from "../../services/feedback";
 import {
   getFeedbackPageConfig,
   upsertFeedbackPageConfig,
-} from "../../services/feedback-page";
+} from "../../services/feedback/page";
 
 export const feedbackPageRouter = router({
   getConfig: organizationProcedure.query(({ ctx }) => {

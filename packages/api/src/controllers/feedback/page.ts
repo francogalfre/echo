@@ -7,7 +7,7 @@ import {
   type FeedbackPageConfig,
   type PublicFeedbackItem,
   type PublicOrganization,
-} from "../../services/feedback-page";
+} from "../../services/feedback/page";
 import type { UploadLogoResult } from "../../types";
 import { uploadImage } from "../upload-image";
 

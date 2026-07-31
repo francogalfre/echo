@@ -7,7 +7,7 @@ import {
   PRO_INSIGHT_DAILY_LIMIT,
   isPro,
 } from "../lib/plan";
-import { reserveUsage, releaseUsage, getUsageCount } from "../services/ai-usage";
+import { reserveUsage, releaseUsage, getUsageCount } from "../services/ai/usage";
 import { getOrgPlan } from "../services/organization";
 
 export class QuotaExceededError extends Error {

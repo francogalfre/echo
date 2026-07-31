@@ -1,7 +1,7 @@
 import { analyzeFeedback } from "@echo/ai";
 
 import { feedbackEnrichPayloadSchema } from "../kinds";
-import { recordAiEvent } from "../../services/ai-events";
+import { recordAiEvent } from "../../services/ai/events";
 import { getFeedbackOrganizationId, setFeedbackEnrichment } from "../../services/feedback";
 
 export async function handleFeedbackEnrich(payload: unknown): Promise<void> {

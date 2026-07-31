@@ -2,7 +2,7 @@ import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
 import { and, desc, eq, gte, inArray, or, sql } from "drizzle-orm";
 
-import { sinceFor } from "../lib/dates";
+import { sinceFor } from "../../lib/dates";
 
 export type FeedbackSearchRow = {
   id: string;

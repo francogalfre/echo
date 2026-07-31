@@ -10,8 +10,8 @@ import {
   PRO_CHAT_DAILY_LIMIT,
   isPro,
 } from "../lib/plan";
-import { getUsageCount } from "../services/ai-usage";
-import { getDigest } from "../services/digest";
+import { getUsageCount } from "../services/ai/usage";
+import { getDigest } from "../services/feedback/digest";
 import { countFeedbackThisMonth } from "../services/feedback";
 import { countOwnedOrganizations, getOrgPlan } from "../services/organization";
 
