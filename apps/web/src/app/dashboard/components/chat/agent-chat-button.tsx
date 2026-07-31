@@ -5,10 +5,15 @@ import { Icons } from "@echo/ui/components/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@echo/ui/components/tooltip";
 import { useState } from "react";
 
+import { useBillingOverview } from "../../hooks/use-billing-overview";
 import { AgentChat } from "./agent-chat";
 
-export function AgentChatButton(): React.ReactElement {
+export function AgentChatButton(): React.ReactElement | null {
   const [isOpen, setIsOpen] = useState(false);
+  const { state } = useBillingOverview();
+  const isPro = state.status === "ready" && state.data.plan === "pro";
+
+  if (!isPro) return null;
 
   return (
     <>

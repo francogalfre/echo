@@ -42,7 +42,7 @@ export function MetricCard({
   sparklineColor = "accent",
 }: MetricCardProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/30">
+    <div className="flex flex-col gap-2.5 overflow-hidden rounded-lg border border-border bg-card p-5 transition-colors hover:bg-muted/30">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">{label}</p>
         <TrendIndicator growth={growth} />

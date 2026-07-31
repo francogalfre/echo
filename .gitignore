@@ -53,6 +53,7 @@ coverage
 tmp
 temp
 
-.claude/inspiration/
-.claude/inspiration
+# .claude/inspiration/
+# .claude/inspiration
 endpoints.md
+/docs/

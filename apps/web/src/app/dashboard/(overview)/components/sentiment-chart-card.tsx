@@ -81,11 +81,11 @@ export function SentimentChartCard({
               {Object.entries(chartConfig).map(([key, item]) => (
                 <span
                   key={key}
-                  className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
+                  className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
                 >
                   <span
                     aria-hidden
-                    className="size-2 rounded-full"
+                    className="size-2.5 rounded-full"
                     style={{ backgroundColor: rgb(seedOfColor(item.color).fill) }}
                   />
                   {item.label}

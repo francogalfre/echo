@@ -78,6 +78,7 @@ export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
           className="h-5.5 w-auto dark:hidden"
           priority
         />
+
         <Image
           src={imagotipoLight}
           alt="echo"
@@ -86,7 +87,7 @@ export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
         />
       </div>
 
-      <div className="pb-2">
+      <div className="pb-2 pt-6">
         <OrgSwitcher />
       </div>
 

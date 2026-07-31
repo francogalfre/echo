@@ -1,6 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
 import { Checkbox } from "@echo/ui/components/checkbox";
 import {
   DropdownMenu,
@@ -16,6 +15,7 @@ import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 import { motion } from "motion/react";
 
+import { AccentAvatar } from "../../components/accent-avatar";
 import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
 import { AGENT_PERSONAS } from "../../components/chat/agent-personas";
 import type { FeedbackItem } from "../utils/map-feedback";
@@ -70,9 +70,7 @@ export function FeedbackRow({
       </span>
 
       <span role="cell" className="flex min-w-0 items-center gap-2.5">
-        <Avatar className="size-8">
-          <AvatarFallback name={item.name} />
-        </Avatar>
+        <AccentAvatar name={item.name} />
         <span className="flex min-w-0 flex-col">
           <span className="flex items-center gap-1.5 truncate text-[13px] font-medium leading-tight">
             <span className="truncate">{item.name}</span>

@@ -49,6 +49,24 @@
       "skillPath": "skills/hono/SKILL.md",
       "computedHash": "220e5e1b12bbaeec49ec362b6e2262d77632d0536e9758bba9acbbc323fef990"
     },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "e07098370ad7fd4605b67d305d8c06623a5c7d7737d2364e30932294ef880ff6"
+    },
+    "interface-design": {
+      "source": "Dammyjay93/interface-design",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/interface-design/SKILL.md",
+      "computedHash": "340cc79a1558f09371aa3eb689952a8b777c1d7362c24226e99693606a80828e"
+    },
+    "make-interfaces-feel-better": {
+      "source": "jakubkrehel/make-interfaces-feel-better",
+      "sourceType": "github",
+      "skillPath": "skills/make-interfaces-feel-better/SKILL.md",
+      "computedHash": "8e3423e467eae12f3748ca1a365a668105ac59dbb0fdd50e66b45a40bb581950"
+    },
     "minimalist-ui": {
       "source": "Leonxlnx/taste-skill",
       "sourceType": "github",
@@ -84,6 +102,12 @@
       "sourceType": "github",
       "skillPath": "skills/turborepo/SKILL.md",
       "computedHash": "b7c3165ae67a2892d6195a5b2cba15c8d96341f5c64ddd0d3ce4225c94a2ae83"
+    },
+    "ui-skills-root": {
+      "source": "ibelick/ui-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-skills-root/SKILL.md",
+      "computedHash": "e3120361faa5a0ef5fba9b67d91e00c90002f3c9ca092c5325d2391dab8c619e"
     },
     "vercel-composition-patterns": {
       "source": "vercel-labs/agent-skills",

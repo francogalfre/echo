@@ -15,7 +15,7 @@ export function MetricStrip({ metrics, trend }: MetricStripProps): React.ReactEl
   const negativeSeries = trend.map((point) => point.negative);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-3">
       <MetricCard
         label="Total feedback"
         value={metrics.total.value}

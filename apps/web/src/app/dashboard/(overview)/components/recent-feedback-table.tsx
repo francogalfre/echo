@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
 import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import Link from "next/link";
 
 import type { OverviewRecentItem } from "@echo/api/services/dashboard-overview";
 
+import { AccentAvatar } from "../../components/accent-avatar";
 import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
 
 export function RecentFeedbackTable({
@@ -28,20 +28,9 @@ export function RecentFeedbackTable({
         {items.map((item) => (
           <li
             key={item.id}
-            className="flex items-center gap-3.5 border-b border-border px-5 py-3.5 transition-colors duration-150 last:border-0 hover:bg-muted/30"
+            className="flex items-center gap-4 border-b border-border px-5 py-4 transition-colors duration-150 last:border-0 hover:bg-muted/30"
           >
-            <Avatar className="size-7 ring-1 ring-border">
-              <AvatarFallback
-                name={item.name}
-                style={
-                  {
-                    "--avatar-bg": "oklch(0.6 0.14 282.7 / 0.16)",
-                    "--avatar-fg-light": "oklch(0.45 0.13 282.7)",
-                    "--avatar-fg-dark": "oklch(0.82 0.09 282.7)",
-                  } as React.CSSProperties
-                }
-              />
-            </Avatar>
+            <AccentAvatar name={item.name} className="size-7 ring-1 ring-border" />
             <span className="w-32 shrink-0 truncate text-[13px] font-medium">
               {item.name}
             </span>
