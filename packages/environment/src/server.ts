@@ -27,6 +27,7 @@ export const env = createEnv({
 
     // AI
     OPENROUTER_API_KEY: z.string().min(1),
+    OPENROUTER_MODEL: z.string().optional(),
 
     RESEND_API_KEY: z.string().min(1).optional(),
     RESEND_FROM_EMAIL: z.string().min(1).optional(),

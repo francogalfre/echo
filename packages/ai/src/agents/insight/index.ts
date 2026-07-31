@@ -1,44 +1,68 @@
 import { generateText } from "ai";
 
 import { AIError } from "../../errors";
-import { buildAgentUsage, type AgentUsage } from "../../usage";
-import { insightModel } from "./models";
+import { openrouterModel } from "../../lib/provider";
+import { DEFAULT_MODEL } from "../../lib/model";
+import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
-import type { InsightInput } from "./types";
 
-const TIMEOUT_MS = 30_000;
-const MAX_OUTPUT_TOKENS = 512;
+const timeoutMs = 30_000;
+const maxOutputTokens = 512;
+const maxAttempts = 2;
+const retryDelayMs = 500;
+
+export type InsightInput = {
+  content: string;
+  sentiment?: string | null;
+};
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function attemptGeneration(
+  input: InsightInput,
+): Promise<{ insight: string; usage: AgentUsage }> {
+  const result = await generateText({
+    model: openrouterModel(DEFAULT_MODEL),
+    system: INSIGHT_SYSTEM_PROMPT,
+    prompt: buildInsightPrompt(input),
+    temperature: 0.3,
+    maxOutputTokens,
+    abortSignal: AbortSignal.timeout(timeoutMs),
+    providerOptions: { openrouter: { usage: { include: true } } },
+  });
+
+  const insight = result.text.trim();
+
+  if (!insight) {
+    throw new AIError("GENERATION_FAILED", "Empty insight output");
+  }
+
+  return {
+    insight,
+    usage: buildAgentUsage({
+      model: result.response.modelId,
+      usage: result.usage,
+      providerMetadata: result.providerMetadata,
+    }),
+  };
+}
 
 export async function generateInsight(
   input: InsightInput,
 ): Promise<{ insight: string; usage: AgentUsage }> {
-  try {
-    const result = await generateText({
-      model: insightModel,
-      system: INSIGHT_SYSTEM_PROMPT,
-      prompt: buildInsightPrompt(input),
-      temperature: 0.3,
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      abortSignal: AbortSignal.timeout(TIMEOUT_MS),
-      providerOptions: { openrouter: { usage: { include: true } } },
-    });
+  let lastError: unknown = undefined;
 
-    const insight = result.text.trim();
-
-    if (!insight) {
-      throw new AIError("GENERATION_FAILED", "Empty insight output");
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await attemptGeneration(input);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxAttempts) await sleep(retryDelayMs);
     }
-
-    return {
-      insight,
-      usage: buildAgentUsage({
-        model: result.response.modelId,
-        usage: result.usage,
-        providerMetadata: result.providerMetadata,
-      }),
-    };
-  } catch (error) {
-    if (error instanceof AIError) throw error;
-    throw new AIError("GENERATION_FAILED", "Insight generation failed", { cause: error });
   }
+
+  if (lastError instanceof AIError) throw lastError;
+  throw new AIError("GENERATION_FAILED", "Insight generation failed", { cause: lastError });
 }

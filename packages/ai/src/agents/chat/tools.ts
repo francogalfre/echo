@@ -1,4 +1,4 @@
-import { tool, type ToolSet } from "ai";
+import { tool, type ToolSet, type UIMessage } from "ai";
 import { z } from "zod";
 
 export type SearchHit = {
@@ -40,6 +40,13 @@ export type FeedbackRetriever = {
     limit: number,
   ) => Promise<readonly SeriesPoint[]>;
   readonly readDigest: () => Promise<CachedDigest | null>;
+};
+
+export type ChatStreamInput = {
+  readonly messages: readonly UIMessage[];
+  readonly digestSummary: string | null;
+  readonly retriever: FeedbackRetriever;
+  readonly spendBudget: (chars: number) => boolean;
 };
 
 const excerptLimit = 240;

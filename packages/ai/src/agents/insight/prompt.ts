@@ -1,6 +1,4 @@
-import type { InsightInput } from "./types";
-
-export const PROMPT_VERSION = 1 as const;
+import type { InsightInput } from "./index";
 
 export const INSIGHT_SYSTEM_PROMPT = `You are a product analyst. You receive one piece of user feedback together with the sentiment already detected for it, and you write a short, clear explanation for a busy product team.
 

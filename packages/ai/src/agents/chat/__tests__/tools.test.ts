@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { buildFeedbackTools, type FeedbackRetriever } from "./tools";
+import { buildFeedbackTools, type FeedbackRetriever } from "../tools";
 
 const stubRetriever: FeedbackRetriever = {
   search: async () => [],

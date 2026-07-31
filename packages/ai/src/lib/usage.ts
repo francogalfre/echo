@@ -1,7 +1,5 @@
 import type { LanguageModelUsage, ProviderMetadata } from "ai";
 
-import { getModelPricing } from "./pricing";
-
 export type TokenUsage = {
   readonly inputTokens: number;
   readonly outputTokens: number;
@@ -20,15 +18,6 @@ export function normalizeUsage(usage: LanguageModelUsage): TokenUsage {
     inputTokens: usage.inputTokens ?? 0,
     outputTokens: usage.outputTokens ?? 0,
   };
-}
-
-export function estimateCostMicroUsd(model: string, usage: TokenUsage): number {
-  const pricing = getModelPricing(model);
-  const costUsd =
-    (usage.inputTokens / 1_000_000) * pricing.inputPerMillionUsd +
-    (usage.outputTokens / 1_000_000) * pricing.outputPerMillionUsd;
-
-  return Math.round(costUsd * 1_000_000);
 }
 
 function extractOpenRouterCostUsd(
@@ -56,9 +45,7 @@ export function buildAgentUsage(input: {
   const tokens = normalizeUsage(input.usage);
   const providerCostUsd = extractOpenRouterCostUsd(input.providerMetadata);
   const costMicroUsd =
-    providerCostUsd !== undefined
-      ? Math.round(providerCostUsd * 1_000_000)
-      : estimateCostMicroUsd(input.model, tokens);
+    providerCostUsd !== undefined ? Math.round(providerCostUsd * 1_000_000) : 0;
 
   return {
     model: input.model,
