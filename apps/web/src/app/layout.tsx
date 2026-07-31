@@ -1,5 +1,5 @@
 import { Toaster } from "@echo/ui/components/toast";
-import { geistMono, geistPixel, geistSans, instrumentSans } from "@/utils/fonts";
+import { geistMono, geistPixel, geistSans, instrumentSans } from "@/lib/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 
@@ -7,8 +7,6 @@ import type { Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { createMetadata } from "@/lib/metadata";
-
-import { PostHogProvider } from "./providers/posthog-provider";
 
 import "../index.css";
 
@@ -28,9 +26,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable} ${geistPixel.variable}`}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <PostHogProvider>
-            <NuqsAdapter>{children}</NuqsAdapter>
-          </PostHogProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>

@@ -22,7 +22,6 @@
     "geist": "^1.7.2",
     "next": "^16.2.0",
     "nuqs": "^2.9.0",
-    "posthog-js": "^1.402.3",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "^7.79.0",
