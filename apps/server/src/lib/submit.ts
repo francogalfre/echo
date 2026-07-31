@@ -1,10 +1,7 @@
+import type { SubmitResult } from "@echo/api/types";
 import type { Context } from "hono";
 
 import { submitFeedbackSchema } from "../schemas";
-
-type SubmitResult =
-  | { success: true }
-  | { success: false; status: 400 | 401 | 403 | 429; error: string };
 
 type SubmitFn = (input: {
   authorization: string | undefined;

@@ -5,13 +5,16 @@ import {
 } from "@echo/api/controllers/widget";
 import { Hono } from "hono";
 
-import { widgetCors } from "../middleware/cors";
 import { createSubmitHandler } from "../lib/submit";
 import { getWidgetUrl } from "../lib/widget-url";
+import { dashboardCors, widgetCors } from "../middleware/cors";
+import { widgetReadRateLimit } from "../middleware/rate-limit";
 
 export const widgetRoutes = new Hono();
 
-widgetRoutes.use("/*", widgetCors);
+widgetRoutes.use("/", widgetCors);
+widgetRoutes.use("/:orgSlug/component", dashboardCors, widgetReadRateLimit);
+widgetRoutes.use("/:orgSlug/registry", dashboardCors, widgetReadRateLimit);
 
 widgetRoutes.post("/", createSubmitHandler(submitWidgetFeedback));
 

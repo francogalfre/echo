@@ -8,6 +8,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
+import { dashboardCors } from "./middleware/cors";
 import { chatRoutes } from "./routes/chat";
 import { feedbackRoutes } from "./routes/feedback";
 import { projectRoutes } from "./routes/projects";
@@ -34,16 +35,12 @@ if (env.WORKER_ENABLED) {
 
 const app = new Hono();
 
-app.onError((_err, c) => c.json({ error: "Internal server error" }, 500));
+app.onError((err, c) => {
+  console.error(err);
+  return c.json({ error: "Internal server error" }, 500);
+});
 
 app.use(logger());
-
-const dashboardCors = cors({
-  origin: env.CORS_ORIGIN,
-  allowMethods: ["GET", "POST", "OPTIONS"],
-  allowHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-});
 
 const chatCors = cors({
   origin: env.CORS_ORIGIN,

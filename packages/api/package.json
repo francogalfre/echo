@@ -16,6 +16,18 @@
     },
     "./lib/redis": {
       "default": "./src/lib/redis.ts"
+    },
+    "./schemas": {
+      "default": "./src/schemas.ts"
+    },
+    "./controllers/*": {
+      "default": "./src/controllers/*.ts"
+    },
+    "./jobs/*": {
+      "default": "./src/jobs/*.ts"
+    },
+    "./services/jobs": {
+      "default": "./src/services/jobs.ts"
     }
   },
   "scripts": {
