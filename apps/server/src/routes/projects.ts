@@ -1,4 +1,4 @@
-import { uploadFeedbackPageBanner } from "@echo/api/controllers/feedback-page";
+import { uploadFeedbackPageBanner } from "@echo/api/controllers/feedback/page";
 import { uploadOrganizationLogo } from "@echo/api/controllers/organization";
 import { Hono } from "hono";
 

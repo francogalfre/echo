@@ -20,6 +20,9 @@
     "./schemas": {
       "default": "./src/schemas.ts"
     },
+    "./controllers/chat": {
+      "default": "./src/controllers/chat/index.ts"
+    },
     "./controllers/*": {
       "default": "./src/controllers/*.ts"
     },

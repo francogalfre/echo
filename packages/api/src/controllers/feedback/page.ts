@@ -1,15 +1,15 @@
 import { organizationBannerPath, organizationBannerUrl } from "@echo/db/storage";
 
-import { isPro } from "../lib/plan";
+import { isPro } from "../../lib/plan";
 import {
   getFeedbackPageBySlug,
   upsertFeedbackPageConfig,
   type FeedbackPageConfig,
   type PublicFeedbackItem,
   type PublicOrganization,
-} from "../services/feedback-page";
-import type { UploadLogoResult } from "../types";
-import { uploadImage } from "./upload-image";
+} from "../../services/feedback-page";
+import type { UploadLogoResult } from "../../types";
+import { uploadImage } from "../upload-image";
 
 export type PublicFeedbackPage = {
   org: PublicOrganization;

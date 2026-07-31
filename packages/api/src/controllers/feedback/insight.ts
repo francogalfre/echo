@@ -1,9 +1,9 @@
 import { generateInsight } from "@echo/ai";
 
-import { enforceQuota } from "./quota";
-import { recordAiEvent } from "../services/ai-events";
-import { getFeedbackById, setFeedbackInsight } from "../services/feedback";
-import type { InsightResult } from "../types";
+import { enforceQuota } from "../quota";
+import { recordAiEvent } from "../../services/ai-events";
+import { getFeedbackById, setFeedbackInsight } from "../../services/feedback";
+import type { InsightResult } from "../../types";
 
 export async function generateFeedbackInsight(
   organizationId: string,

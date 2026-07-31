@@ -1,17 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { generateFeedbackInsight } from "../controllers/feedback-insight";
-import { QuotaExceededError } from "../controllers/quota";
-import { organizationProcedure, router } from "../index";
-import { getErrorCode } from "../lib/error-map";
-import { paginateRows } from "../lib/pagination";
+import { generateFeedbackInsight } from "../../controllers/feedback/insight";
+import { QuotaExceededError } from "../../controllers/quota";
+import { organizationProcedure, router } from "../../index";
+import { getErrorCode } from "../../lib/error-map";
+import { paginateRows } from "../../lib/pagination";
 import {
   countFeedbackBySentiment,
   getFeedbackListItemById,
   listFeedback,
-} from "../services/feedback";
-import { FEEDBACK_SOURCE_VALUES, SENTIMENT_VALUES } from "../types";
+} from "../../services/feedback";
+import { FEEDBACK_SOURCE_VALUES, SENTIMENT_VALUES } from "../../types";
 
 const ListFeedbackInput = z.object({
   sentiment: z.enum(SENTIMENT_VALUES).optional(),

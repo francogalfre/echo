@@ -4,10 +4,10 @@ import {
   buildFeedbackRetriever,
   createBudget,
   summarizeDigestForPrompt,
-} from "./chat-retriever";
-import { enforceQuota } from "./quota";
-import { resolveOrganizationContext } from "../lib/organization";
-import { recordAiEvent } from "../services/ai-events";
+} from "./retriever";
+import { enforceQuota } from "../quota";
+import { resolveOrganizationContext } from "../../lib/organization";
+import { recordAiEvent } from "../../services/ai-events";
 import {
   appendMessage,
   createConversation,
@@ -16,8 +16,8 @@ import {
   listMessages,
   nextSeq,
   type ChatConversationSummary,
-} from "../services/chat-conversations";
-import { getDigest } from "../services/digest";
+} from "../../services/chat-conversations";
+import { getDigest } from "../../services/digest";
 
 const chatToolBudgetChars = 24_000;
 

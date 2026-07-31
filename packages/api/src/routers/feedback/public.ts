@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 
-import { resolvePublicFeedbackPage } from "../controllers/feedback-page";
-import { submitPublicFeedback } from "../controllers/submit-public-feedback";
-import { publicProcedure, router } from "../index";
-import { getErrorCode } from "../lib/error-map";
-import { publicFeedbackSchema, slugSchema } from "../schemas";
+import { resolvePublicFeedbackPage } from "../../controllers/feedback/page";
+import { submitPublicFeedback } from "../../controllers/feedback/submit-public";
+import { publicProcedure, router } from "../../index";
+import { getErrorCode } from "../../lib/error-map";
+import { publicFeedbackSchema, slugSchema } from "../../schemas";
 
 export const publicFeedbackRouter = router({
   getPage: publicProcedure.input(slugSchema).query(({ input }) => {

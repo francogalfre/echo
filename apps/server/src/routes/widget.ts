@@ -1,4 +1,4 @@
-import { submitWidgetFeedback } from "@echo/api/controllers/external-feedback";
+import { submitWidgetFeedback } from "@echo/api/controllers/feedback/external";
 import {
   resolveStandaloneComponent,
   resolveShadcnRegistry,

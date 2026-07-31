@@ -4,10 +4,10 @@ import {
   generateFeedbackDigest,
   getDigestHistory,
   getFeedbackDigest,
-} from "../controllers/generate-digest";
-import { QuotaExceededError } from "../controllers/quota";
-import { organizationProcedure, router } from "../index";
-import { getErrorCode } from "../lib/error-map";
+} from "../../controllers/feedback/digest";
+import { QuotaExceededError } from "../../controllers/quota";
+import { organizationProcedure, router } from "../../index";
+import { getErrorCode } from "../../lib/error-map";
 
 export const digestRouter = router({
   get: organizationProcedure.query(async ({ ctx }) => {

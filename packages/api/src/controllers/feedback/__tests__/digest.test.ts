@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DigestOutput } from "@echo/ai";
 
-import { generateFeedbackDigest } from "../generate-digest";
+import { generateFeedbackDigest } from "../digest";
 
 const SAMPLE_DIGEST: DigestOutput = {
   executiveSummary: "Users like the new dashboard.",
@@ -22,34 +22,34 @@ vi.mock("@echo/ai", () => ({
   generateDigest: vi.fn(),
 }));
 
-vi.mock("../../services/ai-usage", () => ({
+vi.mock("../../../services/ai-usage", () => ({
   reserveUsage: vi.fn(),
   releaseUsage: vi.fn(),
   getUsageCount: vi.fn(),
 }));
 
-vi.mock("../../services/ai-events", () => ({
+vi.mock("../../../services/ai-events", () => ({
   recordAiEvent: vi.fn(),
 }));
 
-vi.mock("../../services/digest", () => ({
+vi.mock("../../../services/digest", () => ({
   getDigest: vi.fn(),
   getFeedbackForDigest: vi.fn(),
   hasFeedbackSince: vi.fn(),
   insertDigest: vi.fn(),
 }));
 
-vi.mock("../../services/organization", () => ({
+vi.mock("../../../services/organization", () => ({
   getOrgPlan: vi.fn(),
 }));
 
 const { generateDigest } = await import("@echo/ai");
 const { reserveUsage, releaseUsage, getUsageCount } =
-  await import("../../services/ai-usage");
-const { recordAiEvent } = await import("../../services/ai-events");
+  await import("../../../services/ai-usage");
+const { recordAiEvent } = await import("../../../services/ai-events");
 const { getDigest, getFeedbackForDigest, hasFeedbackSince, insertDigest } =
-  await import("../../services/digest");
-const { getOrgPlan } = await import("../../services/organization");
+  await import("../../../services/digest");
+const { getOrgPlan } = await import("../../../services/organization");
 
 const ORG_ID = "org_1";
 

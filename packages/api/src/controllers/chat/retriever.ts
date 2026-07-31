@@ -7,8 +7,8 @@ import {
   listFeedbackByIds,
   searchFeedbackFts,
   type FeedbackSearchRow,
-} from "../services/retrieval";
-import { getDigest } from "../services/digest";
+} from "../../services/retrieval";
+import { getDigest } from "../../services/digest";
 
 function toSearchHits(rows: readonly FeedbackSearchRow[]): SearchHit[] {
   return rows.map((row) => ({

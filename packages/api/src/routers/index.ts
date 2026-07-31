@@ -4,10 +4,10 @@ import { billingRouter } from "./billing";
 import { boardRouter } from "./board";
 import { chatRouter } from "./chat";
 import { dashboardRouter } from "./dashboard";
-import { digestRouter } from "./digest";
+import { digestRouter } from "./feedback/digest";
 import { feedbackRouter } from "./feedback";
-import { feedbackPageRouter } from "./feedback-page";
-import { publicFeedbackRouter } from "./public-feedback";
+import { feedbackPageRouter } from "./feedback/page";
+import { publicFeedbackRouter } from "./feedback/public";
 import { widgetRouter } from "./widget";
 
 export const appRouter = router({

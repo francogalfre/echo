@@ -1,7 +1,10 @@
-import { adminProcedure, organizationProcedure, router } from "../index";
-import { feedbackPageConfigSchema } from "../schemas";
-import { listFeedback } from "../services/feedback";
-import { getFeedbackPageConfig, upsertFeedbackPageConfig } from "../services/feedback-page";
+import { adminProcedure, organizationProcedure, router } from "../../index";
+import { feedbackPageConfigSchema } from "../../schemas";
+import { listFeedback } from "../../services/feedback";
+import {
+  getFeedbackPageConfig,
+  upsertFeedbackPageConfig,
+} from "../../services/feedback-page";
 
 export const feedbackPageRouter = router({
   getConfig: organizationProcedure.query(({ ctx }) => {
