@@ -1,5 +1,6 @@
 "use client";
 
+import type { FeedbackSource, Sentiment } from "@echo/api/types";
 import { Icons } from "@echo/ui/components/icons";
 import { Input } from "@echo/ui/components/input";
 import {
@@ -11,8 +12,8 @@ import {
 } from "@echo/ui/components/select";
 import { cn } from "@echo/ui/lib/utils";
 
-export type SentimentFilter = "all" | "positive" | "neutral" | "negative";
-export type SourceFilter = "all" | "api" | "form" | "widget";
+export type SentimentFilter = "all" | Sentiment;
+export type SourceFilter = "all" | FeedbackSource;
 
 const SENTIMENT_SEGMENTS: { value: SentimentFilter; label: string }[] = [
   { value: "all", label: "All" },

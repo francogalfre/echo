@@ -22,7 +22,7 @@ import {
   copyFeedback,
 } from "@/app/dashboard/feedback/utils/feedback-actions";
 
-import type { BoardCard } from "@echo/api/services/board";
+import type { BoardCard } from "@echo/api/types";
 
 import { StarDisplay } from "../../feedback/components/star-display";
 
@@ -54,7 +54,7 @@ export function BoardCardDialog({
                 <div>
                   <DialogTitle>{item.name}</DialogTitle>
                   <DialogDescription>
-                    {formatRelativeTime(item.createdAt.toISOString())}
+                    {formatRelativeTime(item.createdAt)}
                   </DialogDescription>
                 </div>
               </div>
@@ -110,9 +110,7 @@ export function BoardCardDialog({
 
               <div>
                 <p className="text-xs text-muted-foreground">Submitted</p>
-                <p className="mt-1 text-sm">
-                  {formatRelativeTime(item.createdAt.toISOString())}
-                </p>
+                <p className="mt-1 text-sm">{formatRelativeTime(item.createdAt)}</p>
               </div>
             </div>
 

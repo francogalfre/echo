@@ -6,41 +6,22 @@ import { EmptyState } from "@echo/ui/components/empty-state";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
 
-import { DocsHeader } from "../../components/docs-header";
-import { SectionHeading } from "../../components/section-heading";
-import { useApiKeys, type ApiKeysInitial } from "../hooks/use-api-keys";
-import { ApiHero } from "./api-hero";
-import { AuthSection } from "./auth-section";
-import { EndpointCard, type ParamField } from "./endpoint-card";
-import { ErrorTable } from "./error-table";
-import type { LanguageSnippet } from "./language-tabs";
-import { SectionNav, type NavSection } from "./section-nav";
-
-const SECTIONS: readonly NavSection[] = [
-  { id: "authentication", label: "Authentication" },
-  { id: "create-feedback", label: "Create feedback" },
-  { id: "list-feedback", label: "List feedback" },
-  { id: "errors", label: "Errors" },
-];
-
-const CREATE_FEEDBACK_PARAMS: ParamField[] = [
-  { name: "name", type: "string", required: true, description: "Reporter's name." },
-  {
-    name: "feedback",
-    type: "string",
-    required: true,
-    description: "The feedback content.",
-  },
-  { name: "email", type: "string", required: false, description: "Reporter's email." },
-  {
-    name: "rating",
-    type: "number",
-    required: false,
-    description: "Star rating from 1 to 5.",
-  },
-];
-
-const MASKED_SECRET = `echo_sk_${"•".repeat(16)}`;
+import { DocsHeader } from "../../../components/docs-header";
+import { SectionHeading } from "../../../components/section-heading";
+import { useApiKeys, type ApiKeysInitial } from "../../hooks/use-api-keys";
+import { ApiHero } from "../api-hero";
+import { AuthSection } from "../auth-section";
+import { EndpointCard } from "../endpoint-card";
+import { ErrorTable } from "../error-table";
+import { SectionNav } from "../section-nav";
+import {
+  buildCreateSnippets,
+  buildListSnippets,
+  CREATE_FEEDBACK_PARAMS,
+  CREATE_RESPONSE,
+  LIST_RESPONSE,
+  SECTIONS,
+} from "./build-snippets";
 
 type ApiKeysSectionProps = {
   readonly initialData: ApiKeysInitial;
@@ -70,92 +51,8 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
   }
 
   const pk = keys[0]?.publicKey ?? `echo_pk_${"•".repeat(16)}`;
-
-  const createSnippets: LanguageSnippet[] = [
-    {
-      label: "cURL",
-      language: "bash",
-      code: `curl -X POST ${serverUrl}/api/feedback \\
-  -H "Authorization: Bearer ${MASKED_SECRET}" \\
-  -H "Content-Type: application/json" \\
-  -d '{"name": "Jane Smith", "feedback": "Love the product!"}'`,
-    },
-    {
-      label: "JavaScript",
-      language: "js",
-      code: `await fetch("${serverUrl}/api/feedback", {
-  method: "POST",
-  headers: {
-    "Authorization": "Bearer ${MASKED_SECRET}",
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    name: "Jane Smith",
-    feedback: "Love the product!",
-  }),
-})`,
-    },
-    {
-      label: "Python",
-      language: "python",
-      code: `import requests
-
-requests.post(
-    "${serverUrl}/api/feedback",
-    headers={
-        "Authorization": "Bearer ${MASKED_SECRET}",
-        "Content-Type": "application/json",
-    },
-    json={"name": "Jane Smith", "feedback": "Love the product!"},
-)`,
-    },
-  ];
-
-  const listSnippets: LanguageSnippet[] = [
-    {
-      label: "cURL",
-      language: "bash",
-      code: `curl ${serverUrl}/api/feedback \\
-  -H "Authorization: Bearer ${pk}"`,
-    },
-    {
-      label: "JavaScript",
-      language: "js",
-      code: `const res = await fetch("${serverUrl}/api/feedback", {
-  headers: { "Authorization": "Bearer ${pk}" },
-})
-
-const { feedback } = await res.json()`,
-    },
-    {
-      label: "Python",
-      language: "python",
-      code: `import requests
-
-response = requests.get(
-    "${serverUrl}/api/feedback",
-    headers={"Authorization": "Bearer ${pk}"},
-)
-
-feedback = response.json()["feedback"]`,
-    },
-  ];
-
-  const createResponse = `{
-  "success": true
-}`;
-
-  const listResponse = `{
-  "feedback": [
-    {
-      "id": "fb_a1b2c3",
-      "name": "Jane Smith",
-      "feedback": "Love the product!",
-      "rating": 5,
-      "createdAt": "2026-06-24T10:00:00Z"
-    }
-  ]
-}`;
+  const createSnippets = buildCreateSnippets(serverUrl);
+  const listSnippets = buildListSnippets(serverUrl, pk);
 
   return (
     <>
@@ -169,7 +66,7 @@ feedback = response.json()["feedback"]`,
       </FadeIn>
 
       <FadeIn delay={0.05} className="mb-16">
-        <ApiHero request={createSnippets[0]?.code ?? ""} response={createResponse} />
+        <ApiHero request={createSnippets[0]?.code ?? ""} response={CREATE_RESPONSE} />
       </FadeIn>
 
       <div className="lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-16">
@@ -199,7 +96,7 @@ feedback = response.json()["feedback"]`,
                 params={CREATE_FEEDBACK_PARAMS}
                 snippets={createSnippets}
                 responseStatus={201}
-                responseBody={createResponse}
+                responseBody={CREATE_RESPONSE}
               />
             </section>
           </FadeIn>
@@ -217,7 +114,7 @@ feedback = response.json()["feedback"]`,
                 note="Requires the publishable key."
                 snippets={listSnippets}
                 responseStatus={200}
-                responseBody={listResponse}
+                responseBody={LIST_RESPONSE}
               />
             </section>
           </FadeIn>

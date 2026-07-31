@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 export type WidgetInstall = {
   publicKey: string;
@@ -15,48 +16,31 @@ export type WidgetInstall = {
 
 export type WidgetInstallInitial = { info: WidgetInstall | null } | { error: true };
 
-type State =
-  | { status: "loading" }
-  | { status: "empty" }
-  | { status: "error" }
-  | { status: "ready"; info: WidgetInstall };
-
-type UseWidgetInstallResult = State & { retry: () => void };
-
-const RETRY_DELAYS_MS = [400, 800] as const;
-
-function toState(initial: WidgetInstallInitial): State {
-  if ("error" in initial) return { status: "error" };
-  return initial.info ? { status: "ready", info: initial.info } : { status: "empty" };
-}
+type UseWidgetInstallResult =
+  | { status: "loading"; retry: () => void }
+  | { status: "empty"; retry: () => void }
+  | { status: "error"; retry: () => void }
+  | { status: "ready"; info: WidgetInstall; retry: () => void };
 
 export function useWidgetInstall(initial: WidgetInstallInitial): UseWidgetInstallResult {
-  const [state, setState] = useState<State>(() => toState(initial));
+  const hasInitialInfo = !("error" in initial);
+  const previousStatusRef = useRef<"loading" | "ready" | "error">("loading");
 
-  const retry = (): void => {
-    let attempt = 0;
-    setState({ status: "loading" });
+  const { state, refresh } = useAsyncResource<WidgetInstall | null>(
+    () => trpc.widget.getInstallInfo.query(),
+    hasInitialInfo ? { initialData: initial.info } : undefined,
+  );
 
-    const load = (): void => {
-      trpc.widget.getInstallInfo
-        .query()
-        .then((info) => {
-          setState(info ? { status: "ready", info } : { status: "empty" });
-        })
-        .catch(() => {
-          const delay = RETRY_DELAYS_MS[attempt];
-          attempt += 1;
-          if (delay !== undefined) {
-            setTimeout(load, delay);
-            return;
-          }
-          toast.error("Failed to load widget configuration");
-          setState({ status: "error" });
-        });
-    };
+  useEffect(() => {
+    if (state.status === "error" && previousStatusRef.current !== "error") {
+      toast.error("Failed to load widget configuration");
+    }
+    previousStatusRef.current = state.status;
+  }, [state.status]);
 
-    load();
-  };
-
-  return { ...state, retry };
+  if (state.status === "loading") return { status: "loading", retry: refresh };
+  if (state.status === "error") return { status: "error", retry: refresh };
+  return state.data
+    ? { status: "ready", info: state.data, retry: refresh }
+    : { status: "empty", retry: refresh };
 }

@@ -1,16 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 import { mapItem, type FeedbackItem } from "../utils/map-feedback";
-
-type State =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "found"; item: FeedbackItem }
-  | { status: "not-found" };
 
 type UseFeedbackItemResult = {
   item: FeedbackItem | null;
@@ -19,37 +12,20 @@ type UseFeedbackItemResult = {
 };
 
 export function useFeedbackItem(id: string | null): UseFeedbackItemResult {
-  const [state, setState] = useState<State>({ status: "idle" });
+  const { state } = useAsyncResource<FeedbackItem | null>(
+    async () => {
+      if (!id) return null;
+      const result = await trpc.feedback.byId.query({ id });
+      return result ? mapItem(result) : null;
+    },
+    { deps: [id] },
+  );
 
-  useEffect(() => {
-    if (!id) {
-      setState({ status: "idle" });
-      return;
-    }
-
-    let cancelled = false;
-    setState({ status: "loading" });
-
-    trpc.feedback.byId
-      .query({ id })
-      .then((result) => {
-        if (cancelled) return;
-        setState(
-          result ? { status: "found", item: mapItem(result) } : { status: "not-found" },
-        );
-      })
-      .catch(() => {
-        if (!cancelled) setState({ status: "not-found" });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
+  const readyNotFound = state.status === "ready" && id !== null && state.data === null;
 
   return {
-    item: state.status === "found" ? state.item : null,
+    item: state.status === "ready" ? state.data : null,
     loading: state.status === "loading",
-    notFound: state.status === "not-found",
+    notFound: readyNotFound || state.status === "error",
   };
 }

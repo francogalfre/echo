@@ -3,18 +3,14 @@
 import { cn } from "@echo/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 
+import { usageBarColorClass } from "@/lib/usage-meter";
+
 type BillingUsageMeterRowProps = {
   label: string;
   used: number;
   limit: number | null;
   rightLabel?: string;
 };
-
-function barColorClass(ratio: number): string {
-  if (ratio >= 1) return "bg-destructive";
-  if (ratio >= 0.8) return "bg-warning";
-  return "bg-accent";
-}
 
 export const BillingUsageMeterRow = ({
   label,
@@ -38,7 +34,7 @@ export const BillingUsageMeterRow = ({
       {hasLimit ? (
         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <motion.div
-            className={cn("h-full rounded-full", barColorClass(ratio))}
+            className={cn("h-full rounded-full", usageBarColorClass(used, limit ?? 0))}
             initial={{ width: reduced ? widthPercent : "0%" }}
             animate={{ width: widthPercent }}
             transition={{ duration: reduced ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}

@@ -6,7 +6,7 @@ import { cn } from "@echo/ui/lib/utils";
 
 import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback-badges";
 
-import type { BoardCard } from "@echo/api/services/board";
+import type { BoardCard } from "@echo/api/types";
 
 type Props = {
   item: BoardCard;

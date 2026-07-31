@@ -55,7 +55,7 @@ export function FeedbackSheet({
                     </DrawerDescription>
                   ) : (
                     <DrawerDescription className="mt-1 tabular-nums">
-                      {formatRelativeTime(item.createdAt.toISOString())}
+                      {formatRelativeTime(item.createdAt)}
                     </DrawerDescription>
                   )}
                 </div>
@@ -89,7 +89,7 @@ export function FeedbackSheet({
                   {item.rating && <StarDisplay rating={item.rating} />}
                   <div className="flex items-center gap-1.5 tabular-nums">
                     <Icons.clock className="size-3.5" />
-                    {formatRelativeTime(item.createdAt.toISOString())}
+                    {formatRelativeTime(item.createdAt)}
                   </div>
                   {item.tags && item.tags.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5">

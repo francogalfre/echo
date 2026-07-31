@@ -134,7 +134,7 @@ export function FeedbackRow({
       </span>
 
       <span role="cell" className="text-[11px] tabular-nums text-muted-foreground">
-        {formatRelativeTime(item.createdAt.toISOString())}
+        {formatRelativeTime(item.createdAt)}
       </span>
 
       <span role="cell" className="relative z-10 flex justify-end">

@@ -1,4 +1,6 @@
-import type { BoardCard, BoardColumns } from "@echo/api/services/board";
+import type { BoardCard, BoardColumns } from "@echo/api/types";
+
+import { reviveDate } from "@/lib/serialize";
 
 type SerializedCard = Omit<BoardCard, "createdAt"> & { createdAt: string | Date };
 
@@ -9,7 +11,7 @@ export type SerializedColumns = {
 };
 
 function hydrateCard(card: SerializedCard): BoardCard {
-  return { ...card, createdAt: new Date(card.createdAt) };
+  return { ...card, createdAt: reviveDate(card.createdAt) };
 }
 
 export function hydrateBoardColumns(data: SerializedColumns): BoardColumns {
