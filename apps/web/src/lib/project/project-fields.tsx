@@ -4,13 +4,17 @@ import { Field } from "@echo/ui/components/field";
 import { Input } from "@echo/ui/components/input";
 
 import { LogoPicker } from "./logo-picker";
-import type { UseCreateProjectReturn } from "./use-create-project";
+import type { UseProjectFormReturn } from "./use-project-form";
 
 type ProjectFieldsProps = {
-  project: UseCreateProjectReturn;
+  project: UseProjectFormReturn;
+  inputClassName?: string;
 };
 
-export const ProjectFields = ({ project }: ProjectFieldsProps): React.ReactElement => {
+export const ProjectFields = ({
+  project,
+  inputClassName,
+}: ProjectFieldsProps): React.ReactElement => {
   const { form, logo, onNameChange, onSlugChange } = project;
   const {
     register,
@@ -31,6 +35,7 @@ export const ProjectFields = ({ project }: ProjectFieldsProps): React.ReactEleme
           id="name"
           placeholder="Acme Feedback"
           autoFocus
+          className={inputClassName}
           {...register("name", { onChange: onNameChange })}
         />
       </Field>
@@ -40,10 +45,12 @@ export const ProjectFields = ({ project }: ProjectFieldsProps): React.ReactEleme
         label="Slug"
         error={errors.slug?.message}
         hint="Used in URLs and API requests. Lowercase letters, numbers and dashes."
+        className="pb-1"
       >
         <Input
           id="slug"
           placeholder="acme-feedback"
+          className={inputClassName}
           {...register("slug", { onChange: onSlugChange })}
         />
       </Field>

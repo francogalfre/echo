@@ -1,5 +1,3 @@
-import imagotipo from "@echo/assets/imagotipo/accent.png";
-import Image from "next/image";
 import type { ReactNode } from "react";
 
 const AmbientGlow = (): React.ReactElement => {
@@ -13,14 +11,9 @@ const AmbientGlow = (): React.ReactElement => {
 
 const OnboardingLayout = ({ children }: { children: ReactNode }): React.ReactElement => {
   return (
-    <main className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-12">
+    <main className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-10">
       <AmbientGlow />
-      <div className="relative w-full max-w-lg">
-        <div className="mb-8 flex justify-center">
-          <Image src={imagotipo} alt="echo" priority className="h-7 w-auto" />
-        </div>
-        {children}
-      </div>
+      <div className="relative w-full max-w-4xl">{children}</div>
     </main>
   );
 };

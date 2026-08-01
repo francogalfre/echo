@@ -1,5 +1,6 @@
 "use client";
 
+import echoIdle from "@echo/assets/character/idle.webp";
 import { Button } from "@echo/ui/components/button";
 import { Field } from "@echo/ui/components/field";
 import { Icons } from "@echo/ui/components/icons";
@@ -12,59 +13,74 @@ import {
   SelectValue,
 } from "@echo/ui/components/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import { authClient } from "@/lib/auth-client";
+import { inviteSchema, type InviteValues } from "../../schemas";
+import { BackButton, ContinueButton } from "../onboarding-nav";
+import { OnboardingShell } from "../onboarding-shell";
 
-import { inviteStepSchema, type InviteStepValues } from "../../schemas";
-import { OnboardingActions, OnboardingCard } from "../onboarding-card";
-
-const defaultValues: InviteStepValues = { email: "", role: "member" };
+const defaultValues: InviteValues = { email: "", role: "member" };
 
 type InviteStepProps = {
+  invites: readonly InviteValues[];
+  onAdd: (invite: InviteValues) => void;
+  onRemove: (email: string) => void;
+  stepIndex: number;
+  stepCount: number;
+  onBack: () => void;
   onContinue: () => void;
 };
 
-export const InviteStep = ({ onContinue }: InviteStepProps): React.ReactElement => {
-  const [invited, setInvited] = useState<readonly string[]>([]);
-  const form = useForm<InviteStepValues>({
-    resolver: zodResolver(inviteStepSchema),
+export const InviteStep = ({
+  invites,
+  onAdd,
+  onRemove,
+  stepIndex,
+  stepCount,
+  onBack,
+  onContinue,
+}: InviteStepProps): React.ReactElement => {
+  const form = useForm<InviteValues>({
+    resolver: zodResolver(inviteSchema),
     defaultValues,
   });
   const {
     control,
     register,
     handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
+    setValue,
+    formState: { errors },
   } = form;
 
-  const onSubmit = handleSubmit(async (values) => {
-    form.clearErrors("root");
-
-    if (invited.includes(values.email)) {
-      form.setError("email", { message: "That teammate is already invited" });
+  const onSubmit = handleSubmit((values) => {
+    if (invites.some((invite) => invite.email === values.email)) {
+      form.setError("email", { message: "That teammate is already on the list" });
       return;
     }
 
-    const { error } = await authClient.organization.inviteMember(values);
-
-    if (error) {
-      form.setError("root", { message: error.message ?? "Could not send the invitation." });
-      return;
-    }
-
-    setInvited((current) => [...current, values.email]);
-    reset(defaultValues);
+    onAdd(values);
+    setValue("email", "");
+    form.clearErrors();
   });
 
   return (
-    <OnboardingCard
+    <OnboardingShell
+      character={echoIdle}
+      caption="Invitations go out once your project is created, so nobody gets an email you didn't mean to send."
+      stepIndex={stepIndex}
+      stepCount={stepCount}
       title="Invite your team"
-      description="Feedback is easier to act on together. Add teammates now, or do it later from settings."
+      description="Add the people who should see incoming feedback. We'll email them as soon as your project is ready."
+      footer={
+        <>
+          <BackButton onClick={onBack} />
+          <ContinueButton onClick={onContinue}>
+            {invites.length > 0 ? "Continue" : "Skip for now"}
+          </ContinueButton>
+        </>
+      }
     >
-      <form id="invite-teammate" onSubmit={onSubmit} noValidate className="mt-6 space-y-4">
+      <form onSubmit={onSubmit} noValidate className="space-y-5">
         <div className="flex items-start gap-3">
           <div className="flex-1">
             <Field name="email" label="Email" error={errors.email?.message}>
@@ -73,6 +89,7 @@ export const InviteStep = ({ onContinue }: InviteStepProps): React.ReactElement 
                 type="email"
                 autoComplete="off"
                 placeholder="teammate@company.com"
+                className="h-11 rounded-xl"
                 {...register("email")}
               />
             </Field>
@@ -84,8 +101,11 @@ export const InviteStep = ({ onContinue }: InviteStepProps): React.ReactElement 
               name="role"
               render={({ field }) => (
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger id="role" className="w-32">
-                    <SelectValue />
+                  <SelectTrigger
+                    id="role"
+                    className="w-32 rounded-xl data-[size=default]:h-11"
+                  >
+                    <SelectValue className="capitalize" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="member">Member</SelectItem>
@@ -97,46 +117,40 @@ export const InviteStep = ({ onContinue }: InviteStepProps): React.ReactElement 
           </Field>
         </div>
 
-        {errors.root ? (
-          <p className="text-xs text-destructive">{errors.root.message}</p>
-        ) : null}
-
-        {invited.length > 0 ? (
-          <ul className="flex flex-wrap gap-1.5">
-            {invited.map((email) => (
-              <li
-                key={email}
-                className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"
-              >
-                <Icons.circleCheck className="size-3 text-accent" />
-                {email}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <Button type="submit" variant="outline" className="h-10 w-full rounded-xl text-sm">
+          <Icons.userAdd data-icon="inline-start" className="size-4" />
+          Add to the list
+        </Button>
       </form>
 
-      <OnboardingActions>
-        <Button
-          type="submit"
-          form="invite-teammate"
-          variant="outline"
-          size="lg"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <Icons.loading className="size-4 animate-spin" />
-          ) : (
-            <Icons.mail data-icon="inline-start" className="size-4" />
-          )}
-          Send invitation
-        </Button>
-
-        <Button size="lg" onClick={onContinue}>
-          {invited.length > 0 ? "Continue" : "Skip for now"}
-          <Icons.arrowRight data-icon="inline-end" className="size-4" />
-        </Button>
-      </OnboardingActions>
-    </OnboardingCard>
+      {invites.length > 0 ? (
+        <ul className="mt-6 space-y-2">
+          {invites.map((invite) => (
+            <li
+              key={invite.email}
+              className="flex items-center gap-3 rounded-xl bg-muted/50 py-2 pr-2 pl-3"
+            >
+              <Icons.mail className="size-4 shrink-0 text-muted-foreground" />
+              <span className="min-w-0 flex-1 truncate text-sm text-foreground">
+                {invite.email}
+              </span>
+              <span className="text-xs text-muted-foreground capitalize">
+                {invite.role}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={`Remove ${invite.email}`}
+                onClick={() => onRemove(invite.email)}
+                className="rounded-lg"
+              >
+                <Icons.x className="size-3.5" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </OnboardingShell>
   );
 };

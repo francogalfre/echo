@@ -3,42 +3,51 @@
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useCallback, useEffect, useState } from "react";
 
-export const onboardingSteps = ["welcome", "organization", "invite", "appearance"] as const;
+export const onboardingStepIds = [
+  "welcome",
+  "project",
+  "team",
+  "invite",
+  "appearance",
+] as const;
 
-export type OnboardingStep = (typeof onboardingSteps)[number];
+export type OnboardingStep = (typeof onboardingStepIds)[number];
 
 type UseOnboardingStepsReturn = {
   step: OnboardingStep;
   index: number;
-  total: number;
+  count: number;
   next: () => void;
   back: () => void;
 };
 
-export const useOnboardingSteps = (): UseOnboardingStepsReturn => {
-  const [requested, setRequested] = useQueryState(
+export const useOnboardingSteps = (
+  steps: readonly OnboardingStep[],
+): UseOnboardingStepsReturn => {
+  const [, setParam] = useQueryState(
     "step",
-    parseAsStringLiteral(onboardingSteps).withDefault("welcome"),
+    parseAsStringLiteral(onboardingStepIds).withDefault("welcome"),
   );
-  const [unlocked, setUnlocked] = useState(0);
+  const [step, setStep] = useState<OnboardingStep>("welcome");
 
-  const index = Math.min(onboardingSteps.indexOf(requested), unlocked);
-  const step = onboardingSteps[index] ?? "welcome";
+  const maxIndex = steps.length - 1;
+  const currentIndex = steps.indexOf(step);
+  const index = currentIndex === -1 ? 0 : currentIndex;
 
   useEffect(() => {
-    if (requested !== step) void setRequested(step);
-  }, [requested, step, setRequested]);
+    void setParam(step);
+  }, [step, setParam]);
 
-  const next = useCallback((): void => {
-    const target = Math.min(index + 1, onboardingSteps.length - 1);
-    setUnlocked((current) => Math.max(current, target));
-    void setRequested(onboardingSteps[target] ?? "welcome");
-  }, [index, setRequested]);
+  const goTo = useCallback(
+    (target: number): void => {
+      const clamped = Math.min(Math.max(target, 0), maxIndex);
+      setStep(steps[clamped] ?? "welcome");
+    },
+    [maxIndex, steps],
+  );
 
-  const back = useCallback((): void => {
-    const target = Math.max(index - 1, 0);
-    void setRequested(onboardingSteps[target] ?? "welcome");
-  }, [index, setRequested]);
+  const next = useCallback((): void => goTo(index + 1), [goTo, index]);
+  const back = useCallback((): void => goTo(index - 1), [goTo, index]);
 
-  return { step, index, total: onboardingSteps.length, next, back };
+  return { step, index, count: steps.length, next, back };
 };
