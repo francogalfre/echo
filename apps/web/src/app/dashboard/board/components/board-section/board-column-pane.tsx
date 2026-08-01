@@ -7,8 +7,7 @@ import {
 } from "@echo/ui/components/reui/kanban";
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
-import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
-import { durations, easings } from "@echo/ui/lib/motion";
+import { durations, easings, fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { AnimatePresence, motion } from "motion/react";
 
 import type { BoardCard, BoardColumns } from "@echo/api/types";
@@ -59,10 +58,10 @@ export function BoardColumnPane({
       </div>
 
       <KanbanColumnContent value={id} className="flex-1 min-h-0 overflow-y-auto">
-        <Stagger className="flex flex-col gap-2" stagger={0.04}>
-          {items.map((item) => (
-            <StaggerItem key={item.id}>
-              <KanbanItem value={item.id}>
+        {shouldReduceMotion ? (
+          <div className="flex flex-col gap-2">
+            {items.map((item) => (
+              <KanbanItem key={item.id} value={item.id}>
                 <BoardCardItem
                   item={item}
                   onRemove={() => onRemove(item)}
@@ -70,9 +69,29 @@ export function BoardColumnPane({
                   isRemoving={removingIds.has(item.id)}
                 />
               </KanbanItem>
-            </StaggerItem>
-          ))}
-        </Stagger>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            className="flex flex-col gap-2"
+            variants={staggerContainer(0.04)}
+            initial="hidden"
+            animate="visible"
+          >
+            {items.map((item) => (
+              <motion.div key={item.id} variants={fadeInUp}>
+                <KanbanItem value={item.id}>
+                  <BoardCardItem
+                    item={item}
+                    onRemove={() => onRemove(item)}
+                    onClick={() => onSelect(item)}
+                    isRemoving={removingIds.has(item.id)}
+                  />
+                </KanbanItem>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </KanbanColumnContent>
 
       <AnimatePresence>
