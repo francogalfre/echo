@@ -6,7 +6,7 @@ import { SettingsCard } from "../../components/settings-card";
 const COLUMNS = ["Plan", "Amount", "Date", "Status"] as const;
 
 export const BillingHistory = (): React.ReactElement => (
-  <SettingsCard className="flex flex-col p-0">
+  <SettingsCard className="flex flex-col p-0 sm:p-0">
     <div className="p-6 sm:p-8">
       <h3 className="text-sm font-semibold text-foreground">Billing history</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">

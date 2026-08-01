@@ -32,7 +32,14 @@ export const BillingUsageMeterRow = ({
         </span>
       </div>
       {hasLimit ? (
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div
+          role="progressbar"
+          aria-label={label}
+          aria-valuenow={used}
+          aria-valuemin={0}
+          aria-valuemax={limit ?? undefined}
+          className="h-2 w-full overflow-hidden rounded-full bg-muted"
+        >
           <motion.div
             className={cn("h-full rounded-full", usageBarColorClass(used, limit ?? 0))}
             initial={{ width: reduced ? widthPercent : "0%" }}

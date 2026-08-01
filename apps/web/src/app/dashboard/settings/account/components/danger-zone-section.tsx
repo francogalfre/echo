@@ -107,7 +107,7 @@ export const DangerZoneSection = (): React.ReactElement => {
       </div>
 
       <Dialog open={confirmOpen} onOpenChange={closeConfirm}>
-        <DialogContent className="max-w-md gap-6 p-8">
+        <DialogContent className="gap-6 p-8 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete &ldquo;{activeOrg?.name}&rdquo;</DialogTitle>
             <DialogDescription>
