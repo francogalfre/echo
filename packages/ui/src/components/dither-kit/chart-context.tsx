@@ -363,7 +363,10 @@ export function useChartController({
       hoverIndex,
       ready,
       tooltipLeft: Math.max(48, Math.min(plotWidth + mLeft - 48, cursorX)),
-      tooltipTop: Math.max(mTop + 8, Math.min(mTop + plotHeight - 60, cursorY)),
+      tooltipTop: Math.max(
+        mTop + 8,
+        Math.min(mTop + plotHeight - (42 + configKeys.length * 20), cursorY),
+      ),
       heading: (i, labelKey) => (labelKey ? String(data[i]?.[labelKey] ?? "") : null),
       itemsAt: (i) =>
         configKeys.map((name) => {
