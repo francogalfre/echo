@@ -2,6 +2,7 @@ import { Badge } from "@echo/ui/components/badge";
 
 import type { ApiKeyEntry } from "../hooks/use-api-keys";
 import { KeysSection } from "./keys-section";
+import { TABLE_HEAD_CELL } from "./table-styles";
 
 type AuthSectionProps = {
   keys: ApiKeyEntry[];
@@ -32,9 +33,6 @@ const KEY_TYPES: readonly KeyType[] = [
     usage: "Server-side only, never expose it. Required to authenticate POST requests.",
   },
 ];
-
-const TABLE_HEAD_CELL =
-  "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 export const AuthSection = ({
   keys,

@@ -31,7 +31,7 @@ export const FauxField = ({
         type="button"
         onClick={onRemove}
         aria-label={`Remove ${label}`}
-        className="absolute top-0 right-0 text-muted-foreground/50 opacity-0 transition-opacity duration-150 group-hover/field:opacity-100 hover:text-foreground"
+        className="absolute top-0 right-0 rounded text-muted-foreground/50 opacity-0 transition-opacity duration-150 group-hover/field:opacity-100 hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Icons.cancelCircle className="size-4" />
       </button>

@@ -23,7 +23,6 @@ type EditorDockProps = {
   onToggleFeedbackPanel: () => void;
   isPublished: boolean;
   isSaving: boolean;
-  isLoading: boolean;
   onCopyLink: () => void;
   onPreview: () => void;
   onSave: () => void;
@@ -70,7 +69,6 @@ export const EditorDock = ({
   onToggleFeedbackPanel,
   isPublished,
   isSaving,
-  isLoading,
   onCopyLink,
   onPreview,
   onSave,
@@ -141,7 +139,7 @@ export const EditorDock = ({
                   variant="secondary"
                   size="sm"
                   onClick={onSave}
-                  disabled={isSaving || isLoading}
+                  disabled={isSaving}
                   className={buttonMicroInteraction}
                 />
               }
@@ -156,7 +154,7 @@ export const EditorDock = ({
             <Button
               size="sm"
               onClick={onPublish}
-              disabled={isSaving || isLoading}
+              disabled={isSaving}
               className={buttonMicroInteraction}
             >
               {isSaving && <Icons.loading className="size-3.5 animate-spin" />}

@@ -91,8 +91,8 @@ export const RecentFeedback = ({
       {items.length > PREVIEW_LIMIT && (
         <button
           type="button"
-          aria-disabled="true"
-          className="mt-3 w-full cursor-default rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground"
+          disabled
+          className="mt-3 w-full cursor-default rounded-lg border border-border py-2 text-xs font-medium text-muted-foreground disabled:opacity-100"
         >
           Load more
         </button>

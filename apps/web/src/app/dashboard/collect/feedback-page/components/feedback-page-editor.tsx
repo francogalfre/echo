@@ -114,7 +114,6 @@ export function FeedbackPageEditor({
         onToggleFeedbackPanel={() => setField("showFeedback", !config.showFeedback)}
         isPublished={isPublished}
         isSaving={isSaving}
-        isLoading={false}
         onCopyLink={copyLink}
         onPreview={() => pageUrl && globalThis.open(pageUrl, "_blank")}
         onSave={save}

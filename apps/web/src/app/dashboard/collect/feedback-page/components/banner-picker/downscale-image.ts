@@ -3,7 +3,7 @@ const BANNER_QUALITY = 0.82;
 
 export async function downscaleImage(file: File): Promise<File> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_BANNER_DIMENSION / bitmap.width);
+  const scale = Math.min(1, MAX_BANNER_DIMENSION / Math.max(bitmap.width, bitmap.height));
   const width = Math.round(bitmap.width * scale);
   const height = Math.round(bitmap.height * scale);
 

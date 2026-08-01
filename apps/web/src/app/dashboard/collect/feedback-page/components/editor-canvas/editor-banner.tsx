@@ -33,7 +33,7 @@ export function EditorBanner({
           : { background: config.backgroundColor }
       }
     >
-      <div className="absolute top-3 right-3 opacity-0 transition-opacity duration-150 group-hover/banner:opacity-100">
+      <div className="absolute top-3 right-3 opacity-0 transition-opacity duration-150 focus-within:opacity-100 group-hover/banner:opacity-100">
         <BannerPicker
           organizationId={orgId}
           currentValue={config.backgroundColor}

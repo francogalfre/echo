@@ -4,6 +4,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 
 import { LanguageTabs, type LanguageSnippet } from "./language-tabs";
+import { statusTone, TABLE_HEAD_CELL } from "./table-styles";
 
 export type ParamField = {
   name: string;
@@ -29,15 +30,6 @@ const METHOD_TONE: Record<Method, string> = {
   POST: "bg-pastel-violet-bg text-pastel-violet-text",
   GET: "bg-pastel-blue-bg text-pastel-blue-text",
 };
-
-const TABLE_HEAD_CELL =
-  "px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
-
-function statusTone(status: number): string {
-  if (status < 300) return "bg-pastel-green-bg text-pastel-green-text";
-  if (status < 500) return "bg-pastel-amber-bg text-pastel-amber-text";
-  return "bg-pastel-rose-bg text-pastel-rose-text";
-}
 
 export const EndpointCard = ({
   method,
