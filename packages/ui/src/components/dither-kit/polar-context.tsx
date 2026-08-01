@@ -223,7 +223,11 @@ export function usePolarController({
   // so it needs its own stable identity independent of the parent value.
   const common: CommonChart = useMemo<CommonChart>(() => {
     const tooltipLeft = Math.max(48, Math.min(plotWidth + mLeft - 48, cursorX));
-    const tooltipTop = Math.max(mTop + 44, cursorY);
+    const tooltipRows = chartType === "pie" ? 1 : configKeys.length;
+    const tooltipTop = Math.max(
+      mTop + 8,
+      Math.min(mTop + plotHeight - (42 + tooltipRows * 20), cursorY),
+    );
     const emphasis = selectedDataKey ?? focusDataKey;
     if (chartType === "pie" && pie) {
       const names = pie.map((s) => s.name);
