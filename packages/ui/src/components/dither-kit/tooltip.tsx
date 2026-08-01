@@ -49,14 +49,14 @@ export function Tooltip({
           initial={{
             opacity: 0,
             x: "-50%",
-            y: "-115%",
+            y: 14,
             top: chart.tooltipTop,
             left: chart.tooltipLeft,
           }}
           animate={{
             opacity: 1,
             x: "-50%",
-            y: "-115%",
+            y: 14,
             top: chart.tooltipTop,
             left: chart.tooltipLeft,
           }}

@@ -81,6 +81,8 @@ export type ChartContextValue = {
   markerIndex: number | null; // controlled crosshair override (e.g. committed point)
   cursorX: number;
   setCursorX: (px: number) => void;
+  cursorY: number;
+  setCursorY: (py: number) => void;
   isMouseInChart: boolean;
   setMouseInChart: (over: boolean) => void;
   hovered: boolean; // parent-driven hover (e.g. the whole card) — lifts the fill
@@ -226,6 +228,7 @@ export function useChartController({
   const [focusDataKey, setFocusDataKey] = useState<string | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [cursorX, setCursorX] = useState(0);
+  const [cursorY, setCursorY] = useState(0);
   const [isMouseInChart, setMouseInChart] = useState(false);
   const [seriesSpecs, setSeriesSpecs] = useState<Record<string, SeriesSpec>>({});
 
@@ -360,19 +363,7 @@ export function useChartController({
       hoverIndex,
       ready,
       tooltipLeft: Math.max(48, Math.min(plotWidth + mLeft - 48, cursorX)),
-      // Follow the highest hovered node so the card rides the data path, but
-      // keep enough headroom that the upward-lifted card never clips the top.
-      tooltipTop: (() => {
-        const floor = mTop + 44;
-        if (hoverIndex == null) return floor;
-        let minY = Number.POSITIVE_INFINITY;
-        for (const key of configKeys) {
-          const b = bands[key]?.[hoverIndex];
-          if (b) minY = Math.min(minY, y(b[1]));
-        }
-        if (!Number.isFinite(minY)) return floor;
-        return Math.max(floor, mTop + minY);
-      })(),
+      tooltipTop: Math.max(mTop + 8, Math.min(mTop + plotHeight - 60, cursorY)),
       heading: (i, labelKey) => (labelKey ? String(data[i]?.[labelKey] ?? "") : null),
       itemsAt: (i) =>
         configKeys.map((name) => {
@@ -400,11 +391,11 @@ export function useChartController({
       hoverIndex,
       ready,
       plotWidth,
+      plotHeight,
       mLeft,
       mTop,
       cursorX,
-      bands,
-      y,
+      cursorY,
       data,
     ],
   );
@@ -442,6 +433,8 @@ export function useChartController({
       markerIndex,
       cursorX,
       setCursorX,
+      cursorY,
+      setCursorY,
       isMouseInChart,
       setMouseInChart,
       hovered,
@@ -485,6 +478,8 @@ export function useChartController({
       markerIndex,
       cursorX,
       setCursorX,
+      cursorY,
+      setCursorY,
       isMouseInChart,
       setMouseInChart,
       hovered,
