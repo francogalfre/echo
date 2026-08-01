@@ -27,7 +27,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <NuqsAdapter>{children}</NuqsAdapter>
-          <Toaster position="bottom-right" />
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>
