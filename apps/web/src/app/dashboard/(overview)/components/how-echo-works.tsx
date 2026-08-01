@@ -33,7 +33,7 @@ const STEPS: readonly EchoStep[] = [
 
 export function HowEchoWorks(): React.ReactElement {
   return (
-    <div className="flex flex-col gap-4 rounded-xl bg-card p-6 ring-1 ring-foreground/10">
+    <div className="flex flex-col gap-4 rounded-lg bg-card p-6 ring-1 ring-foreground/10">
       <div>
         <h2 className="text-sm font-semibold">How Echo works</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">

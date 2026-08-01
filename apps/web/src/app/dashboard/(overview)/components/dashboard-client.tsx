@@ -1,9 +1,7 @@
 "use client";
 
-import echoGreetings from "@echo/assets/character/greetings.webp";
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
 import { motion } from "motion/react";
-import Image from "next/image";
 import * as React from "react";
 
 import { useSession } from "@/lib/auth-client";
@@ -63,21 +61,13 @@ export function DashboardClient({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Image
-            src={echoGreetings}
-            alt="Echo"
-            className="size-11 shrink-0 object-contain"
-            priority
-          />
-          <div>
-            <h1 className="text-2xl font-medium font-pixel">
-              Hello{firstName ? `, ${firstName}` : ""}!
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Here&apos;s how your project is performing.
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-medium font-pixel">
+            Hello{firstName ? `, ${firstName}` : ""}!
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Here&apos;s how your project is performing.
+          </p>
         </div>
         <Button
           variant="default"
@@ -102,7 +92,7 @@ export function DashboardClient({
       )}
 
       {state.status === "ready" && state.data.recent.length === 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
           <ProductFlowStrip
             variant="full"

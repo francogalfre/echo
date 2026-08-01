@@ -1,13 +1,11 @@
 "use client";
 
-import echoGreetings from "@echo/assets/character/greetings.webp";
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { cn } from "@echo/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 import type { Route } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import * as React from "react";
 
@@ -101,18 +99,15 @@ export function OnboardingChecklist({
 
   return (
     <div className="flex flex-col gap-4 rounded-lg bg-card p-6 ring-1 ring-foreground/10">
-      <div className="flex items-start gap-4">
-        <Image src={echoGreetings} alt="" className="size-16 shrink-0" priority />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 className="text-sm font-medium">Get started with Echo</h2>
-            <p className="shrink-0 text-xs tabular-nums text-muted-foreground">
-              {completedCount} of 3 complete
-            </p>
-          </div>
-          <div className="mt-3">
-            <ProgressBar completed={completedCount} />
-          </div>
+      <div>
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-sm font-medium">Get started with Echo</h2>
+          <p className="shrink-0 text-xs tabular-nums text-muted-foreground">
+            {completedCount} of 3 complete
+          </p>
+        </div>
+        <div className="mt-3">
+          <ProgressBar completed={completedCount} />
         </div>
       </div>
       <Stagger className="flex flex-col gap-4">

@@ -38,8 +38,8 @@ export function RecentFeedbackTable({
               {item.content}
             </p>
             <span className="flex shrink-0 items-center gap-2 max-sm:hidden">
-              <SentimentBadge sentiment={item.sentiment} className="max-sm:hidden" />
-              <SourceBadge source={item.source} className="max-sm:hidden" />
+              <SentimentBadge sentiment={item.sentiment} />
+              <SourceBadge source={item.source} />
             </span>
             <span className="w-16 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
               {formatRelativeTime(item.createdAt)}
