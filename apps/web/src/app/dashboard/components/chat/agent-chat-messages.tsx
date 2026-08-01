@@ -2,9 +2,10 @@ import { cn } from "@echo/ui/lib/utils";
 import type { UIMessage } from "@ai-sdk/react";
 import { isDynamicToolUIPart, isToolUIPart } from "ai";
 
+import { Markdown } from "@/utils/markdown";
+
 import { AiThinking } from "../ai/ai-thinking";
 import type { AgentPersona } from "./agent-personas";
-import { ChatMarkdown } from "./chat-markdown";
 
 const TOOL_LABELS: Record<string, string> = {
   searchFeedback: "Searching feedback",
@@ -85,7 +86,7 @@ export function AgentChatMessages({
             {message.role === "user" ? (
               messageText(message)
             ) : (
-              <ChatMarkdown text={messageText(message)} />
+              <Markdown text={messageText(message)} />
             )}
           </div>
         </div>

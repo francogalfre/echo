@@ -28,6 +28,7 @@ export function DigestHistoryPanel({
           onClick={() => onSelect(null)}
           className={cn(
             "relative rounded-lg px-2 py-1.5 text-left text-sm transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             selectedId === null ? "font-medium" : "hover:bg-muted",
           )}
         >
@@ -49,6 +50,7 @@ export function DigestHistoryPanel({
               onClick={() => onSelect(entry.id)}
               className={cn(
                 "relative flex flex-col items-start rounded-lg px-2 py-1.5 text-left transition-colors",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 !isActive && "hover:bg-muted",
               )}
             >

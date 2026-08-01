@@ -1,6 +1,5 @@
 "use client";
 
-import echoIdle from "@echo/assets/character/idle.webp";
 import { Button } from "@echo/ui/components/button";
 import {
   Drawer,
@@ -22,8 +21,12 @@ import { useEffect, useState } from "react";
 import { AiThinking } from "../ai-thinking";
 import { ErrorCard } from "../../error-card";
 import { UpgradeDialog } from "../../dialogs/upgrade-dialog";
-import { useDigest } from "../../../hooks/use-digest";
-import { DIGEST_SECTIONS, type DigestSectionId } from "../../chat/agent-personas";
+import { useDigest, type DigestItem } from "../../../hooks/use-digest";
+import {
+  AGENT_PERSONAS,
+  DIGEST_SECTIONS,
+  type DigestSectionId,
+} from "../../chat/agent-personas";
 import { DigestHistoryPanel } from "./digest-history";
 import { IssuesContent, MoodContent, DigestSkeleton } from "./digest-summary";
 import { ThemesContent } from "./digest-themes";
@@ -53,14 +56,20 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
     dismissUpgrade,
   } = useDigest();
   const [activeSection, setActiveSection] = useState<DigestSectionId>("issues");
+  const [lastReadyData, setLastReadyData] = useState<DigestItem | null>(null);
+  const echo = AGENT_PERSONAS.echo;
 
   useEffect(() => {
     if (open) void load();
   }, [open, load]);
 
+  useEffect(() => {
+    if (state.status === "ready") setLastReadyData(state.data);
+  }, [state]);
+
   const isGenerating = state.status === "generating";
   const isLoading = state.status === "loading";
-  const data = state.status === "ready" ? state.data : null;
+  const data = state.status === "ready" ? state.data : isGenerating ? lastReadyData : null;
 
   const selectedEntry = selectedId
     ? (history.find((entry) => entry.id === selectedId) ?? null)
@@ -77,8 +86,8 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Image
-                  src={echoIdle}
-                  alt="Echo"
+                  src={echo.avatarImage}
+                  alt={echo.name}
                   className="size-8 shrink-0 rounded-full object-cover"
                   priority
                 />
@@ -95,15 +104,18 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
             </div>
           </DrawerHeader>
 
-          {activeDigest && !isGenerating && (
+          {activeDigest && (
             <div className="flex gap-1 border-b px-6">
               {DIGEST_SECTIONS.map((section) => (
                 <button
                   key={section.id}
                   type="button"
                   onClick={() => setActiveSection(section.id)}
+                  disabled={isGenerating}
                   className={cn(
                     "flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
+                    "disabled:cursor-not-allowed disabled:opacity-50",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     activeSection === section.id
                       ? "border-accent text-foreground"
                       : "border-transparent text-muted-foreground hover:text-foreground",
@@ -116,7 +128,12 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
             </div>
           )}
 
-          <div className="flex flex-1 flex-col overflow-y-auto p-6 sm:grid sm:grid-cols-[1fr_200px] sm:gap-6">
+          <div
+            className={cn(
+              "flex flex-1 flex-col overflow-y-auto p-6",
+              history.length > 0 && "sm:grid sm:grid-cols-[1fr_200px] sm:gap-6",
+            )}
+          >
             <div className="flex flex-col gap-4">
               {(isLoading || isGenerating) && (
                 <AiThinking phrases={SECTION_THINKING_PHRASES}>
@@ -162,27 +179,43 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
               )}
             </div>
 
-            <div className="mt-4 flex flex-col gap-4 sm:mt-0">
-              <DigestHistoryPanel
-                history={history}
-                selectedId={selectedId}
-                onSelect={selectHistoryEntry}
-              />
-            </div>
+            {history.length > 0 && (
+              <div className="mt-4 flex flex-col gap-4 sm:mt-0">
+                <DigestHistoryPanel
+                  history={history}
+                  selectedId={selectedId}
+                  onSelect={selectHistoryEntry}
+                />
+              </div>
+            )}
           </div>
 
-          {activeDigest && !isGenerating && (
+          {activeDigest && (
             <DrawerFooter className="flex-row border-t px-6 pb-6 pt-4">
               {selectedEntry ? (
-                <Button variant="ghost" size="sm" onClick={() => selectHistoryEntry(null)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => selectHistoryEntry(null)}
+                  disabled={isGenerating}
+                >
                   <Icons.arrowLeft className="size-3.5" />
                   Back to latest
                 </Button>
               ) : (
                 data?.canRegenerate && (
-                  <Button variant="outline" size="sm" onClick={() => void generate()}>
-                    <Icons.refresh className="size-3.5" />
-                    Regenerate
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void generate()}
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <Icons.loading className="size-3.5 animate-spin" />
+                    ) : (
+                      <Icons.refresh className="size-3.5" />
+                    )}
+                    {isGenerating ? "Regenerating…" : "Regenerate"}
                   </Button>
                 )
               )}

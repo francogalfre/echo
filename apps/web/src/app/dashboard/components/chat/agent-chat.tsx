@@ -36,8 +36,10 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const [input, setInput] = useState("");
   const [view, setView] = useState<"chat" | "history">("chat");
   const [usageReloadKey, setUsageReloadKey] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const scrolledUpRef = useRef(false);
 
   const echo = AGENT_PERSONAS.echo;
   const EchoIcon = echo.icon;
@@ -48,7 +50,16 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
 
   const isBusy = thread.status === "submitted" || thread.status === "streaming";
 
+  const handleScroll = useCallback((): void => {
+    const container = containerRef.current;
+    if (!container) return;
+    const distanceFromBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    scrolledUpRef.current = distanceFromBottom > 120;
+  }, []);
+
   useEffect(() => {
+    if (scrolledUpRef.current) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [thread.messages]);
 
@@ -63,6 +74,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const sendMessage = useCallback(
     (text: string) => {
       if (!text.trim() || isBusy) return;
+      scrolledUpRef.current = false;
       thread.send(text);
       setInput("");
     },
@@ -77,6 +89,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const selectConversation = useCallback(
     async (id: string): Promise<void> => {
       const priorMessages = await conversations.loadMessages(id);
+      scrolledUpRef.current = false;
       thread.resumeConversation(id, priorMessages);
       setView("chat");
     },
@@ -84,6 +97,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   );
 
   const startNewConversation = useCallback((): void => {
+    scrolledUpRef.current = false;
     thread.startNewConversation();
     setView("chat");
   }, [thread]);
@@ -104,7 +118,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="p-0">
-          <DrawerHeader className="border-b px-6 py-4">
+          <DrawerHeader className="border-b py-4 pl-6 pr-14">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <span
@@ -144,7 +158,11 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
               onNewConversation={startNewConversation}
             />
           ) : (
-            <div className="flex h-[400px] flex-col overflow-y-auto p-6">
+            <div
+              ref={containerRef}
+              onScroll={handleScroll}
+              className="flex h-[400px] flex-col overflow-y-auto p-6"
+            >
               {thread.messages.length === 0 && (
                 <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
                   <span

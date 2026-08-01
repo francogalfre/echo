@@ -1,5 +1,7 @@
 import { Button } from "@echo/ui/components/button";
+import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
+import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 
 import type { ConversationItem } from "../../hooks/use-chat-conversations";
@@ -42,9 +44,11 @@ export function AgentChatHistory({
       )}
 
       {!loading && conversations.length === 0 && (
-        <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-          No past conversations yet.
-        </p>
+        <EmptyState
+          icon={<Icons.clock />}
+          title="No past conversations"
+          description="Conversations with Echo will show up here."
+        />
       )}
 
       <div className="flex flex-col gap-1">
@@ -55,7 +59,7 @@ export function AgentChatHistory({
             onClick={() => onSelect(conversation.id)}
             className={cn(
               "flex flex-col items-start gap-0.5 rounded-lg px-2.5 py-2 text-left text-sm",
-              "transition-colors hover:bg-muted",
+              "transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               activeId === conversation.id && "bg-muted",
             )}
           >
@@ -63,7 +67,7 @@ export function AgentChatHistory({
               {conversationLabel(conversation)}
             </span>
             <span className="text-xs text-muted-foreground">
-              {conversation.lastMessageAt.toLocaleString()}
+              {formatRelativeTime(conversation.lastMessageAt)}
             </span>
           </button>
         ))}
