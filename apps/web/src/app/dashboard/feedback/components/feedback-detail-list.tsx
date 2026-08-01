@@ -31,11 +31,7 @@ function DetailField({ label, children }: DetailFieldProps): React.ReactElement 
 
 export function FeedbackDetailList({ item }: FeedbackDetailListProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-5">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Details
-      </h3>
-
+    <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
       <DetailField label="Sentiment">
         <SentimentBadge sentiment={item.sentiment} />
       </DetailField>

@@ -27,6 +27,24 @@ type FeedbackSheetProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+type SectionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+function Section({ title, children }: SectionProps): React.ReactElement {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border">
+      <div className="border-b border-border bg-muted/40 px-5 py-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {title}
+        </h3>
+      </div>
+      <div className="p-5">{children}</div>
+    </div>
+  );
+}
+
 export function FeedbackSheet({
   item,
   open,
@@ -36,7 +54,7 @@ export function FeedbackSheet({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} direction="right">
-      <DrawerContent direction="right" className="max-w-3xl p-0">
+      <DrawerContent direction="right" className="max-w-2xl p-0">
         {item && (
           <>
             <DrawerHeader className="flex-row items-center gap-3.5 border-b p-6">
@@ -51,39 +69,23 @@ export function FeedbackSheet({
               </div>
             </DrawerHeader>
 
-            <div className="@container flex min-h-0 flex-1 flex-col overflow-y-auto">
-              <Stagger
-                className={cn(
-                  "flex flex-col gap-8 p-6",
-                  "@2xl:grid @2xl:grid-cols-[200px_1fr] @2xl:items-start @2xl:gap-8",
-                )}
-                stagger={0.05}
-              >
-                <StaggerItem
-                  className={cn(
-                    "order-2 @2xl:order-1",
-                    "@2xl:border-r @2xl:border-border @2xl:pr-6",
-                  )}
-                >
-                  <FeedbackDetailList item={item} />
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+              <Stagger className="flex flex-col gap-5 p-6" stagger={0.05}>
+                <StaggerItem>
+                  <Section title="Message">
+                    <p className="text-sm leading-7 text-foreground">{item.feedback}</p>
+                  </Section>
                 </StaggerItem>
 
-                <div className="order-1 flex flex-col gap-6 @2xl:order-2">
-                  <StaggerItem>
-                    <section className="flex flex-col gap-2.5">
-                      <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Message
-                      </h3>
-                      <p className="rounded-xl bg-muted/40 p-5 text-sm leading-7 text-foreground">
-                        {item.feedback}
-                      </p>
-                    </section>
-                  </StaggerItem>
+                <StaggerItem>
+                  <Section title="Details">
+                    <FeedbackDetailList item={item} />
+                  </Section>
+                </StaggerItem>
 
-                  <StaggerItem>
-                    <InsightPanel item={item} active={open} />
-                  </StaggerItem>
-                </div>
+                <StaggerItem>
+                  <InsightPanel item={item} active={open} />
+                </StaggerItem>
               </Stagger>
             </div>
 

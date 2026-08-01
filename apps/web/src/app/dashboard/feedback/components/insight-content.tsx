@@ -1,10 +1,7 @@
 import { cn } from "@echo/ui/lib/utils";
 
-import type { AgentPersona } from "../../components/chat/agent-personas";
-
 type Props = {
   insight: string;
-  agent?: AgentPersona;
 };
 
 type Block = { type: "paragraph"; text: string } | { type: "list"; items: string[] };
@@ -46,8 +43,7 @@ function renderInline(text: string): React.ReactNode {
   return nodes;
 }
 
-export function InsightContent({ insight, agent }: Props): React.ReactElement {
-  const AgentIcon = agent?.icon;
+export function InsightContent({ insight }: Props): React.ReactElement {
   const blocks = parseBlocks(insight);
 
   return (
@@ -55,7 +51,6 @@ export function InsightContent({ insight, agent }: Props): React.ReactElement {
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none rounded-xl border border-border bg-muted/30 p-4 text-sm leading-relaxed",
         "[&_strong]:font-semibold [&_strong]:text-foreground [&_p]:text-muted-foreground [&_li]:text-muted-foreground",
-        agent && "border-accent/20",
       )}
     >
       {blocks.map((block) =>
@@ -68,17 +63,6 @@ export function InsightContent({ insight, agent }: Props): React.ReactElement {
         ) : (
           <p key={block.text}>{renderInline(block.text)}</p>
         ),
-      )}
-
-      {agent && AgentIcon && (
-        <div className="mt-3 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
-          <span
-            className={`flex size-5 items-center justify-center rounded-full ${agent.avatarBg}`}
-          >
-            <AgentIcon className={`size-2.5 ${agent.avatarText}`} />
-          </span>
-          <span>Analyzed by {agent.name}</span>
-        </div>
       )}
     </div>
   );

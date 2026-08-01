@@ -53,87 +53,88 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
     state.status === "loading" || (item.hasInsight && state.status === "idle");
 
   return (
-    <div className="flex flex-col gap-3.5 rounded-lg border border-border bg-background p-4">
-      <div className="flex items-center gap-2.5">
+    <div className="overflow-hidden rounded-2xl border border-border">
+      <div className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-5 py-3">
         <span
           className={cn(
-            "flex size-7 shrink-0 items-center justify-center rounded-lg",
+            "flex size-6 shrink-0 items-center justify-center rounded-md",
             agent.bgColor,
           )}
         >
-          <agent.icon className={cn("size-3.5", agent.color)} />
+          <agent.icon className={cn("size-3", agent.color)} />
         </span>
-        <div>
-          <p className="text-sm font-medium">{agent.name}</p>
-          <p className="text-xs text-muted-foreground">{agent.role}</p>
-        </div>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Insight
+        </h3>
       </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        {isLoading && (
-          <motion.div
-            key="loading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={PHASE_TRANSITION}
-          >
-            <AiThinking phrases={THINKING_PHRASES}>
-              <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-4">
-                <Skeleton className="h-3 w-full rounded" />
-                <Skeleton className="h-3 w-4/5 rounded" />
-                <Skeleton className="h-3 w-3/5 rounded" />
-              </div>
-            </AiThinking>
-          </motion.div>
-        )}
+      <div className="p-5">
+        <AnimatePresence mode="wait" initial={false}>
+          {isLoading && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={PHASE_TRANSITION}
+            >
+              <AiThinking phrases={THINKING_PHRASES}>
+                <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-4">
+                  <Skeleton className="h-3 w-full rounded" />
+                  <Skeleton className="h-3 w-4/5 rounded" />
+                  <Skeleton className="h-3 w-3/5 rounded" />
+                </div>
+              </AiThinking>
+            </motion.div>
+          )}
 
-        {state.status === "ready" && (
-          <motion.div
-            key="ready"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={PHASE_TRANSITION}
-          >
-            <InsightContent insight={state.insight} agent={agent} />
-          </motion.div>
-        )}
+          {state.status === "ready" && (
+            <motion.div
+              key="ready"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={PHASE_TRANSITION}
+            >
+              <InsightContent insight={state.insight} />
+            </motion.div>
+          )}
 
-        {state.status === "error" && (
-          <motion.div
-            key="error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={PHASE_TRANSITION}
-          >
-            <ErrorCard
-              message="We couldn't generate this insight. Please try again."
-              onRetry={() => void generate(item.id)}
-            />
-          </motion.div>
-        )}
+          {state.status === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={PHASE_TRANSITION}
+            >
+              <ErrorCard
+                message="We couldn't generate this insight. Please try again."
+                onRetry={() => void generate(item.id)}
+              />
+            </motion.div>
+          )}
 
-        {!item.hasInsight && state.status === "idle" && (
-          <motion.div
-            key="idle"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={PHASE_TRANSITION}
-            className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border/80 bg-background/50 p-4"
-          >
-            <p className="text-xs leading-relaxed text-muted-foreground">
-              Generate a quick AI summary of what this feedback means.
-            </p>
-            <Button size="sm" onClick={() => void generate(item.id)}>
-              <Icons.aiMagic className="size-4" />
-              Generate insight
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {!item.hasInsight && state.status === "idle" && (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={PHASE_TRANSITION}
+              className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-border/80 bg-background/50 p-4"
+            >
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Generate a quick AI summary of what this feedback means.
+              </p>
+              <Button size="sm" onClick={() => void generate(item.id)}>
+                <Icons.aiMagic className="size-4" />
+                Generate insight
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <UpgradeDialog
         open={upgradeReason !== null}
