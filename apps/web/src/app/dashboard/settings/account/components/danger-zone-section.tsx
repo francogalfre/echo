@@ -55,8 +55,17 @@ export const DangerZoneSection = (): React.ReactElement => {
       return;
     }
 
-    await signOut();
-    router.replace("/login");
+    const { data: remainingOrganizations } = await authClient.organization.list({});
+    const nextOrganization = remainingOrganizations?.[0];
+
+    if (nextOrganization) {
+      await authClient.organization.setActive({ organizationId: nextOrganization.id });
+      router.replace("/dashboard");
+      return;
+    }
+
+    await authClient.organization.setActive({ organizationId: null });
+    router.replace("/onboarding");
   };
 
   const canDelete = Boolean(activeOrg) && confirmText.trim() === activeOrg?.name;

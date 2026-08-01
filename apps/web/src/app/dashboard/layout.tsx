@@ -1,3 +1,6 @@
+import { env } from "@echo/env/web";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 
 import { AgentChatButton } from "./components/chat/agent-chat-button";
@@ -10,7 +13,40 @@ type DashboardLayoutProps = {
   children: ReactNode;
 };
 
-const DashboardLayout = ({ children }: DashboardLayoutProps): React.ReactElement => {
+type ServerSession = {
+  session: { activeOrganizationId: string | null };
+} | null;
+
+async function fetchServerSession(): Promise<ServerSession> {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
+
+  try {
+    const response = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/auth/get-session`, {
+      headers: { cookie: cookieHeader },
+      cache: "no-store",
+    });
+
+    if (!response.ok) return null;
+
+    return (await response.json()) as ServerSession;
+  } catch (error) {
+    console.error("Failed to fetch session for dashboard guard", error);
+    return null;
+  }
+}
+
+const DashboardLayout = async ({
+  children,
+}: DashboardLayoutProps): Promise<React.ReactElement> => {
+  const session = await fetchServerSession();
+
+  if (!session) redirect("/login");
+  if (!session.session.activeOrganizationId) redirect("/onboarding");
+
   return (
     <MotionProvider>
       <div className="flex h-svh">
