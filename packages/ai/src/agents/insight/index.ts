@@ -7,7 +7,7 @@ import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
 
 const timeoutMs = 30_000;
-const maxOutputTokens = 512;
+const maxOutputTokens = 120;
 const maxAttempts = 2;
 const retryDelayMs = 500;
 
