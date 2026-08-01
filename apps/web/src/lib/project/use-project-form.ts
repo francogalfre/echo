@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 
-import { slugify } from "@/lib/slug";
+import { slugify } from "@/utils/slug";
 
 import { createProjectSchema, type CreateProjectValues } from "./schema";
 import { useLogoUpload, type UseLogoUploadReturn } from "./use-logo-upload";

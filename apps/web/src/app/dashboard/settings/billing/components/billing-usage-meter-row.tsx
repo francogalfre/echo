@@ -3,7 +3,7 @@
 import { cn } from "@echo/ui/lib/utils";
 import { motion, useReducedMotion } from "motion/react";
 
-import { usageBarColorClass } from "@/lib/usage-meter";
+import { usageBarColorClass } from "@/utils/usage-meter";
 
 type BillingUsageMeterRowProps = {
   label: string;

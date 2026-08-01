@@ -4,7 +4,7 @@ import { Button } from "@echo/ui/components/button";
 import type { ButtonVariantProps } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
 
-import { useUpgradeCheckout } from "@/lib/use-upgrade-checkout";
+import { useUpgradeCheckout } from "@/utils/use-upgrade-checkout";
 
 type BillingUpgradeButtonProps = {
   size?: ButtonVariantProps["size"];

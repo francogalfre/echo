@@ -1,7 +1,7 @@
 import imagotipo from "@echo/assets/imagotipo/accent.png";
 import Image from "next/image";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import { AcceptInvitationCard } from "./components/accept-invitation-card";
 

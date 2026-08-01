@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import { AuthDivider } from "../components/auth-divider";
 import { LoginForm } from "../components/login-form";

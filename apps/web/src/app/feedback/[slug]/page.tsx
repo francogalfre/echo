@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 import { trpc } from "@/lib/trpc";
 
 import { FeedbackCards } from "./components/feedback-cards";

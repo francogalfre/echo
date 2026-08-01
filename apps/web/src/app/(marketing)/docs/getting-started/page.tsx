@@ -3,7 +3,7 @@ import { CodeBlock } from "@echo/ui/components/code-block";
 import { Icons } from "@echo/ui/components/icons";
 import Link from "next/link";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import { DocsCodeHero } from "../components/docs-code-hero";
 import { DocsPageHeader } from "../components/docs-page-header";

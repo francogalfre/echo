@@ -1,6 +1,6 @@
 import type { BoardCard, BoardColumns } from "@echo/api/types";
 
-import { reviveDate } from "@/lib/serialize";
+import { reviveDate } from "@/utils/serialize";
 
 type SerializedCard = Omit<BoardCard, "createdAt"> & { createdAt: string | Date };
 

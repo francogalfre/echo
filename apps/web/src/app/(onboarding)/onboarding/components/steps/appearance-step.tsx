@@ -1,6 +1,6 @@
 import echoGreetings from "@echo/assets/character/greetings.webp";
 
-import { ThemeSelector } from "@/lib/theme-selector";
+import { ThemeSelector } from "@/utils/theme-selector";
 
 import { BackButton, ContinueButton } from "../onboarding-nav";
 import { OnboardingShell } from "../onboarding-shell";

@@ -6,7 +6,7 @@ import { ThemeProvider } from "next-themes";
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import "../index.css";
 

@@ -1,4 +1,4 @@
-import { ThemeSelector } from "@/lib/theme-selector";
+import { ThemeSelector } from "@/utils/theme-selector";
 
 import { SettingsCard } from "../../components/settings-card";
 import { SettingsRow } from "../../components/settings-row";

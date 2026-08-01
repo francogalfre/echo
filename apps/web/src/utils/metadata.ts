@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteConfig } from "@/lib/site";
+import { siteConfig } from "@/utils/site";
 
 type CreateMetadataInput = {
   title?: string;

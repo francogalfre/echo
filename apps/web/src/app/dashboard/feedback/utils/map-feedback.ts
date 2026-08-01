@@ -1,6 +1,6 @@
 import type { FeedbackSource, Sentiment } from "@echo/api/types";
 
-import { reviveDate } from "@/lib/serialize";
+import { reviveDate } from "@/utils/serialize";
 
 export type FeedbackItem = {
   id: string;
