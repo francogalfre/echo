@@ -7,7 +7,7 @@ import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
 
 const timeoutMs = 30_000;
-const maxOutputTokens = 120;
+const maxOutputTokens = 400;
 const maxAttempts = 2;
 const retryDelayMs = 500;
 
@@ -34,6 +34,10 @@ async function attemptGeneration(
   });
 
   const insight = result.text.trim();
+
+  if (result.finishReason === "length" && !/[.!?]$/.test(insight)) {
+    throw new AIError("GENERATION_FAILED", "Insight truncated");
+  }
 
   if (!insight) {
     throw new AIError("GENERATION_FAILED", "Empty insight output");
