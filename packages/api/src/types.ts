@@ -38,6 +38,16 @@ export const NOTIFICATION_TYPE_VALUES = [
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number];
 
+export type NotificationItem = {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  link: string | null;
+  readAt: string | Date | null;
+  createdAt: string | Date;
+};
+
 export type SeriesGranularity = "day" | "month";
 export type StatsRange = "7d" | "30d" | "6m" | "1y" | "all";
 

@@ -12,7 +12,7 @@ import { useCreateProject } from "@/lib/project/use-create-project";
 
 import { UpgradeDialog } from "./upgrade-dialog";
 
-const projectLimitReason =
+export const projectLimitReason =
   "You've reached your project limit. Pro includes up to 5 projects.";
 
 type CreateProjectModalProps = {

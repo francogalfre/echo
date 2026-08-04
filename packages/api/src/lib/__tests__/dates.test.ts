@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   bucketKeys,
   dayKey,
+  dayKeysBetween,
   granularityFor,
   growthPercent,
   monthKey,
@@ -26,10 +27,11 @@ describe("granularityFor", () => {
 });
 
 describe("rangeWindow", () => {
-  it("should return a 7-day window with an equal previous window", () => {
+  it("should align the window start to the first bucket day", () => {
     const { start, prevStart } = rangeWindow("7d", NOW);
-    expect(start?.toISOString()).toBe("2026-06-25T15:30:00.000Z");
-    expect(prevStart?.toISOString()).toBe("2026-06-18T15:30:00.000Z");
+    expect(start?.toISOString()).toBe("2026-06-26T00:00:00.000Z");
+    expect(prevStart?.toISOString()).toBe("2026-06-19T00:00:00.000Z");
+    expect(dayKey(start as Date)).toBe(bucketKeys("7d", NOW)[0]);
   });
 
   it("should return null bounds for all time", () => {
@@ -77,6 +79,17 @@ describe("bucketKeys", () => {
 
   it("should fall back to the current month when all time has no data", () => {
     expect(bucketKeys("all", NOW)).toEqual(["2026-07"]);
+  });
+});
+
+describe("dayKeysBetween", () => {
+  it("should produce inclusive ascending day keys", () => {
+    const keys = dayKeysBetween(new Date("2026-06-30T21:15:00.000Z"), NOW);
+    expect(keys).toEqual(["2026-06-30", "2026-07-01", "2026-07-02"]);
+  });
+
+  it("should produce a single key when start and end are the same day", () => {
+    expect(dayKeysBetween(NOW, NOW)).toEqual(["2026-07-02"]);
   });
 });
 

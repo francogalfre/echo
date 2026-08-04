@@ -1,17 +1,11 @@
+import type { Route } from "next";
+import Link from "next/link";
+
 import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 
-export type NotificationType = "feedback.received" | "plan.upgraded" | "member.joined";
-
-export type NotificationItem = {
-  id: string;
-  type: NotificationType;
-  title: string;
-  body: string | null;
-  readAt: string | Date | null;
-  createdAt: string | Date;
-};
+import type { NotificationItem, NotificationType } from "@echo/api/types";
 
 const NOTIFICATION_ICONS: Record<NotificationType, typeof Icons.message> = {
   "feedback.received": Icons.message,
@@ -21,19 +15,18 @@ const NOTIFICATION_ICONS: Record<NotificationType, typeof Icons.message> = {
 
 type NotificationRowProps = {
   item: NotificationItem;
+  onNavigate?: () => void;
 };
 
-export function NotificationRow({ item }: NotificationRowProps): React.ReactElement {
+export function NotificationRow({
+  item,
+  onNavigate,
+}: NotificationRowProps): React.ReactElement {
   const Icon = NOTIFICATION_ICONS[item.type];
   const unread = item.readAt === null;
 
-  return (
-    <div
-      className={cn(
-        "flex items-start gap-3 rounded-md px-3 py-2.5",
-        unread && "bg-accent/5",
-      )}
-    >
+  const content = (
+    <>
       <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground [&_svg]:size-3.5">
         <Icon />
       </span>
@@ -46,6 +39,25 @@ export function NotificationRow({ item }: NotificationRowProps): React.ReactElem
           {formatRelativeTime(item.createdAt)}
         </p>
       </div>
-    </div>
+    </>
   );
+
+  const className = cn(
+    "flex items-start gap-3 rounded-md px-3 py-2.5",
+    unread && "bg-accent/5",
+  );
+
+  if (item.link) {
+    return (
+      <Link
+        href={item.link as Route}
+        onClick={onNavigate}
+        className={cn(className, "transition-colors hover:bg-muted/60")}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{content}</div>;
 }

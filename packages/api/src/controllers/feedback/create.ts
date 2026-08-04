@@ -35,6 +35,7 @@ export async function createFeedback(data: InsertFeedback): Promise<SubmitResult
     type: "feedback.received",
     title: `New feedback from ${data.authorName}`,
     body: data.content.length > 120 ? `${data.content.slice(0, 120)}…` : data.content,
+    link: `/dashboard/feedback?feedback=${id}`,
   }).catch((error: unknown) => {
     console.error("[echo:notifications] failed to write feedback.received", error);
   });

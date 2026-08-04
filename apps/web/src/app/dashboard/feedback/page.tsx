@@ -5,9 +5,9 @@ import {
   SENTIMENT_VALUES as API_SENTIMENT_VALUES,
 } from "@echo/api/types";
 
+import { AiAnalysisButton } from "../components/ai/ai-analysis-button";
 import { PageContainer } from "../components/layout/page-container";
 import { PageHeader } from "../components/layout/page-header";
-import { DigestButton } from "./components/digest-button";
 import { FeedbackListData } from "./components/feedback-list-data";
 import { FeedbackListSkeleton } from "./components/feedback-list-skeleton";
 import type { FeedbackFilters } from "./utils/map-feedback";
@@ -63,7 +63,7 @@ const FeedbackPage = async ({
       <PageHeader
         title="Feedback"
         description="All feedback from your users in one place."
-        actions={<DigestButton />}
+        actions={<AiAnalysisButton />}
       />
       <Suspense
         key={`${filters.sentiment}:${filters.source}:${filters.search}`}

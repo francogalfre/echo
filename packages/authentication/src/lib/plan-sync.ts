@@ -56,6 +56,7 @@ export async function syncPlanFromCustomerState(
         type: "plan.upgraded",
         title: "Welcome to Pro",
         body: "Thanks for subscribing — unlimited feedback and higher AI limits are now unlocked.",
+        link: "/dashboard/settings/billing",
       })),
     );
   }
@@ -102,5 +103,6 @@ export async function notifyMemberJoined(data: {
     organizationId: data.member.organizationId,
     type: "member.joined",
     title: `${data.user.name} joined ${data.organization.name}`,
+    link: "/dashboard/settings/team",
   });
 }

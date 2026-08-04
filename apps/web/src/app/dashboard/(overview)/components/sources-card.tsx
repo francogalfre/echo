@@ -33,8 +33,8 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
   const total = sources.reduce((sum, item) => sum + item.count, 0);
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="py-5">
+      <CardHeader className="px-5">
         <CardTitle>Sources</CardTitle>
         {total > 0 ? (
           <div className="flex items-baseline gap-1.5">
@@ -45,7 +45,7 @@ export function SourcesCard({ sources }: { sources: SourceCount[] }): React.Reac
           </div>
         ) : null}
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-center">
+      <CardContent className="flex flex-1 flex-col justify-center px-5">
         {total === 0 ? (
           <EmptyState
             icon={<Icons.radar />}

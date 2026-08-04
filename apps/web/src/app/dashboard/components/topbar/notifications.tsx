@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@echo/ui/components/popover";
 import { Skeleton } from "@echo/ui/components/skeleton";
 
+import type { NotificationItem } from "@echo/api/types";
+
 import { trpc } from "@/lib/trpc";
 import { useAsyncResource } from "@/lib/use-async-resource";
 
-import { NotificationRow, type NotificationItem } from "./notification-row";
+import { NotificationRow } from "./notification-row";
 
 type NotificationsData = {
   items: NotificationItem[];
@@ -31,6 +33,7 @@ function NotificationsSkeleton(): React.ReactElement {
 }
 
 export const Notifications = (): React.ReactElement => {
+  const [open, setOpen] = useState(false);
   const { state, refresh } = useAsyncResource<NotificationsData>(() =>
     trpc.notifications.list.query(),
   );
@@ -42,13 +45,16 @@ export const Notifications = (): React.ReactElement => {
 
   const unread = state.status === "ready" ? state.data.unread : 0;
 
-  const handleOpenChange = (open: boolean): void => {
-    if (!open || unread === 0) return;
+  const handleOpenChange = (nextOpen: boolean): void => {
+    setOpen(nextOpen);
+    if (!nextOpen || unread === 0) return;
     trpc.notifications.markAllRead.mutate().then(() => refresh());
   };
 
+  const closeMenu = (): void => setOpen(false);
+
   return (
-    <Popover onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         aria-label="Notifications"
         className="relative flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground outline-none transition-colors hover:border-foreground/20 hover:text-foreground"
@@ -91,7 +97,7 @@ export const Notifications = (): React.ReactElement => {
         {state.status === "ready" && state.data.items.length > 0 ? (
           <div className="flex max-h-96 flex-col gap-0.5 overflow-y-auto py-1">
             {state.data.items.map((item) => (
-              <NotificationRow key={item.id} item={item} />
+              <NotificationRow key={item.id} item={item} onNavigate={closeMenu} />
             ))}
           </div>
         ) : null}

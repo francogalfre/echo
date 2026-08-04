@@ -17,25 +17,10 @@ import {
 } from "@echo/ui/components/card";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@echo/ui/components/select";
 import { formatBucket, formatCompact } from "@echo/ui/lib/format";
 import { cn } from "@echo/ui/lib/utils";
 
-import type { SeriesGranularity, SeriesPoint, StatsRange } from "@echo/api/types";
-
-const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
-  { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "6m", label: "Last 6 months" },
-  { value: "1y", label: "Last year" },
-  { value: "all", label: "All time" },
-];
+import type { SeriesGranularity, SeriesPoint } from "@echo/api/types";
 
 const chartConfig: ChartConfig = {
   positive: { label: "Positive", color: "accent" },
@@ -46,64 +31,41 @@ const chartConfig: ChartConfig = {
 type SentimentChartCardProps = {
   series: SeriesPoint[];
   granularity: SeriesGranularity;
-  range: StatsRange;
-  onRangeChange: (range: StatsRange) => void;
   pending?: boolean;
 };
 
 export function SentimentChartCard({
   series,
   granularity,
-  range,
-  onRangeChange,
   pending = false,
 }: SentimentChartCardProps): React.ReactElement {
-  const handleRangeChange = (value: StatsRange | null): void => {
-    const next = RANGE_OPTIONS.find((option) => option.value === value);
-    if (next) onRangeChange(next.value);
-  };
-
   const isEmpty = series.every(
     (point) => point.positive === 0 && point.neutral === 0 && point.negative === 0,
   );
 
   return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
+    <Card className="lg:col-span-2 py-5">
+      <CardHeader className="px-5">
         <CardTitle>Feedback sentiment</CardTitle>
         <CardAction>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              {Object.entries(chartConfig).map(([key, item]) => (
+          <div className="flex items-center gap-3">
+            {Object.entries(chartConfig).map(([key, item]) => (
+              <span
+                key={key}
+                className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
+              >
                 <span
-                  key={key}
-                  className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"
-                >
-                  <span
-                    aria-hidden
-                    className="size-2.5 rounded-full"
-                    style={{ backgroundColor: rgb(seedOfColor(item.color).fill) }}
-                  />
-                  {item.label}
-                </span>
-              ))}
-            </div>
-            <Select items={RANGE_OPTIONS} value={range} onValueChange={handleRangeChange}>
-              <SelectTrigger size="sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent align="end" alignItemWithTrigger={false}>
-                {RANGE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  aria-hidden
+                  className="size-2.5 rounded-full"
+                  style={{ backgroundColor: rgb(seedOfColor(item.color).fill) }}
+                />
+                {item.label}
+              </span>
+            ))}
           </div>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-5">
         <div
           className={cn(
             "relative h-80 w-full overflow-hidden rounded-lg transition-opacity duration-200",

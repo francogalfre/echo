@@ -56,6 +56,31 @@ describe("insertNotification", () => {
     expect(values.body).toBe("Great product");
     expect(typeof values.id).toBe("string");
   });
+
+  it("should insert the link when provided", async () => {
+    await insertNotification({
+      organizationId: ORG_ID,
+      type: "feedback.received",
+      title: "New feedback from Ada",
+      link: "/dashboard/feedback?feedback=fb_1",
+    });
+
+    const values = mockInsertValues.mock.calls[0]?.[0] as Record<string, unknown>;
+
+    expect(values.link).toBe("/dashboard/feedback?feedback=fb_1");
+  });
+
+  it("should leave the link undefined when not provided", async () => {
+    await insertNotification({
+      organizationId: ORG_ID,
+      type: "member.joined",
+      title: "Ada joined Acme",
+    });
+
+    const values = mockInsertValues.mock.calls[0]?.[0] as Record<string, unknown>;
+
+    expect(values.link).toBeUndefined();
+  });
 });
 
 describe("listNotifications", () => {

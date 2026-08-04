@@ -14,7 +14,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
-import { CreateProjectModal } from "../dialogs/create-project-modal";
+import { useAtProjectLimit } from "../../hooks/use-project-limit";
+import { CreateProjectModal, projectLimitReason } from "../dialogs/create-project-modal";
+import { UpgradeDialog } from "../dialogs/upgrade-dialog";
 
 type OrgAvatarProps = { logo?: string | null; name?: string | null };
 
@@ -28,6 +30,8 @@ const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => (
 export const OrgSwitcher = (): React.ReactElement => {
   const router = useRouter();
   const [createOpen, setCreateOpen] = useState(false);
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const atProjectLimit = useAtProjectLimit();
   const { data: organizations, isPending } = authClient.useListOrganizations();
   const { data: activeOrg } = authClient.useActiveOrganization();
 
@@ -48,9 +52,19 @@ export const OrgSwitcher = (): React.ReactElement => {
     router.refresh();
   };
 
+  const openCreateProject = (): void => {
+    if (atProjectLimit) setUpgradeOpen(true);
+    else setCreateOpen(true);
+  };
+
   return (
     <>
       <CreateProjectModal open={createOpen} onOpenChange={setCreateOpen} />
+      <UpgradeDialog
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        reason={projectLimitReason}
+      />
       <DropdownMenu>
         <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.75 text-sm outline-none transition-colors hover:border-border hover:bg-background data-popup-open:border-border data-popup-open:bg-background">
           <OrgAvatar logo={activeOrg?.logo} name={activeOrg?.name} />
@@ -78,7 +92,7 @@ export const OrgSwitcher = (): React.ReactElement => {
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
             className="text-sm text-muted-foreground transition-[background-color,color] duration-300"
-            onClick={() => setCreateOpen(true)}
+            onClick={openCreateProject}
           >
             <Icons.circlePlus className="size-4 text-muted-foreground" />
             Add project

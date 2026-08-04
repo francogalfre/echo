@@ -141,7 +141,10 @@ export function PieCanvas() {
       }
       if (s.hoverIndex !== lastHover) {
         lastHover = s.hoverIndex;
-        popEase = 0;
+        // Only snap the pop back to 0 when entering a new slice — restarting the
+        // grow-in each time. Leaving (hoverIndex -> null) must ease down through
+        // the normal popTarget lerp below, not jump instantly.
+        if (s.hoverIndex != null) popEase = 0;
         needsFill = true;
       }
       const itTarget = s.isMouseInChart ? 1 : 0;

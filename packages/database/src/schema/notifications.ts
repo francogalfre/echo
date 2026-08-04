@@ -13,6 +13,7 @@ export const notifications = pgTable(
     type: text("type").notNull(),
     title: text("title").notNull(),
     body: text("body"),
+    link: text("link"),
     readAt: timestamp("read_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },

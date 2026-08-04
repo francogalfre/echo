@@ -42,23 +42,21 @@ export function MetricCard({
   sparklineColor = "accent",
 }: MetricCardProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-2.5 overflow-hidden rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:bg-muted/30">
-      <div className="flex items-center justify-between">
+    <div className="relative flex h-[190px] flex-col gap-2.5 overflow-hidden rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:bg-muted/30">
+      <div className="relative z-10 flex items-center justify-between">
         <p className="text-xs text-muted-foreground">{label}</p>
         <TrendIndicator growth={growth} />
       </div>
       <AnimatedCounter
         value={value}
-        className="font-pixel text-3xl font-medium tracking-tight"
+        className="relative z-10 font-pixel text-3xl font-medium tracking-tight"
       />
-      <div className="mt-1 overflow-hidden rounded-lg">
-        <Sparkline
-          data={[...sparklineData]}
-          color={sparklineColor}
-          variant="gradient"
-          className="h-32 w-full"
-        />
-      </div>
+      <Sparkline
+        data={[...sparklineData]}
+        color={sparklineColor}
+        variant="gradient"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-28"
+      />
     </div>
   );
 }

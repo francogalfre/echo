@@ -11,10 +11,15 @@ import { useAsyncResource } from "@/lib/use-async-resource";
 import type { DigestOutput } from "@echo/ai";
 import type { DashboardOverview, StatsRange } from "@echo/api/types";
 
-import { Button } from "@echo/ui/components/button";
-import { Icons } from "@echo/ui/components/icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@echo/ui/components/select";
 
-import { DigestModal } from "../../components/ai/digest-modal";
+import { AiAnalysisButton } from "../../components/ai/ai-analysis-button";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
 import { HowEchoWorks } from "./how-echo-works";
@@ -37,7 +42,15 @@ type DashboardClientProps = {
   readonly initialDigest: InitialDigest;
 };
 
-const INITIAL_RANGE: StatsRange = "30d";
+const INITIAL_RANGE: StatsRange = "all";
+
+const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
+  { value: "7d", label: "Last 7 days" },
+  { value: "30d", label: "Last 30 days" },
+  { value: "6m", label: "Last 6 months" },
+  { value: "1y", label: "Last year" },
+  { value: "all", label: "All time" },
+];
 
 export function DashboardClient({
   initialData,
@@ -46,7 +59,6 @@ export function DashboardClient({
 }: DashboardClientProps): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
-  const [digestOpen, setDigestOpen] = React.useState(false);
   const { state } = useAsyncResource(() => trpc.dashboard.overview.query({ range }), {
     initialData,
     deps: [range],
@@ -57,6 +69,11 @@ export function DashboardClient({
   const hasInsights =
     initialDigest.digest !== null &&
     (initialDigest.digest.topIssues.length > 0 || initialDigest.digest.themes.length > 0);
+
+  const handleRangeChange = (value: StatsRange | null): void => {
+    const next = RANGE_OPTIONS.find((option) => option.value === value);
+    if (next) setRange(next.value);
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -69,18 +86,22 @@ export function DashboardClient({
             Here&apos;s how your project is performing.
           </p>
         </div>
-        <Button
-          variant="default"
-          size="lg"
-          className="group h-11 gap-2 px-5 text-sm transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
-          onClick={() => setDigestOpen(true)}
-        >
-          <Icons.aiMagic className="size-4 transition-transform duration-200 group-hover:rotate-12" />
-          AI Analysis
-        </Button>
+        <div className="flex items-center gap-3">
+          <Select items={RANGE_OPTIONS} value={range} onValueChange={handleRangeChange}>
+            <SelectTrigger className="data-[size=default]:h-10 rounded-lg px-4 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end" side="bottom" alignItemWithTrigger={false}>
+              {RANGE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <AiAnalysisButton />
+        </div>
       </div>
-
-      <DigestModal open={digestOpen} onOpenChange={setDigestOpen} />
 
       {state.status === "loading" && <DashboardSkeleton />}
 
@@ -121,8 +142,6 @@ export function DashboardClient({
             <SentimentChartCard
               series={state.data.series}
               granularity={state.data.granularity}
-              range={range}
-              onRangeChange={setRange}
               pending={state.pending}
             />
             <SourcesCard sources={state.data.sources} />

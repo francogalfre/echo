@@ -1,4 +1,11 @@
-import { bucketKeys, growthPercent, monthKey, zeroFillSeries } from "../lib/dates";
+import {
+  bucketKeys,
+  dayKeysBetween,
+  growthPercent,
+  monthKey,
+  rangeWindow,
+  zeroFillSeries,
+} from "../lib/dates";
 import { fetchDashboardRawData } from "../services/dashboard-overview";
 import {
   FEEDBACK_SOURCE_VALUES,
@@ -15,7 +22,8 @@ export async function getDashboardOverview(
   const raw = await fetchDashboardRawData(organizationId, range);
 
   const keys = bucketKeys(range, now, raw.earliest ? monthKey(raw.earliest) : undefined);
-  const trendKeys = bucketKeys("30d", now);
+  const { start } = rangeWindow(range, now);
+  const trendKeys = dayKeysBetween(start ?? raw.earliest ?? now, now);
 
   const sourceMap = new Map(raw.sourceRows.map((row) => [row.source, row.n]));
   const sources: SourceCount[] = FEEDBACK_SOURCE_VALUES.map((source) => ({
@@ -26,16 +34,16 @@ export async function getDashboardOverview(
   return {
     metrics: {
       total: {
-        value: raw.allTime.total,
-        growth: growthPercent(raw.last30.total, raw.prev30.total),
+        value: raw.current.total,
+        growth: growthPercent(raw.current.total, raw.prev.total),
       },
       positive: {
-        value: raw.allTime.positive,
-        growth: growthPercent(raw.last30.positive, raw.prev30.positive),
+        value: raw.current.positive,
+        growth: growthPercent(raw.current.positive, raw.prev.positive),
       },
       negative: {
-        value: raw.allTime.negative,
-        growth: growthPercent(raw.last30.negative, raw.prev30.negative),
+        value: raw.current.negative,
+        growth: growthPercent(raw.current.negative, raw.prev.negative),
       },
       thisWeek: {
         value: raw.thisWeek,

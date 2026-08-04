@@ -21,13 +21,12 @@ export type RecentFeedbackRow = {
 };
 
 export type DashboardRawData = {
-  allTime: SentimentCounts;
-  last30: SentimentCounts;
-  prev30: SentimentCounts;
-  trendRows: BucketSentimentRow[];
+  current: SentimentCounts;
+  prev: SentimentCounts;
   thisWeek: number;
   prevWeek: number;
   seriesRows: BucketSentimentRow[];
+  trendRows: BucketSentimentRow[];
   sourceRows: SourceRow[];
   recentRows: RecentFeedbackRow[];
   earliest: Date | null;
@@ -53,59 +52,38 @@ export async function fetchDashboardRawData(
   range: StatsRange,
 ): Promise<DashboardRawData> {
   const now = new Date();
-  const { start } = rangeWindow(range, now);
+  const { start, prevStart } = rangeWindow(range, now);
   const granularity = granularityFor(range);
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
 
   const orgFilter = eq(feedback.organizationId, organizationId);
   const windowFilter = start ? and(orgFilter, gte(feedback.createdAt, start)) : orgFilter;
+  const prevWindowFilter =
+    start && prevStart
+      ? and(orgFilter, gte(feedback.createdAt, prevStart), lt(feedback.createdAt, start))
+      : null;
   const bucketExpr =
     granularity === "day"
       ? sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`
       : sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM')`;
-  const trendBucketExpr = sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`;
+  const dayBucketExpr = sql<string>`TO_CHAR(${feedback.createdAt}, 'YYYY-MM-DD')`;
 
   const [
-    allTimeRows,
-    last30Rows,
-    prev30Rows,
-    trendRows,
+    currentRows,
+    prevRows,
     weekRows,
     seriesRows,
+    trendRows,
     sourceRows,
     recentRows,
     earliestRows,
   ] = await Promise.all([
-    db.select(sentimentSums()).from(feedback).where(orgFilter),
+    db.select(sentimentSums()).from(feedback).where(windowFilter),
 
-    db
-      .select(sentimentSums())
-      .from(feedback)
-      .where(and(orgFilter, gte(feedback.createdAt, thirtyDaysAgo))),
-
-    db
-      .select(sentimentSums())
-      .from(feedback)
-      .where(
-        and(
-          orgFilter,
-          gte(feedback.createdAt, sixtyDaysAgo),
-          lt(feedback.createdAt, thirtyDaysAgo),
-        ),
-      ),
-
-    db
-      .select({
-        bucket: trendBucketExpr,
-        sentiment: feedback.sentiment,
-        n: sql<number>`CAST(COUNT(*) AS INTEGER)`,
-      })
-      .from(feedback)
-      .where(and(orgFilter, gte(feedback.createdAt, thirtyDaysAgo)))
-      .groupBy(trendBucketExpr, feedback.sentiment),
+    prevWindowFilter
+      ? db.select(sentimentSums()).from(feedback).where(prevWindowFilter)
+      : Promise.resolve([EMPTY_COUNTS]),
 
     db
       .select({
@@ -124,6 +102,16 @@ export async function fetchDashboardRawData(
       .from(feedback)
       .where(windowFilter)
       .groupBy(bucketExpr, feedback.sentiment),
+
+    db
+      .select({
+        bucket: dayBucketExpr,
+        sentiment: feedback.sentiment,
+        n: sql<number>`CAST(COUNT(*) AS INTEGER)`,
+      })
+      .from(feedback)
+      .where(windowFilter)
+      .groupBy(dayBucketExpr, feedback.sentiment),
 
     db
       .select({ source: feedback.source, n: sql<number>`CAST(COUNT(*) AS INTEGER)` })
@@ -156,13 +144,12 @@ export async function fetchDashboardRawData(
   const { thisWeek = 0, prevWeek = 0 } = weekRows[0] ?? {};
 
   return {
-    allTime: allTimeRows[0] ?? EMPTY_COUNTS,
-    last30: last30Rows[0] ?? EMPTY_COUNTS,
-    prev30: prev30Rows[0] ?? EMPTY_COUNTS,
-    trendRows,
+    current: currentRows[0] ?? EMPTY_COUNTS,
+    prev: prevRows[0] ?? EMPTY_COUNTS,
     thisWeek,
     prevWeek,
     seriesRows,
+    trendRows,
     sourceRows,
     recentRows,
     earliest: earliestRows[0]?.earliest ?? null,

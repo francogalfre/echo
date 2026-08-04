@@ -16,9 +16,9 @@ const SOURCE_LABEL: Record<string, string> = {
 };
 
 const SOURCE_STYLE: Record<string, string> = {
-  api: "bg-accent/20 text-accent",
-  form: "bg-accent-soft/20 text-accent-soft",
-  widget: "bg-accent-deep/20 text-accent-deep",
+  api: "bg-accent text-white",
+  form: "bg-accent-soft text-white",
+  widget: "bg-accent-deep text-white",
 };
 
 type SentimentBadgeProps = {

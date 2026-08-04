@@ -20,9 +20,11 @@ export function rangeWindow(
 ): { start: Date | null; prevStart: Date | null } {
   if (range === "all") return { start: null, prevStart: null };
   const days = RANGE_DAYS[range];
+  const startOfToday = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const start = new Date(startOfToday - (days - 1) * DAY_MS);
   return {
-    start: new Date(now.getTime() - days * DAY_MS),
-    prevStart: new Date(now.getTime() - 2 * days * DAY_MS),
+    start,
+    prevStart: new Date(start.getTime() - days * DAY_MS),
   };
 }
 
@@ -69,6 +71,20 @@ export function bucketKeys(range: StatsRange, now: Date, earliest?: string): str
   if (!earliest) return [monthKey(end)];
   const [year = end.getUTCFullYear(), month = 1] = earliest.split("-").map(Number);
   return monthKeysBetween(new Date(Date.UTC(year, month - 1, 1)), end);
+}
+
+export function dayKeysBetween(start: Date, end: Date): string[] {
+  const startOfDay = Date.UTC(
+    start.getUTCFullYear(),
+    start.getUTCMonth(),
+    start.getUTCDate(),
+  );
+  const endOfDay = Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate());
+  const keys: string[] = [];
+  for (let t = startOfDay; t <= endOfDay; t += DAY_MS) {
+    keys.push(dayKey(new Date(t)));
+  }
+  return keys;
 }
 
 export function zeroFillSeries(

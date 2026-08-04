@@ -9,6 +9,7 @@ export type NotificationRow = {
   type: NotificationType;
   title: string;
   body: string | null;
+  link: string | null;
   readAt: Date | null;
   createdAt: Date;
 };
@@ -18,6 +19,7 @@ export type InsertNotification = {
   type: NotificationType;
   title: string;
   body?: string;
+  link?: string;
 };
 
 export async function insertNotification(input: InsertNotification): Promise<void> {
@@ -27,6 +29,7 @@ export async function insertNotification(input: InsertNotification): Promise<voi
     type: input.type,
     title: input.title,
     body: input.body,
+    link: input.link,
   });
 }
 
@@ -38,6 +41,15 @@ export async function listNotifications(
     where: eq(notifications.organizationId, organizationId),
     orderBy: [desc(notifications.createdAt)],
     limit,
+    columns: {
+      id: true,
+      type: true,
+      title: true,
+      body: true,
+      link: true,
+      readAt: true,
+      createdAt: true,
+    },
   });
 
   return rows as NotificationRow[];
