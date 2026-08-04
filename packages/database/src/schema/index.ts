@@ -6,3 +6,4 @@ export * from "./board-items";
 export * from "./feedback-digests";
 export * from "./jobs";
 export * from "./chat";
+export * from "./notifications";
