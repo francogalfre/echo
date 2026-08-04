@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
 
 import { Button } from "@echo/ui/components/button";
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
-import { staggerContainer } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 
 import type { FeedbackItem } from "../../utils/map-feedback";
@@ -21,6 +19,7 @@ type FeedbackListBodyProps = {
   status: "loading" | "ready" | "error";
   items: FeedbackItem[];
   counts: Record<SentimentFilter, number>;
+  pending: boolean;
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: () => void;
@@ -31,6 +30,7 @@ type FeedbackListBodyProps = {
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   onViewDetails: (item: FeedbackItem) => void;
+  onDelete: (item: FeedbackItem) => void;
   onClearFilters: () => void;
 };
 
@@ -38,6 +38,7 @@ export function FeedbackListBody({
   status,
   items,
   counts,
+  pending,
   hasMore,
   loadingMore,
   loadMore,
@@ -48,11 +49,17 @@ export function FeedbackListBody({
   onToggleSelect,
   onToggleSelectAll,
   onViewDetails,
+  onDelete,
   onClearFilters,
 }: FeedbackListBodyProps): React.ReactElement {
   return (
     <div className="overflow-x-auto overflow-y-hidden rounded-lg bg-card ring-1 ring-foreground/10">
-      <div className="min-w-[48rem]">
+      <div
+        className={cn(
+          "min-w-[48rem] transition-opacity duration-200",
+          pending && "pointer-events-none opacity-50",
+        )}
+      >
         {status === "loading" && <FeedbackListSkeleton />}
 
         {status === "error" && (
@@ -100,12 +107,7 @@ export function FeedbackListBody({
               onToggleSelectAll={onToggleSelectAll}
             />
 
-            <motion.div
-              role="table"
-              variants={staggerContainer(0.03)}
-              initial="hidden"
-              animate="visible"
-            >
+            <div role="table" className="animate-in fade-in duration-300 ease-out">
               {items.map((item) => (
                 <FeedbackRow
                   key={item.id}
@@ -113,9 +115,10 @@ export function FeedbackListBody({
                   selected={selected.has(item.id)}
                   onToggleSelect={onToggleSelect}
                   onViewDetails={onViewDetails}
+                  onDelete={onDelete}
                 />
               ))}
-            </motion.div>
+            </div>
 
             {hasMore && (
               <div className="flex flex-col items-center gap-2 border-t border-border py-4">

@@ -53,7 +53,7 @@ export function BoardCardItem({
             e.stopPropagation();
             onRemove();
           }}
-          className="flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
+          className="flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/50 opacity-0 transition-[opacity,background-color,color] hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
           aria-label={`Remove ${item.name} from board`}
         >
           <Icons.cancelCircle className="size-3.5" />

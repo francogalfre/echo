@@ -11,57 +11,58 @@ type FeedbackDetailListProps = {
   item: FeedbackItem;
 };
 
-type DetailFieldProps = {
+type DetailRowProps = {
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   children: React.ReactNode;
 };
 
-function DetailField({ label, children }: DetailFieldProps): React.ReactElement {
+function DetailRow({ icon: Icon, label, children }: DetailRowProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground/70">
+    <div className="flex min-h-10 items-center gap-4 rounded-xl px-3 transition-colors hover:bg-muted/50">
+      <span className="flex w-28 shrink-0 items-center gap-2.5 text-sm text-muted-foreground">
+        <Icon className="size-4" />
         {label}
       </span>
-      <div className="flex flex-wrap items-center gap-1.5 text-sm text-foreground">
-        {children}
-      </div>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">{children}</div>
     </div>
   );
 }
 
 export function FeedbackDetailList({ item }: FeedbackDetailListProps): React.ReactElement {
   return (
-    <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-      <DetailField label="Sentiment">
+    <div className="flex flex-col">
+      <DetailRow icon={Icons.sparkles} label="Sentiment">
         <SentimentBadge sentiment={item.sentiment} />
-      </DetailField>
+      </DetailRow>
 
-      <DetailField label="Source">
+      <DetailRow icon={Icons.radar} label="Source">
         <SourceBadge source={item.source} />
-      </DetailField>
+      </DetailRow>
 
       {item.rating && (
-        <DetailField label="Rating">
+        <DetailRow icon={Icons.star} label="Rating">
           <StarDisplay rating={item.rating} />
-          <span className="tabular-nums text-muted-foreground">
+          <span className="text-sm tabular-nums text-muted-foreground">
             {item.rating.toFixed(1)}
           </span>
-        </DetailField>
+        </DetailRow>
       )}
 
-      <DetailField label="Submitted">
-        <Icons.clock className="size-3.5 text-muted-foreground" />
-        <span className="tabular-nums">{formatRelativeTime(item.createdAt)}</span>
-      </DetailField>
+      <DetailRow icon={Icons.clock} label="Submitted">
+        <span className="text-sm tabular-nums text-foreground">
+          {formatRelativeTime(item.createdAt)}
+        </span>
+      </DetailRow>
 
       {item.tags && item.tags.length > 0 && (
-        <DetailField label="Tags">
+        <DetailRow icon={Icons.board} label="Tags">
           {item.tags.map((tag) => (
             <Badge key={tag} variant="outline">
               {tag}
             </Badge>
           ))}
-        </DetailField>
+        </DetailRow>
       )}
     </div>
   );

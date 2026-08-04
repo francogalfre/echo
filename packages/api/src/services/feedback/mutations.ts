@@ -1,6 +1,6 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 export type InsertFeedback = {
   organizationId: string;
@@ -23,4 +23,15 @@ export async function setFeedbackInsight(id: string, insight: string): Promise<v
     .update(feedback)
     .set({ insight, insightAt: new Date() })
     .where(eq(feedback.id, id));
+}
+
+export async function deleteFeedback(
+  ids: readonly string[],
+  organizationId: string,
+): Promise<number> {
+  const rows = await db
+    .delete(feedback)
+    .where(and(eq(feedback.organizationId, organizationId), inArray(feedback.id, [...ids])))
+    .returning({ id: feedback.id });
+  return rows.length;
 }

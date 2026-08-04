@@ -1,4 +1,5 @@
 import { feedback } from "@echo/db/schema/feedback";
+import type { SQL } from "drizzle-orm";
 import { PgDialect } from "drizzle-orm/pg-core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,15 +9,21 @@ const mockWhere = vi.fn();
 const mockFrom = vi.fn(() => ({ where: mockWhere }));
 const mockSelect = vi.fn(() => ({ from: mockFrom }));
 
+const mockReturning = vi.fn();
+const mockDeleteWhere = vi.fn((_condition: SQL<unknown>) => ({ returning: mockReturning }));
+const mockDelete = vi.fn(() => ({ where: mockDeleteWhere }));
+
 vi.mock("@echo/db", () => ({
   db: {
     query: { feedback: { findMany: mockFindMany, findFirst: mockFindFirst } },
     select: mockSelect,
+    delete: mockDelete,
   },
 }));
 
 const { countFeedbackBySentiment, getFeedbackListItemById, listFeedback } =
   await import("../feedback/queries");
+const { deleteFeedback } = await import("../feedback/mutations");
 
 const dialect = new PgDialect();
 const ORG_ID = "org_1";
@@ -146,5 +153,49 @@ describe("countFeedbackBySentiment", () => {
     const result = await countFeedbackBySentiment(ORG_ID);
 
     expect(result).toEqual({ all: 0, positive: 0, neutral: 0, negative: 0 });
+  });
+
+  it("should apply source and search filters to the aggregate query", async () => {
+    mockWhere.mockResolvedValue([{ all: 2, positive: 1, neutral: 1, negative: 0 }]);
+
+    await countFeedbackBySentiment(ORG_ID, { source: "widget", search: "bob" });
+
+    const call = mockWhere.mock.calls[0]?.[0];
+    const query = dialect.sqlToQuery(call);
+
+    expect(query.sql).toContain('"feedback"."organization_id" = $1');
+    expect(query.sql).toContain('"feedback"."source" = $2');
+    expect(query.sql).toContain('"feedback"."author_name" ilike $3');
+    expect(query.sql).toContain('"feedback"."content" ilike $4');
+    expect(query.params).toEqual([ORG_ID, "widget", "%bob%", "%bob%"]);
+  });
+});
+
+describe("deleteFeedback", () => {
+  beforeEach(() => {
+    mockDelete.mockClear();
+    mockDeleteWhere.mockClear();
+    mockReturning.mockReset();
+  });
+
+  it("should scope the delete to organization and the given ids", async () => {
+    mockReturning.mockResolvedValue([{ id: "fb_1" }, { id: "fb_2" }]);
+
+    await deleteFeedback(["fb_1", "fb_2"], ORG_ID);
+
+    const call = mockDeleteWhere.mock.calls[0]?.[0];
+    const query = dialect.sqlToQuery(call as SQL<unknown>);
+
+    expect(query.sql).toContain('"feedback"."organization_id" = $1');
+    expect(query.sql).toContain('"feedback"."id" in ($2, $3)');
+    expect(query.params).toEqual([ORG_ID, "fb_1", "fb_2"]);
+  });
+
+  it("should return the number of rows deleted", async () => {
+    mockReturning.mockResolvedValue([{ id: "fb_1" }, { id: "fb_2" }, { id: "fb_3" }]);
+
+    const result = await deleteFeedback(["fb_1", "fb_2", "fb_3"], ORG_ID);
+
+    expect(result).toBe(3);
   });
 });

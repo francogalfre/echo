@@ -1,9 +1,20 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { Button } from "@echo/ui/components/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@echo/ui/components/dialog";
 import { toast } from "@echo/ui/components/toast";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 
+import { useDeleteFeedback } from "../../hooks/use-delete-feedback";
 import { useFeedback } from "../../hooks/use-feedback";
 import { useFeedbackItem } from "../../hooks/use-feedback-item";
 import type {
@@ -11,8 +22,8 @@ import type {
   FeedbackFilters,
   FeedbackItem,
 } from "../../utils/map-feedback";
+import { FeedbackDialog } from "../feedback-dialog";
 import { FeedbackSelectionBar } from "../feedback-selection-bar";
-import { FeedbackSheet } from "../feedback-sheet";
 import {
   FeedbackToolbar,
   type SentimentFilter,
@@ -70,7 +81,8 @@ export function FeedbackList({
     },
   );
   const [openId, setOpenId] = useQueryState("feedback");
-  const selection = useFeedbackSelection(feedbackState.items);
+  const selection = useFeedbackSelection(feedbackState.items, feedbackState.removeItems);
+  const deleteFeedbackState = useDeleteFeedback(feedbackState.removeItems);
 
   const items = feedbackState.items;
   const counts: Record<SentimentFilter, number> = feedbackState.counts;
@@ -100,6 +112,7 @@ export function FeedbackList({
     <div className="flex flex-col gap-4">
       <FeedbackToolbar
         counts={counts}
+        pending={feedbackState.pending}
         sentiment={sentiment}
         onSentimentChange={(value) => void setSentiment(value)}
         source={source}
@@ -112,6 +125,7 @@ export function FeedbackList({
         status={feedbackState.status}
         items={items}
         counts={counts}
+        pending={feedbackState.pending}
         hasMore={feedbackState.hasMore}
         loadingMore={feedbackState.loadingMore}
         loadMore={feedbackState.loadMore}
@@ -122,22 +136,53 @@ export function FeedbackList({
         onToggleSelect={selection.toggleSelect}
         onToggleSelectAll={selection.toggleSelectAll}
         onViewDetails={(selectedItem) => void setOpenId(selectedItem.id)}
+        onDelete={deleteFeedbackState.requestDelete}
         onClearFilters={clearFilters}
       />
 
       <FeedbackSelectionBar
         count={selection.selected.size}
         onAddToBoard={selection.bulkAddToBoard}
+        onDelete={() => void selection.bulkDelete()}
         onClear={selection.clear}
       />
 
-      <FeedbackSheet
+      <FeedbackDialog
         item={openItem}
         open={openItem !== null}
         onOpenChange={(open) => {
           if (!open) void setOpenId(null);
         }}
       />
+
+      <Dialog
+        open={deleteFeedbackState.pendingItem !== null}
+        onOpenChange={(open) => {
+          if (!open) deleteFeedbackState.cancelDelete();
+        }}
+      >
+        <DialogContent className="gap-6 p-8 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              Delete feedback from {deleteFeedbackState.pendingItem?.name}?
+            </DialogTitle>
+            <DialogDescription>
+              This permanently deletes the feedback and cannot be undone. If it&apos;s on
+              the board, it will be removed from there too.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+            <Button
+              variant="destructive"
+              onClick={() => void deleteFeedbackState.confirmDelete()}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

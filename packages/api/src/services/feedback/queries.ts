@@ -12,6 +12,11 @@ export type FeedbackListFilters = {
   offset: number;
 };
 
+export type FeedbackCountFilters = {
+  source?: FeedbackSource;
+  search?: string;
+};
+
 export type FeedbackSentimentCounts = {
   all: number;
   positive: number;
@@ -99,29 +104,37 @@ export async function getFeedbackListItemById(
   };
 }
 
+function feedbackFilterConditions(
+  organizationId: string,
+  filters: { sentiment?: Sentiment; source?: FeedbackSource; search?: string },
+): SQLWrapper[] {
+  const conditions: SQLWrapper[] = [eq(feedback.organizationId, organizationId)];
+
+  if (filters.sentiment) {
+    conditions.push(eq(feedback.sentiment, filters.sentiment));
+  }
+  if (filters.source) {
+    conditions.push(eq(feedback.source, filters.source));
+  }
+  if (filters.search) {
+    const pattern = `%${filters.search}%`;
+    conditions.push(
+      or(
+        ilike(feedback.authorName, pattern),
+        ilike(feedback.content, pattern),
+      ) as SQLWrapper,
+    );
+  }
+
+  return conditions;
+}
+
 export async function listFeedback(
   organizationId: string,
   options: FeedbackListFilters,
 ): Promise<FeedbackListItem[]> {
-  const conditions: (SQLWrapper | undefined)[] = [
-    eq(feedback.organizationId, organizationId),
-  ];
-
-  if (options.sentiment) {
-    conditions.push(eq(feedback.sentiment, options.sentiment));
-  }
-  if (options.source) {
-    conditions.push(eq(feedback.source, options.source));
-  }
-  if (options.search) {
-    const pattern = `%${options.search}%`;
-    conditions.push(
-      or(ilike(feedback.authorName, pattern), ilike(feedback.content, pattern)),
-    );
-  }
-
   const rows = await db.query.feedback.findMany({
-    where: and(...conditions),
+    where: and(...feedbackFilterConditions(organizationId, options)),
     orderBy: [desc(feedback.createdAt)],
     limit: options.limit,
     offset: options.offset,
@@ -143,6 +156,7 @@ export async function listFeedback(
 
 export async function countFeedbackBySentiment(
   organizationId: string,
+  filters: FeedbackCountFilters = {},
 ): Promise<FeedbackSentimentCounts> {
   const [row] = await db
     .select({
@@ -152,7 +166,7 @@ export async function countFeedbackBySentiment(
       negative: count(sql`case when ${feedback.sentiment} = 'negative' then 1 end`),
     })
     .from(feedback)
-    .where(eq(feedback.organizationId, organizationId));
+    .where(and(...feedbackFilterConditions(organizationId, filters)));
 
   return (
     row ?? {

@@ -11,9 +11,7 @@ import {
 import { Icons } from "@echo/ui/components/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@echo/ui/components/tooltip";
 import { formatRelativeTime } from "@echo/ui/lib/format";
-import { fadeInUp } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
-import { motion } from "motion/react";
 
 import { AccentAvatar } from "../../components/accent-avatar";
 import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-badges";
@@ -33,6 +31,7 @@ type FeedbackRowProps = {
   selected: boolean;
   onToggleSelect: (id: string) => void;
   onViewDetails: (item: FeedbackItem) => void;
+  onDelete: (item: FeedbackItem) => void;
 };
 
 export function FeedbackRow({
@@ -40,14 +39,14 @@ export function FeedbackRow({
   selected,
   onToggleSelect,
   onViewDetails,
+  onDelete,
 }: FeedbackRowProps): React.ReactElement {
   const mailto = buildFeedbackMailto(item);
   const email = item.email;
 
   return (
-    <motion.div
+    <div
       role="row"
-      variants={fadeInUp}
       className={cn(
         FEEDBACK_TABLE_GRID,
         "group relative border-b border-border py-4 transition-colors last:border-0 hover:bg-muted/40",
@@ -141,7 +140,7 @@ export function FeedbackRow({
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label="Open menu"
-            className="relative z-10 flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-colors group-hover:opacity-100 hover:bg-muted hover:text-foreground focus-visible:opacity-100 aria-expanded:opacity-100 focus:outline-none"
+            className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all duration-150 group-hover:opacity-100 hover:scale-105 hover:bg-muted hover:text-foreground focus-visible:opacity-100 aria-expanded:opacity-100 aria-expanded:scale-105 active:scale-95 focus:outline-none"
           >
             <Icons.moreHorizontal className="size-4" />
           </DropdownMenuTrigger>
@@ -182,9 +181,14 @@ export function FeedbackRow({
               <Icons.board className="size-4" />
               Add to board
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onClick={() => onDelete(item)}>
+              <Icons.trash className="size-4" />
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </span>
-    </motion.div>
+    </div>
   );
 }

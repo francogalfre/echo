@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "motion/react";
 
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
-import { Skeleton } from "@echo/ui/components/skeleton";
 import { durations, easings } from "@echo/ui/lib/motion";
 import { cn } from "@echo/ui/lib/utils";
 
@@ -28,9 +27,14 @@ const THINKING_PHRASES = [
 type InsightPanelProps = {
   item: FeedbackItem;
   active: boolean;
+  bare?: boolean;
 };
 
-export function InsightPanel({ item, active }: InsightPanelProps): React.ReactElement {
+export function InsightPanel({
+  item,
+  active,
+  bare = false,
+}: InsightPanelProps): React.ReactElement {
   const { state, generate, reset, upgradeReason, dismissUpgrade } = useFeedbackInsight();
   const requestedIdRef = useRef<string | null>(null);
   const agent = AGENT_PERSONAS.echo;
@@ -52,23 +56,30 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
   const isLoading =
     state.status === "loading" || (item.hasInsight && state.status === "idle");
 
-  return (
-    <div className="overflow-hidden rounded-2xl border border-border">
-      <div className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-5 py-3">
-        <span
-          className={cn(
-            "flex size-6 shrink-0 items-center justify-center rounded-md",
-            agent.bgColor,
-          )}
-        >
-          <agent.icon className={cn("size-3", agent.color)} />
-        </span>
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Insight
-        </h3>
-      </div>
+  const header = (
+    <div
+      className={cn(
+        "flex items-center gap-2.5",
+        bare ? "mb-3" : "border-b border-border bg-muted/40 px-5 py-3",
+      )}
+    >
+      <span
+        className={cn(
+          "flex size-6 shrink-0 items-center justify-center rounded-md",
+          agent.bgColor,
+        )}
+      >
+        <agent.icon className={cn("size-3", agent.color)} />
+      </span>
+      <h3 className="text-sm font-medium text-foreground">Insight</h3>
+    </div>
+  );
 
-      <div className="p-5">
+  return (
+    <div className={cn(!bare && "overflow-hidden rounded-2xl border border-border")}>
+      {header}
+
+      <div className={cn(!bare && "p-5")}>
         <AnimatePresence mode="wait" initial={false}>
           {isLoading && (
             <motion.div
@@ -78,13 +89,7 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
               exit={{ opacity: 0 }}
               transition={PHASE_TRANSITION}
             >
-              <AiThinking phrases={THINKING_PHRASES}>
-                <div className="flex flex-col gap-2 rounded-xl border border-border bg-muted/30 p-4">
-                  <Skeleton className="h-3 w-full rounded" />
-                  <Skeleton className="h-3 w-4/5 rounded" />
-                  <Skeleton className="h-3 w-3/5 rounded" />
-                </div>
-              </AiThinking>
+              <AiThinking phrases={THINKING_PHRASES} />
             </motion.div>
           )}
 
@@ -127,7 +132,7 @@ export function InsightPanel({ item, active }: InsightPanelProps): React.ReactEl
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Generate a quick AI summary of what this feedback means.
               </p>
-              <Button size="sm" onClick={() => void generate(item.id)}>
+              <Button size="lg" onClick={() => void generate(item.id)}>
                 <Icons.aiMagic className="size-4" />
                 Generate insight
               </Button>

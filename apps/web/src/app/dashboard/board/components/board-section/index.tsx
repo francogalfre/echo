@@ -10,7 +10,8 @@ import Link from "next/link";
 
 import type { BoardCard, BoardColumns } from "@echo/api/types";
 
-import { BoardCardDialog } from "../board-card-dialog";
+import { FeedbackDialog } from "../../../feedback/components/feedback-dialog";
+import { toFeedbackItem } from "../../utils/to-feedback-item";
 import { BoardCardItem } from "../board-card";
 import { BoardColumnPane } from "./board-column-pane";
 import { useBoardColumns } from "./use-board-columns";
@@ -43,7 +44,7 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
     <div className="flex flex-col gap-6 h-full">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Board</h1>
+          <h1 className="font-pixel text-2xl font-medium tracking-tight">Board</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {totalItems === 0
               ? "Add feedback from the Feedback page."
@@ -116,11 +117,18 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
         )}
       </div>
 
-      <BoardCardDialog
-        item={selected}
+      <FeedbackDialog
+        item={selected ? toFeedbackItem(selected) : null}
         open={selected !== null}
         onOpenChange={(open) => !open && setSelected(null)}
-        onRemove={handleRemove}
+        onRemoveFromBoard={
+          selected
+            ? () => {
+                handleRemove(selected);
+                setSelected(null);
+              }
+            : undefined
+        }
       />
     </div>
   );

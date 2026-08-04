@@ -8,6 +8,7 @@ import { getErrorCode } from "../../lib/error-map";
 import { paginateRows } from "../../lib/pagination";
 import {
   countFeedbackBySentiment,
+  deleteFeedback,
   getFeedbackListItemById,
   listFeedback,
 } from "../../services/feedback";
@@ -19,6 +20,11 @@ const ListFeedbackInput = z.object({
   search: z.string().max(200).optional(),
   limit: z.number().int().min(1).max(100).default(50),
   offset: z.number().int().min(0).default(0),
+});
+
+const CountFeedbackInput = z.object({
+  source: z.enum(FEEDBACK_SOURCE_VALUES).optional(),
+  search: z.string().max(200).optional(),
 });
 
 export const feedbackRouter = router({
@@ -34,9 +40,11 @@ export const feedbackRouter = router({
     return paginateRows(rows, input.limit);
   }),
 
-  counts: organizationProcedure.query(({ ctx }) => {
-    return countFeedbackBySentiment(ctx.organizationId);
-  }),
+  counts: organizationProcedure
+    .input(CountFeedbackInput.optional())
+    .query(({ ctx, input }) => {
+      return countFeedbackBySentiment(ctx.organizationId, input ?? {});
+    }),
 
   byId: organizationProcedure
     .input(z.object({ id: z.string().min(1) }))
@@ -59,4 +67,10 @@ export const feedbackRouter = router({
 
       return { insight: result.insight, cached: result.cached };
     }),
+
+  delete: organizationProcedure
+    .input(z.object({ ids: z.array(z.string().min(1)).min(1).max(100) }))
+    .mutation(async ({ ctx, input }) => ({
+      deleted: await deleteFeedback(input.ids, ctx.organizationId),
+    })),
 });

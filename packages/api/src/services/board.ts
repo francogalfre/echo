@@ -17,6 +17,7 @@ export type BoardCard = {
   source: string;
   column: string;
   createdAt: Date;
+  hasInsight: boolean;
 };
 
 export type BoardColumns = {
@@ -39,6 +40,7 @@ export async function getBoardItems(organizationId: string): Promise<BoardColumn
       source: feedback.source,
       column: boardItems.column,
       createdAt: feedback.createdAt,
+      insight: feedback.insight,
     })
     .from(boardItems)
     .innerJoin(feedback, eq(boardItems.feedbackId, feedback.id))
@@ -46,9 +48,9 @@ export async function getBoardItems(organizationId: string): Promise<BoardColumn
     .orderBy(asc(boardItems.position));
 
   const result: BoardColumns = { backlog: [], in_progress: [], done: [] };
-  for (const row of rows) {
+  for (const { insight, ...row } of rows) {
     const col = row.column as keyof BoardColumns;
-    if (col in result) result[col].push(row);
+    if (col in result) result[col].push({ ...row, hasInsight: insight != null });
   }
   return result;
 }

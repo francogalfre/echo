@@ -20,7 +20,10 @@ export async function FeedbackListData({
       limit: 50,
       offset: 0,
     }),
-    api.feedback.counts.query(),
+    api.feedback.counts.query({
+      source: filters.source === "all" ? undefined : filters.source,
+      search: filters.search || undefined,
+    }),
   ]);
 
   return (

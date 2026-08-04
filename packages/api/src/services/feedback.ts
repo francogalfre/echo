@@ -12,6 +12,7 @@ export {
 } from "./feedback/queries";
 
 export {
+  deleteFeedback,
   insertFeedback,
   setFeedbackInsight,
   type InsertFeedback,

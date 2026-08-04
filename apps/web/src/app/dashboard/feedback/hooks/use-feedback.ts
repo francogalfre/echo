@@ -27,7 +27,9 @@ type UseFeedbackResult = {
   counts: FeedbackCounts;
   hasMore: boolean;
   loadingMore: boolean;
+  pending: boolean;
   loadMore: () => void;
+  removeItems: (ids: readonly string[]) => void;
 };
 
 const LIMIT = 50;
@@ -62,11 +64,14 @@ export function useFeedback(
   const offsetRef = useRef(0);
   const previousStatusRef = useRef<"loading" | "ready" | "error">("ready");
 
-  const { state } = useAsyncResource<FeedbackPage>(
+  const { state, refresh } = useAsyncResource<FeedbackPage>(
     async () => {
       const [listResult, countsResult] = await Promise.all([
         trpc.feedback.list.query(toQueryInput({ sentiment, source, search }, 0)),
-        trpc.feedback.counts.query(),
+        trpc.feedback.counts.query({
+          source: source === "all" ? undefined : source,
+          search: search || undefined,
+        }),
       ]);
       return {
         items: listResult.items.map(mapItem),
@@ -120,6 +125,11 @@ export function useFeedback(
       });
   };
 
+  const removeItems = (ids: readonly string[]): void => {
+    setAppended((previous) => previous.filter((item) => !ids.includes(item.id)));
+    refresh();
+  };
+
   return {
     status: state.status,
     items: state.status === "ready" ? [...state.data.items, ...appended] : [],
@@ -127,6 +137,8 @@ export function useFeedback(
     hasMore:
       hasMoreOverride ?? (state.status === "ready" ? state.data.hasMore : initial.hasMore),
     loadingMore,
+    pending: state.status === "ready" && state.pending,
     loadMore,
+    removeItems,
   };
 }

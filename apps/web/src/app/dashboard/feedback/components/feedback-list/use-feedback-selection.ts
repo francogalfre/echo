@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "@echo/ui/components/toast";
+
+import { trpc } from "@/lib/trpc";
 
 import type { FeedbackItem } from "../../utils/map-feedback";
 import { addManyToBoard } from "../../utils/feedback-actions";
@@ -13,9 +16,13 @@ type UseFeedbackSelectionResult = {
   toggleSelectAll: () => void;
   clear: () => void;
   bulkAddToBoard: () => void;
+  bulkDelete: () => Promise<void>;
 };
 
-export function useFeedbackSelection(items: FeedbackItem[]): UseFeedbackSelectionResult {
+export function useFeedbackSelection(
+  items: FeedbackItem[],
+  onDeleted: (ids: string[]) => void,
+): UseFeedbackSelectionResult {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   const allSelected = items.length > 0 && items.every((item) => selected.has(item.id));
@@ -49,6 +56,18 @@ export function useFeedbackSelection(items: FeedbackItem[]): UseFeedbackSelectio
     setSelected(new Set());
   };
 
+  const bulkDelete = async (): Promise<void> => {
+    const ids = [...selected];
+    try {
+      await trpc.feedback.delete.mutate({ ids });
+      toast.success(`Deleted ${ids.length} feedback`);
+      onDeleted(ids);
+      setSelected(new Set());
+    } catch {
+      toast.error("Failed to delete feedback");
+    }
+  };
+
   return {
     selected,
     allSelected,
@@ -57,5 +76,6 @@ export function useFeedbackSelection(items: FeedbackItem[]): UseFeedbackSelectio
     toggleSelectAll,
     clear,
     bulkAddToBoard,
+    bulkDelete,
   };
 }
