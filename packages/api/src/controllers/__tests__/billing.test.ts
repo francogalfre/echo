@@ -19,7 +19,7 @@ vi.mock("../../services/feedback/digest", () => ({
 }));
 
 vi.mock("../../services/feedback", () => ({
-  countFeedbackThisMonth: vi.fn(),
+  countFeedbackTotal: vi.fn(),
 }));
 
 vi.mock("../../services/organization", () => ({
@@ -29,7 +29,7 @@ vi.mock("../../services/organization", () => ({
 
 const { getUsageCount } = await import("../../services/ai/usage");
 const { getDigest } = await import("../../services/feedback/digest");
-const { countFeedbackThisMonth } = await import("../../services/feedback");
+const { countFeedbackTotal } = await import("../../services/feedback");
 const { getOrgPlan, countOwnedOrganizations } = await import("../../services/organization");
 
 const ORG_ID = "org_1";
@@ -39,14 +39,14 @@ describe("getBillingOverview", () => {
   beforeEach(() => {
     vi.mocked(getUsageCount).mockReset();
     vi.mocked(getDigest).mockReset();
-    vi.mocked(countFeedbackThisMonth).mockReset();
+    vi.mocked(countFeedbackTotal).mockReset();
     vi.mocked(getOrgPlan).mockReset();
     vi.mocked(countOwnedOrganizations).mockReset();
   });
 
   it("should shape free plan limits with a null digest limit and no digest usage", async () => {
     vi.mocked(getOrgPlan).mockResolvedValue("free");
-    vi.mocked(countFeedbackThisMonth).mockResolvedValue(120);
+    vi.mocked(countFeedbackTotal).mockResolvedValue(120);
     vi.mocked(getUsageCount).mockResolvedValue(2);
     vi.mocked(getDigest).mockResolvedValue({
       digest: SAMPLE_DIGEST,
@@ -73,7 +73,7 @@ describe("getBillingOverview", () => {
 
   it("should shape pro plan limits with unlimited feedback and daily digest usage", async () => {
     vi.mocked(getOrgPlan).mockResolvedValue("pro");
-    vi.mocked(countFeedbackThisMonth).mockResolvedValue(900);
+    vi.mocked(countFeedbackTotal).mockResolvedValue(900);
     vi.mocked(getUsageCount).mockResolvedValue(4);
     vi.mocked(getDigest).mockResolvedValue(null);
     vi.mocked(countOwnedOrganizations).mockResolvedValue(3);

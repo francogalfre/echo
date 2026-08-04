@@ -1,7 +1,7 @@
 import { dayKey } from "../lib/dates";
 import {
+  FREE_FEEDBACK_LIMIT,
   FREE_INSIGHT_DAILY_LIMIT,
-  FREE_MONTHLY_FEEDBACK_LIMIT,
   FREE_PROJECT_LIMIT,
   PRO_DIGEST_DAILY_LIMIT,
   PRO_INSIGHT_DAILY_LIMIT,
@@ -12,7 +12,7 @@ import {
 } from "../lib/plan";
 import { getUsageCount } from "../services/ai/usage";
 import { getDigest } from "../services/feedback/digest";
-import { countFeedbackThisMonth } from "../services/feedback";
+import { countFeedbackTotal } from "../services/feedback";
 import { countOwnedOrganizations, getOrgPlan } from "../services/organization";
 
 export type BillingOverview = {
@@ -33,7 +33,7 @@ export async function getBillingOverview(
   const [plan, feedbackUsed, insightsUsed, cachedDigest, projectsUsed, chatUsed] =
     await Promise.all([
       getOrgPlan(organizationId),
-      countFeedbackThisMonth(organizationId),
+      countFeedbackTotal(organizationId),
       getUsageCount(organizationId, "insight", day),
       getDigest(organizationId),
       countOwnedOrganizations(userId),
@@ -47,7 +47,7 @@ export async function getBillingOverview(
     plan: plan ?? "free",
     feedback: {
       used: feedbackUsed,
-      limit: pro ? null : FREE_MONTHLY_FEEDBACK_LIMIT,
+      limit: pro ? null : FREE_FEEDBACK_LIMIT,
     },
     insights: {
       used: insightsUsed,

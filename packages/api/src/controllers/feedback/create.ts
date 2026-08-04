@@ -1,6 +1,6 @@
-import { FREE_MONTHLY_FEEDBACK_LIMIT } from "../../lib/plan";
+import { FREE_FEEDBACK_LIMIT } from "../../lib/plan";
 import {
-  countFeedbackThisMonth,
+  countFeedbackTotal,
   insertFeedback,
   type InsertFeedback,
 } from "../../services/feedback";
@@ -12,12 +12,13 @@ import { enqueue } from "../enqueue";
 export async function createFeedback(data: InsertFeedback): Promise<SubmitResult> {
   const plan = await getOrgPlan(data.organizationId);
   if (plan === "free") {
-    const usedThisMonth = await countFeedbackThisMonth(data.organizationId);
-    if (usedThisMonth >= FREE_MONTHLY_FEEDBACK_LIMIT) {
+    const total = await countFeedbackTotal(data.organizationId);
+    if (total >= FREE_FEEDBACK_LIMIT) {
       return {
         success: false,
         status: 403,
-        error: "Monthly feedback limit reached. Upgrade to Pro for unlimited feedback.",
+        error:
+          "Feedback limit reached (300). Delete older feedback or upgrade to Pro for unlimited.",
       };
     }
   }

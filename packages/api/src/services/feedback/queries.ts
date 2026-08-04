@@ -1,8 +1,7 @@
 import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
-import { and, count, desc, eq, gte, ilike, or, sql, type SQLWrapper } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or, sql, type SQLWrapper } from "drizzle-orm";
 
-import { startOfCurrentMonthUtc } from "../../lib/dates";
 import type { FeedbackSource, Sentiment } from "../../types";
 
 export type FeedbackListFilters = {
@@ -41,16 +40,11 @@ export type FeedbackForInsight = {
   insight: string | null;
 };
 
-export async function countFeedbackThisMonth(organizationId: string): Promise<number> {
+export async function countFeedbackTotal(organizationId: string): Promise<number> {
   const [row] = await db
     .select({ count: count() })
     .from(feedback)
-    .where(
-      and(
-        eq(feedback.organizationId, organizationId),
-        gte(feedback.createdAt, startOfCurrentMonthUtc()),
-      ),
-    );
+    .where(eq(feedback.organizationId, organizationId));
 
   return row?.count ?? 0;
 }

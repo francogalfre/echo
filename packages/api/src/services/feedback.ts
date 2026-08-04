@@ -1,6 +1,6 @@
 export {
   countFeedbackBySentiment,
-  countFeedbackThisMonth,
+  countFeedbackTotal,
   getFeedbackById,
   getFeedbackListItemById,
   getFeedbackOrganizationId,
