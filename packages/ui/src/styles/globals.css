@@ -258,5 +258,5 @@
 }
 
 @utility micro-label {
-  @apply text-[11px] font-medium tracking-wider text-muted-foreground uppercase;
+  @apply text-[11px] font-medium text-muted-foreground;
 }
