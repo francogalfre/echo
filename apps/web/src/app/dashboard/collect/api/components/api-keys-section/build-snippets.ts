@@ -47,14 +47,6 @@ export const LIST_RESPONSE = `{
 export function buildCreateSnippets(serverUrl: string): LanguageSnippet[] {
   return [
     {
-      label: "cURL",
-      language: "bash",
-      code: `curl -X POST ${serverUrl}/api/feedback \\
-  -H "Authorization: Bearer ${MASKED_SECRET}" \\
-  -H "Content-Type: application/json" \\
-  -d '{"name": "Jane Smith", "feedback": "Love the product!"}'`,
-    },
-    {
       label: "JavaScript",
       language: "js",
       code: `await fetch("${serverUrl}/api/feedback", {
@@ -88,12 +80,6 @@ requests.post(
 
 export function buildListSnippets(serverUrl: string, publicKey: string): LanguageSnippet[] {
   return [
-    {
-      label: "cURL",
-      language: "bash",
-      code: `curl ${serverUrl}/api/feedback \\
-  -H "Authorization: Bearer ${publicKey}"`,
-    },
     {
       label: "JavaScript",
       language: "js",

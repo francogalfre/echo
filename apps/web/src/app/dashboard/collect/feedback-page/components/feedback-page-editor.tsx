@@ -45,10 +45,7 @@ export function FeedbackPageEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [isPublished, setIsPublished] = useState(initialConfig?.published ?? false);
 
-  const config = useWatch({
-    control: form.control,
-    defaultValue: defaultValues,
-  }) as ConfigValues;
+  const config = useWatch({ control: form.control }) as ConfigValues;
 
   const setField = <FieldName extends keyof ConfigValues>(
     fieldName: FieldName,

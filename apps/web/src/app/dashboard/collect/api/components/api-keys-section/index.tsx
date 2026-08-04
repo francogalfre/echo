@@ -60,7 +60,7 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
         <DocsHeader
           eyebrow="REST API"
           title="API reference"
-          description="Send feedback events straight from your backend with a single authenticated request."
+          description="Send feedback from your backend with one authenticated request."
           baseUrl={`${serverUrl}/api/feedback`}
         />
       </FadeIn>
@@ -91,7 +91,7 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
               <EndpointCard
                 method="POST"
                 path="/api/feedback"
-                description="Submit a new feedback entry for the authenticated project."
+                description="Creates a feedback entry for the authenticated project."
                 note="Requires the secret key."
                 params={CREATE_FEEDBACK_PARAMS}
                 snippets={createSnippets}
@@ -110,7 +110,7 @@ export function ApiKeysSection({ initialData }: ApiKeysSectionProps): React.Reac
               <EndpointCard
                 method="GET"
                 path="/api/feedback"
-                description="List feedback entries for the authenticated project."
+                description="Lists feedback entries for the authenticated project."
                 note="Requires the publishable key."
                 snippets={listSnippets}
                 responseStatus={200}

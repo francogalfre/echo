@@ -13,9 +13,7 @@ const ERRORS: readonly ErrorRow[] = [
   { status: 401, meaning: "Missing or invalid Bearer token." },
   {
     status: 403,
-    meaning:
-      "Wrong key type for the operation, or the monthly feedback limit was reached on the " +
-      "free plan. Upgrade to Pro to remove the limit.",
+    meaning: "Wrong key type, or the free plan's monthly limit was reached.",
   },
 ];
 

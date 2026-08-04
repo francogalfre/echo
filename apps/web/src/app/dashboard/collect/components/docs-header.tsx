@@ -25,10 +25,10 @@ export const DocsHeader = ({
   return (
     <header className="mb-10 flex flex-col gap-6 border-b border-border pb-8 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <span className="inline-block rounded-full border border-border px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="inline-block rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground">
           {eyebrow}
         </span>
-        <h1 className="mt-5 text-3xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="mt-5 font-pixel text-3xl font-medium tracking-tight">{title}</h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
@@ -36,9 +36,7 @@ export const DocsHeader = ({
 
       {baseUrl && (
         <div className="lg:w-80">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Base URL
-          </p>
+          <p className="mb-2 text-xs font-medium text-muted-foreground">Base URL</p>
           <button
             type="button"
             onClick={copy}

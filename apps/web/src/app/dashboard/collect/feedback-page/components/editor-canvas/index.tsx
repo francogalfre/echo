@@ -7,7 +7,7 @@ import { cn } from "@echo/ui/lib/utils";
 
 import { EditableText } from "../editable-text";
 import { RecentFeedback, type FeedbackItem } from "../recent-feedback";
-import { DEFAULT_CONFIG, type ConfigValues } from "../types";
+import type { ConfigValues } from "../types";
 import type { AddableField } from "./add-field-menu";
 import { EditorBanner } from "./editor-banner";
 import { EditorFormPreview } from "./editor-form-preview";
@@ -26,7 +26,7 @@ export const EditorCanvas = ({
   recentFeedback,
 }: EditorCanvasProps): React.ReactElement => {
   const { control, setValue } = form;
-  const config = useWatch({ control, defaultValue: DEFAULT_CONFIG }) as ConfigValues;
+  const config = useWatch({ control }) as ConfigValues;
 
   const setField = <FieldName extends keyof ConfigValues>(
     fieldName: FieldName,
@@ -89,7 +89,7 @@ export const EditorCanvas = ({
               placeholder="Share your feedback"
               ariaLabel="Page title"
               maxLength={80}
-              className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
+              className="mt-4 font-pixel text-2xl font-normal tracking-tight text-foreground sm:text-3xl"
             />
             <EditableText
               value={config.description}

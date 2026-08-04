@@ -58,9 +58,7 @@ export const EndpointCard = ({
 
     {params && params.length > 0 && (
       <div className="mt-8">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Parameters
-        </p>
+        <p className="mb-3 text-[11px] font-semibold text-muted-foreground">Parameters</p>
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full text-xs">
             <thead>
@@ -97,17 +95,13 @@ export const EndpointCard = ({
     )}
 
     <div className="mt-8">
-      <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        Request
-      </p>
+      <p className="mb-2.5 text-[11px] font-semibold text-muted-foreground">Request</p>
       <LanguageTabs snippets={snippets} />
     </div>
 
     <div className="mt-6">
       <div className="mb-2.5 flex items-center gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Response
-        </p>
+        <p className="text-[11px] font-semibold text-muted-foreground">Response</p>
         <Badge className={cn(statusTone(responseStatus), "font-mono tabular-nums")}>
           {responseStatus}
         </Badge>

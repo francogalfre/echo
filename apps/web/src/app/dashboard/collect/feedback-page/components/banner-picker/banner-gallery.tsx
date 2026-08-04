@@ -44,7 +44,7 @@ export function BannerGallery({
   return (
     <div className="space-y-3">
       <div>
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        <p className="mb-1.5 text-[10px] font-semibold text-muted-foreground">
           Solid colors
         </p>
         <div className="grid grid-cols-5 gap-2">
@@ -67,9 +67,7 @@ export function BannerGallery({
       </div>
 
       <div>
-        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Gradients
-        </p>
+        <p className="mb-1.5 text-[10px] font-semibold text-muted-foreground">Gradients</p>
         <div className="grid grid-cols-4 gap-2">
           {GRADIENTS.map((gradient) => (
             <button
@@ -90,9 +88,7 @@ export function BannerGallery({
       </div>
 
       <div className="border-t border-border pt-3">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Custom color
-        </p>
+        <p className="mb-2 text-[10px] font-semibold text-muted-foreground">Custom color</p>
         <div className="flex min-w-0 items-center gap-2">
           <div className="relative size-8 shrink-0">
             <input

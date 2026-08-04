@@ -24,13 +24,13 @@ const KEY_TYPES: readonly KeyType[] = [
     prefix: "echo_pk_",
     access: "Read-only",
     accessStyle: "bg-pastel-blue-bg text-pastel-blue-text",
-    usage: "Safe to expose in client-side code. Used to authenticate GET requests.",
+    usage: "Safe for client-side code. Authenticates GET requests.",
   },
   {
     prefix: "echo_sk_",
     access: "Read & write",
     accessStyle: "bg-pastel-violet-bg text-pastel-violet-text",
-    usage: "Server-side only, never expose it. Required to authenticate POST requests.",
+    usage: "Server-side only, never expose it. Authenticates POST requests.",
   },
 ];
 
@@ -45,12 +45,11 @@ export const AuthSection = ({
     <div>
       <h2 className="text-xl font-semibold tracking-tight">Authentication</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        Authenticate every request with an{" "}
+        Every request needs an{" "}
         <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">
           Authorization: Bearer &lt;key&gt;
         </code>{" "}
-        header. Echo issues two key types — using the wrong one for an operation returns a
-        403.
+        header. Using the wrong key type for an operation returns a 403.
       </p>
     </div>
 
