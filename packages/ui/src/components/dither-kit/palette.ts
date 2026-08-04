@@ -46,6 +46,3 @@ export const rgb = ([r, g, b]: Rgb, k = 1, a = 1) =>
   `rgba(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)},${a})`;
 
 export const seedOfColor = (color: DitherColor): Seed => PALETTE[color];
-
-export const isDitherColor = (value: unknown): value is DitherColor =>
-  typeof value === "string" && value in PALETTE;
