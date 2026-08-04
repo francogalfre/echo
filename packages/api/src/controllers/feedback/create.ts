@@ -4,6 +4,7 @@ import {
   insertFeedback,
   type InsertFeedback,
 } from "../../services/feedback";
+import { insertNotification } from "../../services/notifications";
 import { getOrgPlan } from "../../services/organization";
 import type { SubmitResult } from "../../types";
 import { enqueue } from "../enqueue";
@@ -27,6 +28,15 @@ export async function createFeedback(data: InsertFeedback): Promise<SubmitResult
     { feedbackId: id, content: data.content },
     { organizationId: data.organizationId, dedupeKey: id },
   );
+
+  insertNotification({
+    organizationId: data.organizationId,
+    type: "feedback.received",
+    title: `New feedback from ${data.authorName}`,
+    body: data.content.length > 120 ? `${data.content.slice(0, 120)}…` : data.content,
+  }).catch((error: unknown) => {
+    console.error("[echo:notifications] failed to write feedback.received", error);
+  });
 
   return { success: true };
 }

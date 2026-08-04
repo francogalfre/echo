@@ -7,6 +7,7 @@ import { polarClient } from "./payments";
 import {
   hasReachedOrganizationLimit,
   inheritPlanForNewOrganization,
+  notifyMemberJoined,
   syncPlanFromCustomerState,
 } from "./plan-sync";
 
@@ -38,6 +39,7 @@ export const plugins = [
     creatorRole: "owner",
     organizationHooks: {
       afterCreateOrganization: inheritPlanForNewOrganization,
+      afterAddMember: notifyMemberJoined,
     },
     sendInvitationEmail,
   }),
