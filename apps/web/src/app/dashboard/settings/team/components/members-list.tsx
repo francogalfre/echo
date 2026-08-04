@@ -10,11 +10,12 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 
 import { authClient } from "@/lib/auth-client";
 
+import { MemberActions } from "./member-actions";
 import { PendingInvitations } from "./pending-invitations";
 
 const SKELETON_COUNT = 4;
 
-type MemberRole = "owner" | "admin" | "member";
+export type MemberRole = "owner" | "admin" | "member";
 
 function roleBadgeVariant(role: MemberRole): NonNullable<BadgeVariantProps["variant"]> {
   if (role === "owner") return "accent";
@@ -47,23 +48,31 @@ function MembersEmptyState(): React.ReactElement {
 }
 
 type MemberRowProps = {
+  organizationId: string;
+  memberId: string;
   name: string;
   email: string;
   image?: string;
   role: MemberRole;
   isCurrentUser: boolean;
+  viewerRole: MemberRole;
+  ownerCount: number;
 };
 
 function MemberRow({
+  organizationId,
+  memberId,
   name,
   email,
   image,
   role,
   isCurrentUser,
+  viewerRole,
+  ownerCount,
 }: MemberRowProps): React.ReactElement {
   return (
     <StaggerItem>
-      <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-4">
+      <div className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/15">
         <Avatar className="size-9 shrink-0">
           {image ? <AvatarImage src={image} alt={`${name} avatar`} /> : null}
           <AvatarFallback name={name} />
@@ -80,6 +89,16 @@ function MemberRow({
         <Badge variant={roleBadgeVariant(role)} className="shrink-0">
           {roleLabel(role)}
         </Badge>
+
+        <MemberActions
+          organizationId={organizationId}
+          memberId={memberId}
+          name={name}
+          role={role}
+          isCurrentUser={isCurrentUser}
+          viewerRole={viewerRole}
+          ownerCount={ownerCount}
+        />
       </div>
     </StaggerItem>
   );
@@ -102,9 +121,13 @@ export function MembersList(): React.ReactElement {
       role: invitation.role,
     }));
 
-  if (members.length === 0 && pendingInvitations.length === 0) {
+  if (!activeOrg || (members.length === 0 && pendingInvitations.length === 0)) {
     return <MembersEmptyState />;
   }
+
+  const ownerCount = members.filter((member) => member.role === "owner").length;
+  const viewerRole =
+    members.find((member) => member.userId === session?.user.id)?.role ?? "member";
 
   return (
     <div className="flex flex-col gap-3">
@@ -112,11 +135,15 @@ export function MembersList(): React.ReactElement {
         {members.map((member) => (
           <MemberRow
             key={member.id}
+            organizationId={activeOrg.id}
+            memberId={member.id}
             name={member.user.name}
             email={member.user.email}
             image={member.user.image}
             role={member.role}
             isCurrentUser={session?.user.id === member.userId}
+            viewerRole={viewerRole}
+            ownerCount={ownerCount}
           />
         ))}
       </Stagger>

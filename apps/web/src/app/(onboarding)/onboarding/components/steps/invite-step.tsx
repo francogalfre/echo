@@ -21,6 +21,11 @@ import { OnboardingShell } from "../onboarding-shell";
 
 const defaultValues: InviteValues = { email: "", role: "member" };
 
+const ROLE_OPTIONS: readonly { value: InviteValues["role"]; label: string }[] = [
+  { value: "member", label: "Member" },
+  { value: "admin", label: "Admin" },
+];
+
 type InviteStepProps = {
   invites: readonly InviteValues[];
   onAdd: (invite: InviteValues) => void;
@@ -100,16 +105,23 @@ export const InviteStep = ({
               control={control}
               name="role"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  items={ROLE_OPTIONS}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger
                     id="role"
                     className="w-32 rounded-xl data-[size=default]:h-11"
                   >
-                    <SelectValue className="capitalize" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    {ROLE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}

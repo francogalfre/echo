@@ -9,6 +9,8 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 
+import type { InviteMemberValues } from "../schemas";
+
 export type PendingInvitation = {
   id: string;
   email: string;
@@ -27,6 +29,7 @@ function PendingInvitationRow({
   invitation,
 }: PendingInvitationRowProps): React.ReactElement {
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const cancelInvitation = async (): Promise<void> => {
     setIsCancelling(true);
@@ -41,6 +44,23 @@ function PendingInvitationRow({
     }
 
     toast.success(`Invitation to ${invitation.email} canceled`);
+  };
+
+  const resendInvitation = async (): Promise<void> => {
+    setIsResending(true);
+    const { error } = await authClient.organization.inviteMember({
+      email: invitation.email,
+      role: invitation.role as InviteMemberValues["role"],
+      resend: true,
+    });
+    setIsResending(false);
+
+    if (error) {
+      toast.error(error.message ?? "Could not resend the invitation.");
+      return;
+    }
+
+    toast.success(`Invitation resent to ${invitation.email}`);
   };
 
   return (
@@ -65,21 +85,39 @@ function PendingInvitationRow({
           </p>
         </div>
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          className="shrink-0 text-muted-foreground hover:text-destructive"
-          onClick={cancelInvitation}
-          disabled={isCancelling}
-          aria-label={`Cancel invitation to ${invitation.email}`}
-        >
-          {isCancelling ? (
-            <Icons.loading className="size-4 animate-spin" />
-          ) : (
-            <Icons.x className="size-4" />
-          )}
-        </Button>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={resendInvitation}
+            disabled={isResending || isCancelling}
+            aria-label={`Resend invitation to ${invitation.email}`}
+          >
+            {isResending ? (
+              <Icons.loading className="size-4 animate-spin" />
+            ) : (
+              <Icons.refresh className="size-4" />
+            )}
+          </Button>
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-destructive"
+            onClick={cancelInvitation}
+            disabled={isCancelling || isResending}
+            aria-label={`Cancel invitation to ${invitation.email}`}
+          >
+            {isCancelling ? (
+              <Icons.loading className="size-4 animate-spin" />
+            ) : (
+              <Icons.x className="size-4" />
+            )}
+          </Button>
+        </div>
       </div>
     </StaggerItem>
   );

@@ -31,6 +31,11 @@ import { inviteMemberSchema, type InviteMemberValues } from "../schemas";
 
 const DEFAULT_VALUES: InviteMemberValues = { email: "", role: "member" };
 
+const ROLE_OPTIONS: readonly { value: InviteMemberValues["role"]; label: string }[] = [
+  { value: "member", label: "Member" },
+  { value: "admin", label: "Admin" },
+];
+
 export function InviteMemberButton(): React.ReactElement {
   const [open, setOpen] = useState(false);
   const {
@@ -94,13 +99,20 @@ export function InviteMemberButton(): React.ReactElement {
               control={control}
               name="role"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  items={ROLE_OPTIONS}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger id="role" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                    {ROLE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
