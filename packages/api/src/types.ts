@@ -31,6 +31,13 @@ export type FeedbackSource = (typeof FEEDBACK_SOURCE_VALUES)[number];
 export const BOARD_COLUMN_VALUES = ["backlog", "in_progress", "done"] as const;
 export type BoardColumn = (typeof BOARD_COLUMN_VALUES)[number];
 
+export const NOTIFICATION_TYPE_VALUES = [
+  "feedback.received",
+  "plan.upgraded",
+  "member.joined",
+] as const;
+export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number];
+
 export type SeriesGranularity = "day" | "month";
 export type StatsRange = "7d" | "30d" | "6m" | "1y" | "all";
 

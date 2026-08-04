@@ -7,6 +7,7 @@ import { dashboardRouter } from "./dashboard";
 import { digestRouter } from "./feedback/digest";
 import { feedbackRouter } from "./feedback";
 import { feedbackPageRouter } from "./feedback/page";
+import { notificationsRouter } from "./notifications";
 import { publicFeedbackRouter } from "./feedback/public";
 import { widgetRouter } from "./widget";
 
@@ -19,6 +20,7 @@ export const appRouter = router({
   digest: digestRouter,
   feedback: feedbackRouter,
   feedbackPage: feedbackPageRouter,
+  notifications: notificationsRouter,
   publicFeedback: publicFeedbackRouter,
   widget: widgetRouter,
 });
