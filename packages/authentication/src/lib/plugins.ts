@@ -2,10 +2,12 @@ import { env } from "@echo/env/server";
 import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
 import { lastLoginMethod, organization } from "better-auth/plugins";
 
+import { sendInvitationEmail } from "./invitation-email";
 import { polarClient } from "./payments";
 import {
   hasReachedOrganizationLimit,
   inheritPlanForNewOrganization,
+  notifyMemberJoined,
   syncPlanFromCustomerState,
 } from "./plan-sync";
 
@@ -37,7 +39,9 @@ export const plugins = [
     creatorRole: "owner",
     organizationHooks: {
       afterCreateOrganization: inheritPlanForNewOrganization,
+      afterAddMember: notifyMemberJoined,
     },
+    sendInvitationEmail,
   }),
   lastLoginMethod(),
 ];

@@ -1,31 +1,36 @@
 import { AnimatedCounter } from "@echo/ui/components/animated-counter";
-import { Badge } from "@echo/ui/components/badge";
+import type { DitherColor } from "@echo/ui/components/dither-kit/palette";
+import { Sparkline } from "@echo/ui/components/dither-kit/sparkline";
 import { Icons } from "@echo/ui/components/icons";
-import { Sparkline } from "@echo/ui/components/sparkline";
+import { cn } from "@echo/ui/lib/utils";
 
 type MetricCardProps = {
   label: string;
   value: number;
   growth: number | null;
-  caption: string;
   sparklineData: readonly number[];
-  sparklineColor?: string;
+  sparklineColor?: DitherColor;
 };
 
-function TrendBadge({ growth }: { growth: number | null }): React.ReactElement {
+function TrendIndicator({ growth }: { growth: number | null }): React.ReactElement {
   if (growth === null) {
-    return <span className="text-[11px] font-medium text-muted-foreground/70">—</span>;
+    return <span className="text-xs text-muted-foreground">--</span>;
   }
   const positive = growth >= 0;
   return (
-    <Badge variant={positive ? "success" : "destructive"} dot>
+    <span
+      className={cn(
+        "flex items-center gap-0.5 text-xs font-medium tabular-nums",
+        positive ? "text-success" : "text-destructive",
+      )}
+    >
       {positive ? (
         <Icons.trendUp className="size-3" />
       ) : (
         <Icons.trendDown className="size-3" />
       )}
       {Math.abs(growth)}%
-    </Badge>
+    </span>
   );
 }
 
@@ -33,19 +38,27 @@ export function MetricCard({
   label,
   value,
   growth,
-  caption,
   sparklineData,
-  sparklineColor,
+  sparklineColor = "accent",
 }: MetricCardProps): React.ReactElement {
   return (
-    <div className="flex flex-col gap-3 rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:ring-foreground/15">
-      <p className="micro-label">{label}</p>
-      <AnimatedCounter value={value} className="text-3xl font-semibold tracking-tight" />
-      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-        <TrendBadge growth={growth} />
-        {caption}
+    <div className="flex flex-col gap-2.5 overflow-hidden rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:bg-muted/30">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <TrendIndicator growth={growth} />
       </div>
-      <Sparkline data={sparklineData} color={sparklineColor} className="mt-1" />
+      <AnimatedCounter
+        value={value}
+        className="font-pixel text-3xl font-medium tracking-tight"
+      />
+      <div className="mt-1 overflow-hidden rounded-lg">
+        <Sparkline
+          data={[...sparklineData]}
+          color={sparklineColor}
+          variant="gradient"
+          className="h-32 w-full"
+        />
+      </div>
     </div>
   );
 }

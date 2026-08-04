@@ -107,7 +107,7 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
           <section>
             <SectionHeading
               title="Preview"
-              description="See how the widget looks and behaves before you install it."
+              description="How the widget looks and behaves before you install it."
             />
             <WidgetShowcase
               publicKey={state.info.publicKey}

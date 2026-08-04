@@ -1,36 +1,50 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 
-import { organizationProcedure, router } from "../index";
-import { generateRawKey, getApiKeys, hashKey, upsertApiKeys } from "../services/api-keys";
+import {
+  generateApiKey,
+  listApiKeys,
+  revokeApiKeyById,
+  rollApiKey,
+} from "../controllers/api-keys";
+import { organizationProcedure, ownerProcedure, router } from "../index";
+import { getErrorCode } from "../lib/error-map";
 
-function createKeyPair(): { publicKey: string; secretKey: string } {
-  return {
-    publicKey: generateRawKey("echo_pk_"),
-    secretKey: generateRawKey("echo_sk_"),
-  };
-}
+const defaultKeyName = "Default";
 
 export const apiKeysRouter = router({
-  get: organizationProcedure.query(async ({ ctx }) => {
-    const keys = await getApiKeys(ctx.organizationId);
-    if (!keys) return null;
+  get: organizationProcedure.query(({ ctx }) => listApiKeys(ctx.organizationId)),
 
-    return { publicKey: keys.publicKey, hasSecret: true, createdAt: keys.createdAt };
-  }),
+  generate: ownerProcedure
+    .input(z.object({ name: z.string().min(1).max(100).default(defaultKeyName) }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await generateApiKey(
+        ctx.organizationId,
+        ctx.session.user.id,
+        input.name,
+      );
+      if (!result.success) {
+        throw new TRPCError({ code: getErrorCode(result.status), message: result.error });
+      }
+      return result.key;
+    }),
 
-  generate: organizationProcedure.mutation(async ({ ctx }) => {
-    const { publicKey, secretKey } = createKeyPair();
-    await upsertApiKeys(ctx.organizationId, publicKey, hashKey(secretKey));
-    return { publicKey, secretKey };
-  }),
+  roll: ownerProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await rollApiKey(ctx.organizationId, ctx.session.user.id, input.id);
+      if (!result.success) {
+        throw new TRPCError({ code: getErrorCode(result.status), message: result.error });
+      }
+      return result.key;
+    }),
 
-  roll: organizationProcedure.mutation(async ({ ctx }) => {
-    if (!(await getApiKeys(ctx.organizationId))) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "No API keys to roll" });
-    }
-
-    const { publicKey, secretKey } = createKeyPair();
-    await upsertApiKeys(ctx.organizationId, publicKey, hashKey(secretKey));
-    return { publicKey, secretKey };
-  }),
+  revoke: ownerProcedure
+    .input(z.object({ id: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await revokeApiKeyById(ctx.organizationId, input.id);
+      if (!result.success) {
+        throw new TRPCError({ code: getErrorCode(result.status), message: result.error });
+      }
+    }),
 });

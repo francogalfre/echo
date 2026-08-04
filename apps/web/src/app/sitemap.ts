@@ -1,16 +1,11 @@
 import type { MetadataRoute } from "next";
 
-import { siteConfig } from "@/lib/site";
+import { siteConfig } from "@/utils/site";
 
 const buildUrl = (path: string): string => new URL(path, siteConfig.url).toString();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    {
-      url: buildUrl("/"),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
     {
       url: buildUrl("/docs"),
       changeFrequency: "weekly",

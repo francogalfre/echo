@@ -1,16 +1,20 @@
 export { AIError, type AIErrorCode } from "./errors";
-
-export { generateInsight } from "./agents/insight";
-export type { InsightInput } from "./agents/insight/types";
+export { buildAgentUsage } from "./lib/usage";
 
 export { analyzeFeedback } from "./agents/analyze";
-export {
-  SENTIMENT_VALUES,
-  VALID_TAGS,
-  type FeedbackAnalysis,
-  type Sentiment,
-  type Tag,
-} from "./agents/analyze/types";
+export { SENTIMENT_VALUES, type FeedbackAnalysis, type Sentiment } from "./agents/analyze";
+
+export { generateInsight } from "./agents/insight";
+export type { InsightInput } from "./agents/insight";
 
 export { generateDigest } from "./agents/digest";
-export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest/types";
+export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest";
+
+export type { UIMessage } from "ai";
+export { streamChatResponse, type ChatStreamResult } from "./agents/chat";
+export type {
+  CachedDigest,
+  FeedbackRetriever,
+  SearchHit,
+  SeriesPoint,
+} from "./agents/chat/tools";

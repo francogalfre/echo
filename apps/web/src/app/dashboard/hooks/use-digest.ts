@@ -112,7 +112,7 @@ export function useDigest(): {
       void loadHistory();
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Failed to generate digest.";
-      if (isUpgradeError(message)) {
+      if (isUpgradeError(error)) {
         setUpgradeReason(message);
       } else {
         toast.error(message);

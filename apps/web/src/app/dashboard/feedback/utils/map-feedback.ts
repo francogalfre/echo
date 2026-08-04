@@ -1,3 +1,7 @@
+import type { FeedbackSource, Sentiment } from "@echo/api/types";
+
+import { reviveDate } from "@/utils/serialize";
+
 export type FeedbackItem = {
   id: string;
   name: string;
@@ -19,8 +23,8 @@ export type FeedbackCounts = {
 };
 
 export type FeedbackFilters = {
-  sentiment: "all" | "positive" | "neutral" | "negative";
-  source: "all" | "api" | "form" | "widget";
+  sentiment: "all" | Sentiment;
+  source: "all" | FeedbackSource;
   search: string;
 };
 
@@ -36,5 +40,5 @@ type SerializedFeedbackItem = Omit<FeedbackItem, "createdAt"> & {
 };
 
 export function mapItem(item: SerializedFeedbackItem): FeedbackItem {
-  return { ...item, createdAt: new Date(item.createdAt) };
+  return { ...item, createdAt: reviveDate(item.createdAt) };
 }

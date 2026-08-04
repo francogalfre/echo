@@ -6,12 +6,13 @@ import { cn } from "@echo/ui/lib/utils";
 
 import { SentimentBadge, SourceBadge } from "@/app/dashboard/components/feedback-badges";
 
-import type { BoardCard } from "@echo/api/services/board";
+import type { BoardCard } from "@echo/api/types";
 
 type Props = {
   item: BoardCard;
   onRemove: () => void;
   isDragging?: boolean;
+  isRemoving?: boolean;
   onClick?: () => void;
 };
 
@@ -19,6 +20,7 @@ export function BoardCardItem({
   item,
   onRemove,
   isDragging,
+  isRemoving,
   onClick,
 }: Props): React.ReactElement {
   return (
@@ -26,8 +28,10 @@ export function BoardCardItem({
       onClick={onClick}
       className={cn(
         "group flex flex-col gap-3 rounded-xl border border-border bg-card p-4",
-        "transition-shadow duration-150 hover:shadow-sm motion-reduce:transition-none",
-        isDragging && "shadow-md ring-2 ring-violet-400",
+        "transition-[box-shadow,transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+        !isDragging && !isRemoving && "hover:shadow-sm",
+        isDragging && "scale-[1.02] rotate-1 shadow-md ring-2 ring-accent/50",
+        isRemoving && "pointer-events-none scale-95 opacity-0",
       )}
     >
       <div className="flex items-center gap-1">
@@ -49,7 +53,7 @@ export function BoardCardItem({
             e.stopPropagation();
             onRemove();
           }}
-          className="flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/50 opacity-0 transition-opacity hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
+          className="flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/50 opacity-0 transition-[opacity,background-color,color] hover:bg-muted hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
           aria-label={`Remove ${item.name} from board`}
         >
           <Icons.cancelCircle className="size-3.5" />

@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 import { trpc } from "@/lib/trpc";
 
 import { FeedbackCards } from "./components/feedback-cards";
@@ -89,7 +89,7 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
                 />
               )}
 
-              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              <h1 className="mt-4 font-pixel text-2xl font-normal tracking-tight text-foreground sm:text-3xl">
                 {config.title || org.name}
               </h1>
 

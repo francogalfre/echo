@@ -1,27 +1,24 @@
 import { Badge } from "@echo/ui/components/badge";
 import { cn } from "@echo/ui/lib/utils";
 
-const PILL_TONE = {
-  green: "bg-pastel-green-bg text-pastel-green-text",
-  slate: "bg-pastel-slate-bg text-pastel-slate-text",
-  rose: "bg-pastel-rose-bg text-pastel-rose-text",
-  blue: "bg-pastel-blue-bg text-pastel-blue-text",
-  violet: "bg-pastel-violet-bg text-pastel-violet-text",
-  amber: "bg-pastel-amber-bg text-pastel-amber-text",
-} as const;
-
-type PillTone = keyof typeof PILL_TONE;
-
-const SENTIMENT_TONE: Record<string, PillTone> = {
-  positive: "green",
-  neutral: "slate",
-  negative: "rose",
+const SENTIMENT_STYLE: Record<string, string> = {
+  positive: "bg-success/20 text-success",
+  neutral: "bg-muted text-muted-foreground",
+  negative: "bg-destructive/20 text-destructive",
 };
 
-const SOURCE_TONE: Record<string, PillTone> = {
-  api: "blue",
-  form: "violet",
-  widget: "amber",
+const NEUTRAL_STYLE = "bg-muted text-muted-foreground";
+
+const SOURCE_LABEL: Record<string, string> = {
+  api: "API",
+  form: "Form",
+  widget: "Widget",
+};
+
+const SOURCE_STYLE: Record<string, string> = {
+  api: "bg-accent/20 text-accent",
+  form: "bg-accent-soft/20 text-accent-soft",
+  widget: "bg-accent-deep/20 text-accent-deep",
 };
 
 type SentimentBadgeProps = {
@@ -34,9 +31,9 @@ export function SentimentBadge({
   className,
 }: SentimentBadgeProps): React.ReactElement {
   const value = sentiment ?? "neutral";
-  const tone = SENTIMENT_TONE[value] ?? "slate";
+  const style = SENTIMENT_STYLE[value] ?? NEUTRAL_STYLE;
 
-  return <Badge className={cn(PILL_TONE[tone], "capitalize", className)}>{value}</Badge>;
+  return <Badge className={cn(style, "capitalize", className)}>{value}</Badge>;
 }
 
 type SourceBadgeProps = {
@@ -45,13 +42,9 @@ type SourceBadgeProps = {
 };
 
 export function SourceBadge({ source, className }: SourceBadgeProps): React.ReactElement {
-  const tone = SOURCE_TONE[source] ?? "slate";
+  const style = SOURCE_STYLE[source] ?? NEUTRAL_STYLE;
 
-  return (
-    <Badge dot className={cn(PILL_TONE[tone], "capitalize", className)}>
-      {source}
-    </Badge>
-  );
+  return <Badge className={cn(style, className)}>{SOURCE_LABEL[source] ?? source}</Badge>;
 }
 
 type TagPillProps = {
@@ -61,8 +54,6 @@ type TagPillProps = {
 
 export function TagPill({ label, className }: TagPillProps): React.ReactElement {
   return (
-    <Badge className={cn(PILL_TONE.slate, "max-w-[8rem] truncate", className)}>
-      {label}
-    </Badge>
+    <Badge className={cn(NEUTRAL_STYLE, "max-w-[8rem] truncate", className)}>{label}</Badge>
   );
 }

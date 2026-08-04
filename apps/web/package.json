@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/react": "3.0.240",
     "@echo/api": "workspace:*",
     "@echo/assets": "workspace:*",
     "@echo/env": "workspace:*",
@@ -15,8 +16,10 @@
     "@hookform/resolvers": "^5.4.0",
     "@polar-sh/better-auth": "catalog:",
     "@trpc/client": "catalog:",
+    "ai": "6.0.238",
     "babel-plugin-react-compiler": "^1.0.0",
     "better-auth": "catalog:",
+    "geist": "^1.7.2",
     "next": "^16.2.0",
     "nuqs": "^2.9.0",
     "react": "catalog:",

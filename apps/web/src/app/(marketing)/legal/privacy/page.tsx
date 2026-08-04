@@ -1,6 +1,6 @@
 import { Separator } from "@echo/ui/components/separator";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 export const metadata = createMetadata({
   title: "Privacy Policy",

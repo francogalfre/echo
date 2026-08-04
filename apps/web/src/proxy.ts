@@ -12,5 +12,5 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/create-project"],
+  matcher: ["/dashboard/:path*", "/onboarding"],
 };

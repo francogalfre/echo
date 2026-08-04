@@ -7,7 +7,9 @@
     "check-types": "tsc -b",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run dist/index.mjs"
+    "start": "bun run dist/index.mjs",
+    "test": "vitest run",
+    "worker": "bun run src/worker.ts"
   },
   "dependencies": {
     "@echo/api": "workspace:*",
@@ -15,13 +17,15 @@
     "@echo/env": "workspace:*",
     "@hono/trpc-server": "^0.4.0",
     "@trpc/server": "catalog:",
+    "@upstash/ratelimit": "^2.0.8",
     "hono": "catalog:"
   },
   "devDependencies": {
     "@echo/config": "workspace:*",
     "@types/bun": "catalog:",
     "tsdown": "^0.21.9",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^3.2.0"
   },
   "trustedDependencies": [
     "supabase"

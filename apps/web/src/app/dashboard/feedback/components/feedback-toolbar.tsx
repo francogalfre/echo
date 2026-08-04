@@ -1,5 +1,6 @@
 "use client";
 
+import type { FeedbackSource, Sentiment } from "@echo/api/types";
 import { Icons } from "@echo/ui/components/icons";
 import { Input } from "@echo/ui/components/input";
 import {
@@ -11,8 +12,8 @@ import {
 } from "@echo/ui/components/select";
 import { cn } from "@echo/ui/lib/utils";
 
-export type SentimentFilter = "all" | "positive" | "neutral" | "negative";
-export type SourceFilter = "all" | "api" | "form" | "widget";
+export type SentimentFilter = "all" | Sentiment;
+export type SourceFilter = "all" | FeedbackSource;
 
 const SENTIMENT_SEGMENTS: { value: SentimentFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -30,6 +31,7 @@ const SOURCE_OPTIONS: { value: SourceFilter; label: string }[] = [
 
 type FeedbackToolbarProps = {
   counts: Record<SentimentFilter, number>;
+  pending: boolean;
   sentiment: SentimentFilter;
   onSentimentChange: (value: SentimentFilter) => void;
   source: SourceFilter;
@@ -40,6 +42,7 @@ type FeedbackToolbarProps = {
 
 export function FeedbackToolbar({
   counts,
+  pending,
   sentiment,
   onSentimentChange,
   source,
@@ -74,7 +77,7 @@ export function FeedbackToolbar({
       </div>
 
       <div className="flex items-center gap-2">
-        <Select value={source} onValueChange={handleSourceChange}>
+        <Select items={SOURCE_OPTIONS} value={source} onValueChange={handleSourceChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -88,7 +91,11 @@ export function FeedbackToolbar({
         </Select>
 
         <div className="relative">
-          <Icons.search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          {pending ? (
+            <Icons.loading className="absolute left-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+          ) : (
+            <Icons.search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          )}
           <Input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}

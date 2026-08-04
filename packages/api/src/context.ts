@@ -20,7 +20,6 @@ export async function createContext({ context }: CreateContextOptions) {
   });
 
   return {
-    auth: null,
     session,
     ip: extractIp(context),
   };

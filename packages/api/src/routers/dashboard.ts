@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { getDashboardOverview } from "../services/dashboard-overview";
+import { getDashboardOverview } from "../controllers/dashboard";
 import { organizationProcedure, router } from "../index";
 
 const OverviewInput = z

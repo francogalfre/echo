@@ -1,12 +1,12 @@
 import { Toaster } from "@echo/ui/components/toast";
-import { geistMono, geistSans, instrumentSans } from "@/utils/fonts";
+import { geistMono, geistPixel, geistSans, instrumentSans } from "@/lib/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import "../index.css";
 
@@ -23,11 +23,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable}`}
+        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable} ${geistPixel.variable}`}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <NuqsAdapter>{children}</NuqsAdapter>
-          <Toaster position="bottom-right" />
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>

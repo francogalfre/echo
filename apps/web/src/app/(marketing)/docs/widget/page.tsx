@@ -2,7 +2,7 @@ import { env } from "@echo/env/web";
 import { CodeBlock } from "@echo/ui/components/code-block";
 import { Separator } from "@echo/ui/components/separator";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import { DocsPageHeader } from "../components/docs-page-header";
 

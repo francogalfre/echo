@@ -33,13 +33,14 @@ export function formatBucket(bucket: string, granularity: "day" | "month"): stri
   return (granularity === "day" ? monthDayFormatter : monthFormatter).format(date);
 }
 
-export function formatRelativeTime(iso: string, now: number = Date.now()): string {
-  const diffMinutes = Math.floor((now - new Date(iso).getTime()) / 60_000);
+export function formatRelativeTime(input: Date | string, now: number = Date.now()): string {
+  const date = input instanceof Date ? input : new Date(input);
+  const diffMinutes = Math.floor((now - date.getTime()) / 60_000);
   if (diffMinutes < 1) return "just now";
   if (diffMinutes < 60) return `${diffMinutes}m ago`;
   const hours = Math.floor(diffMinutes / 60);
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   if (days < 7) return `${days}d ago`;
-  return monthDayFormatter.format(new Date(iso));
+  return monthDayFormatter.format(date);
 }

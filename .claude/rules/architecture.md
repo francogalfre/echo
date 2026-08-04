@@ -22,15 +22,29 @@ Echo splits backend responsibilities across `apps/server` and `packages/api`.
 ```
 apps/server/src/
   index.ts            # Hono app: middleware, mounts auth/tRPC/routes
-  <feature>.ts        # thin Hono route: auth, parse input, call a controller
+  routes/<feature>.ts # thin Hono route: auth, parse input, call a controller
+  middleware/         # CORS, auth, rate-limit
+  lib/                # transport-only helpers (submit/upload handler factories)
 
 packages/api/src/
   index.ts            # tRPC init (procedures)
   context.ts          # tRPC context
+  types.ts            # cross-cutting Result/domain types re-exported to apps/*
   routers/            # tRPC routers (transport for JSON-RPC procedures)
-  controllers/        # business logic / orchestration, returns Result
-  services/           # data access only — the only place touching @echo/db
+  controllers/         # business logic / orchestration, returns Result
+  services/            # data access only — the only place touching @echo/db
+  lib/                 # shared helpers: plan, dates, crypto, sampling, rate-limit
+  jobs/                 # job kinds/registry/handlers for the Postgres queue
 ```
+
+`packages/api/package.json`'s `exports` map is intentionally narrow: `.`, `./context`,
+`./types`, `./routers/index`, `./lib/redis`, `./schemas`, `./controllers/*`, `./jobs/*`,
+`./services/jobs`. `apps/web` may only import `.` (via tRPC) and `./types` — never
+`./services/*` or `./controllers/*` directly, since those are `apps/server`'s privilege as
+the layer that actually calls controllers. `apps/server` may import `./controllers/*` and
+`./jobs/*` (that's the whole point of the transport/controller split) but never
+`./services/*` except `./services/jobs` (the job-queue claim/complete/fail primitives,
+treated as infrastructure plumbing rather than a business-logic service).
 
 ## Service contract (data access only)
 

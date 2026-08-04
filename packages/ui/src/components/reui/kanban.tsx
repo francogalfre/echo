@@ -587,6 +587,7 @@ function KanbanItem({ value, className, render, disabled, ...props }: KanbanItem
     ref: setNodeRef,
     style,
     ...attributes,
+    ...listeners,
     className: cn(
       isSortableDragging && "opacity-50 z-50",
       disabled && "opacity-50",
@@ -616,13 +617,12 @@ function KanbanItemHandle({
   cursor = true,
   ...props
 }: KanbanItemHandleProps) {
-  const { listeners, isDragging, disabled } = useContext(ItemContext);
+  const { isDragging, disabled } = useContext(ItemContext);
 
   const defaultProps = {
     "data-slot": "kanban-item-handle",
     "data-dragging": isDragging,
     "data-disabled": disabled,
-    ...listeners,
     className: cn(cursor && (isDragging ? "cursor-grabbing!" : "cursor-grab!"), className),
     children: props.children,
   };

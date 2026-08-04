@@ -1,12 +1,12 @@
-import { createServerTrpc } from "@/lib/trpc-server";
+import { Suspense } from "react";
 
-import { TeamSection } from "./components/team-section";
+import { SettingsSkeleton } from "../components/settings-skeleton";
+import { TeamData } from "./components/team-data";
 
-const TeamSettingsPage = async (): Promise<React.ReactElement> => {
-  const api = await createServerTrpc();
-  const billingOverview = await api.billing.overview.query();
-
-  return <TeamSection initialBillingOverview={billingOverview} />;
-};
+const TeamSettingsPage = (): React.ReactElement => (
+  <Suspense fallback={<SettingsSkeleton />}>
+    <TeamData />
+  </Suspense>
+);
 
 export default TeamSettingsPage;

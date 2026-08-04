@@ -56,10 +56,7 @@ export const KeyCard = ({
       <div className="flex items-center gap-2">
         <p className="text-xs font-semibold text-foreground">{label}</p>
         <Badge
-          className={cn(
-            "uppercase tracking-wide",
-            BADGE_STYLES[badge] ?? "bg-pastel-slate-bg text-pastel-slate-text",
-          )}
+          className={cn(BADGE_STYLES[badge] ?? "bg-pastel-slate-bg text-pastel-slate-text")}
         >
           {badge}
         </Badge>

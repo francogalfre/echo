@@ -5,8 +5,32 @@
     ".": {
       "default": "./src/index.ts"
     },
-    "./*": {
-      "default": "./src/*.ts"
+    "./context": {
+      "default": "./src/context.ts"
+    },
+    "./types": {
+      "default": "./src/types.ts"
+    },
+    "./routers/index": {
+      "default": "./src/routers/index.ts"
+    },
+    "./lib/redis": {
+      "default": "./src/lib/redis.ts"
+    },
+    "./schemas": {
+      "default": "./src/schemas.ts"
+    },
+    "./controllers/chat": {
+      "default": "./src/controllers/chat/index.ts"
+    },
+    "./controllers/*": {
+      "default": "./src/controllers/*.ts"
+    },
+    "./jobs/*": {
+      "default": "./src/jobs/*.ts"
+    },
+    "./services/jobs": {
+      "default": "./src/services/jobs.ts"
     }
   },
   "scripts": {

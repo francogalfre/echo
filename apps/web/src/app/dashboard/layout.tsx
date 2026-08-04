@@ -1,15 +1,52 @@
+import { env } from "@echo/env/web";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
 
-import { MotionProvider } from "./components/motion-provider";
+import { AgentChatButton } from "./components/chat/agent-chat-button";
+import { MotionProvider } from "./components/layout/motion-provider";
 import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";
 
-type Props = {
+type DashboardLayoutProps = {
   children: ReactNode;
 };
 
-const DashboardLayout = ({ children }: Props): React.ReactElement => {
+type ServerSession = {
+  session: { activeOrganizationId: string | null };
+} | null;
+
+async function fetchServerSession(): Promise<ServerSession> {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
+
+  try {
+    const response = await fetch(`${env.NEXT_PUBLIC_SERVER_URL}/api/auth/get-session`, {
+      headers: { cookie: cookieHeader },
+      cache: "no-store",
+    });
+
+    if (!response.ok) return null;
+
+    return (await response.json()) as ServerSession;
+  } catch (error) {
+    console.error("Failed to fetch session for dashboard guard", error);
+    return null;
+  }
+}
+
+const DashboardLayout = async ({
+  children,
+}: DashboardLayoutProps): Promise<React.ReactElement> => {
+  const session = await fetchServerSession();
+
+  if (!session) redirect("/login");
+  if (!session.session.activeOrganizationId) redirect("/onboarding");
+
   return (
     <MotionProvider>
       <div className="flex h-svh">
@@ -24,6 +61,7 @@ const DashboardLayout = ({ children }: Props): React.ReactElement => {
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>
+        <AgentChatButton />
       </div>
     </MotionProvider>
   );

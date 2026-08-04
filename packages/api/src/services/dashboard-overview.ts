@@ -2,49 +2,37 @@ import { db } from "@echo/db";
 import { feedback } from "@echo/db/schema/feedback";
 import { and, count, desc, eq, gte, lt, min, sql } from "drizzle-orm";
 
-import {
-  bucketKeys,
-  granularityFor,
-  growthPercent,
-  monthKey,
-  rangeWindow,
-  zeroFillSeries,
-  type SeriesGranularity,
-  type SeriesPoint,
-  type StatsRange,
-} from "../lib/dashboard-range";
+import { granularityFor, rangeWindow } from "../lib/dates";
+import type { SeriesGranularity, StatsRange } from "../types";
 
-export type { SeriesGranularity, SeriesPoint, StatsRange } from "../lib/dashboard-range";
+export type SentimentCounts = { total: number; positive: number; negative: number };
 
-export type MetricValue = { value: number; growth: number | null };
-export type FeedbackSource = "api" | "form" | "widget";
-export type SourceCount = { source: FeedbackSource; count: number };
-export type OverviewRecentItem = {
+export type BucketSentimentRow = { bucket: string; sentiment: string | null; n: number };
+
+export type SourceRow = { source: string; n: number };
+
+export type RecentFeedbackRow = {
   id: string;
-  name: string;
+  authorName: string;
   content: string;
   sentiment: string | null;
   source: string;
-  createdAt: string;
+  createdAt: Date;
 };
 
-export type DashboardOverview = {
-  metrics: {
-    total: MetricValue;
-    positive: MetricValue;
-    negative: MetricValue;
-    thisWeek: MetricValue;
-  };
+export type DashboardRawData = {
+  allTime: SentimentCounts;
+  last30: SentimentCounts;
+  prev30: SentimentCounts;
+  trendRows: BucketSentimentRow[];
+  thisWeek: number;
+  prevWeek: number;
+  seriesRows: BucketSentimentRow[];
+  sourceRows: SourceRow[];
+  recentRows: RecentFeedbackRow[];
+  earliest: Date | null;
   granularity: SeriesGranularity;
-  series: SeriesPoint[];
-  trend: SeriesPoint[];
-  sources: SourceCount[];
-  recent: OverviewRecentItem[];
 };
-
-const SOURCES = ["api", "form", "widget"] as const;
-
-type SentimentCounts = { total: number; positive: number; negative: number };
 
 const EMPTY_COUNTS: SentimentCounts = { total: 0, positive: 0, negative: 0 };
 
@@ -60,10 +48,10 @@ function sentimentSums(): {
   };
 }
 
-export async function getDashboardOverview(
+export async function fetchDashboardRawData(
   organizationId: string,
   range: StatsRange,
-): Promise<DashboardOverview> {
+): Promise<DashboardRawData> {
   const now = new Date();
   const { start } = rangeWindow(range, now);
   const granularity = granularityFor(range);
@@ -165,48 +153,19 @@ export async function getDashboardOverview(
       : Promise.resolve([{ earliest: null }]),
   ]);
 
-  const allTime = allTimeRows[0] ?? EMPTY_COUNTS;
-  const last30 = last30Rows[0] ?? EMPTY_COUNTS;
-  const prev30 = prev30Rows[0] ?? EMPTY_COUNTS;
   const { thisWeek = 0, prevWeek = 0 } = weekRows[0] ?? {};
 
-  const earliestDate = earliestRows[0]?.earliest ?? null;
-  const keys = bucketKeys(range, now, earliestDate ? monthKey(earliestDate) : undefined);
-  const trendKeys = bucketKeys("30d", now);
-
-  const sourceMap = new Map(sourceRows.map((row) => [row.source, row.n]));
-  const sources = SOURCES.map((source) => ({
-    source,
-    count: sourceMap.get(source) ?? 0,
-  })).sort((a, b) => b.count - a.count);
-
   return {
-    metrics: {
-      total: {
-        value: allTime.total,
-        growth: growthPercent(last30.total, prev30.total),
-      },
-      positive: {
-        value: allTime.positive,
-        growth: growthPercent(last30.positive, prev30.positive),
-      },
-      negative: {
-        value: allTime.negative,
-        growth: growthPercent(last30.negative, prev30.negative),
-      },
-      thisWeek: { value: thisWeek, growth: growthPercent(thisWeek, prevWeek) },
-    },
+    allTime: allTimeRows[0] ?? EMPTY_COUNTS,
+    last30: last30Rows[0] ?? EMPTY_COUNTS,
+    prev30: prev30Rows[0] ?? EMPTY_COUNTS,
+    trendRows,
+    thisWeek,
+    prevWeek,
+    seriesRows,
+    sourceRows,
+    recentRows,
+    earliest: earliestRows[0]?.earliest ?? null,
     granularity,
-    series: zeroFillSeries(keys, seriesRows),
-    trend: zeroFillSeries(trendKeys, trendRows),
-    sources,
-    recent: recentRows.map((row) => ({
-      id: row.id,
-      name: row.authorName,
-      content: row.content,
-      sentiment: row.sentiment,
-      source: row.source,
-      createdAt: row.createdAt.toISOString(),
-    })),
   };
 }

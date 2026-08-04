@@ -27,6 +27,10 @@ export const env = createEnv({
 
     // AI
     OPENROUTER_API_KEY: z.string().min(1),
+    OPENROUTER_MODEL: z.string().optional(),
+
+    RESEND_API_KEY: z.string().min(1).optional(),
+    RESEND_FROM_EMAIL: z.string().min(1).optional(),
 
     // Redis (Upstash)
     UPSTASH_REDIS_REST_URL: z.url().optional(),
@@ -35,6 +39,12 @@ export const env = createEnv({
     // Server
     CORS_ORIGIN: z.url(),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+
+    // Jobs
+    WORKER_ENABLED: z
+      .string()
+      .optional()
+      .transform((v) => v === "true"),
   },
   runtimeEnv: process.env,
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,

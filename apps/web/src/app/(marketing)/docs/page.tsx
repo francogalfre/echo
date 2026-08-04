@@ -4,7 +4,7 @@ import { Separator } from "@echo/ui/components/separator";
 import type { Route } from "next";
 import Link from "next/link";
 
-import { createMetadata } from "@/lib/metadata";
+import { createMetadata } from "@/utils/metadata";
 
 import { DocsPageHeader } from "./components/docs-page-header";
 

@@ -4,7 +4,6 @@ import imagotipoDark from "@echo/assets/imagotipo/dark.png";
 import imagotipoLight from "@echo/assets/imagotipo/light.png";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Icons } from "@echo/ui/components/icons";
-import type { Route } from "next";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
@@ -45,11 +44,11 @@ const settingsItem: NavItem = {
   icon: Icons.slidersHorizontal,
 };
 
-type Props = {
+type SidebarProps = {
   usageMeterSlot: ReactNode;
 };
 
-export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
+export const Sidebar = ({ usageMeterSlot }: SidebarProps): React.ReactElement => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -62,7 +61,7 @@ export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
 
   useEffect(() => {
     if (!orgsPending && organizations && organizations.length === 0) {
-      router.replace("/new-project" as Route);
+      router.replace("/onboarding");
     }
   }, [orgsPending, organizations, router]);
 
@@ -78,6 +77,7 @@ export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
           className="h-5.5 w-auto dark:hidden"
           priority
         />
+
         <Image
           src={imagotipoLight}
           alt="echo"
@@ -86,7 +86,7 @@ export const Sidebar = ({ usageMeterSlot }: Props): React.ReactElement => {
         />
       </div>
 
-      <div className="pb-2">
+      <div className="pb-2 pt-6">
         <OrgSwitcher />
       </div>
 

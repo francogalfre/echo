@@ -1,0 +1,1 @@
+CREATE INDEX "board_items_org_column_position_idx" ON "board_items" USING btree ("organization_id","column","position");

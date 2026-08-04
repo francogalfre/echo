@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { FeedbackSource, Sentiment } from "@echo/api/types";
 import { toast } from "@echo/ui/components/toast";
 
 import { trpc } from "@/lib/trpc";
+import { useAsyncResource } from "@/lib/use-async-resource";
 
 import {
   mapItem,
@@ -13,18 +15,21 @@ import {
   type FeedbackItem,
 } from "../utils/map-feedback";
 
-type State =
-  | { status: "loading" }
-  | { status: "ready"; items: FeedbackItem[] }
-  | { status: "error" };
+type FeedbackPage = {
+  items: FeedbackItem[];
+  counts: FeedbackCounts;
+  hasMore: boolean;
+};
 
 type UseFeedbackResult = {
-  status: State["status"];
+  status: "loading" | "ready" | "error";
   items: FeedbackItem[];
   counts: FeedbackCounts;
   hasMore: boolean;
   loadingMore: boolean;
+  pending: boolean;
   loadMore: () => void;
+  removeItems: (ids: readonly string[]) => void;
 };
 
 const LIMIT = 50;
@@ -33,8 +38,8 @@ function toQueryInput(
   filters: FeedbackFilters,
   offset: number,
 ): {
-  sentiment?: "positive" | "neutral" | "negative";
-  source?: "api" | "form" | "widget";
+  sentiment?: Sentiment;
+  source?: FeedbackSource;
   search?: string;
   limit: number;
   offset: number;
@@ -53,60 +58,54 @@ export function useFeedback(
   initial: FeedbackInitialData,
 ): UseFeedbackResult {
   const { sentiment, source, search } = filters;
-  const [state, setState] = useState<State>({ status: "ready", items: initial.items });
-  const [hasMore, setHasMore] = useState(initial.hasMore);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [counts, setCounts] = useState<FeedbackCounts>(initial.counts);
+  const [appended, setAppended] = useState<FeedbackItem[]>([]);
+  const [hasMoreOverride, setHasMoreOverride] = useState<boolean | null>(null);
   const offsetRef = useRef(0);
-  const initialFiltersRef = useRef(initial.filters);
+  const previousStatusRef = useRef<"loading" | "ready" | "error">("ready");
+
+  const { state, refresh } = useAsyncResource<FeedbackPage>(
+    async () => {
+      const [listResult, countsResult] = await Promise.all([
+        trpc.feedback.list.query(toQueryInput({ sentiment, source, search }, 0)),
+        trpc.feedback.counts.query({
+          source: source === "all" ? undefined : source,
+          search: search || undefined,
+        }),
+      ]);
+      return {
+        items: listResult.items.map(mapItem),
+        counts: countsResult,
+        hasMore: listResult.hasMore,
+      };
+    },
+    {
+      initialData: {
+        items: initial.items,
+        counts: initial.counts,
+        hasMore: initial.hasMore,
+      },
+      deps: [sentiment, source, search],
+    },
+  );
 
   useEffect(() => {
-    const initialFilters = initialFiltersRef.current;
-    const isInitialFilters =
-      sentiment === initialFilters.sentiment &&
-      source === initialFilters.source &&
-      search === initialFilters.search;
-
-    if (isInitialFilters) return;
-
-    let cancelled = false;
-    let attempt = 0;
-    const maxAttempts = 3;
     offsetRef.current = 0;
-
-    const load = (): void => {
-      Promise.all([
-        trpc.feedback.list.query(toQueryInput({ sentiment, source, search }, 0)),
-        trpc.feedback.counts.query(),
-      ])
-        .then(([listResult, countsResult]) => {
-          if (cancelled) return;
-          setState({ status: "ready", items: listResult.items.map(mapItem) });
-          setHasMore(listResult.hasMore);
-          setCounts(countsResult);
-        })
-        .catch(() => {
-          if (cancelled) return;
-          attempt += 1;
-          if (attempt < maxAttempts) {
-            setTimeout(load, attempt * 800);
-          } else {
-            toast.error("Failed to load feedback");
-            setState({ status: "error" });
-          }
-        });
-    };
-
-    setState({ status: "loading" });
-    load();
-
-    return () => {
-      cancelled = true;
-    };
+    setAppended([]);
+    setHasMoreOverride(null);
   }, [sentiment, source, search]);
 
+  useEffect(() => {
+    if (state.status === "error" && previousStatusRef.current !== "error") {
+      toast.error("Failed to load feedback");
+    }
+    previousStatusRef.current = state.status;
+  }, [state.status]);
+
   const loadMore = (): void => {
-    if (loadingMore || !hasMore || state.status !== "ready") return;
+    if (loadingMore || state.status !== "ready") return;
+    const currentHasMore = hasMoreOverride ?? state.data.hasMore;
+    if (!currentHasMore) return;
 
     const nextOffset = offsetRef.current + LIMIT;
     setLoadingMore(true);
@@ -115,12 +114,8 @@ export function useFeedback(
       .query(toQueryInput({ sentiment, source, search }, nextOffset))
       .then((result) => {
         offsetRef.current = nextOffset;
-        setHasMore(result.hasMore);
-        setState((previous) =>
-          previous.status === "ready"
-            ? { status: "ready", items: [...previous.items, ...result.items.map(mapItem)] }
-            : previous,
-        );
+        setHasMoreOverride(result.hasMore);
+        setAppended((previous) => [...previous, ...result.items.map(mapItem)]);
       })
       .catch(() => {
         toast.error("Failed to load more feedback");
@@ -130,12 +125,20 @@ export function useFeedback(
       });
   };
 
+  const removeItems = (ids: readonly string[]): void => {
+    setAppended((previous) => previous.filter((item) => !ids.includes(item.id)));
+    refresh();
+  };
+
   return {
     status: state.status,
-    items: state.status === "ready" ? state.items : [],
-    counts,
-    hasMore,
+    items: state.status === "ready" ? [...state.data.items, ...appended] : [],
+    counts: state.status === "ready" ? state.data.counts : initial.counts,
+    hasMore:
+      hasMoreOverride ?? (state.status === "ready" ? state.data.hasMore : initial.hasMore),
     loadingMore,
+    pending: state.status === "ready" && state.pending,
     loadMore,
+    removeItems,
   };
 }

@@ -32,8 +32,10 @@ const PLANS: Record<PlanTier, PlanDefinition> = {
     description: "Core feedback collection to get started.",
     features: [
       "1 project",
-      "AI sentiment analysis",
-      "Up to 300 feedback / month",
+      "300 stored feedback",
+      "3 AI insights / day",
+      "1 AI summary / week",
+      "5 AI chats / day",
       "Widget + REST API",
     ],
   },
@@ -42,13 +44,15 @@ const PLANS: Record<PlanTier, PlanDefinition> = {
     name: "Pro",
     price: "$12",
     cadence: "/month",
-    description: "Scale collection with AI summaries and automation.",
+    description: "Everything in Free, plus AI automation and unlimited feedback.",
     features: [
-      "Up to 5 projects",
-      "AI summaries & insights",
+      "Unlimited stored feedback",
+      "5 projects",
+      "50 AI insights / day",
+      "10 AI summaries / day",
+      "100 AI chats / day",
       "Webhooks",
       'Remove "Powered by Echo" branding',
-      "Usage-based pricing beyond limits",
     ],
   },
 };
@@ -85,49 +89,59 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
   return (
     <SettingsCard
       className={cn(
-        "flex flex-col gap-6",
-        isPro ? "ring-2 ring-accent/40" : "ring-1 ring-foreground/10",
+        "relative overflow-hidden",
+        isPro
+          ? "ring-2 ring-accent/40 transition-shadow hover:shadow-md"
+          : "ring-1 ring-foreground/10",
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="text-base font-semibold text-foreground">{definition.name}</h3>
-          <p className="mt-1 text-xs text-muted-foreground">{definition.description}</p>
+      {isPro ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-accent/[0.06] to-transparent"
+        />
+      ) : null}
+      <div className="relative z-10 flex flex-col gap-6">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-base font-semibold text-foreground">{definition.name}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">{definition.description}</p>
+          </div>
+          {isCurrent ? (
+            <Badge variant="accent">Current plan</Badge>
+          ) : isPro ? (
+            <Badge variant="outline">Recommended</Badge>
+          ) : null}
         </div>
-        {isCurrent ? (
-          <Badge variant="accent">Current plan</Badge>
+
+        <div className="flex items-baseline gap-1">
+          <span className="font-display text-3xl font-semibold tabular-nums text-foreground">
+            {definition.price}
+          </span>
+          <span className="text-sm text-muted-foreground">{definition.cadence}</span>
+        </div>
+
+        {isCurrent && isPro ? (
+          <ManageSubscriptionButton className="h-9 w-full text-sm" />
+        ) : isCurrent ? (
+          <Button disabled variant="outline" className="h-9 w-full text-sm">
+            Current plan
+          </Button>
         ) : isPro ? (
-          <Badge variant="outline">Recommended</Badge>
-        ) : null}
+          <BillingUpgradeButton className="h-9 w-full text-sm" />
+        ) : (
+          <div aria-hidden="true" className="h-9" />
+        )}
+
+        <ul className="flex flex-col gap-2.5 border-t border-border pt-6">
+          {definition.features.map((feature) => (
+            <li key={feature} className="flex items-start gap-2.5 text-sm text-foreground">
+              <Icons.check className="mt-0.5 size-3.5 shrink-0 text-accent" />
+              {feature}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      <div className="flex items-baseline gap-1">
-        <span className="font-display text-3xl font-semibold tabular-nums text-foreground">
-          {definition.price}
-        </span>
-        <span className="text-sm text-muted-foreground">{definition.cadence}</span>
-      </div>
-
-      {isCurrent && isPro ? (
-        <ManageSubscriptionButton className="h-9 w-full text-sm" />
-      ) : isCurrent ? (
-        <Button disabled variant="outline" className="h-9 w-full text-sm">
-          Current plan
-        </Button>
-      ) : isPro ? (
-        <BillingUpgradeButton className="h-9 w-full text-sm" />
-      ) : (
-        <div aria-hidden="true" className="h-9" />
-      )}
-
-      <ul className="flex flex-col gap-2.5 border-t border-border pt-6">
-        {definition.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5 text-sm text-foreground">
-            <Icons.check className="mt-0.5 size-3.5 shrink-0 text-accent" />
-            {feature}
-          </li>
-        ))}
-      </ul>
     </SettingsCard>
   );
 };

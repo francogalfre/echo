@@ -1,3 +1,5 @@
+import { cn } from "@echo/ui/lib/utils";
+
 import { Label } from "./label";
 import type { ReactNode } from "react";
 
@@ -6,12 +8,13 @@ type FieldProps = {
   label: string;
   error?: string;
   hint?: string;
+  className?: string;
   children: ReactNode;
 };
 
-export const Field = ({ name, label, error, hint, children }: FieldProps) => {
+export const Field = ({ name, label, error, hint, className, children }: FieldProps) => {
   return (
-    <div className="space-y-1.5">
+    <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={name} className="text-xs font-medium text-foreground">
         {label}
       </Label>

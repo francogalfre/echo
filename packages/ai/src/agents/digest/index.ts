@@ -2,13 +2,34 @@ import { generateObject } from "ai";
 import { z } from "zod";
 
 import { AIError } from "../../errors";
-import { digestModel } from "./models";
+import { openrouterModel } from "../../lib/provider";
+import { DEFAULT_MODEL } from "../../lib/model";
+import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
-import type { DigestInput, DigestOutput } from "./types";
 
-const TIMEOUT_MS = 20_000;
-const MAX_OUTPUT_TOKENS = 2000;
-const PARALLEL_ATTEMPTS = 4;
+const timeoutMs = 20_000;
+const maxOutputTokens = 2000;
+const maxAttempts = 2;
+const retryDelayMs = 500;
+
+export type DigestInput = {
+  content: string;
+  sentiment?: string | null;
+  tags?: string[] | null;
+};
+
+export type DigestTheme = {
+  title: string;
+  count: number;
+  insight: string;
+};
+
+export type DigestOutput = {
+  executiveSummary: string;
+  themes: DigestTheme[];
+  topIssues: string[];
+  positiveHighlight: string;
+};
 
 const digestSchema = z.object({
   executiveSummary: z.string(),
@@ -25,34 +46,57 @@ const digestSchema = z.object({
   positiveHighlight: z.string(),
 });
 
-async function attemptGeneration(inputs: DigestInput[]): Promise<DigestOutput> {
-  const { object } = await generateObject({
-    model: digestModel,
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function attemptGeneration(
+  inputs: DigestInput[],
+): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
+  const result = await generateObject({
+    model: openrouterModel(DEFAULT_MODEL),
     schema: digestSchema,
     system: DIGEST_SYSTEM_PROMPT,
     prompt: buildDigestPrompt(inputs),
     temperature: 0.2,
-    maxOutputTokens: MAX_OUTPUT_TOKENS,
-    abortSignal: AbortSignal.timeout(TIMEOUT_MS),
+    maxOutputTokens,
+    abortSignal: AbortSignal.timeout(timeoutMs),
     providerOptions: {
       openrouter: {
         reasoning: { enabled: false, exclude: true, effort: "none" },
+        usage: { include: true },
       },
     },
   });
-  return object;
+
+  return {
+    digest: result.object,
+    usage: buildAgentUsage({
+      model: result.response.modelId,
+      usage: result.usage,
+      providerMetadata: result.providerMetadata,
+    }),
+  };
 }
 
-export async function generateDigest(inputs: DigestInput[]): Promise<DigestOutput> {
+export async function generateDigest(
+  inputs: DigestInput[],
+): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
   if (inputs.length === 0) {
     throw new AIError("GENERATION_FAILED", "No feedback to digest");
   }
 
-  try {
-    return await Promise.any(
-      Array.from({ length: PARALLEL_ATTEMPTS }, () => attemptGeneration(inputs)),
-    );
-  } catch (error) {
-    throw new AIError("GENERATION_FAILED", "Digest generation failed", { cause: error });
+  let lastError: unknown = undefined;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      return await attemptGeneration(inputs);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxAttempts) await sleep(retryDelayMs);
+    }
   }
+
+  if (lastError instanceof AIError) throw lastError;
+  throw new AIError("GENERATION_FAILED", "Digest generation failed", { cause: lastError });
 }

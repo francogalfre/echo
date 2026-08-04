@@ -1,4 +1,4 @@
-import type { DigestInput } from "./types";
+import type { DigestInput } from "./index";
 
 export const DIGEST_SYSTEM_PROMPT = `Analyze product feedback and summarize it for the team.
 

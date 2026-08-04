@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback } from "@echo/ui/components/avatar";
 import { Icons } from "@echo/ui/components/icons";
 import { formatRelativeTime } from "@echo/ui/lib/format";
 import Link from "next/link";
 
-import type { OverviewRecentItem } from "@echo/api/services/dashboard-overview";
+import type { OverviewRecentItem } from "@echo/api/types";
 
+import { AccentAvatar } from "../../components/accent-avatar";
 import { SentimentBadge, SourceBadge } from "../../components/feedback-badges";
 
 export function RecentFeedbackTable({
@@ -28,11 +28,9 @@ export function RecentFeedbackTable({
         {items.map((item) => (
           <li
             key={item.id}
-            className="flex items-center gap-3.5 border-b border-border px-5 py-3.5 transition-colors duration-150 last:border-0 hover:bg-muted/30"
+            className="flex items-center gap-4 border-b border-border px-5 py-4 transition-colors duration-150 last:border-0 hover:bg-muted/30"
           >
-            <Avatar className="size-7 ring-1 ring-border">
-              <AvatarFallback name={item.name} />
-            </Avatar>
+            <AccentAvatar name={item.name} className="size-7 ring-1 ring-border" />
             <span className="w-32 shrink-0 truncate text-[13px] font-medium">
               {item.name}
             </span>
@@ -40,8 +38,8 @@ export function RecentFeedbackTable({
               {item.content}
             </p>
             <span className="flex shrink-0 items-center gap-2 max-sm:hidden">
-              <SentimentBadge sentiment={item.sentiment} className="max-sm:hidden" />
-              <SourceBadge source={item.source} className="max-sm:hidden" />
+              <SentimentBadge sentiment={item.sentiment} />
+              <SourceBadge source={item.source} />
             </span>
             <span className="w-16 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground">
               {formatRelativeTime(item.createdAt)}

@@ -7,14 +7,17 @@ import { authClient } from "@/lib/auth-client";
 
 const SEGMENT_LABELS: Record<string, string> = {
   feedback: "Feedback",
+  board: "Board",
   collect: "Collect",
   "feedback-page": "Feedback page",
   api: "API",
   widget: "Widget",
+  settings: "Settings",
+  account: "Account",
   team: "Team",
+  billing: "Billing",
   members: "Members",
   projects: "Projects",
-  settings: "Settings",
 };
 
 function toLabel(segment: string): string {

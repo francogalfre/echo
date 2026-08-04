@@ -3,6 +3,7 @@ import * as schema from "@echo/db/schema/auth";
 import { env } from "@echo/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { asc, eq } from "drizzle-orm";
 
 import { plugins } from "./lib/plugins";
 import { socialProviders } from "./lib/providers";
@@ -15,6 +16,26 @@ export function createAuth() {
       provider: "pg",
       schema,
     }),
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session) => {
+            const membership = await db.query.member.findFirst({
+              where: eq(schema.member.userId, session.userId),
+              orderBy: [asc(schema.member.createdAt), asc(schema.member.id)],
+              columns: { organizationId: true },
+            });
+
+            return {
+              data: {
+                ...session,
+                activeOrganizationId: membership?.organizationId ?? null,
+              },
+            };
+          },
+        },
+      },
+    },
     trustedOrigins: [env.CORS_ORIGIN],
     emailAndPassword: {
       enabled: true,

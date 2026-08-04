@@ -1,5 +1,6 @@
 import { db } from "@echo/db";
 import { member, organization } from "@echo/db/schema/auth";
+import { notifications } from "@echo/db/schema/notifications";
 import { env } from "@echo/env/server";
 import { and, eq, inArray } from "drizzle-orm";
 import type { CustomerStateSubscription } from "@polar-sh/sdk/models/components/customerstatesubscription";
@@ -43,6 +44,22 @@ export async function syncPlanFromCustomerState(
   const owned = await getOwnedOrganizations(externalId);
   if (owned.length === 0) return;
 
+  const upgradedOrgIds = owned
+    .filter((org) => org.plan !== "pro" && plan === "pro")
+    .map((org) => org.id);
+
+  if (upgradedOrgIds.length > 0) {
+    await db.insert(notifications).values(
+      upgradedOrgIds.map((organizationId) => ({
+        id: crypto.randomUUID(),
+        organizationId,
+        type: "plan.upgraded",
+        title: "Welcome to Pro",
+        body: "Thanks for subscribing — unlimited feedback and higher AI limits are now unlocked.",
+      })),
+    );
+  }
+
   await db
     .update(organization)
     .set({ plan })
@@ -73,4 +90,17 @@ export async function inheritPlanForNewOrganization(data: {
     .update(organization)
     .set({ plan: "pro" })
     .where(eq(organization.id, data.organization.id));
+}
+
+export async function notifyMemberJoined(data: {
+  member: { organizationId: string };
+  user: { name: string };
+  organization: { name: string };
+}): Promise<void> {
+  await db.insert(notifications).values({
+    id: crypto.randomUUID(),
+    organizationId: data.member.organizationId,
+    type: "member.joined",
+    title: `${data.user.name} joined ${data.organization.name}`,
+  });
 }

@@ -1,8 +1,10 @@
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 
 import { db } from "@echo/db";
 import { apiKeys } from "@echo/db/schema/feedback";
-import { eq } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, or } from "drizzle-orm";
+
+import { sha256 } from "../lib/crypto";
 
 export type ApiKeyRow = typeof apiKeys.$inferSelect;
 
@@ -22,39 +24,91 @@ export type WidgetInstallInfo = {
   accentColor: string;
 };
 
+export type InsertApiKeyInput = {
+  organizationId: string;
+  name: string;
+  publicKey: string;
+  publicKeyHash: string;
+  secretKeyHash: string;
+  secretKeyPrefix: string;
+  scopes: readonly string[];
+  createdBy: string;
+};
+
 const DEFAULT_ACCENT_COLOR = "#7C3AED";
+const LAST_USED_THROTTLE_MS = 5 * 60 * 1000;
 
 export function generateRawKey(prefix: "echo_pk_" | "echo_sk_"): string {
   return `${prefix}${randomBytes(32).toString("hex")}`;
 }
 
 export function hashKey(key: string): string {
-  return createHash("sha256").update(key).digest("hex");
+  return sha256(key);
 }
 
-export function getApiKeys(organizationId: string): Promise<ApiKeyRow | undefined> {
-  return db.query.apiKeys.findFirst({
+export async function insertApiKey(input: InsertApiKeyInput): Promise<ApiKeyRow> {
+  const [row] = await db
+    .insert(apiKeys)
+    .values({
+      id: crypto.randomUUID(),
+      organizationId: input.organizationId,
+      name: input.name,
+      publicKey: input.publicKey,
+      publicKeyHash: input.publicKeyHash,
+      secretKeyHash: input.secretKeyHash,
+      secretKeyPrefix: input.secretKeyPrefix,
+      scopes: [...input.scopes],
+      createdBy: input.createdBy,
+    })
+    .returning();
+
+  if (!row) {
+    throw new Error("Failed to insert API key");
+  }
+
+  return row;
+}
+
+export async function revokeApiKey(
+  id: string,
+  organizationId: string,
+  revokedAt: Date,
+): Promise<boolean> {
+  const result = await db
+    .update(apiKeys)
+    .set({ revokedAt })
+    .where(and(eq(apiKeys.id, id), eq(apiKeys.organizationId, organizationId)))
+    .returning();
+
+  return result.length > 0;
+}
+
+export function findKeysByOrganization(
+  organizationId: string,
+): Promise<readonly ApiKeyRow[]> {
+  return db.query.apiKeys.findMany({
     where: (k) => eq(k.organizationId, organizationId),
+    orderBy: (k) => desc(k.createdAt),
   });
 }
 
-export async function upsertApiKeys(
-  organizationId: string,
-  publicKey: string,
-  secretKeyHash: string,
-): Promise<void> {
+export async function touchLastUsed(id: string): Promise<void> {
+  const threshold = new Date(Date.now() - LAST_USED_THROTTLE_MS);
+
   await db
-    .insert(apiKeys)
-    .values({ id: crypto.randomUUID(), organizationId, publicKey, secretKeyHash })
-    .onConflictDoUpdate({
-      target: apiKeys.organizationId,
-      set: { publicKey, secretKeyHash, updatedAt: new Date() },
-    });
+    .update(apiKeys)
+    .set({ lastUsedAt: new Date() })
+    .where(
+      and(
+        eq(apiKeys.id, id),
+        or(isNull(apiKeys.lastUsedAt), lt(apiKeys.lastUsedAt, threshold)),
+      ),
+    );
 }
 
 export function findByPublicKey(publicKey: string): Promise<ApiKeyRow | undefined> {
   return db.query.apiKeys.findFirst({
-    where: (k) => eq(k.publicKey, publicKey),
+    where: (k) => eq(k.publicKeyHash, sha256(publicKey)),
   });
 }
 
@@ -74,7 +128,8 @@ export async function getPublicKeyByOrgSlug(slug: string): Promise<PublicKeyLook
 
   const [keys, config] = await Promise.all([
     db.query.apiKeys.findFirst({
-      where: (k) => eq(k.organizationId, org.id),
+      where: (k) => and(eq(k.organizationId, org.id), isNull(k.revokedAt)),
+      orderBy: (k) => desc(k.createdAt),
       columns: { publicKey: true, organizationId: true },
     }),
     db.query.feedbackPageConfig.findFirst({
@@ -103,7 +158,8 @@ export async function getWidgetInstallInfo(
       columns: { slug: true, name: true, logo: true },
     }),
     db.query.apiKeys.findFirst({
-      where: (k) => eq(k.organizationId, organizationId),
+      where: (k) => and(eq(k.organizationId, organizationId), isNull(k.revokedAt)),
+      orderBy: (k) => desc(k.createdAt),
       columns: { publicKey: true },
     }),
     db.query.feedbackPageConfig.findFirst({

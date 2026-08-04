@@ -55,8 +55,17 @@ export const DangerZoneSection = (): React.ReactElement => {
       return;
     }
 
-    await signOut();
-    router.replace("/login");
+    const { data: remainingOrganizations } = await authClient.organization.list({});
+    const nextOrganization = remainingOrganizations?.[0];
+
+    if (nextOrganization) {
+      await authClient.organization.setActive({ organizationId: nextOrganization.id });
+      router.replace("/dashboard");
+      return;
+    }
+
+    await authClient.organization.setActive({ organizationId: null });
+    router.replace("/onboarding");
   };
 
   const canDelete = Boolean(activeOrg) && confirmText.trim() === activeOrg?.name;
@@ -98,7 +107,7 @@ export const DangerZoneSection = (): React.ReactElement => {
       </div>
 
       <Dialog open={confirmOpen} onOpenChange={closeConfirm}>
-        <DialogContent className="max-w-md gap-6 p-8">
+        <DialogContent className="gap-6 p-8 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Delete &ldquo;{activeOrg?.name}&rdquo;</DialogTitle>
             <DialogDescription>

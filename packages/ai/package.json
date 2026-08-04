@@ -9,7 +9,10 @@
       "default": "./src/*.ts"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
   "dependencies": {
     "@echo/env": "workspace:*",
     "@openrouter/ai-sdk-provider": "^2.10.0",
@@ -18,6 +21,7 @@
   },
   "devDependencies": {
     "@echo/config": "workspace:*",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^3.2.0"
   }
 }

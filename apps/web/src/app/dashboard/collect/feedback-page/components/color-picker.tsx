@@ -61,7 +61,7 @@ export const ColorPicker = ({
         aria-expanded={open}
         aria-controls="color-picker-menu"
         onClick={() => setOpen((o) => !o)}
-        className="size-8 cursor-pointer rounded-lg border border-border/60 ring-offset-1 transition-transform duration-200 hover:scale-105 active:scale-95"
+        className="size-6 mt-2 cursor-pointer rounded-lg border border-border/60 ring-offset-1 transition-transform duration-200 hover:scale-105 active:scale-95"
         style={{ backgroundColor: value }}
         title={value}
       />
@@ -72,14 +72,8 @@ export const ColorPicker = ({
           className="animate-in fade-in zoom-in-95 slide-in-from-bottom-2 absolute bottom-10 left-0 z-50 w-56 origin-bottom-left rounded-2xl border border-border bg-card p-4 shadow-2xl duration-150"
           role="menu"
         >
-          <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Presets
-          </p>
-          <div
-            className="mb-4 grid grid-cols-5 gap-2"
-            role="group"
-            aria-label="Color presets"
-          >
+          <p className="mb-2.5 text-[10px] font-semibold text-muted-foreground">Presets</p>
+          <fieldset className="mb-4 grid grid-cols-5 gap-2" aria-label="Color presets">
             {presets.map((color) => (
               <button
                 key={color}
@@ -98,12 +92,10 @@ export const ColorPicker = ({
                 style={{ backgroundColor: color }}
               />
             ))}
-          </div>
+          </fieldset>
 
           <div className="border-t border-border pt-3">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Custom
-            </p>
+            <p className="mb-2 text-[10px] font-semibold text-muted-foreground">Custom</p>
             <div className="flex min-w-0 items-center gap-2">
               <div className="relative size-8 shrink-0">
                 <input

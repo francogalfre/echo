@@ -1,14 +1,19 @@
 import { Suspense } from "react";
 
-import { PageContainer } from "../components/page-container";
-import { PageHeader } from "../components/page-header";
+import {
+  FEEDBACK_SOURCE_VALUES,
+  SENTIMENT_VALUES as API_SENTIMENT_VALUES,
+} from "@echo/api/types";
+
+import { PageContainer } from "../components/layout/page-container";
+import { PageHeader } from "../components/layout/page-header";
 import { DigestButton } from "./components/digest-button";
 import { FeedbackListData } from "./components/feedback-list-data";
 import { FeedbackListSkeleton } from "./components/feedback-list-skeleton";
 import type { FeedbackFilters } from "./utils/map-feedback";
 
-const SENTIMENT_VALUES = ["all", "positive", "neutral", "negative"] as const;
-const SOURCE_VALUES = ["all", "api", "form", "widget"] as const;
+const SENTIMENT_VALUES = ["all", ...API_SENTIMENT_VALUES] as const;
+const SOURCE_VALUES = ["all", ...FEEDBACK_SOURCE_VALUES] as const;
 
 type SearchParams = Record<string, string | string[] | undefined>;
 

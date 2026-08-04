@@ -61,7 +61,7 @@ export const BillingSection = ({ initialData }: Props): React.ReactElement => {
         <BillingUsageMeters overview={state.data} />
       </motion.div>
       <motion.div variants={fadeInUp}>
-        <BillingHistory />
+        <BillingHistory plan={state.data.plan} />
       </motion.div>
     </motion.div>
   );

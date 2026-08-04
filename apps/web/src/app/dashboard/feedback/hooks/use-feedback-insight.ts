@@ -29,7 +29,7 @@ export function useFeedbackInsight(): {
       setState({ status: "ready", insight: result.insight });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Could not generate insight";
-      if (isUpgradeError(message)) {
+      if (isUpgradeError(error)) {
         setUpgradeReason(message);
         setState({ status: "idle" });
       } else {
