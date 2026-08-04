@@ -34,14 +34,14 @@ export const UsageMeter = ({ initialData }: UsageMeterProps): React.ReactElement
   return (
     <div className="px-2.5 py-2">
       <div className="flex items-center justify-between">
-        <p className="micro-label">This month</p>
+        <p className="micro-label">Feedback</p>
         <p className="tabular-nums text-[11px] text-muted-foreground">
           {used}/{limit}
         </p>
       </div>
       <div
         role="progressbar"
-        aria-label="Feedback usage this month"
+        aria-label="Feedback usage"
         aria-valuenow={used}
         aria-valuemin={0}
         aria-valuemax={limit}

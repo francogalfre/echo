@@ -19,7 +19,7 @@ export function PageHeader({
     <FadeIn className={cn("mb-6", className)}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="font-pixel text-2xl font-medium tracking-tight">{title}</h1>
           {description ? (
             <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
           ) : null}

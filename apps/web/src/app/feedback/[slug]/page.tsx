@@ -89,7 +89,7 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
                 />
               )}
 
-              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              <h1 className="mt-4 font-pixel text-2xl font-normal tracking-tight text-foreground sm:text-3xl">
                 {config.title || org.name}
               </h1>
 

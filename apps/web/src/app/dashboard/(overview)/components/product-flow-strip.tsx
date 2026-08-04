@@ -122,9 +122,7 @@ function FullFlowStrip({
 
   return (
     <div className="rounded-lg bg-card p-6 ring-1 ring-foreground/10">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        Your feedback loop
-      </p>
+      <p className="text-xs font-semibold text-muted-foreground">Your feedback loop</p>
       <Stagger
         className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-1"
         stagger={0.06}

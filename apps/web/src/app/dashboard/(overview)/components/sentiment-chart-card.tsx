@@ -88,7 +88,7 @@ export function SentimentChartCard({
                 </span>
               ))}
             </div>
-            <Select value={range} onValueChange={handleRangeChange}>
+            <Select items={RANGE_OPTIONS} value={range} onValueChange={handleRangeChange}>
               <SelectTrigger size="sm">
                 <SelectValue />
               </SelectTrigger>
