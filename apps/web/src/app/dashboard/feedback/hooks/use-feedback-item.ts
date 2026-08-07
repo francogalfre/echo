@@ -9,10 +9,11 @@ type UseFeedbackItemResult = {
   item: FeedbackItem | null;
   loading: boolean;
   notFound: boolean;
+  refresh: () => void;
 };
 
 export function useFeedbackItem(id: string | null): UseFeedbackItemResult {
-  const { state } = useAsyncResource<FeedbackItem | null>(
+  const { state, refresh } = useAsyncResource<FeedbackItem | null>(
     async () => {
       if (!id) return null;
       const result = await trpc.feedback.byId.query({ id });
@@ -27,5 +28,6 @@ export function useFeedbackItem(id: string | null): UseFeedbackItemResult {
     item: state.status === "ready" ? state.data : null,
     loading: state.status === "loading",
     notFound: readyNotFound || state.status === "error",
+    refresh,
   };
 }

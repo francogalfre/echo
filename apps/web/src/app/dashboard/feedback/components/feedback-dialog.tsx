@@ -25,6 +25,7 @@ type FeedbackDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRemoveFromBoard?: () => void;
+  onAddToBoard?: () => void;
 };
 
 export function FeedbackDialog({
@@ -32,6 +33,7 @@ export function FeedbackDialog({
   open,
   onOpenChange,
   onRemoveFromBoard,
+  onAddToBoard,
 }: FeedbackDialogProps): React.ReactElement {
   const mailto = item ? buildFeedbackMailto(item) : null;
 
@@ -105,7 +107,11 @@ export function FeedbackDialog({
                   Remove from board
                 </Button>
               ) : (
-                <Button variant="ghost" size="sm" onClick={() => addToBoard(item)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onAddToBoard ?? (() => addToBoard(item))}
+                >
                   <Icons.board className="size-4" />
                   Add to board
                 </Button>

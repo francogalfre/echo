@@ -3,18 +3,28 @@ import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
 import { lastLoginMethod, organization } from "better-auth/plugins";
 
 import { sendInvitationEmail } from "./invitation-email";
+import {
+  notifyMemberJoined,
+  notifyOrganizationCreated,
+} from "./organization-notifications";
 import { polarClient } from "./payments";
 import {
   hasReachedOrganizationLimit,
   inheritPlanForNewOrganization,
-  notifyMemberJoined,
   syncPlanFromCustomerState,
 } from "./plan-sync";
+
+async function afterCreateOrganization(data: {
+  organization: { id: string; name: string };
+  user: { id: string };
+}): Promise<void> {
+  await Promise.all([inheritPlanForNewOrganization(data), notifyOrganizationCreated(data)]);
+}
 
 export const plugins = [
   polar({
     client: polarClient,
-    createCustomerOnSignUp: true,
+    createCustomerOnSignUp: false,
     enableCustomerPortal: true,
     use: [
       checkout({
@@ -38,7 +48,7 @@ export const plugins = [
     organizationLimit: hasReachedOrganizationLimit,
     creatorRole: "owner",
     organizationHooks: {
-      afterCreateOrganization: inheritPlanForNewOrganization,
+      afterCreateOrganization,
       afterAddMember: notifyMemberJoined,
     },
     sendInvitationEmail,

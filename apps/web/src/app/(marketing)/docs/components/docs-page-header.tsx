@@ -33,7 +33,9 @@ export const DocsPageHeader = ({
         );
       })}
     </nav>
-    <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance">{title}</h1>
+    <h1 className="mt-4 font-pixel text-3xl font-medium tracking-tight text-balance">
+      {title}
+    </h1>
     <p className="mt-3 text-muted-foreground text-pretty">{description}</p>
   </div>
 );

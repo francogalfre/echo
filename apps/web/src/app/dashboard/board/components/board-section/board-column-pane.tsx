@@ -42,7 +42,7 @@ export function BoardColumnPane({
   return (
     <KanbanColumn
       value={id}
-      className="flex h-full flex-col gap-2.5 rounded-xl border border-border bg-muted/30 p-3"
+      className="flex flex-col gap-2.5 rounded-xl border border-border min-h-full bg-muted/30 p-3"
     >
       <div className="flex items-center gap-1.5 px-1">
         <span aria-hidden className={`size-1.5 shrink-0 rounded-full ${dot}`} />
@@ -57,7 +57,7 @@ export function BoardColumnPane({
         )}
       </div>
 
-      <KanbanColumnContent value={id} className="flex-1 min-h-0 overflow-y-auto">
+      <KanbanColumnContent value={id}>
         {shouldReduceMotion ? (
           <div className="flex flex-col gap-2">
             {items.map((item) => (
@@ -102,7 +102,7 @@ export function BoardColumnPane({
             animate={{ opacity: 1 }}
             exit={shouldReduceMotion ? undefined : { opacity: 0 }}
             transition={{ duration: durations.fast, ease: easings.out }}
-            className="flex flex-1 flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 py-8 text-center"
+            className="flex min-h-[16rem] flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 py-8 text-center"
           >
             <Icons.board className="size-4 text-muted-foreground/30" />
             <p className="text-xs text-muted-foreground/60">Drop cards here</p>

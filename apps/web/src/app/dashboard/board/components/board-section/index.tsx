@@ -41,7 +41,7 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
   const totalItems = Object.values(columns).reduce((acc, arr) => acc + arr.length, 0);
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-pixel text-2xl font-medium tracking-tight">Board</h1>
@@ -60,9 +60,9 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
         </Link>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div>
         {totalItems === 0 ? (
-          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border">
+          <div className="flex min-h-[24rem] items-center justify-center rounded-xl border border-dashed border-border">
             <EmptyState
               icon={<Icons.board />}
               title="Your board is empty"
@@ -83,9 +83,9 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
             onValueChange={(v) => setColumns(v as BoardColumns)}
             getItemValue={(item: BoardCard) => item.id}
             onMove={handleMove}
-            className="flex h-full flex-col"
+            className="flex flex-col"
           >
-            <KanbanBoard className="grid flex-1 min-h-0 grid-cols-3 gap-4">
+            <KanbanBoard className="grid grid-cols-3 items-start gap-4">
               {COLUMNS.map((col) => (
                 <BoardColumnPane
                   key={col.id}

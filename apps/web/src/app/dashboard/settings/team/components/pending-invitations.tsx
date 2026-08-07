@@ -8,6 +8,7 @@ import { toast } from "@echo/ui/components/toast";
 import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
+import { siteConfig } from "@/utils/site";
 
 import type { InviteMemberValues } from "../schemas";
 
@@ -15,21 +16,29 @@ export type PendingInvitation = {
   id: string;
   email: string;
   role: string;
+  expiresAt: Date;
 };
 
 function roleLabel(role: string): string {
   return `${role.charAt(0).toUpperCase()}${role.slice(1)}`;
 }
 
+function isExpired(expiresAt: Date): boolean {
+  return expiresAt.getTime() < Date.now();
+}
+
 type PendingInvitationRowProps = {
   invitation: PendingInvitation;
+  onChange: () => void;
 };
 
 function PendingInvitationRow({
   invitation,
+  onChange,
 }: PendingInvitationRowProps): React.ReactElement {
   const [isCancelling, setIsCancelling] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const expired = isExpired(invitation.expiresAt);
 
   const cancelInvitation = async (): Promise<void> => {
     setIsCancelling(true);
@@ -44,6 +53,7 @@ function PendingInvitationRow({
     }
 
     toast.success(`Invitation to ${invitation.email} canceled`);
+    onChange();
   };
 
   const resendInvitation = async (): Promise<void> => {
@@ -61,6 +71,13 @@ function PendingInvitationRow({
     }
 
     toast.success(`Invitation resent to ${invitation.email}`);
+    onChange();
+  };
+
+  const copyInviteLink = (): void => {
+    const link = `${siteConfig.url}/accept-invitation/${invitation.id}`;
+    void navigator.clipboard.writeText(link);
+    toast.success("Invite link copied");
   };
 
   return (
@@ -75,10 +92,17 @@ function PendingInvitationRow({
             <p className="truncate text-sm font-medium text-foreground">
               {invitation.email}
             </p>
-            <Badge variant="outline">
-              <Icons.clock />
-              Pending
-            </Badge>
+            {expired ? (
+              <Badge variant="outline" className="text-muted-foreground">
+                <Icons.alertCircle />
+                Expired
+              </Badge>
+            ) : (
+              <Badge variant="outline">
+                <Icons.clock />
+                Pending
+              </Badge>
+            )}
           </div>
           <p className="truncate text-xs text-muted-foreground">
             Invited as {roleLabel(invitation.role)}
@@ -86,6 +110,17 @@ function PendingInvitationRow({
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={copyInviteLink}
+            aria-label={`Copy invite link for ${invitation.email}`}
+          >
+            <Icons.copy className="size-4" />
+          </Button>
+
           <Button
             type="button"
             variant="ghost"
@@ -125,17 +160,23 @@ function PendingInvitationRow({
 
 type PendingInvitationsProps = {
   invitations: readonly PendingInvitation[];
+  onChange: () => void;
 };
 
 export function PendingInvitations({
   invitations,
+  onChange,
 }: PendingInvitationsProps): React.ReactElement | null {
   if (invitations.length === 0) return null;
 
   return (
     <Stagger className="flex flex-col gap-3">
       {invitations.map((invitation) => (
-        <PendingInvitationRow key={invitation.id} invitation={invitation} />
+        <PendingInvitationRow
+          key={invitation.id}
+          invitation={invitation}
+          onChange={onChange}
+        />
       ))}
     </Stagger>
   );

@@ -11,6 +11,7 @@ const NOTIFICATION_ICONS: Record<NotificationType, typeof Icons.message> = {
   "feedback.received": Icons.message,
   "plan.upgraded": Icons.aiMagic,
   "member.joined": Icons.user,
+  "organization.created": Icons.sparkles,
 };
 
 type NotificationRowProps = {
@@ -22,7 +23,7 @@ export function NotificationRow({
   item,
   onNavigate,
 }: NotificationRowProps): React.ReactElement {
-  const Icon = NOTIFICATION_ICONS[item.type];
+  const Icon = NOTIFICATION_ICONS[item.type] ?? Icons.bell;
   const unread = item.readAt === null;
 
   const content = (

@@ -113,6 +113,23 @@ export async function removeBoardItem(
   return rows.length > 0;
 }
 
+export async function removeBoardItemByFeedbackId(
+  feedbackId: string,
+  organizationId: string,
+): Promise<boolean> {
+  const rows = await db
+    .delete(boardItems)
+    .where(
+      and(
+        eq(boardItems.feedbackId, feedbackId),
+        eq(boardItems.organizationId, organizationId),
+      ),
+    )
+    .returning({ id: boardItems.id });
+
+  return rows.length > 0;
+}
+
 export async function clearBoardColumn(
   organizationId: string,
   column: BoardColumn,

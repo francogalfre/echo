@@ -35,7 +35,7 @@ describe("createSubmitHandler", () => {
   });
 
   it("should call submit with the parsed body and authorization header, returning 201 on success", async () => {
-    const submit = vi.fn().mockResolvedValue({ success: true });
+    const submit = vi.fn().mockResolvedValue({ success: true, id: "fb_1" });
     const app = buildApp(submit);
 
     const res = await app.request("/", {
@@ -50,6 +50,7 @@ describe("createSubmitHandler", () => {
       name: "Ana",
       feedback: "Great product",
     });
+    await expect(res.json()).resolves.toEqual({ success: true, id: "fb_1" });
   });
 
   it("should map a failed SubmitResult to its status code and error body", async () => {

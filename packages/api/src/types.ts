@@ -2,7 +2,7 @@ import type { FeedbackListItem } from "./services/feedback";
 
 type Failure<Status extends number> = { success: false; status: Status; error: string };
 
-export type SubmitResult = { success: true } | Failure<400 | 401 | 403 | 429>;
+export type SubmitResult = { success: true; id: string } | Failure<400 | 401 | 403 | 429>;
 
 export type ListResult =
   | { success: true; feedback: FeedbackListItem[] }
@@ -35,6 +35,7 @@ export const NOTIFICATION_TYPE_VALUES = [
   "feedback.received",
   "plan.upgraded",
   "member.joined",
+  "organization.created",
 ] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPE_VALUES)[number];
 

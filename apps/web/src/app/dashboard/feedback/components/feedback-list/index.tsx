@@ -22,6 +22,7 @@ import type {
   FeedbackFilters,
   FeedbackItem,
 } from "../../utils/map-feedback";
+import { addToBoard, removeFromBoard } from "../../utils/feedback-actions";
 import { FeedbackDialog } from "../feedback-dialog";
 import { FeedbackSelectionBar } from "../feedback-selection-bar";
 import {
@@ -81,7 +82,11 @@ export function FeedbackList({
     },
   );
   const [openId, setOpenId] = useQueryState("feedback");
-  const selection = useFeedbackSelection(feedbackState.items, feedbackState.removeItems);
+  const selection = useFeedbackSelection(
+    feedbackState.items,
+    feedbackState.removeItems,
+    feedbackState.refresh,
+  );
   const deleteFeedbackState = useDeleteFeedback(feedbackState.removeItems);
 
   const items = feedbackState.items;
@@ -106,6 +111,19 @@ export function FeedbackList({
     void setSentiment("all");
     void setSource("all");
     void setSearch("");
+  };
+
+  const handleToggleBoard = (item: FeedbackItem): void => {
+    const onSuccess = (): void => {
+      feedbackState.refresh();
+      remote.refresh();
+    };
+
+    if (item.onBoard) {
+      removeFromBoard(item, onSuccess);
+    } else {
+      addToBoard(item, onSuccess);
+    }
   };
 
   return (
@@ -137,6 +155,7 @@ export function FeedbackList({
         onToggleSelectAll={selection.toggleSelectAll}
         onViewDetails={(selectedItem) => void setOpenId(selectedItem.id)}
         onDelete={deleteFeedbackState.requestDelete}
+        onToggleBoard={handleToggleBoard}
         onClearFilters={clearFilters}
       />
 
@@ -153,6 +172,12 @@ export function FeedbackList({
         onOpenChange={(open) => {
           if (!open) void setOpenId(null);
         }}
+        onRemoveFromBoard={
+          openItem?.onBoard ? () => handleToggleBoard(openItem) : undefined
+        }
+        onAddToBoard={
+          openItem && !openItem.onBoard ? () => handleToggleBoard(openItem) : undefined
+        }
       />
 
       <Dialog

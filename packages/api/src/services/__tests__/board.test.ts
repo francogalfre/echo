@@ -15,14 +15,22 @@ const mockTransaction = vi.fn(async (callback: (tx: typeof mockTx) => Promise<un
   callback(mockTx),
 );
 
+const mockDeleteReturning = vi.fn();
+const mockDeleteWhere = vi.fn((_condition: SQL<unknown>) => ({
+  returning: mockDeleteReturning,
+}));
+const mockDelete = vi.fn(() => ({ where: mockDeleteWhere }));
+
 vi.mock("@echo/db", () => ({
   db: {
     update: mockUpdate,
     transaction: mockTransaction,
+    delete: mockDelete,
   },
 }));
 
-const { moveBoardItem, reindexColumn } = await import("../board");
+const { moveBoardItem, reindexColumn, removeBoardItemByFeedbackId } =
+  await import("../board");
 
 const dialect = new PgDialect();
 const ORG_ID = "org_1";
@@ -62,6 +70,35 @@ describe("moveBoardItem", () => {
     mockReturning.mockResolvedValue([]);
 
     const result = await moveBoardItem("item_1", "other_org", "done", 0);
+
+    expect(result).toBe(false);
+  });
+});
+
+describe("removeBoardItemByFeedbackId", () => {
+  beforeEach(() => {
+    mockDelete.mockClear();
+    mockDeleteWhere.mockClear();
+    mockDeleteReturning.mockReset();
+  });
+
+  it("should scope the delete to feedback id and organization", async () => {
+    mockDeleteReturning.mockResolvedValue([{ id: "item_1" }]);
+
+    await removeBoardItemByFeedbackId("fb_1", ORG_ID);
+
+    const call = mockDeleteWhere.mock.calls[0]?.[0];
+    const query = dialect.sqlToQuery(call as SQL<unknown>);
+
+    expect(query.sql).toContain('"board_items"."feedback_id" = $1');
+    expect(query.sql).toContain('"board_items"."organization_id" = $2');
+    expect(query.params).toEqual(["fb_1", ORG_ID]);
+  });
+
+  it("should return false when no row matches", async () => {
+    mockDeleteReturning.mockResolvedValue([]);
+
+    const result = await removeBoardItemByFeedbackId("fb_1", ORG_ID);
 
     expect(result).toBe(false);
   });

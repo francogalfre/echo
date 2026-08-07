@@ -37,7 +37,7 @@ export const WidgetPreview = ({
 
   return (
     <div
-      className="relative flex min-h-[28rem] items-center justify-center overflow-hidden rounded-xl border border-border"
+      className="relative flex min-h-[28rem] items-center justify-center overflow-hidden rounded-lg ring-1 ring-foreground/10"
       style={{
         backgroundImage:
           "radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0)",
@@ -52,7 +52,7 @@ export const WidgetPreview = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-5 bottom-20 w-80 rounded-2xl border border-border bg-background p-6 shadow-xl shadow-black/5"
+            className="absolute right-5 bottom-20 left-5 w-auto max-w-80 rounded-2xl border border-border bg-background p-6 shadow-xl shadow-black/5 sm:left-auto sm:w-80"
           >
             <div className="mb-5 flex items-center justify-between">
               <div className="flex items-center gap-2">

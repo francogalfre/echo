@@ -10,6 +10,7 @@ import {
   moveBoardItem,
   reindexColumn,
   removeBoardItem,
+  removeBoardItemByFeedbackId,
 } from "../services/board";
 import { BOARD_COLUMN_VALUES } from "../types";
 
@@ -62,6 +63,18 @@ export const boardRouter = router({
     .input(z.object({ id: z.string().min(1) }))
     .mutation(async ({ input, ctx }) => {
       const removed = await removeBoardItem(input.id, ctx.organizationId);
+      if (!removed) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Board item not found" });
+      }
+    }),
+
+  removeByFeedbackId: organizationProcedure
+    .input(z.object({ feedbackId: z.string().min(1) }))
+    .mutation(async ({ input, ctx }) => {
+      const removed = await removeBoardItemByFeedbackId(
+        input.feedbackId,
+        ctx.organizationId,
+      );
       if (!removed) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Board item not found" });
       }

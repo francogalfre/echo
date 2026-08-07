@@ -40,5 +40,5 @@ export async function createFeedback(data: InsertFeedback): Promise<SubmitResult
     console.error("[echo:notifications] failed to write feedback.received", error);
   });
 
-  return { success: true };
+  return { success: true, id };
 }

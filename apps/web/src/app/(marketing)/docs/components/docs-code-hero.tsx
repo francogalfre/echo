@@ -23,7 +23,7 @@ export const DocsCodeHero = ({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-border p-6 sm:p-8",
+        "relative overflow-hidden rounded-lg p-6 ring-1 ring-foreground/10 sm:p-8",
         className,
       )}
     >

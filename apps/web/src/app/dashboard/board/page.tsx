@@ -5,7 +5,7 @@ import { BoardData } from "./components/board-data";
 import { BoardSkeleton } from "./components/board-skeleton";
 
 const BoardPage = (): React.ReactElement => (
-  <PageContainer className="flex h-full flex-col gap-6">
+  <PageContainer className="flex flex-col gap-6">
     <Suspense fallback={<BoardSkeleton />}>
       <BoardData />
     </Suspense>

@@ -29,6 +29,6 @@ export function createSubmitHandler(submit: SubmitFn) {
     const result = await submit({ authorization, ...parsed.data });
     if (!result.success) return c.json({ error: result.error }, result.status);
 
-    return c.json({ success: true }, 201);
+    return c.json(result, 201);
   };
 }

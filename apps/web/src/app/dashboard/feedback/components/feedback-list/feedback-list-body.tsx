@@ -31,6 +31,7 @@ type FeedbackListBodyProps = {
   onToggleSelectAll: () => void;
   onViewDetails: (item: FeedbackItem) => void;
   onDelete: (item: FeedbackItem) => void;
+  onToggleBoard: (item: FeedbackItem) => void;
   onClearFilters: () => void;
 };
 
@@ -50,6 +51,7 @@ export function FeedbackListBody({
   onToggleSelectAll,
   onViewDetails,
   onDelete,
+  onToggleBoard,
   onClearFilters,
 }: FeedbackListBodyProps): React.ReactElement {
   return (
@@ -116,6 +118,7 @@ export function FeedbackListBody({
                   onToggleSelect={onToggleSelect}
                   onViewDetails={onViewDetails}
                   onDelete={onDelete}
+                  onToggleBoard={onToggleBoard}
                 />
               ))}
             </div>

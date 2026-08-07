@@ -14,6 +14,8 @@ export type ApiKeyListItem = {
 
 export type ApiKeysInitial = readonly ApiKeyListItem[];
 
+export type ApiKeysInitialState = { keys: ApiKeysInitial } | { error: true };
+
 export type ApiKeyEntry = ApiKeyListItem & {
   secretKey: string | null;
   justIssued: boolean;

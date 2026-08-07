@@ -92,17 +92,3 @@ export async function inheritPlanForNewOrganization(data: {
     .set({ plan: "pro" })
     .where(eq(organization.id, data.organization.id));
 }
-
-export async function notifyMemberJoined(data: {
-  member: { organizationId: string };
-  user: { name: string };
-  organization: { name: string };
-}): Promise<void> {
-  await db.insert(notifications).values({
-    id: crypto.randomUUID(),
-    organizationId: data.member.organizationId,
-    type: "member.joined",
-    title: `${data.user.name} joined ${data.organization.name}`,
-    link: "/dashboard/settings/team",
-  });
-}

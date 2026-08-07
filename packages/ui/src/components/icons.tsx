@@ -51,6 +51,8 @@ import {
   MoonIcon,
   ComputerIcon,
   Delete02Icon,
+  CrownIcon,
+  Shield01Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -114,4 +116,6 @@ export const Icons = {
   moon: createIcon(MoonIcon),
   monitor: createIcon(ComputerIcon),
   trash: createIcon(Delete02Icon),
+  crown: createIcon(CrownIcon),
+  shield: createIcon(Shield01Icon),
 };

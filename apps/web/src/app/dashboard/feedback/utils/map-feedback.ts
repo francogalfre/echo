@@ -12,6 +12,7 @@ export type FeedbackItem = {
   sentiment: string | null;
   tags: string[] | null;
   hasInsight: boolean;
+  onBoard: boolean;
   createdAt: Date;
 };
 

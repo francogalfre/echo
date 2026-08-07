@@ -15,10 +15,10 @@ type SiteConfig = {
 
 export const siteConfig: SiteConfig = {
   name: "Echo",
-  title: "Echo - Feedback infrastructure for developers",
+  title: "Echo",
   description:
-    "Echo is developer-first feedback infrastructure. Collect, classify, and act on user " +
-    "feedback with a drop-in widget, REST API, and a clean dashboard.",
+    "Collect, classify, and act on user feedback with a drop-in widget, REST API, " +
+    "and a clean dashboard. Built for developers.",
   url: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
   twitter: "@echo",
   links: {

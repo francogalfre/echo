@@ -1,3 +1,4 @@
+import type { Route } from "next";
 import Link from "next/link";
 
 import { createMetadata } from "@/utils/metadata";
@@ -13,7 +14,18 @@ export const metadata = createMetadata({
   noIndex: true,
 });
 
-const LoginPage = () => {
+type LoginPageProps = {
+  searchParams: Promise<{ callbackURL?: string }>;
+};
+
+function registerHref(callbackURL: string | undefined): string {
+  if (!callbackURL) return "/register";
+  return `/register?callbackURL=${encodeURIComponent(callbackURL)}`;
+}
+
+const LoginPage = async ({ searchParams }: LoginPageProps): Promise<React.ReactElement> => {
+  const { callbackURL } = await searchParams;
+
   return (
     <>
       <div className="mb-6 text-center">
@@ -21,14 +33,14 @@ const LoginPage = () => {
         <p className="mt-1.5 text-sm text-muted-foreground">Log in to your echo account</p>
       </div>
       <div className="rounded-xl border border-border bg-card p-6">
-        <SocialButtons />
+        <SocialButtons callbackURL={callbackURL} />
         <AuthDivider />
-        <LoginForm />
+        <LoginForm callbackURL={callbackURL} />
       </div>
       <p className="mt-6 text-center text-xs text-muted-foreground">
         No account yet?{" "}
         <Link
-          href="/register"
+          href={registerHref(callbackURL) as Route}
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >
           Sign up

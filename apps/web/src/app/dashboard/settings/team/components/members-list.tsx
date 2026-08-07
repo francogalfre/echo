@@ -11,11 +11,13 @@ import { Skeleton } from "@echo/ui/components/skeleton";
 import { authClient } from "@/lib/auth-client";
 
 import { MemberActions } from "./member-actions";
+import type { MemberRole } from "./member-role";
 import { PendingInvitations } from "./pending-invitations";
+import { RoleIcon } from "./role-icon";
 
 const SKELETON_COUNT = 4;
 
-export type MemberRole = "owner" | "admin" | "member";
+export type { MemberRole } from "./member-role";
 
 function roleBadgeVariant(role: MemberRole): NonNullable<BadgeVariantProps["variant"]> {
   if (role === "owner") return "accent";
@@ -86,7 +88,8 @@ function MemberRow({
           <p className="truncate text-xs text-muted-foreground">{email}</p>
         </div>
 
-        <Badge variant={roleBadgeVariant(role)} className="shrink-0">
+        <Badge variant={roleBadgeVariant(role)} className="shrink-0 gap-1">
+          <RoleIcon role={role} className="size-3" />
           {roleLabel(role)}
         </Badge>
 
@@ -105,7 +108,7 @@ function MemberRow({
 }
 
 export function MembersList(): React.ReactElement {
-  const { data: activeOrg, isPending } = authClient.useActiveOrganization();
+  const { data: activeOrg, isPending, refetch } = authClient.useActiveOrganization();
   const { data: session } = authClient.useSession();
 
   if (isPending) {
@@ -119,6 +122,7 @@ export function MembersList(): React.ReactElement {
       id: invitation.id,
       email: invitation.email,
       role: invitation.role,
+      expiresAt: invitation.expiresAt,
     }));
 
   if (!activeOrg || (members.length === 0 && pendingInvitations.length === 0)) {
@@ -147,7 +151,10 @@ export function MembersList(): React.ReactElement {
           />
         ))}
       </Stagger>
-      <PendingInvitations invitations={pendingInvitations} />
+      <PendingInvitations
+        invitations={pendingInvitations}
+        onChange={() => void refetch()}
+      />
     </div>
   );
 }

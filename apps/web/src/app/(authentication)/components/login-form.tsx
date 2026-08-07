@@ -4,16 +4,22 @@ import { Button } from "@echo/ui/components/button";
 import { Input } from "@echo/ui/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Icons } from "@echo/ui/components/icons";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Field } from "@echo/ui/components/field";
 import { signIn } from "@/lib/auth-client";
+import { isSafeRedirectPath } from "@/lib/safe-redirect";
 
 import { loginSchema, type LoginValues } from "../schemas";
 
-export const LoginForm = () => {
+type LoginFormProps = {
+  callbackURL?: string;
+};
+
+export const LoginForm = ({ callbackURL }: LoginFormProps) => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -24,8 +30,9 @@ export const LoginForm = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
+    const destination = isSafeRedirectPath(callbackURL) ? callbackURL : "/dashboard";
     await signIn.email(values, {
-      onSuccess: () => router.push("/dashboard"),
+      onSuccess: () => router.push(destination as Route),
       onError: ({ error }) => setServerError(error.message),
     });
   });

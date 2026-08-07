@@ -34,21 +34,31 @@ function NotificationsSkeleton(): React.ReactElement {
 
 export const Notifications = (): React.ReactElement => {
   const [open, setOpen] = useState(false);
+  const [marking, setMarking] = useState(false);
   const { state, refresh } = useAsyncResource<NotificationsData>(() =>
     trpc.notifications.list.query(),
   );
 
   useEffect(() => {
-    const interval = setInterval(() => refresh(), POLL_INTERVAL_MS);
+    const interval = setInterval(() => {
+      if (!document.hidden) refresh();
+    }, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, [refresh]);
 
   const unread = state.status === "ready" ? state.data.unread : 0;
 
+  const markAllRead = async (): Promise<void> => {
+    setMarking(true);
+    await trpc.notifications.markAllRead.mutate();
+    await refresh();
+    setMarking(false);
+  };
+
   const handleOpenChange = (nextOpen: boolean): void => {
     setOpen(nextOpen);
     if (!nextOpen || unread === 0) return;
-    trpc.notifications.markAllRead.mutate().then(() => refresh());
+    void markAllRead();
   };
 
   const closeMenu = (): void => setOpen(false);
@@ -66,8 +76,18 @@ export const Notifications = (): React.ReactElement => {
       </PopoverTrigger>
 
       <PopoverContent side="bottom" align="end" className="w-80 gap-0 p-0">
-        <div className="border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <p className="text-sm font-medium text-foreground">Notifications</p>
+          {unread > 0 ? (
+            <button
+              type="button"
+              onClick={() => void markAllRead()}
+              disabled={marking}
+              className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50"
+            >
+              Mark all read
+            </button>
+          ) : null}
         </div>
 
         {state.status === "loading" ? <NotificationsSkeleton /> : null}

@@ -115,7 +115,7 @@ const POSITION_CLASSES: Record<ToasterPosition, string> = {
   "top-left": "top-4 left-4 items-start",
   "top-right": "top-4 right-4 items-end",
   "bottom-left": "bottom-4 left-4 items-start",
-  "bottom-right": "bottom-4 right-4 items-end",
+  "bottom-right": "toast-bottom-right right-4 items-end",
 };
 
 type ToastCardProps = {
@@ -131,17 +131,25 @@ function ToastCard({ toast: item, reducedMotion }: ToastCardProps): React.JSX.El
   return (
     <motion.div
       layout={!reducedMotion}
-      initial={reducedMotion ? false : { opacity: 0, y: 12, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+      initial={
+        reducedMotion ? false : { opacity: 0, y: 28, scale: 0.92, filter: "blur(4px)" }
+      }
+      animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+      exit={
+        reducedMotion
+          ? { opacity: 0 }
+          : { opacity: 0, scale: 0.94, filter: "blur(2px)", transition: { duration: 0.15 } }
+      }
       transition={
-        reducedMotion ? { duration: 0.15 } : { type: "spring", duration: 0.3, bounce: 0 }
+        reducedMotion
+          ? { duration: 0.15 }
+          : { type: "spring", stiffness: 420, damping: 32, mass: 0.7 }
       }
       role={role}
       aria-live={ariaLive}
       className={cn(
-        "group pointer-events-auto flex w-80 items-start gap-3 rounded-xl border",
-        "bg-popover px-4 py-3 text-popover-foreground shadow-md",
+        "toast-viewport group pointer-events-auto flex items-start gap-3 rounded-xl border",
+        "bg-popover px-4 py-3.5 text-popover-foreground shadow-lg",
       )}
     >
       {Icon !== undefined ? (
@@ -184,7 +192,7 @@ function Toaster({ position = "bottom-right" }: ToasterProps): React.JSX.Element
       role="region"
       aria-label="Notifications"
       className={cn(
-        "pointer-events-none fixed z-[100] flex w-80 flex-col gap-2",
+        "toast-viewport pointer-events-none fixed z-[100] flex flex-col gap-2.5",
         POSITION_CLASSES[position],
       )}
     >

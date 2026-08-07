@@ -37,13 +37,14 @@ describe("createFeedback", () => {
   });
 
   it("should insert a feedback.received notification linking to the new feedback item", async () => {
-    await createFeedback({
+    const result = await createFeedback({
       organizationId: ORG_ID,
       authorName: "Ada",
       content: "Great product",
       source: "widget",
     });
 
+    expect(result).toEqual({ success: true, id: FEEDBACK_ID });
     expect(insertNotification).toHaveBeenCalledWith(
       expect.objectContaining({
         organizationId: ORG_ID,

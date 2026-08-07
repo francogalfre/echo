@@ -3,6 +3,7 @@
 import { Badge } from "@echo/ui/components/badge";
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
+import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { cn } from "@echo/ui/lib/utils";
 import { useState } from "react";
 import { toast } from "@echo/ui/components/toast";
@@ -91,7 +92,7 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
       className={cn(
         "relative overflow-hidden",
         isPro
-          ? "ring-2 ring-accent/40 transition-shadow hover:shadow-md"
+          ? "ring-2 ring-accent/40 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md"
           : "ring-1 ring-foreground/10",
       )}
     >
@@ -133,14 +134,19 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
           <div aria-hidden="true" className="h-9" />
         )}
 
-        <ul className="flex flex-col gap-2.5 border-t border-border pt-6">
+        <Stagger
+          className="flex flex-col gap-2.5 border-t border-border pt-6"
+          stagger={0.04}
+        >
           {definition.features.map((feature) => (
-            <li key={feature} className="flex items-start gap-2.5 text-sm text-foreground">
-              <Icons.check className="mt-0.5 size-3.5 shrink-0 text-accent" />
-              {feature}
-            </li>
+            <StaggerItem key={feature}>
+              <div className="flex items-start gap-2.5 text-sm text-foreground">
+                <Icons.check className="mt-0.5 size-3.5 shrink-0 text-accent" />
+                {feature}
+              </div>
+            </StaggerItem>
           ))}
-        </ul>
+        </Stagger>
       </div>
     </SettingsCard>
   );

@@ -41,9 +41,9 @@ export const Breadcrumb = (): React.ReactElement => {
 
   return (
     <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-sm">
-      <span className="truncate font-medium text-foreground">{project}</span>
+      <span className="truncate text-muted-foreground">{project}</span>
       {crumbs.map((crumb, index) => (
-        <span key={crumb} className="flex min-w-0 items-center gap-1.5">
+        <span key={crumb} className="flex min-w-0 items-center gap-1.5 ">
           <Icons.chevronRight className="size-3 shrink-0 text-muted-foreground/50" />
           <span
             className={

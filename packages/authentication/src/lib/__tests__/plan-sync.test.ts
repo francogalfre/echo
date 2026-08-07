@@ -22,8 +22,8 @@ vi.mock("@echo/db", () => ({
   },
 }));
 
-const { notifyMemberJoined, resolvePlanFromSubscriptions, syncPlanFromCustomerState } =
-  await import("./plan-sync");
+const { resolvePlanFromSubscriptions, syncPlanFromCustomerState } =
+  await import("../plan-sync");
 
 const PRO_PRODUCT_ID = "prod_pro_123";
 
@@ -69,28 +69,6 @@ describe("resolvePlanFromSubscriptions", () => {
     const subscriptions = [buildSubscription({ productId: "prod_other_456" })];
 
     expect(resolvePlanFromSubscriptions(subscriptions, PRO_PRODUCT_ID)).toBe("free");
-  });
-});
-
-describe("notifyMemberJoined", () => {
-  beforeEach(() => {
-    mockInsert.mockClear();
-    mockInsertValues.mockClear();
-  });
-
-  it("should insert a member.joined notification linking to the team settings page", async () => {
-    await notifyMemberJoined({
-      member: { organizationId: "org_1" },
-      user: { name: "Ada" },
-      organization: { name: "Acme" },
-    });
-
-    const values = mockInsertValues.mock.calls[0]?.[0] as Record<string, unknown>;
-
-    expect(values.organizationId).toBe("org_1");
-    expect(values.type).toBe("member.joined");
-    expect(values.title).toBe("Ada joined Acme");
-    expect(values.link).toBe("/dashboard/settings/team");
   });
 });
 

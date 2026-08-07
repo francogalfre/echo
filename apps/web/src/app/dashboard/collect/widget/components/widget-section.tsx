@@ -2,6 +2,7 @@
 
 import { env } from "@echo/env/web";
 import { buttonVariants } from "@echo/ui/components/button-variants";
+import { DocsSectionHeading } from "@echo/ui/components/docs/docs-section";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
@@ -14,7 +15,6 @@ import { trpc } from "@/lib/trpc";
 
 import { ErrorCard } from "../../../components/error-card";
 import { DocsHeader } from "../../components/docs-header";
-import { SectionHeading } from "../../components/section-heading";
 import { useWidgetInstall, type WidgetInstallInitial } from "../hooks/use-widget-install";
 import { CustomizeAccent } from "./customize-accent";
 import { InstallMethods } from "./install-methods";
@@ -31,6 +31,8 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
   const state = useWidgetInstall(initial);
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
   const [accentOverride, setAccentOverride] = useState<string | null>(null);
+  const [accentStatus, setAccentStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const lastPersistedRef = useRef<string | null>(null);
   const persistTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -56,36 +58,48 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
 
   if (state.status === "empty") {
     return (
-      <EmptyState
-        icon={<Icons.lock />}
-        title="No API keys yet"
-        description="Generate your API keys to enable the widget."
-        className="mx-auto max-w-md"
-        action={
-          <Link
-            href="/dashboard/collect/api"
-            className={cn(buttonVariants({ size: "sm" }))}
-          >
-            Go to API keys
-          </Link>
-        }
-      />
+      <>
+        <DocsHeader
+          eyebrow="React"
+          title="Feedback widget"
+          description="A floating feedback button you can drop into any React application."
+        />
+        <EmptyState
+          icon={<Icons.lock />}
+          title="No API keys yet"
+          description="Generate your API keys to enable the widget."
+          className="mx-auto max-w-md py-20"
+          action={
+            <Link
+              href="/dashboard/collect/api"
+              className={cn(buttonVariants({ size: "sm" }))}
+            >
+              Go to API keys
+            </Link>
+          }
+        />
+      </>
     );
   }
 
   const accentColor = accentOverride ?? state.info.accentColor;
+  lastPersistedRef.current ??= state.info.accentColor;
 
   const handleAccentChange = (color: string): void => {
-    const previous = accentColor;
     setAccentOverride(color);
+    setAccentStatus("saving");
 
     if (persistTimeout.current) clearTimeout(persistTimeout.current);
     persistTimeout.current = setTimeout(() => {
       trpc.feedbackPage.upsertConfig
         .mutate({ accentColor: color })
-        .then(() => toast.success("Accent color saved"))
+        .then(() => {
+          lastPersistedRef.current = color;
+          setAccentStatus("saved");
+        })
         .catch(() => {
-          setAccentOverride(previous);
+          setAccentOverride(lastPersistedRef.current);
+          setAccentStatus("idle");
           toast.error("Failed to save accent color");
         });
     }, ACCENT_PERSIST_DELAY_MS);
@@ -99,13 +113,14 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
           title="Feedback widget"
           description="A floating feedback button you can drop into any React application."
           baseUrl={`${serverUrl}/api/widget`}
+          docsHref="/docs/widget"
         />
       </FadeIn>
 
-      <div className="space-y-20">
+      <div className="space-y-14">
         <FadeIn delay={0.05}>
           <section>
-            <SectionHeading
+            <DocsSectionHeading
               title="Preview"
               description="How the widget looks and behaves before you install it."
             />
@@ -120,15 +135,22 @@ export function WidgetSection({ initial }: WidgetSectionProps): React.ReactEleme
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <CustomizeAccent
-            accentColor={accentColor}
-            onAccentColorChange={handleAccentChange}
-          />
+          <section>
+            <DocsSectionHeading
+              title="Customize"
+              description="Match the widget to your brand — updates the preview instantly."
+            />
+            <CustomizeAccent
+              accentColor={accentColor}
+              onAccentColorChange={handleAccentChange}
+              status={accentStatus}
+            />
+          </section>
         </FadeIn>
 
         <FadeIn delay={0.15}>
           <section>
-            <SectionHeading
+            <DocsSectionHeading
               title="Install"
               description="Choose the install method that fits your stack."
             />

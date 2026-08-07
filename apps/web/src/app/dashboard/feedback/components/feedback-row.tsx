@@ -18,7 +18,6 @@ import { SentimentBadge, SourceBadge, TagPill } from "../../components/feedback-
 import { AGENT_PERSONAS } from "../../components/chat/agent-personas";
 import type { FeedbackItem } from "../utils/map-feedback";
 import {
-  addToBoard,
   buildFeedbackMailto,
   copyEmail,
   copyFeedback,
@@ -32,6 +31,7 @@ type FeedbackRowProps = {
   onToggleSelect: (id: string) => void;
   onViewDetails: (item: FeedbackItem) => void;
   onDelete: (item: FeedbackItem) => void;
+  onToggleBoard: (item: FeedbackItem) => void;
 };
 
 export function FeedbackRow({
@@ -40,6 +40,7 @@ export function FeedbackRow({
   onToggleSelect,
   onViewDetails,
   onDelete,
+  onToggleBoard,
 }: FeedbackRowProps): React.ReactElement {
   const mailto = buildFeedbackMailto(item);
   const email = item.email;
@@ -177,10 +178,17 @@ export function FeedbackRow({
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => addToBoard(item)}>
-              <Icons.board className="size-4" />
-              Add to board
-            </DropdownMenuItem>
+            {item.onBoard ? (
+              <DropdownMenuItem onClick={() => onToggleBoard(item)}>
+                <Icons.cancelCircle className="size-4" />
+                Remove from board
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem onClick={() => onToggleBoard(item)}>
+                <Icons.board className="size-4" />
+                Add to board
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={() => onDelete(item)}>
               <Icons.trash className="size-4" />

@@ -1,6 +1,17 @@
 import { db } from "@echo/db";
+import { boardItems } from "@echo/db/schema/board-items";
 import { feedback } from "@echo/db/schema/feedback";
-import { and, count, desc, eq, ilike, or, sql, type SQLWrapper } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  sql,
+  type SQLWrapper,
+} from "drizzle-orm";
 
 import type { FeedbackSource, Sentiment } from "../../types";
 
@@ -34,8 +45,28 @@ export type FeedbackListItem = {
   sentiment: string | null;
   tags: string[] | null;
   hasInsight: boolean;
+  onBoard: boolean;
   createdAt: Date;
 };
+
+async function getOnBoardIds(
+  organizationId: string,
+  feedbackIds: readonly string[],
+): Promise<Set<string>> {
+  if (feedbackIds.length === 0) return new Set();
+
+  const rows = await db
+    .select({ feedbackId: boardItems.feedbackId })
+    .from(boardItems)
+    .where(
+      and(
+        eq(boardItems.organizationId, organizationId),
+        inArray(boardItems.feedbackId, feedbackIds),
+      ),
+    );
+
+  return new Set(rows.map((row) => row.feedbackId));
+}
 
 export type FeedbackForInsight = {
   id: string;
@@ -90,6 +121,8 @@ export async function getFeedbackListItemById(
   });
   if (!row) return null;
 
+  const onBoardIds = await getOnBoardIds(organizationId, [row.id]);
+
   return {
     id: row.id,
     name: row.authorName,
@@ -100,6 +133,7 @@ export async function getFeedbackListItemById(
     sentiment: row.sentiment,
     tags: row.tags,
     hasInsight: row.insight != null,
+    onBoard: onBoardIds.has(row.id),
     createdAt: row.createdAt,
   };
 }
@@ -140,6 +174,11 @@ export async function listFeedback(
     offset: options.offset,
   });
 
+  const onBoardIds = await getOnBoardIds(
+    organizationId,
+    rows.map((r) => r.id),
+  );
+
   return rows.map((r) => ({
     id: r.id,
     name: r.authorName,
@@ -150,6 +189,7 @@ export async function listFeedback(
     sentiment: r.sentiment,
     tags: r.tags,
     hasInsight: r.insight != null,
+    onBoard: onBoardIds.has(r.id),
     createdAt: r.createdAt,
   }));
 }

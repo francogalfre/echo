@@ -3,7 +3,8 @@
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { codeToHtml } from "shiki";
 
 type CodeTab = {
   label: string;
@@ -17,6 +18,35 @@ type CodeBlockProps = {
   language?: string;
   className?: string;
 };
+
+const SHIKI_THEMES = { light: "github-light", dark: "github-dark" } as const;
+
+function useHighlightedTabs(tabs: CodeTab[]): (string | null)[] {
+  const [htmls, setHtmls] = useState<(string | null)[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all(
+      tabs.map((tab) =>
+        codeToHtml(tab.code, {
+          lang: tab.language ?? "text",
+          themes: SHIKI_THEMES,
+          defaultColor: false,
+          structure: "inline",
+        }).catch(() => null),
+      ),
+    ).then((results) => {
+      if (!cancelled) setHtmls(results);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tabs]);
+
+  return htmls;
+}
 
 export function CodeBlock({
   tabs,
@@ -54,7 +84,9 @@ export function CodeBlock({
     return [];
   }, [tabs, code, language]);
 
+  const highlighted = useHighlightedTabs(codeContent);
   const currentCode = codeContent[activeTab]?.code ?? "";
+  const currentHtml = highlighted[activeTab] ?? null;
 
   useLayoutEffect(() => {
     measureIndicator();
@@ -81,7 +113,7 @@ export function CodeBlock({
     if (preRef.current) resizeObserver.observe(preRef.current);
 
     return () => resizeObserver.disconnect();
-  }, [currentCode]);
+  }, [currentCode, currentHtml]);
 
   const handleCopy = async (): Promise<void> => {
     await navigator.clipboard.writeText(currentCode);
@@ -182,23 +214,37 @@ export function CodeBlock({
         <pre
           ref={preRef}
           className={cn(
-            "m-0 bg-background p-4 text-sm leading-relaxed",
+            "m-0 bg-background p-4 text-[13px] leading-[1.7]",
             codeContent.length > 1 ? "rounded-b-2xl" : "rounded-2xl",
             hasOverflow ? "overflow-x-auto" : "overflow-x-hidden",
           )}
         >
           <AnimatePresence mode="wait" initial={false} custom={direction}>
-            <motion.code
-              key={activeTab}
-              custom={direction}
-              initial={{ opacity: 0, x: direction > 0 ? 20 : -20, filter: "blur(4px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: direction > 0 ? -20 : 20, filter: "blur(4px)" }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
-              className="block whitespace-pre font-mono text-foreground"
-            >
-              {currentCode}
-            </motion.code>
+            {currentHtml ? (
+              <motion.code
+                key={activeTab}
+                custom={direction}
+                initial={{ opacity: 0, x: direction > 0 ? 20 : -20, filter: "blur(4px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: direction > 0 ? -20 : 20, filter: "blur(4px)" }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="shiki block font-mono whitespace-pre [&_.line]:block"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: currentHtml }}
+              />
+            ) : (
+              <motion.code
+                key={`${activeTab}-plain`}
+                custom={direction}
+                initial={{ opacity: 0, x: direction > 0 ? 20 : -20, filter: "blur(4px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, x: direction > 0 ? -20 : 20, filter: "blur(4px)" }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
+                className="block whitespace-pre font-mono text-foreground"
+              >
+                {currentCode}
+              </motion.code>
+            )}
           </AnimatePresence>
         </pre>
       </div>

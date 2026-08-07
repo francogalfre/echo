@@ -30,6 +30,7 @@ type UseFeedbackResult = {
   pending: boolean;
   loadMore: () => void;
   removeItems: (ids: readonly string[]) => void;
+  refresh: () => void;
 };
 
 const LIMIT = 50;
@@ -140,5 +141,6 @@ export function useFeedback(
     pending: state.status === "ready" && state.pending,
     loadMore,
     removeItems,
+    refresh,
   };
 }

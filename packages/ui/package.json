@@ -10,6 +10,7 @@
     },
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
+    "./components/docs/*": "./src/components/docs/*.tsx",
     "./components/reui/rating": "./src/components/reui/rating.tsx",
     "./postcss.config": "./postcss.config.mjs"
   },
@@ -35,6 +36,7 @@
     "react-dom": "catalog:",
     "react-use-measure": "^2.1.7",
     "shadcn": "^3.6.2",
+    "shiki": "^4.4.2",
     "sonner": "catalog:",
     "tailwind-merge": "^3.3.1",
     "tw-animate-css": "^1.3.4",

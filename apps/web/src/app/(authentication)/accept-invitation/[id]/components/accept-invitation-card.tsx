@@ -1,7 +1,11 @@
 "use client";
 
 import { Button } from "@echo/ui/components/button";
+import { buttonVariants } from "@echo/ui/components/button-variants";
+import { FadeIn } from "@echo/ui/components/fade-in";
 import { Icons } from "@echo/ui/components/icons";
+import { cn } from "@echo/ui/lib/utils";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -63,12 +67,6 @@ export function AcceptInvitationCard({
     };
   }, [invitationId]);
 
-  useEffect(() => {
-    if (state.status === "unauthenticated") {
-      router.replace("/login");
-    }
-  }, [state.status, router]);
-
   const acceptInvitation = async (): Promise<void> => {
     setIsResponding(true);
     const { error } = await authClient.organization.acceptInvitation({
@@ -93,7 +91,7 @@ export function AcceptInvitationCard({
     router.replace("/");
   };
 
-  if (state.status === "loading" || state.status === "unauthenticated") {
+  if (state.status === "loading") {
     return (
       <div className="flex items-center justify-center rounded-xl border border-border bg-card p-10">
         <Icons.loading className="size-5 animate-spin text-muted-foreground" />
@@ -101,51 +99,93 @@ export function AcceptInvitationCard({
     );
   }
 
+  if (state.status === "unauthenticated") {
+    const callbackURL = `/accept-invitation/${invitationId}`;
+    const query = `callbackURL=${encodeURIComponent(callbackURL)}`;
+
+    return (
+      <FadeIn>
+        <div className="rounded-xl border border-border bg-card p-8 text-center">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <Icons.mail className="size-5" />
+          </div>
+          <p className="mt-5 text-sm leading-relaxed text-foreground">
+            You&apos;ve been invited to join a team on Echo. Sign in or create an account to
+            view and accept the invitation.
+          </p>
+
+          <div className="mt-7 flex flex-col gap-2.5">
+            <Link href={`/login?${query}`} className={cn(buttonVariants(), "h-10 w-full")}>
+              Sign in
+            </Link>
+            <Link
+              href={`/register?${query}`}
+              className={cn(buttonVariants({ variant: "outline" }), "h-10 w-full")}
+            >
+              Create an account
+            </Link>
+          </div>
+        </div>
+      </FadeIn>
+    );
+  }
+
   if (state.status === "error") {
     return (
-      <div className="rounded-xl border border-border bg-card p-6 text-center">
-        <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-          <Icons.cancelCircle className="size-5" />
+      <FadeIn>
+        <div className="rounded-xl border border-border bg-card p-8 text-center">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <Icons.cancelCircle className="size-5" />
+          </div>
+          <p className="mt-5 text-sm leading-relaxed font-medium text-foreground">
+            {state.message}
+          </p>
+          <Button
+            className="mt-7 h-10 w-full"
+            variant="outline"
+            onClick={() => router.replace("/")}
+          >
+            Go to homepage
+          </Button>
         </div>
-        <p className="mt-4 text-sm font-medium text-foreground">{state.message}</p>
-        <Button
-          className="mt-6 w-full"
-          variant="outline"
-          onClick={() => router.replace("/")}
-        >
-          Go to homepage
-        </Button>
-      </div>
+      </FadeIn>
     );
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 text-center">
-      <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-accent/10 text-accent">
-        <Icons.mail className="size-5" />
-      </div>
-      <p className="mt-4 text-sm text-foreground">
-        <span className="font-medium">{state.context.inviterEmail}</span> invited you to
-        join <span className="font-medium">{state.context.organizationName}</span> on Echo.
-      </p>
+    <FadeIn>
+      <div className="rounded-xl border border-border bg-card p-8 text-center">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+          <Icons.mail className="size-5" />
+        </div>
+        <p className="mt-5 text-sm leading-relaxed text-foreground">
+          <span className="font-medium">{state.context.inviterEmail}</span> invited you to
+          join <span className="font-medium">{state.context.organizationName}</span> on
+          Echo.
+        </p>
 
-      <div className="mt-6 flex flex-col gap-2">
-        <Button onClick={acceptInvitation} disabled={isResponding} className="w-full">
-          {isResponding ? (
-            <Icons.loading className="size-4 animate-spin" />
-          ) : (
-            "Accept invitation"
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={declineInvitation}
-          disabled={isResponding}
-          className="w-full"
-        >
-          Decline
-        </Button>
+        <div className="mt-7 flex flex-col gap-2.5">
+          <Button
+            onClick={acceptInvitation}
+            disabled={isResponding}
+            className="h-10 w-full"
+          >
+            {isResponding ? (
+              <Icons.loading className="size-4 animate-spin" />
+            ) : (
+              "Accept invitation"
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={declineInvitation}
+            disabled={isResponding}
+            className="h-10 w-full"
+          >
+            Decline
+          </Button>
+        </div>
       </div>
-    </div>
+    </FadeIn>
   );
 }

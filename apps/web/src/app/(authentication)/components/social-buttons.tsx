@@ -6,6 +6,7 @@ import { Icons } from "@echo/ui/components/icons";
 import { useEffect, useState } from "react";
 
 import { authClient, signIn } from "@/lib/auth-client";
+import { isSafeRedirectPath } from "@/lib/safe-redirect";
 
 import { GitHubIcon, GoogleIcon } from "./brand-icons";
 
@@ -16,7 +17,11 @@ const providers = [
   { id: "github", label: "GitHub", Icon: GitHubIcon },
 ] as const;
 
-export const SocialButtons = () => {
+type SocialButtonsProps = {
+  callbackURL?: string;
+};
+
+export const SocialButtons = ({ callbackURL }: SocialButtonsProps) => {
   const [pending, setPending] = useState<Provider | null>(null);
   const [lastMethod, setLastMethod] = useState<string | null>(null);
 
@@ -27,8 +32,9 @@ export const SocialButtons = () => {
   const continueWith = (provider: Provider) => {
     return async () => {
       setPending(provider);
+      const destination = isSafeRedirectPath(callbackURL) ? callbackURL : "/dashboard";
       await signIn.social(
-        { provider, callbackURL: `${globalThis.location.origin}/dashboard` },
+        { provider, callbackURL: `${globalThis.location.origin}${destination}` },
         { onError: () => setPending(null) },
       );
     };

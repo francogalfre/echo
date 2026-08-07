@@ -13,6 +13,7 @@ export function toFeedbackItem(card: BoardCard): FeedbackItem {
     sentiment: card.sentiment,
     tags: card.tags,
     hasInsight: card.hasInsight,
+    onBoard: true,
     createdAt: card.createdAt,
   };
 }

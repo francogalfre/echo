@@ -47,17 +47,33 @@ export function buildFeedbackMailto(item: MailtoInput): string | null {
   return `mailto:${item.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-export function addToBoard(item: { id: string }): void {
+export function addToBoard(item: { id: string }, onSuccess?: () => void): void {
   trpc.board.add
     .mutate({ feedbackId: item.id })
-    .then(() => toast.success("Added to board"))
+    .then(() => {
+      toast.success("Added to board");
+      onSuccess?.();
+    })
     .catch((error: unknown) => {
       const msg = error instanceof Error ? error.message : "Failed";
       toast.error(msg.includes("Already") ? "Already on board" : "Failed to add to board");
     });
 }
 
-export function addManyToBoard(items: readonly { id: string }[]): void {
+export function removeFromBoard(item: { id: string }, onSuccess?: () => void): void {
+  trpc.board.removeByFeedbackId
+    .mutate({ feedbackId: item.id })
+    .then(() => {
+      toast.success("Removed from board");
+      onSuccess?.();
+    })
+    .catch(() => toast.error("Failed to remove from board"));
+}
+
+export function addManyToBoard(
+  items: readonly { id: string }[],
+  onSuccess?: () => void,
+): void {
   Promise.allSettled(
     items.map((item) => trpc.board.add.mutate({ feedbackId: item.id })),
   ).then((results) => {
@@ -72,5 +88,6 @@ export function addManyToBoard(items: readonly { id: string }[]): void {
     toast.success(
       `Added ${succeeded} to board${failed > 0 ? ` (${failed} already added or failed)` : ""}`,
     );
+    onSuccess?.();
   });
 }

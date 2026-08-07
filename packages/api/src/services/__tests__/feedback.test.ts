@@ -32,6 +32,43 @@ describe("listFeedback", () => {
   beforeEach(() => {
     mockFindMany.mockReset();
     mockFindMany.mockResolvedValue([]);
+    mockWhere.mockReset();
+    mockWhere.mockResolvedValue([]);
+  });
+
+  it("should mark items present in the board items lookup as onBoard", async () => {
+    mockFindMany.mockResolvedValue([
+      {
+        id: "fb_1",
+        authorName: "Ada",
+        content: "Great product",
+        email: null,
+        rating: null,
+        source: "widget",
+        sentiment: "positive",
+        tags: null,
+        insight: null,
+        createdAt: new Date("2026-01-01"),
+      },
+      {
+        id: "fb_2",
+        authorName: "Bo",
+        content: "Meh",
+        email: null,
+        rating: null,
+        source: "widget",
+        sentiment: "neutral",
+        tags: null,
+        insight: null,
+        createdAt: new Date("2026-01-01"),
+      },
+    ]);
+    mockWhere.mockResolvedValue([{ feedbackId: "fb_1" }]);
+
+    const result = await listFeedback(ORG_ID, { limit: 10, offset: 0 });
+
+    expect(result.find((item) => item.id === "fb_1")?.onBoard).toBe(true);
+    expect(result.find((item) => item.id === "fb_2")?.onBoard).toBe(false);
   });
 
   it("should compose sentiment, source and search into a single where clause", async () => {
@@ -77,6 +114,8 @@ describe("listFeedback", () => {
 describe("getFeedbackListItemById", () => {
   beforeEach(() => {
     mockFindFirst.mockReset();
+    mockWhere.mockReset();
+    mockWhere.mockResolvedValue([]);
   });
 
   it("should return the mapped item when it belongs to the organization", async () => {
@@ -106,8 +145,30 @@ describe("getFeedbackListItemById", () => {
       sentiment: "positive",
       tags: ["ui"],
       hasInsight: true,
+      onBoard: false,
       createdAt: new Date("2026-01-01"),
     });
+  });
+
+  it("should mark the item as on board when a board item exists for it", async () => {
+    mockFindFirst.mockResolvedValue({
+      id: "fb_1",
+      organizationId: ORG_ID,
+      authorName: "Ada",
+      content: "Great product",
+      email: "ada@example.com",
+      rating: 5,
+      source: "widget",
+      sentiment: "positive",
+      tags: ["ui"],
+      insight: "Loves the product",
+      createdAt: new Date("2026-01-01"),
+    });
+    mockWhere.mockResolvedValue([{ feedbackId: "fb_1" }]);
+
+    const result = await getFeedbackListItemById(ORG_ID, "fb_1");
+
+    expect(result?.onBoard).toBe(true);
   });
 
   it("should scope the lookup to both the id and the organization", async () => {

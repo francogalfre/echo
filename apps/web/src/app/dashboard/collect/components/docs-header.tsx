@@ -2,12 +2,15 @@
 
 import { Icons } from "@echo/ui/components/icons";
 import { toast } from "@echo/ui/components/toast";
+import Link from "next/link";
+import type { Route } from "next";
 
 type DocsHeaderProps = {
   eyebrow: string;
   title: string;
   description: string;
   baseUrl?: string;
+  docsHref?: Route;
 };
 
 export const DocsHeader = ({
@@ -15,6 +18,7 @@ export const DocsHeader = ({
   title,
   description,
   baseUrl,
+  docsHref,
 }: DocsHeaderProps): React.ReactElement => {
   const copy = (): void => {
     if (!baseUrl) return;
@@ -32,6 +36,15 @@ export const DocsHeader = ({
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
+        {docsHref ? (
+          <Link
+            href={docsHref}
+            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+          >
+            Full documentation
+            <Icons.arrowRight className="size-3" />
+          </Link>
+        ) : null}
       </div>
 
       {baseUrl && (

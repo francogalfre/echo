@@ -2,6 +2,7 @@
 
 import { Badge } from "@echo/ui/components/badge";
 import { CodeBlock } from "@echo/ui/components/code-block";
+import { DOCS_TABLE_HEAD_CELL, DocsTable } from "@echo/ui/components/docs/docs-table";
 
 type InstallMethodsProps = {
   orgSlug: string;
@@ -81,12 +82,12 @@ const Step = ({
   footnote,
   children,
 }: StepProps): React.ReactElement => (
-  <section className="rounded-2xl border border-border bg-card p-5">
+  <section className="rounded-lg bg-card p-5 ring-1 ring-foreground/10">
     <div className="mb-1 flex items-center gap-2.5">
       <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[11px] font-semibold text-muted-foreground">
         {index}
       </span>
-      <h2 className="text-sm font-semibold">{title}</h2>
+      <h3 className="text-sm font-semibold">{title}</h3>
       {badge && (
         <Badge className="bg-pastel-green-bg text-pastel-green-text">{badge}</Badge>
       )}
@@ -103,22 +104,20 @@ const Step = ({
 );
 
 const PropsTable = (): React.ReactElement => (
-  <div className="mt-4 overflow-hidden rounded-xl border border-border">
-    <table className="w-full text-xs">
-      <thead>
-        <tr className="border-b border-border bg-muted/30 text-left">
-          <th className="px-4 py-2.5 font-medium text-muted-foreground">Prop</th>
-          <th className="px-4 py-2.5 font-medium text-muted-foreground">Type</th>
-          <th className="px-4 py-2.5 font-medium text-muted-foreground">Default</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr className="transition-colors hover:bg-muted/30">
-          <td className="px-4 py-2.5 font-mono text-xs">position</td>
-          <td className="px-4 py-2.5 font-mono text-muted-foreground">'left' | 'right'</td>
-          <td className="px-4 py-2.5 font-mono text-muted-foreground">'right'</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <DocsTable className="mt-4">
+    <thead>
+      <tr className="border-b border-border bg-muted/30 text-left">
+        <th className={DOCS_TABLE_HEAD_CELL}>Prop</th>
+        <th className={DOCS_TABLE_HEAD_CELL}>Type</th>
+        <th className={DOCS_TABLE_HEAD_CELL}>Default</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-border">
+      <tr className="transition-colors hover:bg-muted/30">
+        <td className="px-4 py-3 font-mono text-xs text-foreground">position</td>
+        <td className="px-4 py-3 font-mono text-muted-foreground">'left' | 'right'</td>
+        <td className="px-4 py-3 font-mono text-muted-foreground">'right'</td>
+      </tr>
+    </tbody>
+  </DocsTable>
 );

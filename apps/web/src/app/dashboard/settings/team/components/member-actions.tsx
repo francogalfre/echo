@@ -24,7 +24,8 @@ import { useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
 
-import type { MemberRole } from "./members-list";
+import type { MemberRole } from "./member-role";
+import { RoleIcon } from "./role-icon";
 
 const ROLE_ORDER: readonly MemberRole[] = ["owner", "admin", "member"];
 
@@ -151,7 +152,7 @@ export function MemberActions({
         <DropdownMenuTrigger
           aria-label={`Actions for ${name}`}
           disabled={pending}
-          className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all duration-150 group-hover:opacity-100 hover:scale-105 hover:bg-muted hover:text-foreground focus-visible:opacity-100 aria-expanded:opacity-100 aria-expanded:scale-105 active:scale-95 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+          className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-all duration-150 hover:scale-105 hover:bg-muted hover:text-foreground aria-expanded:scale-105 aria-expanded:bg-muted aria-expanded:text-foreground active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >
           {pending ? (
             <Icons.loading className="size-4 animate-spin" />
@@ -163,6 +164,7 @@ export function MemberActions({
           {showRoleChange
             ? roleOptions.map((option) => (
                 <DropdownMenuItem key={option} onClick={() => changeRole(option)}>
+                  <RoleIcon role={option} className="size-4" />
                   Make {option}
                 </DropdownMenuItem>
               ))

@@ -1,15 +1,17 @@
-import type { ParamField } from "../endpoint-card";
-import type { LanguageSnippet } from "../language-tabs";
-import type { NavSection } from "../section-nav";
+import type { DocsTocSection } from "@echo/ui/components/docs/docs-toc";
+import type {
+  EndpointParam,
+  EndpointSnippet,
+} from "@echo/ui/components/docs/endpoint-card";
 
-export const SECTIONS: readonly NavSection[] = [
+export const SECTIONS: readonly DocsTocSection[] = [
   { id: "authentication", label: "Authentication" },
   { id: "create-feedback", label: "Create feedback" },
   { id: "list-feedback", label: "List feedback" },
   { id: "errors", label: "Errors" },
 ];
 
-export const CREATE_FEEDBACK_PARAMS: ParamField[] = [
+export const CREATE_FEEDBACK_PARAMS: EndpointParam[] = [
   { name: "name", type: "string", required: true, description: "Reporter's name." },
   {
     name: "feedback",
@@ -29,7 +31,8 @@ export const CREATE_FEEDBACK_PARAMS: ParamField[] = [
 const MASKED_SECRET = `echo_sk_${"•".repeat(16)}`;
 
 export const CREATE_RESPONSE = `{
-  "success": true
+  "success": true,
+  "id": "fb_a1b2c3"
 }`;
 
 export const LIST_RESPONSE = `{
@@ -44,7 +47,7 @@ export const LIST_RESPONSE = `{
   ]
 }`;
 
-export function buildCreateSnippets(serverUrl: string): LanguageSnippet[] {
+export function buildCreateSnippets(serverUrl: string): EndpointSnippet[] {
   return [
     {
       label: "JavaScript",
@@ -78,7 +81,7 @@ requests.post(
   ];
 }
 
-export function buildListSnippets(serverUrl: string, publicKey: string): LanguageSnippet[] {
+export function buildListSnippets(serverUrl: string, publicKey: string): EndpointSnippet[] {
   return [
     {
       label: "JavaScript",

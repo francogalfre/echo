@@ -57,7 +57,7 @@ export function EchoWidget({ position = 'right' }) {
 }`;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border bg-card">
+    <section className="overflow-hidden rounded-lg bg-card ring-1 ring-foreground/10">
       <div className="flex items-center gap-1 border-b border-border px-4 py-2.5">
         {(["preview", "code"] as const).map((t) => (
           <button

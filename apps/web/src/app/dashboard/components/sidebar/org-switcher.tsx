@@ -74,7 +74,11 @@ export const OrgSwitcher = (): React.ReactElement => {
           <Icons.chevronDown className="size-3.5 shrink-0 text-muted-foreground/70" />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="px-2 py-2.5 shadow-xs" side="bottom" align="start">
+        <DropdownMenuContent
+          className="w-(--anchor-width) px-2 py-2.5 shadow-xs"
+          side="bottom"
+          align="start"
+        >
           {organizations?.map((org) => (
             <DropdownMenuItem
               className="text-sm transition-[background-color,color] duration-300"

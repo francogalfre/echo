@@ -22,6 +22,7 @@ type UseFeedbackSelectionResult = {
 export function useFeedbackSelection(
   items: FeedbackItem[],
   onDeleted: (ids: string[]) => void,
+  onBoardChanged: () => void,
 ): UseFeedbackSelectionResult {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -52,7 +53,7 @@ export function useFeedbackSelection(
 
   const bulkAddToBoard = (): void => {
     const selectedItems = items.filter((item) => selected.has(item.id));
-    addManyToBoard(selectedItems);
+    addManyToBoard(selectedItems, onBoardChanged);
     setSelected(new Set());
   };
 
