@@ -15,7 +15,7 @@ export function getLangfuse(): Langfuse | null {
     return null;
   }
 
-  const baseUrl = env.LANGFUSE_BASEURL || LANGFUSE_CLOUD;
+  const baseUrl = env.LANGFUSE_BASEURL || env.LANGFUSE_BASE_URL || LANGFUSE_CLOUD;
 
   // Diagnostic log so users can verify exact URL and key format
   // eslint-disable-next-line no-console

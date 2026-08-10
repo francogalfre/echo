@@ -45,6 +45,7 @@ export const env = createEnv({
     LANGFUSE_PUBLIC_KEY: z.string().min(1).optional(),
     LANGFUSE_SECRET_KEY: z.string().min(1).optional(),
     LANGFUSE_BASEURL: z.string().url().optional(),
+    LANGFUSE_BASE_URL: z.string().url().optional(),
 
     // Jobs
     WORKER_ENABLED: z
