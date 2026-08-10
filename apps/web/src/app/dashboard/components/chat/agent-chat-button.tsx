@@ -5,6 +5,8 @@ import echoGreetings from "@echo/assets/character/greetings.webp";
 import Image from "next/image";
 import { useState } from "react";
 
+import { captureChatOpened } from "@/lib/posthog";
+
 import { useBillingOverview } from "../../hooks/use-billing-overview";
 import { AgentChat } from "./agent-chat";
 
@@ -22,7 +24,10 @@ export function AgentChatButton(): React.ReactElement | null {
           render={
             <button
               type="button"
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                setIsOpen(true);
+                captureChatOpened();
+              }}
               className="fixed bottom-6 right-6 z-50 flex size-16 items-center justify-center overflow-hidden rounded-full border border-border bg-card transition-all duration-300 hover:scale-105  hover:border-accent/30 active:scale-95"
             />
           }

@@ -41,6 +41,11 @@ export const env = createEnv({
     CORS_ORIGIN: z.url(),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 
+    // Observability
+    LANGFUSE_PUBLIC_KEY: z.string().min(1).optional(),
+    LANGFUSE_SECRET_KEY: z.string().min(1).optional(),
+    LANGFUSE_BASEURL: z.string().url().optional(),
+
     // Jobs
     WORKER_ENABLED: z
       .string()

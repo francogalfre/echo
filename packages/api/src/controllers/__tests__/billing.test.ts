@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { getBillingOverview } from "../billing";
 import { countFeedbackTotal } from "../../services/feedback";
-import { getDigest } from "../../services/feedback/digest";
+import { getDigest, type DigestRecord } from "../../services/feedback/digest";
 import { countOwnedOrganizations, getOrgPlan } from "../../services/organization";
 import { getUsageCount } from "../../services/ai/usage";
 
@@ -22,7 +22,8 @@ describe("getBillingOverview", () => {
     vi.mocked(getDigest).mockResolvedValue({
       digest: "test",
       generatedAt: new Date("2026-07-01T00:00:00.000Z"),
-    } as unknown as { digest: string; generatedAt: Date });
+      feedbackCount: 120,
+    } as unknown as DigestRecord);
     vi.mocked(countOwnedOrganizations).mockResolvedValue(1);
 
     const overview = await getBillingOverview(ORG_ID, USER_ID);

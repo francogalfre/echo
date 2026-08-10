@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { createMetadata } from "@/utils/metadata";
 
 import { SuccessStatus } from "./success-status";
+import { capturePlanUpgraded } from "@/lib/posthog";
 
 export const metadata: Metadata = createMetadata({
   title: "Payment successful",
@@ -24,6 +25,7 @@ const SuccessPage = async ({
   searchParams,
 }: SuccessPageProps): Promise<React.ReactElement> => {
   const { checkout_id: checkoutId } = await searchParams;
+  capturePlanUpgraded({ checkoutId });
 
   return (
     <main className="relative flex min-h-svh items-center justify-center overflow-hidden px-4 py-12">

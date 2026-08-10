@@ -2,6 +2,8 @@ import { Toaster } from "@echo/ui/components/toast";
 import { geistMono, geistPixel, geistSans, instrumentSans } from "@/lib/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
+import { PostHogAuthSync } from "@/components/posthog-auth-sync";
+import { PostHogPageView } from "@/components/posthog-pageview";
 
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
@@ -26,7 +28,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
         className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable} ${geistPixel.variable}`}
       >
         <ThemeProvider attribute="class" defaultTheme="light">
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            {children}
+            <PostHogAuthSync />
+            <PostHogPageView />
+          </NuqsAdapter>
           <Toaster position="top-right" />
         </ThemeProvider>
       </body>

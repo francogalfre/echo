@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 
 import { Field } from "@echo/ui/components/field";
 import { signUp } from "@/lib/auth-client";
+import { captureUserSignedUp } from "@/lib/posthog";
 import { isSafeRedirectPath } from "@/lib/safe-redirect";
 
 import { registerSchema, type RegisterValues } from "../schemas";
@@ -32,7 +33,10 @@ export const RegisterForm = ({ callbackURL }: RegisterFormProps) => {
     setServerError(null);
     const destination = isSafeRedirectPath(callbackURL) ? callbackURL : "/onboarding";
     await signUp.email(values, {
-      onSuccess: () => router.push(destination as Route),
+      onSuccess: () => {
+        captureUserSignedUp({ method: "email" });
+        router.push(destination as Route);
+      },
       onError: ({ error }) => setServerError(error.message),
     });
   });

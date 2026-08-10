@@ -5,6 +5,8 @@ import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport, isTextUIPart } from "ai";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import { captureChatMessageSent } from "@/lib/posthog";
+
 import { isUpgradeError } from "../components/upgrade-error";
 
 const CONVERSATION_ID_HEADER = "X-Conversation-Id";
@@ -83,6 +85,7 @@ export function useChatThread(): {
   const send = useCallback(
     (text: string) => {
       if (!text.trim()) return;
+      captureChatMessageSent({ length: text.trim().length });
       void sendMessage({ text: text.trim() });
     },
     [sendMessage],

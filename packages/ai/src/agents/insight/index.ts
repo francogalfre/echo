@@ -5,6 +5,7 @@ import { openrouterModel } from "../../lib/provider";
 import { DEFAULT_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
+import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
 
 const timeoutMs = 30_000;
 const maxOutputTokens = 400;
@@ -23,6 +24,12 @@ function sleep(ms: number): Promise<void> {
 async function attemptGeneration(
   input: InsightInput,
 ): Promise<{ insight: string; usage: AgentUsage }> {
+  const trace = createTrace({
+    name: "insight-agent",
+    metadata: { model: DEFAULT_MODEL, sentiment: input.sentiment },
+    input: { content: input.content.slice(0, 500) },
+  });
+
   const result = await generateText({
     model: openrouterModel(DEFAULT_MODEL),
     system: INSIGHT_SYSTEM_PROMPT,
@@ -43,14 +50,36 @@ async function attemptGeneration(
     throw new AIError("GENERATION_FAILED", "Empty insight output");
   }
 
-  return {
-    insight,
-    usage: buildAgentUsage({
+  const usage = buildAgentUsage({
+    model: result.response.modelId,
+    usage: result.usage,
+    providerMetadata: result.providerMetadata,
+  });
+
+  try {
+    const generation = createGeneration(trace, {
+      name: "insight-generation",
       model: result.response.modelId,
-      usage: result.usage,
-      providerMetadata: result.providerMetadata,
-    }),
-  };
+      system: INSIGHT_SYSTEM_PROMPT.slice(0, 200),
+      prompt: buildInsightPrompt(input).slice(0, 500),
+      output: insight.slice(0, 1000),
+      usage: {
+        inputTokens: result.usage?.inputTokens,
+        outputTokens: result.usage?.outputTokens,
+        totalTokens: result.usage?.totalTokens,
+      },
+      metadata: { temperature: 0.3, maxOutputTokens },
+    });
+    updateGeneration(generation, insight.slice(0, 1000), {
+      inputTokens: result.usage?.inputTokens,
+      outputTokens: result.usage?.outputTokens,
+      totalTokens: result.usage?.totalTokens,
+    });
+  } catch {
+    // Tracing failures must never block the user
+  }
+
+  return { insight, usage };
 }
 
 export async function generateInsight(

@@ -5,6 +5,7 @@ import { openrouterModel } from "../../lib/provider";
 import { CHAT_MODEL } from "../../lib/model";
 import { buildChatSystemPrompt } from "./prompt";
 import { buildFeedbackTools, type ChatStreamInput } from "./tools";
+import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
 
 export type ChatStreamResult = ReturnType<typeof streamText<ToolSet>>;
 
@@ -22,6 +23,40 @@ function sleep(ms: number): Promise<void> {
 async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> {
   const messages = await convertToModelMessages([...input.messages]);
 
+  const trace = createTrace({
+    name: "chat-agent",
+    userId: input.traceContext?.userId,
+    organizationId: input.traceContext?.organizationId,
+    metadata: {
+      conversationId: input.traceContext?.conversationId,
+      model: CHAT_MODEL,
+      messageCount: input.messages.length,
+      hasDigest: !!input.digestSummary,
+    },
+    input: {
+      messages: input.messages.map((m) => ({
+        role: m.role,
+        text: m.parts
+          .filter((p) => p.type === "text")
+          .map((p) => p.text)
+          .join("")
+          .slice(0, 200),
+      })),
+      digestSummary: input.digestSummary?.slice(0, 500),
+    },
+  });
+
+  const generation = createGeneration(trace, {
+    name: "chat-generation",
+    model: CHAT_MODEL,
+    system: buildChatSystemPrompt(input.digestSummary).slice(0, 500),
+    messages,
+    metadata: {
+      temperature: 0.3,
+      maxOutputTokens,
+    },
+  });
+
   return streamText({
     model: openrouterModel(CHAT_MODEL),
     system: buildChatSystemPrompt(input.digestSummary),
@@ -34,6 +69,17 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),
     providerOptions: { openrouter: { usage: { include: true } } },
+    onFinish: async ({ text, totalUsage }) => {
+      try {
+        updateGeneration(generation, text.slice(0, 1000), {
+          inputTokens: totalUsage?.inputTokens,
+          outputTokens: totalUsage?.outputTokens,
+          totalTokens: totalUsage?.totalTokens,
+        });
+      } catch {
+        // Silently ignore tracing failures — never block the user
+      }
+    },
   });
 }
 

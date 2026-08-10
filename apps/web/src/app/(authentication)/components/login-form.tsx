@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 
 import { Field } from "@echo/ui/components/field";
 import { signIn } from "@/lib/auth-client";
+import { captureUserLoggedIn } from "@/lib/posthog";
 import { isSafeRedirectPath } from "@/lib/safe-redirect";
 
 import { loginSchema, type LoginValues } from "../schemas";
@@ -32,7 +33,10 @@ export const LoginForm = ({ callbackURL }: LoginFormProps) => {
     setServerError(null);
     const destination = isSafeRedirectPath(callbackURL) ? callbackURL : "/dashboard";
     await signIn.email(values, {
-      onSuccess: () => router.push(destination as Route),
+      onSuccess: () => {
+        captureUserLoggedIn({ method: "email" });
+        router.push(destination as Route);
+      },
       onError: ({ error }) => setServerError(error.message),
     });
   });

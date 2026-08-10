@@ -126,6 +126,7 @@ export async function streamChatTurn(
       digestSummary,
       retriever: buildFeedbackRetriever(organizationId),
       spendBudget: createBudget(chatToolBudgetChars),
+      traceContext: { userId, organizationId, conversationId: conversation.id },
     });
 
     const uiMessageStream = streamResult.toUIMessageStream({

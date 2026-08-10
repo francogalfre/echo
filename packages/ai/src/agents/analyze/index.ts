@@ -6,6 +6,7 @@ import { openrouterModel } from "../../lib/provider";
 import { DEFAULT_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { ANALYZE_SYSTEM_PROMPT, buildAnalyzePrompt } from "./prompt";
+import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
 
 const timeoutMs = 30_000;
 const maxOutputTokens = 150;
@@ -44,6 +45,12 @@ function sleep(ms: number): Promise<void> {
 async function attemptGeneration(
   content: string,
 ): Promise<{ analysis: FeedbackAnalysis; usage: AgentUsage }> {
+  const trace = createTrace({
+    name: "analyze-agent",
+    metadata: { model: DEFAULT_MODEL },
+    input: { content: content.slice(0, 500) },
+  });
+
   const result = await generateObject({
     model: openrouterModel(DEFAULT_MODEL),
     schema: analysisSchema,
@@ -55,14 +62,36 @@ async function attemptGeneration(
     providerOptions: { openrouter: { usage: { include: true } } },
   });
 
-  return {
-    analysis: result.object,
-    usage: buildAgentUsage({
+  const usage = buildAgentUsage({
+    model: result.response.modelId,
+    usage: result.usage,
+    providerMetadata: result.providerMetadata,
+  });
+
+  try {
+    const generation = createGeneration(trace, {
+      name: "analyze-generation",
       model: result.response.modelId,
-      usage: result.usage,
-      providerMetadata: result.providerMetadata,
-    }),
-  };
+      system: ANALYZE_SYSTEM_PROMPT.slice(0, 200),
+      prompt: buildAnalyzePrompt(content).slice(0, 500),
+      output: result.object,
+      usage: {
+        inputTokens: result.usage?.inputTokens,
+        outputTokens: result.usage?.outputTokens,
+        totalTokens: result.usage?.totalTokens,
+      },
+      metadata: { temperature: 0, maxOutputTokens },
+    });
+    updateGeneration(generation, result.object, {
+      inputTokens: result.usage?.inputTokens,
+      outputTokens: result.usage?.outputTokens,
+      totalTokens: result.usage?.totalTokens,
+    });
+  } catch {
+    // Tracing failures must never block the user
+  }
+
+  return { analysis: result.object, usage };
 }
 
 export async function analyzeFeedback(

@@ -47,6 +47,11 @@ export type ChatStreamInput = {
   readonly digestSummary: string | null;
   readonly retriever: FeedbackRetriever;
   readonly spendBudget: (chars: number) => boolean;
+  readonly traceContext?: {
+    readonly userId?: string;
+    readonly organizationId?: string;
+    readonly conversationId?: string;
+  };
 };
 
 const excerptLimit = 240;

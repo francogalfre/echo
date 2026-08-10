@@ -6,6 +6,7 @@ import { openrouterModel } from "../../lib/provider";
 import { DEFAULT_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
+import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
 
 const timeoutMs = 20_000;
 const maxOutputTokens = 1300;
@@ -60,6 +61,12 @@ function sleep(ms: number): Promise<void> {
 async function attemptGeneration(
   inputs: DigestInput[],
 ): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
+  const trace = createTrace({
+    name: "digest-agent",
+    metadata: { model: DEFAULT_MODEL, feedbackCount: inputs.length },
+    input: { feedbacks: inputs.map((i) => ({ sentiment: i.sentiment, tags: i.tags })) },
+  });
+
   const result = await generateObject({
     model: openrouterModel(DEFAULT_MODEL),
     schema: digestSchema,
@@ -76,14 +83,36 @@ async function attemptGeneration(
     },
   });
 
-  return {
-    digest: result.object,
-    usage: buildAgentUsage({
+  const usage = buildAgentUsage({
+    model: result.response.modelId,
+    usage: result.usage,
+    providerMetadata: result.providerMetadata,
+  });
+
+  try {
+    const generation = createGeneration(trace, {
+      name: "digest-generation",
       model: result.response.modelId,
-      usage: result.usage,
-      providerMetadata: result.providerMetadata,
-    }),
-  };
+      system: DIGEST_SYSTEM_PROMPT.slice(0, 200),
+      prompt: buildDigestPrompt(inputs).slice(0, 500),
+      output: result.object.executiveSummary?.slice(0, 500),
+      usage: {
+        inputTokens: result.usage?.inputTokens,
+        outputTokens: result.usage?.outputTokens,
+        totalTokens: result.usage?.totalTokens,
+      },
+      metadata: { temperature: 0.2, maxOutputTokens, feedbackCount: inputs.length },
+    });
+    updateGeneration(generation, result.object, {
+      inputTokens: result.usage?.inputTokens,
+      outputTokens: result.usage?.outputTokens,
+      totalTokens: result.usage?.totalTokens,
+    });
+  } catch {
+    // Tracing failures must never block the user
+  }
+
+  return { digest: result.object, usage };
 }
 
 export async function generateDigest(
