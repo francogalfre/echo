@@ -5,7 +5,12 @@ import { openrouterModel } from "../../lib/provider";
 import { CHAT_MODEL } from "../../lib/model";
 import { buildChatSystemPrompt } from "./prompt";
 import { buildFeedbackTools, type ChatStreamInput } from "./tools";
-import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
+import {
+  createGeneration,
+  createTrace,
+  flushTracing,
+  updateGeneration,
+} from "../../lib/tracing";
 
 export type ChatStreamResult = ReturnType<typeof streamText<ToolSet>>;
 
@@ -76,6 +81,7 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
           outputTokens: totalUsage?.outputTokens,
           totalTokens: totalUsage?.totalTokens,
         });
+        await flushTracing();
       } catch {
         // Silently ignore tracing failures — never block the user
       }

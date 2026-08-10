@@ -5,7 +5,12 @@ import { openrouterModel } from "../../lib/provider";
 import { DEFAULT_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
-import { createGeneration, createTrace, updateGeneration } from "../../lib/tracing";
+import {
+  createGeneration,
+  createTrace,
+  flushTracing,
+  updateGeneration,
+} from "../../lib/tracing";
 
 const timeoutMs = 30_000;
 const maxOutputTokens = 400;
@@ -75,6 +80,7 @@ async function attemptGeneration(
       outputTokens: result.usage?.outputTokens,
       totalTokens: result.usage?.totalTokens,
     });
+    await flushTracing();
   } catch {
     // Tracing failures must never block the user
   }

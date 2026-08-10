@@ -1,4 +1,4 @@
-import { getLangfuse } from "./langfuse";
+import { flushLangfuse, getLangfuse } from "./langfuse";
 
 export type TraceInput = {
   name: string;
@@ -109,6 +109,10 @@ export function updateGeneration(
         }
       : undefined,
   });
+}
+
+export async function flushTracing(): Promise<void> {
+  await flushLangfuse();
 }
 
 export function scoreTrace(
