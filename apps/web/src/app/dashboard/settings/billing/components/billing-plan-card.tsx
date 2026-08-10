@@ -90,10 +90,10 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
   return (
     <SettingsCard
       className={cn(
-        "relative overflow-hidden",
+        "relative overflow-hidden transition-[box-shadow,transform] duration-200 ease-out",
         isPro
-          ? "ring-2 ring-accent/40 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md"
-          : "ring-1 ring-foreground/10",
+          ? "ring-2 ring-accent/40 hover:-translate-y-0.5 hover:shadow-md"
+          : "ring-1 ring-foreground/10 hover:shadow-sm hover:ring-foreground/20",
       )}
     >
       {isPro ? (
@@ -105,7 +105,7 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
       <div className="relative z-10 flex flex-col gap-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-base font-semibold text-foreground">{definition.name}</h3>
+            <h3 className="text-base font-medium text-foreground">{definition.name}</h3>
             <p className="mt-1 text-xs text-muted-foreground">{definition.description}</p>
           </div>
           {isCurrent ? (
@@ -116,22 +116,22 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
         </div>
 
         <div className="flex items-baseline gap-1">
-          <span className="font-display text-3xl font-semibold tabular-nums text-foreground">
+          <span className="font-pixel text-3xl tabular-nums text-foreground">
             {definition.price}
           </span>
           <span className="text-sm text-muted-foreground">{definition.cadence}</span>
         </div>
 
         {isCurrent && isPro ? (
-          <ManageSubscriptionButton className="h-9 w-full text-sm" />
+          <ManageSubscriptionButton className="h-11 w-full text-sm" />
         ) : isCurrent ? (
-          <Button disabled variant="outline" className="h-9 w-full text-sm">
+          <Button disabled variant="outline" className="h-11 w-full text-sm">
             Current plan
           </Button>
         ) : isPro ? (
-          <BillingUpgradeButton className="h-9 w-full text-sm" />
+          <BillingUpgradeButton className="h-11 w-full text-sm" />
         ) : (
-          <div aria-hidden="true" className="h-9" />
+          <div aria-hidden="true" className="h-11" />
         )}
 
         <Stagger

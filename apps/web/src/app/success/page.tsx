@@ -9,6 +9,8 @@ import type { Metadata } from "next";
 
 import { createMetadata } from "@/utils/metadata";
 
+import { SuccessStatus } from "./success-status";
+
 export const metadata: Metadata = createMetadata({
   title: "Payment successful",
   noIndex: true,
@@ -42,10 +44,7 @@ const SuccessPage = async ({
           <h1 className="mt-5 font-pixel text-2xl font-medium tracking-tight text-balance">
             You're on Pro
           </h1>
-          <p className="mt-2 max-w-xs text-sm text-pretty text-muted-foreground">
-            Your subscription is active. It may take a moment to reflect across your
-            dashboard.
-          </p>
+          <SuccessStatus />
           {checkoutId ? (
             <p className="mt-2 text-xs text-muted-foreground/70">
               Reference: {checkoutId.slice(0, 8)}…

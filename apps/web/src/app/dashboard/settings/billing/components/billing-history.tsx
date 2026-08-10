@@ -27,7 +27,7 @@ export const BillingHistory = ({ plan }: BillingHistoryProps): React.ReactElemen
 
   return (
     <SettingsCard>
-      <h3 className="text-sm font-semibold text-foreground">Billing history</h3>
+      <h3 className="text-sm font-medium text-foreground">Billing history</h3>
       {isPro ? (
         <>
           <p className="mt-0.5 text-xs text-muted-foreground">

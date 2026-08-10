@@ -46,7 +46,7 @@ export const WorkspaceSection = (): React.ReactElement => {
 
   return (
     <SettingsCard>
-      <h2 className="text-sm font-semibold text-foreground">Workspace</h2>
+      <h2 className="text-sm font-medium text-foreground">Workspace</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Rename this workspace. The slug stays fixed once created.
       </p>

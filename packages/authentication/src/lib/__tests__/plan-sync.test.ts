@@ -22,7 +22,13 @@ vi.mock("@echo/db", () => ({
   },
 }));
 
-const { resolvePlanFromSubscriptions, syncPlanFromCustomerState } =
+const mockGetStateExternal = vi.fn();
+
+vi.mock("../payments", () => ({
+  polarClient: { customers: { getStateExternal: mockGetStateExternal } },
+}));
+
+const { resolvePlanFromSubscriptions, syncPlanFromCustomerState, syncPlanForUser } =
   await import("../plan-sync");
 
 const PRO_PRODUCT_ID = "prod_pro_123";
@@ -128,5 +134,38 @@ describe("syncPlanFromCustomerState", () => {
     );
 
     expect(mockInsert).not.toHaveBeenCalled();
+  });
+});
+
+describe("syncPlanForUser", () => {
+  beforeEach(() => {
+    mockInsert.mockClear();
+    mockInsertValues.mockClear();
+    mockSelectWhere.mockReset().mockResolvedValue([]);
+    mockUpdate.mockClear();
+    mockUpdateSet.mockClear();
+    mockUpdateWhere.mockClear();
+    mockGetStateExternal.mockReset();
+  });
+
+  it("should upgrade owned orgs from the pulled customer state", async () => {
+    mockSelectWhere.mockResolvedValue([{ id: "org_1", plan: "free" }]);
+    mockGetStateExternal.mockResolvedValue({
+      activeSubscriptions: [buildSubscription({ productId: "test-polar-pro-product-id" })],
+    });
+
+    await syncPlanForUser("user_1");
+
+    expect(mockGetStateExternal).toHaveBeenCalledWith({ externalId: "user_1" });
+    expect(mockUpdateSet).toHaveBeenCalledWith({ plan: "pro" });
+  });
+
+  it("should downgrade owned orgs when no active subscription is pro", async () => {
+    mockSelectWhere.mockResolvedValue([{ id: "org_1", plan: "pro" }]);
+    mockGetStateExternal.mockResolvedValue({ activeSubscriptions: [] });
+
+    await syncPlanForUser("user_1");
+
+    expect(mockUpdateSet).toHaveBeenCalledWith({ plan: "free" });
   });
 });

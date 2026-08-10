@@ -28,7 +28,7 @@ export const BillingUsageMeters = ({
 
   return (
     <SettingsCard>
-      <h3 className="text-sm font-semibold text-foreground">Usage</h3>
+      <h3 className="text-sm font-medium text-foreground">Usage</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">
         AI usage resets daily • feedback storage doesn&apos;t reset automatically.
       </p>

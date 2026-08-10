@@ -72,7 +72,7 @@ export const DangerZoneSection = (): React.ReactElement => {
 
   return (
     <SettingsCard className="bg-destructive/[0.02] ring-destructive/20">
-      <h2 className="text-sm font-semibold text-destructive">Danger zone</h2>
+      <h2 className="text-sm font-medium text-destructive">Danger zone</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Irreversible actions for your account and workspace.
       </p>

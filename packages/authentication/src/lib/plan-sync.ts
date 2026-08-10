@@ -6,6 +6,8 @@ import { and, eq, inArray } from "drizzle-orm";
 import type { CustomerStateSubscription } from "@polar-sh/sdk/models/components/customerstatesubscription";
 import type { WebhookCustomerStateChangedPayload } from "@polar-sh/sdk/models/components/webhookcustomerstatechangedpayload";
 
+import { polarClient } from "./payments";
+
 const FREE_ORG_LIMIT = 1;
 const PRO_ORG_LIMIT = 5;
 
@@ -30,18 +32,13 @@ export function resolvePlanFromSubscriptions(
   return hasActivePro ? "pro" : "free";
 }
 
-export async function syncPlanFromCustomerState(
-  payload: WebhookCustomerStateChangedPayload,
+async function applyPlanForUser(
+  userId: string,
+  subscriptions: readonly CustomerStateSubscription[],
 ): Promise<void> {
-  const externalId = payload.data.externalId;
-  if (!externalId) return;
+  const plan = resolvePlanFromSubscriptions(subscriptions, env.POLAR_PRO_PRODUCT_ID);
 
-  const plan = resolvePlanFromSubscriptions(
-    payload.data.activeSubscriptions,
-    env.POLAR_PRO_PRODUCT_ID,
-  );
-
-  const owned = await getOwnedOrganizations(externalId);
+  const owned = await getOwnedOrganizations(userId);
   if (owned.length === 0) return;
 
   const upgradedOrgIds = owned
@@ -70,6 +67,21 @@ export async function syncPlanFromCustomerState(
         owned.map((org) => org.id),
       ),
     );
+}
+
+export async function syncPlanFromCustomerState(
+  payload: WebhookCustomerStateChangedPayload,
+): Promise<void> {
+  const externalId = payload.data.externalId;
+  if (!externalId) return;
+
+  await applyPlanForUser(externalId, payload.data.activeSubscriptions);
+}
+
+// Pulls the customer state directly so the checkout success page doesn't depend on a webhook reaching this server (e.g. local dev with no public URL).
+export async function syncPlanForUser(userId: string): Promise<void> {
+  const state = await polarClient.customers.getStateExternal({ externalId: userId });
+  await applyPlanForUser(userId, state.activeSubscriptions);
 }
 
 export async function hasReachedOrganizationLimit(user: { id: string }): Promise<boolean> {

@@ -12,9 +12,11 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  scaleOnHover = true,
   ...props
-}: ButtonPrimitive.Props & ButtonVariantProps) {
+}: ButtonPrimitive.Props & ButtonVariantProps & { scaleOnHover?: boolean }) {
   const prefersReducedMotion = useReducedMotion();
+  const animateScale = scaleOnHover && !prefersReducedMotion;
 
   return (
     <ButtonPrimitive
@@ -22,8 +24,8 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       render={
         <motion.button
-          whileHover={prefersReducedMotion ? undefined : { scale: 1.02 }}
-          whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
+          whileHover={animateScale ? { scale: 1.02 } : undefined}
+          whileTap={animateScale ? { scale: 0.97 } : undefined}
           transition={{ duration: 0.12 }}
         />
       }

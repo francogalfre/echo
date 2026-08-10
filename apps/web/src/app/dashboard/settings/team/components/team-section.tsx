@@ -27,7 +27,7 @@ export const TeamSection = ({
       <SettingsCard>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Projects</h2>
+            <h2 className="text-sm font-medium text-foreground">Projects</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Switch your active workspace or create a new one.
             </p>
@@ -44,7 +44,7 @@ export const TeamSection = ({
       <SettingsCard>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Members</h2>
+            <h2 className="text-sm font-medium text-foreground">Members</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               People with access to this project.
             </p>

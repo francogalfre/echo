@@ -43,7 +43,7 @@ export const ProfileSection = (): React.ReactElement => {
 
   return (
     <SettingsCard>
-      <h2 className="text-sm font-semibold text-foreground">Profile</h2>
+      <h2 className="text-sm font-medium text-foreground">Profile</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Update your display name and how you appear across Echo.
       </p>

@@ -6,7 +6,7 @@ import { SettingsRow } from "../../components/settings-row";
 export const AppearanceSection = (): React.ReactElement => {
   return (
     <SettingsCard>
-      <h2 className="text-sm font-semibold text-foreground">Appearance</h2>
+      <h2 className="text-sm font-medium text-foreground">Appearance</h2>
       <p className="mt-0.5 text-xs text-muted-foreground">
         Choose how Echo looks on this device.
       </p>

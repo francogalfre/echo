@@ -18,7 +18,13 @@ export const BillingUpgradeButton = ({
   const { loading, upgrade } = useUpgradeCheckout();
 
   return (
-    <Button onClick={upgrade} disabled={loading} size={size} className={className}>
+    <Button
+      onClick={upgrade}
+      disabled={loading}
+      size={size}
+      scaleOnHover={false}
+      className={className}
+    >
       {loading ? <Icons.loading className="size-4 animate-spin" /> : "Upgrade to Pro"}
     </Button>
   );

@@ -24,11 +24,11 @@ export const SettingsRow = ({
   >
     <div className="space-y-1">
       {htmlFor ? (
-        <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">
+        <label htmlFor={htmlFor} className="text-sm font-normal text-foreground">
           {label}
         </label>
       ) : (
-        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-sm font-normal text-foreground">{label}</p>
       )}
       {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
     </div>

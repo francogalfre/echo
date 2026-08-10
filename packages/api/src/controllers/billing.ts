@@ -68,3 +68,8 @@ export async function getBillingOverview(
     },
   };
 }
+
+export async function syncBillingPlan(userId: string): Promise<void> {
+  const { syncPlanForUser } = await import("@echo/auth/lib/plan-sync");
+  await syncPlanForUser(userId);
+}
