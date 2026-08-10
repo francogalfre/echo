@@ -1,58 +1,28 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { DigestOutput } from "@echo/ai";
+import { describe, expect, it, vi } from "vitest";
 
 import { getBillingOverview } from "../billing";
+import { countFeedbackTotal } from "../../services/feedback";
+import { getDigest } from "../../services/feedback/digest";
+import { countOwnedOrganizations, getOrgPlan } from "../../services/organization";
+import { getUsageCount } from "../../services/ai/usage";
 
-const SAMPLE_DIGEST: DigestOutput = {
-  executiveSummary: "Users like the new dashboard.",
-  themes: [],
-  topIssues: [],
-  positiveHighlight: "Fast onboarding.",
-};
+vi.mock("../../services/feedback");
+vi.mock("../../services/feedback/digest");
+vi.mock("../../services/organization");
+vi.mock("../../services/ai/usage");
 
-vi.mock("../../services/ai/usage", () => ({
-  getUsageCount: vi.fn(),
-}));
-
-vi.mock("../../services/feedback/digest", () => ({
-  getDigest: vi.fn(),
-}));
-
-vi.mock("../../services/feedback", () => ({
-  countFeedbackTotal: vi.fn(),
-}));
-
-vi.mock("../../services/organization", () => ({
-  getOrgPlan: vi.fn(),
-  countOwnedOrganizations: vi.fn(),
-}));
-
-const { getUsageCount } = await import("../../services/ai/usage");
-const { getDigest } = await import("../../services/feedback/digest");
-const { countFeedbackTotal } = await import("../../services/feedback");
-const { getOrgPlan, countOwnedOrganizations } = await import("../../services/organization");
-
-const ORG_ID = "org_1";
-const USER_ID = "user_1";
+const ORG_ID = "org-1";
+const USER_ID = "user-1";
 
 describe("getBillingOverview", () => {
-  beforeEach(() => {
-    vi.mocked(getUsageCount).mockReset();
-    vi.mocked(getDigest).mockReset();
-    vi.mocked(countFeedbackTotal).mockReset();
-    vi.mocked(getOrgPlan).mockReset();
-    vi.mocked(countOwnedOrganizations).mockReset();
-  });
-
-  it("should shape free plan limits with a null digest limit and no digest usage", async () => {
+  it("should shape free plan limits with daily insight usage", async () => {
     vi.mocked(getOrgPlan).mockResolvedValue("free");
     vi.mocked(countFeedbackTotal).mockResolvedValue(120);
     vi.mocked(getUsageCount).mockResolvedValue(2);
     vi.mocked(getDigest).mockResolvedValue({
-      digest: SAMPLE_DIGEST,
+      digest: "test",
       generatedAt: new Date("2026-07-01T00:00:00.000Z"),
-      feedbackCount: 10,
-    });
+    } as unknown as { digest: string; generatedAt: Date });
     vi.mocked(countOwnedOrganizations).mockResolvedValue(1);
 
     const overview = await getBillingOverview(ORG_ID, USER_ID);
@@ -67,7 +37,7 @@ describe("getBillingOverview", () => {
         lastGeneratedAt: new Date("2026-07-01T00:00:00.000Z"),
       },
       projects: { used: 1, limit: 1 },
-      chat: { used: 2, limit: 5 },
+      chat: { used: 2, limit: 10 },
     });
   });
 
@@ -86,7 +56,7 @@ describe("getBillingOverview", () => {
       insights: { used: 4, limit: 50 },
       digests: { used: 4, limit: 10, lastGeneratedAt: null },
       projects: { used: 3, limit: 5 },
-      chat: { used: 4, limit: 100 },
+      chat: { used: 4, limit: 50 },
     });
   });
 });

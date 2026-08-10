@@ -1,8 +1,8 @@
-import { dayKey } from "../lib/dates";
+import { dayKey, weekKey } from "../lib/dates";
 import {
-  FREE_CHAT_DAILY_LIMIT,
+  FREE_CHAT_WEEKLY_LIMIT,
   FREE_INSIGHT_DAILY_LIMIT,
-  PRO_CHAT_DAILY_LIMIT,
+  PRO_CHAT_WEEKLY_LIMIT,
   PRO_DIGEST_DAILY_LIMIT,
   PRO_INSIGHT_DAILY_LIMIT,
   isPro,
@@ -45,10 +45,10 @@ const quotaConfig: Record<QuotaFeature, QuotaConfig> = {
     proMessage: `Daily insight limit (${PRO_INSIGHT_DAILY_LIMIT}) reached.`,
   },
   chat: {
-    freeLimit: FREE_CHAT_DAILY_LIMIT,
-    proLimit: PRO_CHAT_DAILY_LIMIT,
-    freeMessage: `Free plan allows ${FREE_CHAT_DAILY_LIMIT} chats per day. Upgrade to Pro for more.`,
-    proMessage: `Daily chat limit (${PRO_CHAT_DAILY_LIMIT}) reached.`,
+    freeLimit: FREE_CHAT_WEEKLY_LIMIT,
+    proLimit: PRO_CHAT_WEEKLY_LIMIT,
+    freeMessage: `Free plan allows ${FREE_CHAT_WEEKLY_LIMIT} chats per week. Upgrade to Pro for more.`,
+    proMessage: `Weekly chat limit (${PRO_CHAT_WEEKLY_LIMIT}) reached.`,
   },
   digest: {
     freeLimit: 0,
@@ -64,11 +64,13 @@ export async function enforceQuota(
 ): Promise<QuotaDecision> {
   const plan = await getOrgPlan(organizationId);
   const pro = isPro(plan);
-  const day = dayKey(new Date());
   const config = quotaConfig[feature];
   const limit = pro ? config.proLimit : config.freeLimit;
 
-  const { reserved, used } = await reserveUsage(organizationId, feature, day, limit);
+  // Chat uses weekly buckets, everything else uses daily
+  const bucket = feature === "chat" ? weekKey(new Date()) : dayKey(new Date());
+
+  const { reserved, used } = await reserveUsage(organizationId, feature, bucket, limit);
 
   if (!reserved) {
     return {
@@ -84,7 +86,7 @@ export async function enforceQuota(
     allowed: true,
     used,
     limit,
-    release: () => releaseUsage(organizationId, feature, day),
+    release: () => releaseUsage(organizationId, feature, bucket),
   };
 }
 
@@ -110,10 +112,12 @@ export async function readQuota(
 ): Promise<{ used: number; limit: number; plan: string }> {
   const plan = await getOrgPlan(organizationId);
   const pro = isPro(plan);
-  const day = dayKey(new Date());
   const config = quotaConfig[feature];
   const limit = pro ? config.proLimit : config.freeLimit;
-  const used = await getUsageCount(organizationId, feature, day);
+
+  // Chat uses weekly buckets, everything else uses daily
+  const bucket = feature === "chat" ? weekKey(new Date()) : dayKey(new Date());
+  const used = await getUsageCount(organizationId, feature, bucket);
 
   return { used, limit, plan: plan ?? "free" };
 }

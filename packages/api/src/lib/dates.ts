@@ -32,6 +32,14 @@ export function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
+export function weekKey(date: Date): string {
+  const year = date.getUTCFullYear();
+  const start = new Date(Date.UTC(year, 0, 1));
+  const dayOfYear = Math.floor((date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+  const week = Math.floor(dayOfYear / 7) + 1;
+  return `${year}-W${week.toString().padStart(2, "0")}`;
+}
+
 export function monthKey(date: Date): string {
   return date.toISOString().slice(0, 7);
 }

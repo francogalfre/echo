@@ -2,16 +2,16 @@ import { convertToModelMessages, stepCountIs, streamText, type ToolSet } from "a
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL } from "../../lib/model";
+import { CHAT_MODEL } from "../../lib/model";
 import { buildChatSystemPrompt } from "./prompt";
 import { buildFeedbackTools, type ChatStreamInput } from "./tools";
 
 export type ChatStreamResult = ReturnType<typeof streamText<ToolSet>>;
 
 const timeoutMs = 60_000;
-const maxOutputTokens = 800;
-const stepLimit = 6;
-const toolsDisabledFromStep = 4;
+const maxOutputTokens = 600;
+const stepLimit = 5;
+const toolsDisabledFromStep = 3;
 const maxAttempts = 2;
 const retryDelayMs = 500;
 
@@ -23,14 +23,14 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
   const messages = await convertToModelMessages([...input.messages]);
 
   return streamText({
-    model: openrouterModel(DEFAULT_MODEL),
+    model: openrouterModel(CHAT_MODEL),
     system: buildChatSystemPrompt(input.digestSummary),
     messages,
     tools: buildFeedbackTools(input.retriever, input.spendBudget),
     stopWhen: stepCountIs(stepLimit),
     prepareStep: ({ stepNumber }) =>
       stepNumber >= toolsDisabledFromStep ? { activeTools: [] } : {},
-    temperature: 0.4,
+    temperature: 0.3,
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),
     providerOptions: { openrouter: { usage: { include: true } } },

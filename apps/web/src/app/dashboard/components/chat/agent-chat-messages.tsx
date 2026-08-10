@@ -1,39 +1,32 @@
-import codingCharacter from "@echo/assets/character/coding.webp";
-import thinkingCharacter from "@echo/assets/character/thinking.webp";
+"use client";
+
+import { Diamond } from "@echo/ui/components/diamond";
 import { cn } from "@echo/ui/lib/utils";
 import type { UIMessage } from "@ai-sdk/react";
-import { isDynamicToolUIPart, isTextUIPart, isToolUIPart } from "ai";
+import { isTextUIPart } from "ai";
+import { motion } from "motion/react";
 import Image from "next/image";
 
 import { Markdown } from "@/utils/markdown";
 
-import { AiThinking } from "../ai/ai-thinking";
 import type { AgentPersona } from "./agent-personas";
 
-const TOOL_LABELS: Record<string, string> = {
-  searchFeedback: "Searching feedback",
-  countFeedback: "Counting feedback",
-  getFeedbackById: "Fetching feedback",
-  getTimeSeries: "Building a timeline",
-  readDigest: "Reading the digest",
-};
-
-type ToolLikePart = { type: string; toolName?: string; state?: string };
-
-function toolNameFromPart(part: ToolLikePart): string {
-  if (part.toolName) return part.toolName;
-  return part.type.replace(/^tool-/, "");
-}
-
-function activeToolLabel(message: UIMessage): string | null {
-  for (const part of message.parts) {
-    if (!isToolUIPart(part) && !isDynamicToolUIPart(part)) continue;
-    if (part.state === "output-available" || part.state === "output-error") continue;
-
-    const name = toolNameFromPart(part);
-    return TOOL_LABELS[name] ?? "Working";
-  }
-  return null;
+/*
+  Some models emit tool calls as raw XML/DSML text instead of structured
+  tool-invocation parts. We strip those tags so the user only sees the
+  final answer.
+*/
+function stripToolXml(text: string): string {
+  return text
+    .replace(/<｜[^>]*>/g, "")
+    .replace(/<\/｜[^>]*>/g, "")
+    .replace(/<tool_call>[\s\S]*?<\/tool_call>/gi, "")
+    .replace(/<arg_key>[\s\S]*?<\/arg_key>/gi, "")
+    .replace(/<arg_value>[\s\S]*?<\/arg_value>/gi, "")
+    .replace(/<invoke[^>]*>[\s\S]*?<\/invoke>/gi, "")
+    .replace(/<parameter[^>]*>[\s\S]*?<\/parameter>/gi, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function messageText(message: UIMessage): string {
@@ -43,77 +36,76 @@ function messageText(message: UIMessage): string {
     .join("");
 }
 
-type AgentAvatarProps = {
-  readonly agent: AgentPersona;
-};
-
-function AgentAvatar({ agent }: AgentAvatarProps): React.ReactElement {
-  return (
-    <span className="relative flex size-7 shrink-0 overflow-hidden rounded-full bg-muted">
-      <Image src={agent.avatarImage} alt="" fill className="object-cover" />
-    </span>
-  );
-}
-
 type AgentChatMessagesProps = {
   messages: readonly UIMessage[];
   isBusy: boolean;
   agent: AgentPersona;
 };
 
+function TypingIndicator(): React.ReactElement {
+  return (
+    <div className="flex items-center gap-2.5 py-0.5">
+      <Diamond className="size-4 text-muted-foreground/60" />
+      <span className="text-sm text-muted-foreground/60">Thinking</span>
+    </div>
+  );
+}
+
 export function AgentChatMessages({
   messages,
   isBusy,
   agent,
 }: AgentChatMessagesProps): React.ReactElement {
-  const lastMessage = messages.at(-1);
-  const lastIsEmptyAssistantTurn =
-    isBusy &&
-    (!lastMessage || lastMessage.role === "user" || messageText(lastMessage).length === 0);
-  const toolLabel = lastMessage ? activeToolLabel(lastMessage) : null;
-
   return (
     <div className="flex flex-col gap-5">
-      {messages.map((message) => (
-        <div
-          key={message.id}
-          className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
-        >
-          {message.role === "assistant" && <AgentAvatar agent={agent} />}
-          <div
-            className={cn(
-              "max-w-[80%] text-sm leading-relaxed",
-              message.role === "user"
-                ? "rounded-xl bg-muted px-4 py-2.5 text-foreground"
-                : "px-1 py-1 text-foreground",
-            )}
-          >
-            {message.role === "user" ? (
-              messageText(message)
-            ) : (
-              <Markdown text={messageText(message)} />
-            )}
-          </div>
-        </div>
-      ))}
+      {messages.map((message) => {
+        const rawText = messageText(message);
+        const text = stripToolXml(rawText);
+        const isLast = message === messages[messages.length - 1];
+        const isAssistant = message.role === "assistant";
 
-      {lastIsEmptyAssistantTurn && (
-        <div className="flex gap-3">
-          <span className="relative flex size-7 shrink-0 overflow-hidden rounded-full bg-muted">
-            <Image
-              src={toolLabel ? codingCharacter : thinkingCharacter}
-              alt=""
-              fill
-              className="object-cover"
-            />
-          </span>
-          <div className="flex items-center px-1 py-1">
-            <AiThinking phrases={toolLabel ? [`${toolLabel}…`] : agent.thinkingPhrases}>
-              <span />
-            </AiThinking>
-          </div>
-        </div>
-      )}
+        // Show "Thinking..." only for the last assistant bubble while streaming
+        // and there is no visible text yet.
+        const showTyping = isBusy && isAssistant && isLast && text.length === 0;
+
+        return (
+          <motion.div
+            key={`msg-${message.id}`}
+            initial={message.role === "user" ? { opacity: 0, y: 8, x: 12 } : false}
+            animate={{ opacity: 1, y: 0, x: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
+            className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
+          >
+            {isAssistant && (
+              <span className="relative flex size-8 shrink-0 overflow-hidden rounded-lg bg-muted/50">
+                <Image
+                  src={agent.avatarImage}
+                  alt={agent.name}
+                  fill
+                  className="object-contain"
+                />
+              </span>
+            )}
+
+            <div
+              className={cn(
+                "max-w-[85%] text-sm leading-relaxed",
+                message.role === "user"
+                  ? "rounded-2xl bg-muted px-4 py-3 text-foreground"
+                  : "px-1 py-1 text-foreground",
+              )}
+            >
+              {message.role === "user" ? (
+                <span className="whitespace-pre-wrap">{rawText}</span>
+              ) : showTyping ? (
+                <TypingIndicator />
+              ) : (
+                <Markdown text={text} />
+              )}
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

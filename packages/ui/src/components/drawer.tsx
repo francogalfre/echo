@@ -61,7 +61,7 @@ function DrawerContent({
           direction === "right" && "right-0 rounded-l-2xl border-l",
           direction === "left" && "left-0 rounded-r-2xl border-r",
           direction === "bottom" &&
-            "inset-x-0 bottom-0 mx-auto max-h-[85vh] w-full max-w-2xl rounded-t-2xl border " +
+            "inset-x-0 bottom-0 mx-auto max-h-[92vh] w-full max-w-2xl rounded-t-2xl border " +
               "border-b-0 border-border shadow-md ring-1 ring-foreground/10",
           className,
         )}

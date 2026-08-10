@@ -3,7 +3,6 @@
 import { Drawer, DrawerContent } from "@echo/ui/components/drawer";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useChatConversations } from "../../hooks/use-chat-conversations";
 import { useChatThread } from "../../hooks/use-chat-thread";
 import { useChatUsage } from "../../hooks/use-chat-usage";
 import { ErrorCard } from "../error-card";
@@ -12,7 +11,6 @@ import { AGENT_PERSONAS } from "./agent-personas";
 import { AgentChatComposer } from "./agent-chat-composer";
 import { AgentChatEmptyState } from "./agent-chat-empty-state";
 import { AgentChatHeader } from "./agent-chat-header";
-import { AgentChatHistory } from "./agent-chat-history";
 import { AgentChatMessages } from "./agent-chat-messages";
 
 type AgentChatProps = {
@@ -23,13 +21,11 @@ type AgentChatProps = {
 const SUGGESTED_QUESTIONS = [
   "What do users dislike most?",
   "What features are requested the most?",
-  "How many negative reviews mention billing?",
   "What are the biggest pain points?",
 ];
 
 export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactElement {
   const [input, setInput] = useState("");
-  const [view, setView] = useState<"chat" | "history">("chat");
   const [usageReloadKey, setUsageReloadKey] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -39,7 +35,6 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const echo = AGENT_PERSONAS.echo;
 
   const thread = useChatThread();
-  const conversations = useChatConversations();
   const usage = useChatUsage(usageReloadKey);
 
   const isBusy = thread.status === "submitted" || thread.status === "streaming";
@@ -75,27 +70,6 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
     [thread, isBusy],
   );
 
-  const openHistory = useCallback(async (): Promise<void> => {
-    setView("history");
-    await conversations.refresh();
-  }, [conversations]);
-
-  const selectConversation = useCallback(
-    async (id: string): Promise<void> => {
-      const priorMessages = await conversations.loadMessages(id);
-      scrolledUpRef.current = false;
-      thread.resumeConversation(id, priorMessages);
-      setView("chat");
-    },
-    [conversations, thread],
-  );
-
-  const startNewConversation = useCallback((): void => {
-    scrolledUpRef.current = false;
-    thread.startNewConversation();
-    setView("chat");
-  }, [thread]);
-
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     sendMessage(input);
@@ -112,60 +86,42 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="p-0">
-          <AgentChatHeader
-            agent={echo}
-            usage={usage.state}
-            onOpenHistory={() => void openHistory()}
+          <AgentChatHeader agent={echo} usage={usage.state} />
+
+          <div
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex h-120 flex-col overflow-y-auto p-6"
+          >
+            {thread.messages.length === 0 && (
+              <AgentChatEmptyState
+                agent={echo}
+                questions={SUGGESTED_QUESTIONS}
+                disabled={isBusy}
+                onSelect={sendMessage}
+              />
+            )}
+
+            <AgentChatMessages messages={thread.messages} isBusy={isBusy} agent={echo} />
+
+            {thread.status === "error" && thread.error && (
+              <ErrorCard
+                className="mt-4"
+                message={thread.error.message || "Something went wrong. Please try again."}
+              />
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          <AgentChatComposer
+            value={input}
+            inputRef={inputRef}
+            disabled={isBusy}
+            onChange={setInput}
+            onSubmit={handleSubmit}
+            onKeyDown={handleKeyDown}
           />
-
-          {view === "history" ? (
-            <AgentChatHistory
-              conversations={conversations.conversations}
-              loading={conversations.loading}
-              activeId={thread.conversationId}
-              onSelect={(id) => void selectConversation(id)}
-              onNewConversation={startNewConversation}
-            />
-          ) : (
-            <div
-              ref={containerRef}
-              onScroll={handleScroll}
-              className="flex h-[400px] flex-col overflow-y-auto p-6"
-            >
-              {thread.messages.length === 0 && (
-                <AgentChatEmptyState
-                  agent={echo}
-                  questions={SUGGESTED_QUESTIONS}
-                  disabled={isBusy}
-                  onSelect={sendMessage}
-                />
-              )}
-
-              <AgentChatMessages messages={thread.messages} isBusy={isBusy} agent={echo} />
-
-              {thread.status === "error" && thread.error && (
-                <ErrorCard
-                  className="mt-4"
-                  message={
-                    thread.error.message || "Something went wrong. Please try again."
-                  }
-                />
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-
-          {view === "chat" && (
-            <AgentChatComposer
-              value={input}
-              inputRef={inputRef}
-              disabled={isBusy}
-              onChange={setInput}
-              onSubmit={handleSubmit}
-              onKeyDown={handleKeyDown}
-            />
-          )}
         </DrawerContent>
       </Drawer>
 

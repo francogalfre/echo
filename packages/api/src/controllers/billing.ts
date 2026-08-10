@@ -1,4 +1,4 @@
-import { dayKey } from "../lib/dates";
+import { dayKey, weekKey } from "../lib/dates";
 import {
   FREE_FEEDBACK_LIMIT,
   FREE_INSIGHT_DAILY_LIMIT,
@@ -6,8 +6,8 @@ import {
   PRO_DIGEST_DAILY_LIMIT,
   PRO_INSIGHT_DAILY_LIMIT,
   PRO_PROJECT_LIMIT,
-  FREE_CHAT_DAILY_LIMIT,
-  PRO_CHAT_DAILY_LIMIT,
+  FREE_CHAT_WEEKLY_LIMIT,
+  PRO_CHAT_WEEKLY_LIMIT,
   isPro,
 } from "../lib/plan";
 import { getUsageCount } from "../services/ai/usage";
@@ -29,6 +29,7 @@ export async function getBillingOverview(
   userId: string,
 ): Promise<BillingOverview> {
   const day = dayKey(new Date());
+  const week = weekKey(new Date());
 
   const [plan, feedbackUsed, insightsUsed, cachedDigest, projectsUsed, chatUsed] =
     await Promise.all([
@@ -37,7 +38,7 @@ export async function getBillingOverview(
       getUsageCount(organizationId, "insight", day),
       getDigest(organizationId),
       countOwnedOrganizations(userId),
-      getUsageCount(organizationId, "chat", day),
+      getUsageCount(organizationId, "chat", week),
     ]);
 
   const pro = isPro(plan);
@@ -64,7 +65,7 @@ export async function getBillingOverview(
     },
     chat: {
       used: chatUsed,
-      limit: pro ? PRO_CHAT_DAILY_LIMIT : FREE_CHAT_DAILY_LIMIT,
+      limit: pro ? PRO_CHAT_WEEKLY_LIMIT : FREE_CHAT_WEEKLY_LIMIT,
     },
   };
 }

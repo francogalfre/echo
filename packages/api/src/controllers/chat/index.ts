@@ -1,4 +1,5 @@
 import { buildAgentUsage, streamChatResponse, type UIMessage } from "@echo/ai";
+import { createUIMessageStreamResponse } from "ai";
 
 import {
   buildFeedbackRetriever,
@@ -127,7 +128,7 @@ export async function streamChatTurn(
       spendBudget: createBudget(chatToolBudgetChars),
     });
 
-    const response = streamResult.toUIMessageStreamResponse({
+    const uiMessageStream = streamResult.toUIMessageStream({
       originalMessages: allMessages,
       generateMessageId: () => crypto.randomUUID(),
       onFinish: async ({ responseMessage }) => {
@@ -173,7 +174,12 @@ export async function streamChatTurn(
       },
     });
 
-    response.headers.set("X-Conversation-Id", conversation.id);
+    const response = createUIMessageStreamResponse({
+      stream: uiMessageStream,
+      headers: {
+        "X-Conversation-Id": conversation.id,
+      },
+    });
 
     return { success: true, response, conversationId: conversation.id };
   } catch (error) {

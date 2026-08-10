@@ -18,13 +18,14 @@ export const AGENT_PERSONAS = {
   echo: {
     id: "echo",
     name: "Echo",
-    role: "Reads your feedback and explains it",
-    description: "Reads all feedback and answers your questions about it.",
+    role: "Analyzes your feedback and helps you grow",
+    description:
+      "Echo reads every piece of feedback, identifies patterns, and tells you exactly what users love, what frustrates them, and what to build next.",
     icon: Icons.message,
     avatarImage: echoIdle,
     color: "text-accent",
     bgColor: "bg-accent/8",
-    thinkingPhrases: ["Reading feedback", "Thinking", "Preparing answer"],
+    thinkingPhrases: ["Digging through feedback…", "Connecting the dots…", "Almost there…"],
   },
 } as const;
 

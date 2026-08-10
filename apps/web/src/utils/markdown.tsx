@@ -35,10 +35,18 @@ function renderInline(text: string): React.ReactNode {
 
     const token = match[0];
     if (token.startsWith("**")) {
-      nodes.push(<strong key={`${token}-${start}`}>{token.slice(2, -2)}</strong>);
+      // Use medium weight instead of strong for lighter feel
+      nodes.push(
+        <span key={`${token}-${start}`} className="font-medium text-foreground">
+          {token.slice(2, -2)}
+        </span>,
+      );
     } else {
       nodes.push(
-        <code key={`${token}-${start}`} className="rounded bg-muted px-1 py-0.5 text-xs">
+        <code
+          key={`${token}-${start}`}
+          className="rounded bg-muted px-1 py-0.5 text-[11px]"
+        >
           {token.slice(1, -1)}
         </code>,
       );
@@ -59,16 +67,21 @@ export function Markdown({ text, className }: MarkdownProps): React.ReactElement
   const blocks = parseBlocks(text);
 
   return (
-    <div className={cn("flex flex-col gap-2 text-sm leading-relaxed", className)}>
-      {blocks.map((block) =>
+    <div
+      className={cn(
+        "flex flex-col gap-1.5 text-sm leading-relaxed text-foreground/90",
+        className,
+      )}
+    >
+      {blocks.map((block, i) =>
         block.type === "list" ? (
-          <ul key={block.items.join("|")} className="list-disc space-y-1 pl-4">
-            {block.items.map((item) => (
-              <li key={item}>{renderInline(item)}</li>
+          <ul key={`ul-${i}`} className="list-disc space-y-1 pl-4">
+            {block.items.map((item, j) => (
+              <li key={`li-${i}-${j}-${item.slice(0, 20)}`}>{renderInline(item)}</li>
             ))}
           </ul>
         ) : (
-          <p key={block.text}>{renderInline(block.text)}</p>
+          <p key={`p-${i}`}>{renderInline(block.text)}</p>
         ),
       )}
     </div>

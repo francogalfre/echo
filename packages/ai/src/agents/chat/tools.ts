@@ -71,6 +71,24 @@ function withBudget<T>(
   return output;
 }
 
+const ECHO_INFO = {
+  name: "Echo",
+  description:
+    "Echo is an AI-powered feedback management platform. It collects user feedback through widgets, API, and feedback pages, then uses AI to analyze, summarize, and extract insights.",
+  features: [
+    "Feedback collection via widget, API, and custom feedback pages",
+    "AI-powered analysis and sentiment detection",
+    "Weekly digests with themes, issues, and mood summaries",
+    "Board view for organizing feedback into columns",
+    "Team collaboration with role-based access",
+    "Echo agent for natural language Q&A over all feedback",
+  ],
+  pricing: {
+    free: "Up to 300 feedback entries, 1 project, 3 insights/day, 1 digest/week, 10 chat messages/week",
+    pro: "Unlimited feedback, 5 projects, 50 insights/day, 10 digests/day, 50 chat messages/week",
+  },
+};
+
 export function buildFeedbackTools(
   retriever: FeedbackRetriever,
   spendBudget: (chars: number) => boolean,
@@ -146,6 +164,38 @@ export function buildFeedbackTools(
         const digest = await retriever.readDigest();
         if (!digest) return { available: false as const };
         return withBudget(spendBudget, { available: true as const, digest });
+      },
+    }),
+
+    getEchoInfo: tool({
+      description:
+        "Answer questions about Echo the product itself — what it does, features, pricing, " +
+        "how it works. Use this when the user asks about Echo (not user feedback).",
+      inputSchema: z.object({
+        topic: z
+          .enum(["features", "pricing", "how_it_works", "general"])
+          .default("general"),
+      }),
+      execute: async ({ topic }) => {
+        if (topic === "pricing") {
+          return {
+            name: ECHO_INFO.name,
+            pricing: ECHO_INFO.pricing,
+          };
+        }
+        if (topic === "features") {
+          return {
+            name: ECHO_INFO.name,
+            description: ECHO_INFO.description,
+            features: ECHO_INFO.features,
+          };
+        }
+        return {
+          name: ECHO_INFO.name,
+          description: ECHO_INFO.description,
+          features: ECHO_INFO.features,
+          pricing: ECHO_INFO.pricing,
+        };
       },
     }),
   };

@@ -127,6 +127,13 @@
       "when": 1785855992678,
       "tag": "0017_notifications_link",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1785936800000,
+      "tag": "0018_ai_usage_day_text",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE ai_usage ALTER COLUMN day TYPE text;
