@@ -3,6 +3,7 @@
 import { Button } from "@echo/ui/components/button";
 import type { ButtonVariantProps } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
+import { cn } from "@echo/ui/lib/utils";
 
 import { useUpgradeCheckout } from "@/utils/use-upgrade-checkout";
 
@@ -23,7 +24,7 @@ export const BillingUpgradeButton = ({
       disabled={loading}
       size={size}
       scaleOnHover={false}
-      className={className}
+      className={cn("hover:bg-accent/85", className)}
     >
       {loading ? <Icons.loading className="size-4 animate-spin" /> : "Upgrade to Pro"}
     </Button>

@@ -90,10 +90,8 @@ const PlanCard = ({ definition, isCurrent }: PlanCardProps): React.ReactElement 
   return (
     <SettingsCard
       className={cn(
-        "relative overflow-hidden transition-[box-shadow,transform] duration-200 ease-out",
-        isPro
-          ? "ring-2 ring-accent/40 hover:-translate-y-0.5 hover:shadow-md"
-          : "ring-1 ring-foreground/10 hover:shadow-sm hover:ring-foreground/20",
+        "relative overflow-hidden",
+        isPro ? "ring-2 ring-accent/40" : "ring-1 ring-foreground/10",
       )}
     >
       {isPro ? (

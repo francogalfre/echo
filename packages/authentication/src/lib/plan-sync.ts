@@ -78,7 +78,6 @@ export async function syncPlanFromCustomerState(
   await applyPlanForUser(externalId, payload.data.activeSubscriptions);
 }
 
-// Pulls the customer state directly so the checkout success page doesn't depend on a webhook reaching this server (e.g. local dev with no public URL).
 export async function syncPlanForUser(userId: string): Promise<void> {
   const state = await polarClient.customers.getStateExternal({ externalId: userId });
   await applyPlanForUser(userId, state.activeSubscriptions);
