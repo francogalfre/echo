@@ -4,6 +4,7 @@ import { enforceQuota } from "../quota";
 import { recordAiEvent } from "../../services/ai/events";
 import { getFeedbackById, setFeedbackInsight } from "../../services/feedback";
 import type { InsightResult } from "../../types";
+import { logError } from "../../lib/logger";
 
 export async function generateFeedbackInsight(
   organizationId: string,
@@ -53,7 +54,7 @@ export async function generateFeedbackInsight(
 
     return { success: true, insight, cached: false };
   } catch (error) {
-    console.error(`[echo:ai] failed to generate insight for ${feedbackId}`, error);
+    logError(`[echo:ai] failed to generate insight for ${feedbackId}`, error);
     await decision.release();
     await recordAiEvent({
       organizationId,

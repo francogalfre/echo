@@ -8,6 +8,7 @@ import { insertNotification } from "../../services/notifications";
 import { getOrgPlan } from "../../services/organization";
 import type { SubmitResult } from "../../types";
 import { enqueue } from "../enqueue";
+import { logError } from "../../lib/logger";
 
 export async function createFeedback(data: InsertFeedback): Promise<SubmitResult> {
   const plan = await getOrgPlan(data.organizationId);
@@ -37,7 +38,7 @@ export async function createFeedback(data: InsertFeedback): Promise<SubmitResult
     body: data.content.length > 120 ? `${data.content.slice(0, 120)}…` : data.content,
     link: `/dashboard/feedback?feedback=${id}`,
   }).catch((error: unknown) => {
-    console.error("[echo:notifications] failed to write feedback.received", error);
+    logError("[echo:notifications] failed to write feedback.received", error);
   });
 
   return { success: true, id };

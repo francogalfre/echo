@@ -2,6 +2,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 
 import { sha256 } from "./crypto";
 import { redis } from "./redis";
+import { logError } from "./logger";
 
 type Allowed = { allowed: true };
 type Blocked = { allowed: false; silent: boolean; message: string };
@@ -39,7 +40,7 @@ function hashContent(ip: string, content: string): string {
 }
 
 function logRedisFailure(context: string, error: unknown): void {
-  console.error(`redis rate-limit transport error in ${context}, failing open`, error);
+  logError(`redis rate-limit transport error in ${context}, failing open`, error);
 }
 
 export async function guardSubmission(

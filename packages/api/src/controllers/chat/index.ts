@@ -19,6 +19,7 @@ import {
   type ChatConversationSummary,
 } from "../../services/chat/conversations";
 import { getDigest } from "../../services/feedback/digest";
+import { logError } from "../../lib/logger";
 
 const chatToolBudgetChars = 24_000;
 
@@ -170,7 +171,7 @@ export async function streamChatTurn(
             status: "ok",
           });
         } catch (persistError) {
-          console.error("[echo:ai] failed to persist chat turn", persistError);
+          logError("[echo:ai] failed to persist chat turn", persistError);
         }
       },
     });
@@ -184,7 +185,7 @@ export async function streamChatTurn(
 
     return { success: true, response, conversationId: conversation.id };
   } catch (error) {
-    console.error("[echo:ai] chat stream failed", error);
+    logError("[echo:ai] chat stream failed", error);
     await decision.release();
 
     return {

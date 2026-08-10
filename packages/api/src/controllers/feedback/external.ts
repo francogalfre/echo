@@ -10,6 +10,7 @@ import {
 import { listFeedback } from "../../services/feedback";
 import type { ListResult, SubmitResult } from "../../types";
 import { createFeedback } from "./create";
+import { logError } from "../../lib/logger";
 
 type FeedbackInput = {
   authorization: string | undefined;
@@ -69,7 +70,7 @@ async function createFeedbackWithKey(
     return { success: false, status: 429, error: guard.message };
   }
 
-  touchLastUsed(keyRow.id).catch(console.error);
+  touchLastUsed(keyRow.id).catch((e) => logError("api-keys", e));
 
   return createFeedback({
     organizationId: keyRow.organizationId,
@@ -117,7 +118,7 @@ export async function getFeedback(input: {
     return { success: false, status: 429, error: guard.message };
   }
 
-  touchLastUsed(keyRow.id).catch(console.error);
+  touchLastUsed(keyRow.id).catch((e) => logError("api-keys", e));
 
   return {
     success: true,

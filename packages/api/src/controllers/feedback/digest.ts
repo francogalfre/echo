@@ -14,6 +14,7 @@ import {
   type DigestHistoryEntry,
 } from "../../services/feedback/digest";
 import { getOrgPlan } from "../../services/organization";
+import { logError } from "../../lib/logger";
 
 const freeDigestMaxItems = 100;
 const proDigestMaxItems = 500;
@@ -152,7 +153,7 @@ export async function generateFeedbackDigest(
       }),
     ]);
   } catch (error) {
-    console.error("[echo:ai] digest generation failed", error);
+    logError("[echo:ai] digest generation failed", error);
     await releaseQuota?.();
     await recordAiEvent({
       organizationId,

@@ -34,7 +34,8 @@ async function fetchServerSession(): Promise<ServerSession> {
 
     return (await response.json()) as ServerSession;
   } catch (error) {
-    console.error("Failed to fetch session for dashboard guard", error);
+    // Silent fail — user will be redirected to login
+    void error;
     return null;
   }
 }

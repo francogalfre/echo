@@ -21,7 +21,8 @@ export async function getActiveRole(): Promise<ActiveRole | null> {
     const data = (await response.json()) as { role: string };
     return data.role === "owner" || data.role === "admin" ? data.role : "member";
   } catch (error) {
-    console.error("Failed to fetch active role for route guard", error);
+    // Silent fail — role guard will handle missing role
+    void error;
     return null;
   }
 }
