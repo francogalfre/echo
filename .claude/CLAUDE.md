@@ -1,173 +1,102 @@
-# Echo — Claude Code Configuration
+# CLAUDE.md
 
-## Project Context
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-**Echo** is a developer-first feedback infrastructure SaaS.
+Detailed coding standards live in `.claude/CLAUDE.md` and `.claude/rules/*.md` (architecture, trpc-api,
+react, typescript, database, security, testing) — read those before writing code. This file covers
+commands and the big-picture architecture needed to navigate the repo.
 
-**Stack**:
+## Commands
 
-- Monorepo: Turborepo + Bun
-- Frontend: Next.js 15 (App Router)
-- Backend: Hono + tRPC
-- Database: PostgreSQL (Supabase)
-- ORM: Drizzle
-- Auth: Better-Auth
-- AI: Vercel AI SDK + OpenRouter
+This is a Bun + Turborepo monorepo. Run everything from the repo root unless noted.
 
-**Core Architecture**:
+```bash
+bun install              # install all workspaces
+bun run dev               # start all apps (web :3001, server :3000)
+bun run dev:web           # web only
+bun run dev:server        # server only
 
-- Multi-tenant with `organizations` → `projects` → `feedback`
-- API-first: API keys (secret/publishable) for public feedback endpoints
-- Free tier: 1 project, sentiment included, limited feedback volume
-- Pro tier: Usage-based billing, resumes, advanced features
+bun run check:types       # turbo check-types across all packages/apps
+bun run lint              # oxlint
+bun run format             # oxfmt --write
+bun run check              # lint + format
 
----
-
-## Code Standards
-
-### TypeScript
-
-- **Always** enable `strict: true` in tsconfig
-- **Never** use `any` type — this is an error in ESLint
-- Use **branded types** for IDs: `type ProjectId = string & { readonly __brand: 'ProjectId' }`
-- Discriminated unions for state machines (e.g., FeedbackStatus)
-- Return types on functions are explicit, always
-
-### File Organization
-
-- **Max 300 lines per file** — break up into smaller modules if longer
-- **Max 100 characters per line** (enforced by Prettier)
-- **Imports at top**, organized: external → internal packages → relative paths
-- **No default exports** — named exports for better refactoring
-- **No empty catch blocks** — always handle or rethrow
-
-### Functions & Methods
-
-- **Explicit return types**: `function getId(): ProjectId`
-- **Short parameter lists**: if >3 params, use object destructuring
-- **Early returns** to reduce nesting
-- **No side effects in pure functions** — be explicit about I/O
-
-### React Components
-
-- **Server components by default** in Next.js
-- `'use client'` only at leaf components, not at page level
-- Props interface explicitly typed
-- No logic in JSX — extract to `utils/` or component hooks
-
-### Error Handling
-
-- **Use Result types** for domain errors: `type Result<T> = { success: true, data: T } | { success: false, error: string }`
-- **Never swallow errors silently** — log or rethrow
-- **Validate at boundaries**: API routes, tRPC procedures, form inputs
-- Use **Zod** for runtime validation
-
-### Database
-
-- Drizzle **schema files** live in `packages/database/schema/`
-- **Migrations** are auto-generated, manually edited only in emergencies
-- **RLS (Row-Level Security)** enforced at Postgres level for multi-tenancy
-- No N+1 queries — always `.with()` or explicit joins
-
-### API Design (tRPC)
-
-- **Input validation with Zod** on every procedure
-- **Authorization checks first** in middleware
-- **Consistent error codes**: UNAUTHORIZED, FORBIDDEN, NOT_FOUND, INVALID_INPUT
-- **Lean API** — only expose what frontend needs
-
----
-
-## Testing
-
-- Write tests as you code — don't leave 100% untested features
-- **Unit tests** for utils, types, logic
-- **Integration tests** for API routes + database
-- Test names should read like documentation: `should reject API key if not prefixed with echo_`
-- Use test factories for common fixtures (e.g., `createMockProject()`)
-
----
-
-## Performance & Security
-
-- **API keys**: never log in plain text, always hash before storage
-- **Rate limiting**: per API key, not per IP (keys can come from behind proxies)
-- **Environment variables**: use `@t3-oss/env-nextjs` for validation
-- **Client secrets**: never expose in frontend bundles
-- **SQL injection**: Drizzle parameterized queries prevent this — never concatenate SQL
-
----
-
-## Documentation
-
-- **Code comments**: only for _why_, not _what_ — the code should be clear enough
-- **README.md**: at each package level, explains what the package does
-- **API docs**: tRPC automatically exposes types — that IS the documentation
-- TypeScript types are documentation — use them heavily
-
----
-
-## Debugging
-
-- `console.warn()` and `console.error()` are allowed in production (ESLint allows these)
-- `console.log()` is a warning — remove before committing
-- Use `DEBUG=echo:*` environment variable for conditional logging (adopt standard)
-- Never commit `debugger` statements
-
----
-
-## Git & Commits
-
-- **Atomic commits**: one feature/fix per commit, testable on its own
-- **Descriptive commit messages**: "Add sentiment classification for feedback" not "fix stuff"
-- Use **conventional commits** if team adopts: `feat(api): add feedback POST endpoint`
-- Never put your name and descriptions in the commits. Only the title.
-
----
-
-## Common Gotchas in Echo
-
-1. **Multi-tenancy**: Always filter by `organizationId` at database level — never trust the frontend
-2. **API key validation**: Check the key type (secret vs. publishable) before allowing operations
-3. **Feedback source tracking**: Include `source: 'api' | 'form' | 'widget'` on every feedback insert
-4. **Plan limits**: Check `plan` column on `organizations` before allowing features (Pro only)
-
----
-
-## Folder Structure You'll See
-
-```
-echo/
-├── apps/
-│   ├── web/              # Next.js dashboard
-│   └── server/           # Hono backend (experimental, keep minimal)
-├── packages/
-│   ├── api/              # tRPC routers
-│   ├── auth/             # Better-Auth config
-│   ├── database/         # Drizzle ORM + schema
-│   ├── environment/      # Env var validation
-│   ├── ui/               # Shared React components
-│   └── configuration/    # Shared config
-└── .claude/              # This directory
-
+bun run db:push            # drizzle-kit push (packages/database)
+bun run db:generate        # drizzle-kit generate — migrations, commit the output
+bun run db:migrate         # drizzle-kit migrate
+bun run db:studio          # drizzle studio
 ```
 
----
+Tests run per-package with Vitest (no root test script) — `cd` into the package first:
 
-## When to Ask for Help
+```bash
+cd packages/api && bun run test                       # all tests in packages/api
+cd packages/api && bunx vitest run src/path/to.test.ts # single file
+cd packages/api && bunx vitest run -t "test name"      # single test by name
+```
 
-Claude Code will try to implement features end-to-end. If stuck on:
+Packages with tests: `apps/server`, `packages/api`, `packages/ai`, `packages/authentication`, `packages/ui`.
+Test files live in `__tests__/` next to the source they cover (see `.claude/rules/testing.md`).
 
-- **Multi-tenancy edge cases**: Ask about authorization layer
-- **Drizzle migrations**: Ask about schema backwards compatibility
-- **tRPC type inference**: This is always tricky — explicit help here is good
-- **Performance**: Ask about N+1 queries or missing indexes
+`apps/web` has no `check-types`/test script of its own — type-check it via the root `check:types`.
+**Never run `next build` in `apps/web` while `bun dev` is running** — it clobbers the shared `.next`
+dev build. Use `tsc`/`check:types` to validate instead, and only build when dev isn't running.
 
-Just describe what you're trying to do and Claude will figure it out.
+Git hooks (lefthook): pre-commit runs oxlint + oxfmt on staged files; pre-push runs `check:types`.
 
----
+## Architecture
 
-## Last Note
+Echo is multi-tenant feedback infrastructure: `organizations` → `projects` → `feedback`. Note: Better-Auth's
+"organization" concept is what the UI surfaces to users as a "project" — one Better-Auth org per Echo project.
 
-Keep this file under 150 lines and specific. It's **guidance**, not law. If a pattern in the codebase contradicts this, follow the codebase — consistency beats doctrine.
-Never put comments in the code. Never put your name and descriptions in the commits
+### Two backend processes, one API package
+
+- `apps/server` (Hono, port 3000) — transport only. Mounts the Better-Auth handler, the tRPC adapter,
+  CORS, rate-limit middleware, and thin Hono routes. **Never imports `@echo/db` or runs queries directly.**
+- `apps/web` (Next.js 15 App Router, port 3001) — the dashboard. Talks to the server via tRPC and Better-Auth,
+  cross-origin (different ports/hosts even in dev).
+- `packages/api` (`@echo/api`) owns all business logic and is the only package with database access, split
+  into two layers:
+  - `services/` — data access only. One function per query/fetch, no validation, no orchestration.
+  - `controllers/` — validates input, authorizes, calls services in order, returns a `Result` type
+    (never throws for expected domain failures).
+  - `routers/` — tRPC routers, thin transport over controllers.
+  - `jobs/` — Postgres-backed job queue (kinds/registry/handlers); `apps/server/src/worker.ts` polls and
+    claims jobs, scheduled work runs through `jobs/bootstrap.ts`.
+
+  `packages/api`'s `package.json` `exports` map is deliberately narrow. `apps/web` may only import `.`
+  (via tRPC) and `./types` — never `./services/*` or `./controllers/*` directly. `apps/server` may import
+  `./controllers/*` and `./jobs/*`, but not `./services/*` (except `./services/jobs`, the queue's
+  claim/complete/fail primitives). Full contract in `.claude/rules/architecture.md`.
+
+### Workspace packages
+
+| Package                   | Name           | Purpose                                                                  |
+| ------------------------- | -------------- | ------------------------------------------------------------------------ |
+| `apps/web`                | `web`          | Next.js dashboard                                                        |
+| `apps/server`             | `server`       | Hono host: auth handler, tRPC adapter, routes, job worker                |
+| `packages/api`            | `@echo/api`    | tRPC routers, controllers, services, jobs (business logic + data access) |
+| `packages/database`       | `@echo/db`     | Drizzle schema (`src/schema/`), migrations, seed/backfill scripts        |
+| `packages/authentication` | `@echo/auth`   | Better-Auth config (email/OAuth, Polar billing plugin)                   |
+| `packages/ai`             | `@echo/ai`     | Vercel AI SDK agents (e.g. digest generation) via OpenRouter             |
+| `packages/ui`             | `@echo/ui`     | Shared shadcn/ui primitives + design tokens (`src/styles/globals.css`)   |
+| `packages/environment`    | `@echo/env`    | `@t3-oss/env-nextjs`-validated env vars                                  |
+| `packages/configuration`  | `@echo/config` | Shared `tsconfig`/tooling config                                         |
+| `packages/assets`         | `@echo/assets` | Static assets                                                            |
+
+### Frontend routing
+
+`apps/web/src/app/dashboard/` follows a co-location rule: every page owns its own `components/`; a
+component used by 2+ pages moves up to the nearest shared `components/` folder (never a page-local one).
+Route groups (e.g. `dashboard/(overview)/`) exist purely to give a page its own `components/` folder
+without changing the URL. Full route map and layout hierarchy in `.claude/rules/architecture.md`.
+
+Any client subtree using nuqs `useQueryState`/`useSearchParams` must be wrapped in `<Suspense>` or
+`next build` fails to prerender — `tsc`/oxlint won't catch this.
+
+### Multi-tenancy & auth
+
+- Every query must filter by `organizationId` at the database level — never trust the frontend.
+- Postgres RLS enforces tenant isolation as a second layer.
+- Public feedback endpoints (widget/API) use a separate API-key auth layer (secret vs. publishable keys),
+  distinct from the Better-Auth session used by the dashboard.

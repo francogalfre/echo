@@ -8,7 +8,7 @@ import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
 
 const timeoutMs = 20_000;
-const maxOutputTokens = 2000;
+const maxOutputTokens = 1300;
 const maxAttempts = 2;
 const retryDelayMs = 500;
 
@@ -24,11 +24,17 @@ export type DigestTheme = {
   insight: string;
 };
 
+export type DigestSuggestion = {
+  title: string;
+  detail: string;
+};
+
 export type DigestOutput = {
   executiveSummary: string;
   themes: DigestTheme[];
   topIssues: string[];
   positiveHighlight: string;
+  suggestions?: DigestSuggestion[];
 };
 
 const digestSchema = z.object({
@@ -44,6 +50,7 @@ const digestSchema = z.object({
     .max(5),
   topIssues: z.array(z.string()).max(3),
   positiveHighlight: z.string(),
+  suggestions: z.array(z.object({ title: z.string(), detail: z.string() })).max(3),
 });
 
 function sleep(ms: number): Promise<void> {

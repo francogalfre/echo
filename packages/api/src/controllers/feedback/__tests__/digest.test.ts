@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DigestOutput } from "@echo/ai";
 
-import { generateFeedbackDigest } from "../digest";
+import { generateFeedbackDigest, getFeedbackDigest } from "../digest";
 
 const SAMPLE_DIGEST: DigestOutput = {
   executiveSummary: "Users like the new dashboard.",
@@ -134,5 +134,61 @@ describe("generateFeedbackDigest", () => {
       error: "Daily digest limit (10) reached. Resets tomorrow.",
       upgrade: false,
     });
+  });
+});
+
+describe("getFeedbackDigest", () => {
+  beforeEach(() => {
+    vi.mocked(getDigest).mockReset();
+    vi.mocked(hasFeedbackSince).mockReset();
+    vi.mocked(getUsageCount).mockReset();
+    vi.mocked(getOrgPlan).mockReset();
+  });
+
+  it("should report canRegenerate as false when no new feedback arrived since the cached digest, even if the interval/quota would otherwise allow it", async () => {
+    const generatedAt = new Date("2026-07-06T00:00:00.000Z");
+    vi.mocked(getOrgPlan).mockResolvedValue("free");
+    vi.mocked(getDigest).mockResolvedValue({
+      digest: SAMPLE_DIGEST,
+      generatedAt,
+      feedbackCount: 81,
+    });
+    vi.mocked(hasFeedbackSince).mockResolvedValue(false);
+
+    const result = await getFeedbackDigest(ORG_ID);
+
+    expect(hasFeedbackSince).toHaveBeenCalledWith(ORG_ID, generatedAt);
+    expect(result.canRegenerate).toBe(false);
+  });
+
+  it("should report canRegenerate as true when new feedback arrived and the interval/quota allow it", async () => {
+    const generatedAt = new Date("2026-07-06T00:00:00.000Z");
+    vi.mocked(getOrgPlan).mockResolvedValue("free");
+    vi.mocked(getDigest).mockResolvedValue({
+      digest: SAMPLE_DIGEST,
+      generatedAt,
+      feedbackCount: 81,
+    });
+    vi.mocked(hasFeedbackSince).mockResolvedValue(true);
+
+    const result = await getFeedbackDigest(ORG_ID);
+
+    expect(result.canRegenerate).toBe(true);
+  });
+
+  it("should report canRegenerate as false when the pro daily quota is exhausted, without checking new feedback first", async () => {
+    const generatedAt = new Date("2026-07-06T00:00:00.000Z");
+    vi.mocked(getOrgPlan).mockResolvedValue("pro");
+    vi.mocked(getUsageCount).mockResolvedValue(10);
+    vi.mocked(getDigest).mockResolvedValue({
+      digest: SAMPLE_DIGEST,
+      generatedAt,
+      feedbackCount: 81,
+    });
+    vi.mocked(hasFeedbackSince).mockResolvedValue(true);
+
+    const result = await getFeedbackDigest(ORG_ID);
+
+    expect(result.canRegenerate).toBe(false);
   });
 });

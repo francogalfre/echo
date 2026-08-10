@@ -45,14 +45,17 @@ export async function getFeedbackDigest(organizationId: string): Promise<DigestS
     return { digest: null, generatedAt: null, feedbackCount: 0, canRegenerate: true };
   }
 
-  let canRegenerate: boolean;
+  let eligible: boolean;
   if (isPro(plan)) {
     const used = await getUsageCount(organizationId, "digest", dayKey(new Date()));
-    canRegenerate = used < PRO_DIGEST_DAILY_LIMIT;
+    eligible = used < PRO_DIGEST_DAILY_LIMIT;
   } else {
     const ageMs = Date.now() - cached.generatedAt.getTime();
-    canRegenerate = ageMs >= FREE_DIGEST_INTERVAL_MS;
+    eligible = ageMs >= FREE_DIGEST_INTERVAL_MS;
   }
+
+  const canRegenerate =
+    eligible && (await hasFeedbackSince(organizationId, cached.generatedAt));
 
   return {
     digest: cached.digest,

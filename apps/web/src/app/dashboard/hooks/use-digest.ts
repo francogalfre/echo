@@ -35,14 +35,11 @@ export function useDigest(): {
   load: () => Promise<void>;
   generate: () => Promise<void>;
   history: DigestHistoryItem[];
-  selectedId: string | null;
-  selectHistoryEntry: (id: string | null) => void;
   upgradeReason: string | null;
   dismissUpgrade: () => void;
 } {
   const [state, setState] = useState<State>({ status: "idle" });
   const [history, setHistory] = useState<DigestHistoryItem[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [upgradeReason, setUpgradeReason] = useState<string | null>(null);
 
   const dismissUpgrade = useCallback((): void => setUpgradeReason(null), []);
@@ -105,7 +102,6 @@ export function useDigest(): {
           cached: result.cached,
         },
       });
-      setSelectedId(null);
       if (result.cached) {
         toast.success("Digest is already up to date");
       }
@@ -121,17 +117,11 @@ export function useDigest(): {
     }
   }, [loadHistory]);
 
-  const selectHistoryEntry = useCallback((id: string | null): void => {
-    setSelectedId(id);
-  }, []);
-
   return {
     state,
     load,
     generate,
     history,
-    selectedId,
-    selectHistoryEntry,
     upgradeReason,
     dismissUpgrade,
   };

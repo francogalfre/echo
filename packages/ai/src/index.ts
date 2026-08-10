@@ -8,7 +8,12 @@ export { generateInsight } from "./agents/insight";
 export type { InsightInput } from "./agents/insight";
 
 export { generateDigest } from "./agents/digest";
-export type { DigestInput, DigestOutput, DigestTheme } from "./agents/digest";
+export type {
+  DigestInput,
+  DigestOutput,
+  DigestSuggestion,
+  DigestTheme,
+} from "./agents/digest";
 
 export type { UIMessage } from "ai";
 export { streamChatResponse, type ChatStreamResult } from "./agents/chat";

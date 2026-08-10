@@ -1,5 +1,8 @@
 "use client";
 
+import { Diamond } from "@echo/ui/components/diamond";
+import { durations, easings } from "@echo/ui/lib/motion";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 
 type AiThinkingProps = {
@@ -11,6 +14,7 @@ const PHRASE_INTERVAL_MS = 2000;
 
 export function AiThinking({ phrases, children }: AiThinkingProps): React.ReactElement {
   const [index, setIndex] = useState(0);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     if (phrases.length < 2) return;
@@ -22,19 +26,24 @@ export function AiThinking({ phrases, children }: AiThinkingProps): React.ReactE
 
   return (
     <div className="flex flex-col gap-4">
-      <div
-        role="status"
-        aria-live="polite"
-        className="flex items-center gap-2.5 text-sm font-medium text-muted-foreground"
-      >
-        <span className="flex items-center gap-1">
-          <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground motion-reduce:animate-none" />
-          <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground [animation-delay:150ms] motion-reduce:animate-none" />
-          <span className="size-1.5 animate-pulse rounded-full bg-muted-foreground [animation-delay:300ms] motion-reduce:animate-none" />
-        </span>
-        <span key={phrases[index]} className="animate-in fade-in duration-200">
-          {phrases[index]}
-        </span>
+      <div role="status" aria-live="polite" className="flex items-center gap-3">
+        <Diamond className="size-6 text-muted-foreground" />
+        {reduced ? (
+          <span className="font-pixel text-xs text-muted-foreground">{phrases[index]}</span>
+        ) : (
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={phrases[index]}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: durations.base, ease: easings.out }}
+              className="font-pixel text-xs text-muted-foreground"
+            >
+              {phrases[index]}
+            </motion.span>
+          </AnimatePresence>
+        )}
       </div>
       <div aria-hidden="true">{children}</div>
     </div>

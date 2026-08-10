@@ -1,67 +1,38 @@
 "use client";
 
 import { Button } from "@echo/ui/components/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@echo/ui/components/drawer";
 import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
-import { formatRelativeTime } from "@echo/ui/lib/format";
-import { cn } from "@echo/ui/lib/utils";
-import { durations, easings } from "@echo/ui/lib/motion";
-import { AnimatePresence, motion } from "motion/react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { AiThinking } from "../ai-thinking";
 import { ErrorCard } from "../../error-card";
 import { UpgradeDialog } from "../../dialogs/upgrade-dialog";
 import { useDigest, type DigestItem } from "../../../hooks/use-digest";
-import {
-  AGENT_PERSONAS,
-  DIGEST_SECTIONS,
-  type DigestSectionId,
-} from "../../chat/agent-personas";
-import { DigestHistoryPanel } from "./digest-history";
-import { IssuesContent, MoodContent, DigestSkeleton } from "./digest-summary";
-import { ThemesContent } from "./digest-themes";
+import { AnalysisContent } from "./analysis-content";
+import { AnalysisHeader } from "./analysis-header";
+import { DigestHistoryRow } from "./digest-history-row";
+import { DigestSkeleton } from "./digest-summary";
 
 const SECTION_THINKING_PHRASES = [
+  "Thinking",
   "Reading feedback",
   "Finding patterns",
-  "Analyzing mood",
+  "Understanding",
+  "Cooking",
 ] as const;
 
-const SECTION_TRANSITION = { duration: durations.fast, ease: easings.out };
-
 type DigestModalProps = {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function DigestModal({ open, onOpenChange }: DigestModalProps): React.ReactElement {
-  const {
-    state,
-    load,
-    generate,
-    history,
-    selectedId,
-    selectHistoryEntry,
-    upgradeReason,
-    dismissUpgrade,
-  } = useDigest();
-  const [activeSection, setActiveSection] = useState<DigestSectionId>("issues");
+export function DigestModal({ onOpenChange }: DigestModalProps): React.ReactElement {
+  const { state, load, generate, history, upgradeReason, dismissUpgrade } = useDigest();
   const [lastReadyData, setLastReadyData] = useState<DigestItem | null>(null);
-  const echo = AGENT_PERSONAS.echo;
 
   useEffect(() => {
-    if (open) void load();
-  }, [open, load]);
+    void load();
+  }, [load]);
 
   useEffect(() => {
     if (state.status === "ready") setLastReadyData(state.data);
@@ -71,158 +42,54 @@ export function DigestModal({ open, onOpenChange }: DigestModalProps): React.Rea
   const isLoading = state.status === "loading";
   const data = state.status === "ready" ? state.data : isGenerating ? lastReadyData : null;
 
-  const selectedEntry = selectedId
-    ? (history.find((entry) => entry.id === selectedId) ?? null)
-    : null;
-  const activeDigest = selectedEntry ? selectedEntry.digest : data?.digest;
-  const feedbackCount = selectedEntry ? selectedEntry.feedbackCount : data?.feedbackCount;
-  const generatedAt = selectedEntry ? selectedEntry.generatedAt : data?.generatedAt;
-
   return (
     <>
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[90vh] sm:max-h-[85vh]">
-          <DrawerHeader className="border-b px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Image
-                  src={echo.avatarImage}
-                  alt={echo.name}
-                  className="size-8 shrink-0 rounded-full object-cover"
-                  priority
-                />
-                <div>
-                  <DrawerTitle>AI Analysis</DrawerTitle>
-                  {feedbackCount !== undefined && generatedAt && (
-                    <DrawerDescription>
-                      {feedbackCount} feedbacks ·{" "}
-                      {formatRelativeTime(generatedAt.toISOString())}
-                    </DrawerDescription>
-                  )}
-                </div>
-              </div>
-            </div>
-          </DrawerHeader>
+      <div className="flex h-full flex-col">
+        <AnalysisHeader
+          onClose={() => onOpenChange(false)}
+          feedbackCount={data?.feedbackCount}
+          generatedAt={data?.generatedAt}
+          canRegenerate={data?.canRegenerate}
+          isGenerating={isGenerating}
+          onRegenerate={() => void generate()}
+        />
 
-          {activeDigest && (
-            <div className="flex gap-1 border-b px-6">
-              {DIGEST_SECTIONS.map((section) => (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => setActiveSection(section.id)}
-                  disabled={isGenerating}
-                  className={cn(
-                    "flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors",
-                    "disabled:cursor-not-allowed disabled:opacity-50",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                    activeSection === section.id
-                      ? "border-accent text-foreground"
-                      : "border-transparent text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <section.icon className="size-4" />
-                  <span>{section.label}</span>
-                </button>
-              ))}
+        <div className="flex flex-1 flex-col overflow-y-auto px-6 py-6">
+          {isGenerating && (
+            <div className="m-auto">
+              <AiThinking phrases={SECTION_THINKING_PHRASES} />
             </div>
           )}
 
-          <div
-            className={cn(
-              "flex flex-1 flex-col overflow-y-auto p-6",
-              history.length > 0 && "sm:grid sm:grid-cols-[1fr_200px] sm:gap-6",
-            )}
-          >
-            <div className="flex flex-col gap-4">
-              {(isLoading || isGenerating) && (
-                <AiThinking phrases={SECTION_THINKING_PHRASES}>
-                  <DigestSkeleton />
-                </AiThinking>
-              )}
+          {isLoading && <DigestSkeleton />}
 
-              {state.status === "error" && (
-                <ErrorCard
-                  message="Could not load analysis. Please try again."
-                  onRetry={() => void load()}
-                />
-              )}
+          {state.status === "error" && (
+            <ErrorCard
+              message="Could not load analysis. Please try again."
+              onRetry={() => void load()}
+            />
+          )}
 
-              {state.status === "idle" && !isLoading && !selectedEntry && (
-                <EmptyState
-                  icon={<Icons.aiMagic />}
-                  title="No analysis yet"
-                  description="Generate an AI analysis of your feedback."
-                  action={
-                    <Button size="sm" onClick={() => void generate()}>
-                      <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
-                      Generate Analysis
-                    </Button>
-                  }
-                />
-              )}
-
-              {activeDigest && !isGenerating && (
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={activeSection}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={SECTION_TRANSITION}
-                  >
-                    {activeSection === "issues" && <IssuesContent digest={activeDigest} />}
-                    {activeSection === "themes" && <ThemesContent digest={activeDigest} />}
-                    {activeSection === "mood" && <MoodContent digest={activeDigest} />}
-                  </motion.div>
-                </AnimatePresence>
-              )}
-            </div>
-
-            {history.length > 0 && (
-              <div className="mt-4 flex flex-col gap-4 sm:mt-0">
-                <DigestHistoryPanel
-                  history={history}
-                  selectedId={selectedId}
-                  onSelect={selectHistoryEntry}
-                />
-              </div>
-            )}
-          </div>
-
-          {activeDigest && (
-            <DrawerFooter className="flex-row border-t px-6 pb-6 pt-4">
-              {selectedEntry ? (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => selectHistoryEntry(null)}
-                  disabled={isGenerating}
-                >
-                  <Icons.arrowLeft className="size-3.5" />
-                  Back to latest
+          {state.status === "idle" && !isLoading && (
+            <EmptyState
+              className="m-auto"
+              icon={<Icons.aiMagic />}
+              title="You don't have any analysis yet"
+              description="I can go through your feedback and tell you what stands out."
+              action={
+                <Button size="sm" onClick={() => void generate()}>
+                  <Icons.aiMagic data-icon="inline-start" className="size-3.5" />
+                  Generate Analysis
                 </Button>
-              ) : (
-                data?.canRegenerate && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => void generate()}
-                    disabled={isGenerating}
-                  >
-                    {isGenerating ? (
-                      <Icons.loading className="size-3.5 animate-spin" />
-                    ) : (
-                      <Icons.refresh className="size-3.5" />
-                    )}
-                    {isGenerating ? "Regenerating…" : "Regenerate"}
-                  </Button>
-                )
-              )}
-            </DrawerFooter>
+              }
+            />
           )}
-        </DrawerContent>
-      </Drawer>
+
+          {data && !isGenerating && <AnalysisContent digest={data.digest} />}
+        </div>
+
+        <DigestHistoryRow history={history} />
+      </div>
       <UpgradeDialog
         open={upgradeReason !== null}
         onOpenChange={(next) => {
