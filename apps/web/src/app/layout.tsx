@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 import { PostHogAuthSync } from "@/components/posthog-auth-sync";
 import { PostHogPageView } from "@/components/posthog-pageview";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 import type { Viewport } from "next";
 import type { ReactNode } from "react";
@@ -29,9 +30,11 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
       >
         <ThemeProvider attribute="class" defaultTheme="light">
           <NuqsAdapter>
-            {children}
-            <PostHogAuthSync />
-            <PostHogPageView />
+            <PostHogProvider>
+              {children}
+              <PostHogAuthSync />
+              <PostHogPageView />
+            </PostHogProvider>
           </NuqsAdapter>
           <Toaster position="top-right" />
         </ThemeProvider>
