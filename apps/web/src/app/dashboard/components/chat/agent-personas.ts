@@ -11,8 +11,6 @@ export type AgentPersona = {
   readonly avatarImage: StaticImageData;
   readonly color: string;
   readonly bgColor: string;
-  readonly avatarBg: string;
-  readonly avatarText: string;
   readonly thinkingPhrases: readonly string[];
 };
 
@@ -26,8 +24,6 @@ export const AGENT_PERSONAS = {
     avatarImage: echoIdle,
     color: "text-accent",
     bgColor: "bg-accent/8",
-    avatarBg: "bg-accent",
-    avatarText: "text-white",
     thinkingPhrases: ["Reading feedback", "Thinking", "Preparing answer"],
   },
 } as const;

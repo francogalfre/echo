@@ -10,6 +10,7 @@ import Link from "next/link";
 
 import type { BoardCard, BoardColumns } from "@echo/api/types";
 
+import { useRole } from "../../../hooks/use-role";
 import { FeedbackDialog } from "../../../feedback/components/feedback-dialog";
 import { toFeedbackItem } from "../../utils/to-feedback-item";
 import { BoardCardItem } from "../board-card";
@@ -36,6 +37,7 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
     handleRemove,
     handleClearDone,
   } = useBoardColumns(initialItems);
+  const { isAdmin } = useRole();
   const [selected, setSelected] = useState<BoardCard | null>(null);
 
   const totalItems = Object.values(columns).reduce((acc, arr) => acc + arr.length, 0);
@@ -95,7 +97,7 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
                   items={columns[col.id]}
                   removingIds={removingIds}
                   shouldReduceMotion={shouldReduceMotion}
-                  showClear={col.id === "done"}
+                  showClear={col.id === "done" && isAdmin}
                   onSelect={setSelected}
                   onRemove={handleRemove}
                   onClearDone={handleClearDone}

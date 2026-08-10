@@ -118,7 +118,14 @@ const FeedbackPage = async ({ params }: PageProps): Promise<React.ReactElement> 
         </div>
 
         {!hideBranding && (
-          <p className="mt-12 text-center text-xs text-muted-foreground">Powered by echo</p>
+          <a
+            href="https://echo.builders"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-12 block text-center text-xs text-muted-foreground no-underline"
+          >
+            Powered by echo
+          </a>
         )}
       </div>
     </main>

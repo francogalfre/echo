@@ -1,14 +1,6 @@
 "use client";
 
-import { Button } from "@echo/ui/components/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@echo/ui/components/drawer";
-import { Icons } from "@echo/ui/components/icons";
-import { cn } from "@echo/ui/lib/utils";
+import { Drawer, DrawerContent } from "@echo/ui/components/drawer";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useChatConversations } from "../../hooks/use-chat-conversations";
@@ -17,6 +9,9 @@ import { useChatUsage } from "../../hooks/use-chat-usage";
 import { ErrorCard } from "../error-card";
 import { UpgradeDialog } from "../dialogs/upgrade-dialog";
 import { AGENT_PERSONAS } from "./agent-personas";
+import { AgentChatComposer } from "./agent-chat-composer";
+import { AgentChatEmptyState } from "./agent-chat-empty-state";
+import { AgentChatHeader } from "./agent-chat-header";
 import { AgentChatHistory } from "./agent-chat-history";
 import { AgentChatMessages } from "./agent-chat-messages";
 
@@ -42,7 +37,6 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const scrolledUpRef = useRef(false);
 
   const echo = AGENT_PERSONAS.echo;
-  const EchoIcon = echo.icon;
 
   const thread = useChatThread();
   const conversations = useChatConversations();
@@ -107,7 +101,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
     sendMessage(input);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent): void => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage(input);
@@ -118,36 +112,11 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="p-0">
-          <DrawerHeader className="border-b py-4 pl-6 pr-14">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className={cn(
-                    "flex size-8 items-center justify-center rounded-full",
-                    echo.avatarBg,
-                  )}
-                >
-                  <EchoIcon className={cn("size-4", echo.avatarText)} />
-                </span>
-                <div>
-                  <DrawerTitle>{echo.name}</DrawerTitle>
-                  <p className="text-xs text-muted-foreground">
-                    {usage.state.status === "ready"
-                      ? `${usage.state.data.used}/${usage.state.data.limit} messages today`
-                      : echo.role}
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => void openHistory()}
-                aria-label="Chat history"
-              >
-                <Icons.clock className="size-4" />
-              </Button>
-            </div>
-          </DrawerHeader>
+          <AgentChatHeader
+            agent={echo}
+            usage={usage.state}
+            onOpenHistory={() => void openHistory()}
+          />
 
           {view === "history" ? (
             <AgentChatHistory
@@ -164,35 +133,12 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
               className="flex h-[400px] flex-col overflow-y-auto p-6"
             >
               {thread.messages.length === 0 && (
-                <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-                  <span
-                    className={cn(
-                      "flex size-12 items-center justify-center rounded-full",
-                      echo.avatarBg,
-                    )}
-                  >
-                    <EchoIcon className={cn("size-6", echo.avatarText)} />
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">Ask Echo anything</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Echo reads all your feedback and answers questions with real numbers.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {SUGGESTED_QUESTIONS.map((question) => (
-                      <Button
-                        key={question}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => sendMessage(question)}
-                        disabled={isBusy}
-                      >
-                        {question}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <AgentChatEmptyState
+                  agent={echo}
+                  questions={SUGGESTED_QUESTIONS}
+                  disabled={isBusy}
+                  onSelect={sendMessage}
+                />
               )}
 
               <AgentChatMessages messages={thread.messages} isBusy={isBusy} agent={echo} />
@@ -211,23 +157,14 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
           )}
 
           {view === "chat" && (
-            <div className="border-t p-4">
-              <form onSubmit={handleSubmit} className="flex gap-2">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask about your feedback..."
-                  className="flex-1 resize-none rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
-                  rows={1}
-                  disabled={isBusy}
-                />
-                <Button type="submit" size="icon" disabled={!input.trim() || isBusy}>
-                  <Icons.arrowRight className="size-4" />
-                </Button>
-              </form>
-            </div>
+            <AgentChatComposer
+              value={input}
+              inputRef={inputRef}
+              disabled={isBusy}
+              onChange={setInput}
+              onSubmit={handleSubmit}
+              onKeyDown={handleKeyDown}
+            />
           )}
         </DrawerContent>
       </Drawer>

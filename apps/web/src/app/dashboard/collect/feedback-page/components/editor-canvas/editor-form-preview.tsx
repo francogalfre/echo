@@ -3,6 +3,8 @@
 import { Icons } from "@echo/ui/components/icons";
 import { Rating } from "@echo/ui/components/reui/rating";
 
+import { useBillingOverview } from "@/app/dashboard/hooks/use-billing-overview";
+
 import type { ConfigValues } from "../types";
 import { AddFieldMenu, type AddableField } from "./add-field-menu";
 import { FauxField } from "./faux-field";
@@ -22,6 +24,9 @@ export function EditorFormPreview({
   onRemoveField,
   onAddField,
 }: EditorFormPreviewProps): React.ReactElement {
+  const { state } = useBillingOverview();
+  const isPro = state.status === "ready" && state.data.plan === "pro";
+
   return (
     <div className="mt-10 space-y-6">
       <FauxField label="Name" placeholder="Your name" />
@@ -57,7 +62,16 @@ export function EditorFormPreview({
       >
         Send feedback
       </button>
-      <p className="text-center text-xs text-muted-foreground">Powered by echo</p>
+      {!isPro && (
+        <a
+          href="https://echo.builders"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-center text-xs text-muted-foreground no-underline"
+        >
+          Powered by echo
+        </a>
+      )}
     </div>
   );
 }

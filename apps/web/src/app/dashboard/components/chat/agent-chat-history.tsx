@@ -28,9 +28,9 @@ export function AgentChatHistory({
   return (
     <div className="flex h-[400px] flex-col overflow-y-auto p-3">
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
-        className="mb-2 justify-start"
+        className="mb-2 justify-start text-muted-foreground"
         onClick={onNewConversation}
       >
         <Icons.circlePlus className="size-4" />

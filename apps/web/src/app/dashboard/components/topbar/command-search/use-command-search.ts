@@ -5,6 +5,8 @@ import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { useRole } from "../../../hooks/use-role";
+
 export type IconComponent = (typeof Icons)[keyof typeof Icons];
 
 export type CommandItem = {
@@ -13,6 +15,7 @@ export type CommandItem = {
   section: string;
   icon: IconComponent;
   shortcut?: string;
+  adminOnly?: boolean;
   run: (router: ReturnType<typeof useRouter>) => void;
 };
 
@@ -58,6 +61,7 @@ const COMMANDS: CommandItem[] = [
     title: "Feedback page",
     section: "Collect",
     icon: Icons.radar,
+    adminOnly: true,
     run: navigate("/dashboard/collect/feedback-page"),
   },
   {
@@ -65,6 +69,7 @@ const COMMANDS: CommandItem[] = [
     title: "API keys",
     section: "Collect",
     icon: Icons.lock,
+    adminOnly: true,
     run: navigate("/dashboard/collect/api"),
   },
   {
@@ -72,6 +77,7 @@ const COMMANDS: CommandItem[] = [
     title: "Widget",
     section: "Collect",
     icon: Icons.sparkles,
+    adminOnly: true,
     run: navigate("/dashboard/collect/widget"),
   },
   {
@@ -79,6 +85,7 @@ const COMMANDS: CommandItem[] = [
     title: "Team members",
     section: "Team",
     icon: Icons.user,
+    adminOnly: true,
     run: navigate("/dashboard/settings/team"),
   },
   {
@@ -86,6 +93,7 @@ const COMMANDS: CommandItem[] = [
     title: "Projects",
     section: "Team",
     icon: Icons.circlePlus,
+    adminOnly: true,
     run: navigate("/dashboard/settings/team"),
   },
   {
@@ -127,6 +135,7 @@ export function useCommandSearch(): {
   onPanelKeyDown: (event: React.KeyboardEvent) => void;
 } {
   const router = useRouter();
+  const { isAdmin } = useRole();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -134,10 +143,12 @@ export function useCommandSearch(): {
 
   const results = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return COMMANDS;
+    const available = COMMANDS.filter((item) => !item.adminOnly || isAdmin);
 
-    return COMMANDS.filter((item) => item.title.toLowerCase().includes(term));
-  }, [query]);
+    if (!term) return available;
+
+    return available.filter((item) => item.title.toLowerCase().includes(term));
+  }, [query, isAdmin]);
 
   const sections = useMemo(() => {
     const map = new Map<string, CommandItem[]>();

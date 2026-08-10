@@ -10,6 +10,8 @@ import { useEffect, type ReactNode } from "react";
 
 import { authClient, useSession } from "@/lib/auth-client";
 
+import { useRole } from "../../hooks/use-role";
+
 import { ExpandableNavLink, NavLink } from "./nav-item";
 import { OrgSwitcher } from "./org-switcher";
 import type { NavItem } from "./types";
@@ -54,6 +56,7 @@ export const Sidebar = ({ usageMeterSlot }: SidebarProps): React.ReactElement =>
 
   const { data: session, isPending: sessionPending } = useSession();
   const { data: organizations, isPending: orgsPending } = authClient.useListOrganizations();
+  const { isAdmin, isPending: rolePending } = useRole();
 
   useEffect(() => {
     if (!sessionPending && !session) router.replace("/login");
@@ -95,7 +98,9 @@ export const Sidebar = ({ usageMeterSlot }: SidebarProps): React.ReactElement =>
         {navItems.map((item) => (
           <NavLink key={item.href} item={item} active={isActive(item.href)} />
         ))}
-        <ExpandableNavLink item={collectItem} subLinks={collectSubLinks} />
+        {!rolePending && isAdmin ? (
+          <ExpandableNavLink item={collectItem} subLinks={collectSubLinks} />
+        ) : null}
         <NavLink item={settingsItem} active={isActive(settingsItem.href)} />
       </nav>
 

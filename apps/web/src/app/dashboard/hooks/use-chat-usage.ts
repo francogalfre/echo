@@ -5,7 +5,7 @@ import { useAsyncResource } from "@/lib/use-async-resource";
 
 export type ChatUsage = Awaited<ReturnType<typeof trpc.chat.getUsage.query>>;
 
-type ChatUsageState =
+export type ChatUsageState =
   | { status: "loading" }
   | { status: "error" }
   | { status: "ready"; data: ChatUsage };

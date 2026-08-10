@@ -46,7 +46,7 @@ export async function uploadImage(
   }
 
   const membership = await findMembership(input.userId, input.organizationId);
-  if (!membership) {
+  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
     return { success: false, status: 403, error: "Forbidden" };
   }
 

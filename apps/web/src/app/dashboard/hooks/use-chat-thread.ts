@@ -2,7 +2,7 @@
 
 import { env } from "@echo/env/web";
 import { useChat, type UIMessage } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, isTextUIPart } from "ai";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { isUpgradeError } from "../components/upgrade-error";
@@ -13,7 +13,7 @@ function extractMessageText(message: UIMessage | undefined): string {
   if (!message) return "";
 
   return message.parts
-    .filter((part): part is { type: "text"; text: string } => part.type === "text")
+    .filter(isTextUIPart)
     .map((part) => part.text)
     .join("");
 }

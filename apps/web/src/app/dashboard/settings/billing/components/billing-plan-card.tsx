@@ -24,7 +24,7 @@ type PlanDefinition = {
   features: readonly string[];
 };
 
-const PLANS: Record<PlanTier, PlanDefinition> = {
+const plans: Record<PlanTier, PlanDefinition> = {
   free: {
     tier: "free",
     name: "Free",
@@ -52,7 +52,6 @@ const PLANS: Record<PlanTier, PlanDefinition> = {
       "50 AI insights / day",
       "10 AI summaries / day",
       "100 AI chats / day",
-      "Webhooks",
       'Remove "Powered by Echo" branding',
     ],
   },
@@ -157,8 +156,8 @@ export const BillingPlanCard = ({ plan }: BillingPlanCardProps): React.ReactElem
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-      <PlanCard definition={PLANS.free} isCurrent={!isPro} />
-      <PlanCard definition={PLANS.pro} isCurrent={isPro} />
+      <PlanCard definition={plans.free} isCurrent={!isPro} />
+      <PlanCard definition={plans.pro} isCurrent={isPro} />
     </div>
   );
 };

@@ -1,6 +1,9 @@
+import codingCharacter from "@echo/assets/character/coding.webp";
+import thinkingCharacter from "@echo/assets/character/thinking.webp";
 import { cn } from "@echo/ui/lib/utils";
 import type { UIMessage } from "@ai-sdk/react";
-import { isDynamicToolUIPart, isToolUIPart } from "ai";
+import { isDynamicToolUIPart, isTextUIPart, isToolUIPart } from "ai";
+import Image from "next/image";
 
 import { Markdown } from "@/utils/markdown";
 
@@ -35,9 +38,21 @@ function activeToolLabel(message: UIMessage): string | null {
 
 function messageText(message: UIMessage): string {
   return message.parts
-    .filter((part) => part.type === "text")
-    .map((part) => (part as { text: string }).text)
+    .filter(isTextUIPart)
+    .map((part) => part.text)
     .join("");
+}
+
+type AgentAvatarProps = {
+  readonly agent: AgentPersona;
+};
+
+function AgentAvatar({ agent }: AgentAvatarProps): React.ReactElement {
+  return (
+    <span className="relative flex size-7 shrink-0 overflow-hidden rounded-full bg-muted">
+      <Image src={agent.avatarImage} alt="" fill className="object-cover" />
+    </span>
+  );
 }
 
 type AgentChatMessagesProps = {
@@ -51,7 +66,6 @@ export function AgentChatMessages({
   isBusy,
   agent,
 }: AgentChatMessagesProps): React.ReactElement {
-  const EchoIcon = agent.icon;
   const lastMessage = messages.at(-1);
   const lastIsEmptyAssistantTurn =
     isBusy &&
@@ -59,28 +73,19 @@ export function AgentChatMessages({
   const toolLabel = lastMessage ? activeToolLabel(lastMessage) : null;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {messages.map((message) => (
         <div
           key={message.id}
           className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
         >
-          {message.role === "assistant" && (
-            <span
-              className={cn(
-                "flex size-7 shrink-0 items-center justify-center rounded-full",
-                agent.avatarBg,
-              )}
-            >
-              <EchoIcon className={cn("size-3.5", agent.avatarText)} />
-            </span>
-          )}
+          {message.role === "assistant" && <AgentAvatar agent={agent} />}
           <div
             className={cn(
-              "max-w-[80%] rounded-xl px-4 py-2.5",
+              "max-w-[80%] text-sm leading-relaxed",
               message.role === "user"
-                ? "bg-accent text-accent-foreground text-sm"
-                : "bg-muted",
+                ? "rounded-xl bg-muted px-4 py-2.5 text-foreground"
+                : "px-1 py-1 text-foreground",
             )}
           >
             {message.role === "user" ? (
@@ -94,15 +99,15 @@ export function AgentChatMessages({
 
       {lastIsEmptyAssistantTurn && (
         <div className="flex gap-3">
-          <span
-            className={cn(
-              "flex size-7 shrink-0 items-center justify-center rounded-full",
-              agent.avatarBg,
-            )}
-          >
-            <EchoIcon className={cn("size-3.5", agent.avatarText)} />
+          <span className="relative flex size-7 shrink-0 overflow-hidden rounded-full bg-muted">
+            <Image
+              src={toolLabel ? codingCharacter : thinkingCharacter}
+              alt=""
+              fill
+              className="object-cover"
+            />
           </span>
-          <div className="rounded-xl bg-muted px-4 py-2.5">
+          <div className="flex items-center px-1 py-1">
             <AiThinking phrases={toolLabel ? [`${toolLabel}…`] : agent.thinkingPhrases}>
               <span />
             </AiThinking>

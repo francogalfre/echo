@@ -5,23 +5,31 @@ import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useRole } from "../../hooks/use-role";
+
 type SettingsNavItem = {
   label: string;
   href: Route;
+  adminOnly?: boolean;
 };
 
 const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
   { label: "Account", href: "/dashboard/settings/account" },
-  { label: "Team", href: "/dashboard/settings/team" },
-  { label: "Billing", href: "/dashboard/settings/billing" },
+  { label: "Team", href: "/dashboard/settings/team", adminOnly: true },
+  { label: "Billing", href: "/dashboard/settings/billing", adminOnly: true },
 ];
 
 export const SettingsNav = (): React.ReactElement => {
   const pathname = usePathname();
+  const { isAdmin, isPending } = useRole();
+
+  const items = SETTINGS_NAV_ITEMS.filter(
+    (item) => !item.adminOnly || (!isPending && isAdmin),
+  );
 
   return (
     <nav aria-label="Settings" className="flex gap-1 border-b border-border">
-      {SETTINGS_NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const isActive = pathname === item.href;
 
         return (

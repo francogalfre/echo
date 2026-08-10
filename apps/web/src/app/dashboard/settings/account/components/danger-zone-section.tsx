@@ -22,7 +22,13 @@ import { authClient, signOut } from "@/lib/auth-client";
 import { SettingsCard } from "../../components/settings-card";
 import { SettingsRow } from "../../components/settings-row";
 
-export const DangerZoneSection = (): React.ReactElement => {
+type DangerZoneSectionProps = {
+  canDeleteWorkspace: boolean;
+};
+
+export const DangerZoneSection = ({
+  canDeleteWorkspace,
+}: DangerZoneSectionProps): React.ReactElement => {
   const router = useRouter();
   const { data: activeOrg } = authClient.useActiveOrganization();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -89,7 +95,7 @@ export const DangerZoneSection = (): React.ReactElement => {
           </Button>
         </SettingsRow>
 
-        {activeOrg ? (
+        {activeOrg && canDeleteWorkspace ? (
           <SettingsRow
             label="Delete workspace"
             description={`Permanently delete “${activeOrg.name}” and all of its feedback.`}

@@ -1,17 +1,18 @@
 "use client";
 
-import { Button } from "@echo/ui/components/button";
-import { Icons } from "@echo/ui/components/icons";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@echo/ui/components/tooltip";
+import Image from "next/image";
 import { useState } from "react";
 
 import { useBillingOverview } from "../../hooks/use-billing-overview";
 import { AgentChat } from "./agent-chat";
+import { AGENT_PERSONAS } from "./agent-personas";
 
 export function AgentChatButton(): React.ReactElement | null {
   const [isOpen, setIsOpen] = useState(false);
   const { state } = useBillingOverview();
   const isPro = state.status === "ready" && state.data.plan === "pro";
+  const echo = AGENT_PERSONAS.echo;
 
   if (!isPro) return null;
 
@@ -20,14 +21,14 @@ export function AgentChatButton(): React.ReactElement | null {
       <Tooltip>
         <TooltipTrigger
           render={
-            <Button
+            <button
+              type="button"
               onClick={() => setIsOpen(true)}
-              className="fixed bottom-6 right-6 z-50 size-14 rounded-full shadow-lg transition-shadow hover:shadow-xl"
-              size="icon"
+              className="fixed bottom-6 right-6 z-50 flex size-14 items-center justify-center overflow-hidden rounded-full border border-border bg-card shadow-lg transition-shadow hover:shadow-xl"
             />
           }
         >
-          <Icons.aiMagic className="size-6" />
+          <Image src={echo.avatarImage} alt="" className="size-10 object-contain" />
           <span className="sr-only">Chat with Echo agent</span>
         </TooltipTrigger>
         <TooltipContent side="left">Chat with Echo</TooltipContent>

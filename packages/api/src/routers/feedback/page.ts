@@ -1,4 +1,4 @@
-import { adminProcedure, organizationProcedure, router } from "../../index";
+import { adminProcedure, router } from "../../index";
 import { feedbackPageConfigSchema } from "../../schemas";
 import { listFeedback } from "../../services/feedback";
 import {
@@ -7,11 +7,11 @@ import {
 } from "../../services/feedback/page";
 
 export const feedbackPageRouter = router({
-  getConfig: organizationProcedure.query(({ ctx }) => {
+  getConfig: adminProcedure.query(({ ctx }) => {
     return getFeedbackPageConfig(ctx.organizationId).then((config) => config ?? null);
   }),
 
-  recentFeedback: organizationProcedure.query(async ({ ctx }) => {
+  recentFeedback: adminProcedure.query(async ({ ctx }) => {
     const items = await listFeedback(ctx.organizationId, { limit: 12, offset: 0 });
     return items.map((item) => ({
       id: item.id,
@@ -21,7 +21,7 @@ export const feedbackPageRouter = router({
     }));
   }),
 
-  upsertConfig: organizationProcedure
+  upsertConfig: adminProcedure
     .input(feedbackPageConfigSchema)
     .mutation(async ({ input, ctx }) => {
       await upsertFeedbackPageConfig(ctx.organizationId, input);
