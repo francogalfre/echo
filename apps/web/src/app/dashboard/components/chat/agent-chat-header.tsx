@@ -24,6 +24,7 @@ export function AgentChatHeader({
             src={agent.avatarImage}
             alt="Echo character"
             fill
+            sizes="36px"
             className="object-contain"
           />
         </span>

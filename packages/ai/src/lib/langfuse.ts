@@ -9,9 +9,22 @@ export function getLangfuse(): Langfuse | null {
   const publicKey = env.LANGFUSE_PUBLIC_KEY;
   const secretKey = env.LANGFUSE_SECRET_KEY;
 
+  // Debug: always log what we see so users know if keys are missing
+  // eslint-disable-next-line no-console
+  console.log(
+    "[Langfuse] env.LANGFUSE_PUBLIC_KEY present?",
+    !!publicKey,
+    "env.LANGFUSE_SECRET_KEY present?",
+    !!secretKey,
+  );
+
   if (!publicKey || !secretKey) {
     // eslint-disable-next-line no-console
-    console.log("[Langfuse] Skipped — LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY not set");
+    console.warn(
+      `[Langfuse] Skipped — LANGFUSE_PUBLIC_KEY or LANGFUSE_SECRET_KEY not set.\n` +
+        `Make sure these are in the .env file that the server loads (usually at the monorepo root, not apps/server/.env).\n` +
+        `Current CWD: ${process.cwd()}`,
+    );
     return null;
   }
 

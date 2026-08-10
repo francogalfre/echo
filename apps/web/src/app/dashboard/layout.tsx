@@ -61,8 +61,8 @@ const DashboardLayout = async ({
           <Topbar />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>
-        <AgentChatButton />
       </div>
+      <AgentChatButton />
     </MotionProvider>
   );
 };
