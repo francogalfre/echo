@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { isRetryableTrpcError } from "./trpc-retry";
+
 export type AsyncResource<T> =
   | { status: "loading" }
   | { status: "error"; retry: () => void }
@@ -55,11 +57,11 @@ export function useAsyncResource<T>(
           if (requestIdRef.current !== requestId) return;
           setState({ status: "ready", data, pending: false });
         })
-        .catch(() => {
+        .catch((error: unknown) => {
           if (requestIdRef.current !== requestId) return;
           attempt += 1;
-          if (attempt < MAX_ATTEMPTS) {
-            setTimeout(attemptFetch, attempt * RETRY_BASE_DELAY_MS);
+          if (attempt < MAX_ATTEMPTS && isRetryableTrpcError(error)) {
+            setTimeout(attemptFetch, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
           } else {
             setState({ status: "error", retry: load });
           }

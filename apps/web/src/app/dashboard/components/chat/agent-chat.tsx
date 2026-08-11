@@ -91,7 +91,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
           <div
             ref={containerRef}
             onScroll={handleScroll}
-            className="flex h-120 flex-col overflow-y-auto p-6"
+            className="flex h-[50vh] flex-col overflow-y-auto p-4 sm:h-120 sm:p-6"
           >
             {thread.messages.length === 0 && (
               <AgentChatEmptyState

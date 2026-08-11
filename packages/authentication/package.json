@@ -18,9 +18,7 @@
     "@polar-sh/better-auth": "catalog:",
     "@polar-sh/sdk": "^0.47.1",
     "better-auth": "catalog:",
-    "dotenv": "catalog:",
-    "resend": "^6.17.2",
-    "zod": "catalog:"
+    "resend": "^6.17.2"
   },
   "devDependencies": {
     "@echo/config": "workspace:*",

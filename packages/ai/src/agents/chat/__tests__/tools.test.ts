@@ -31,12 +31,13 @@ describe("buildFeedbackTools", () => {
     }
   });
 
-  it("should expose exactly the five retrieval tools chat needs", () => {
+  it("should expose exactly the six retrieval and product-info tools chat needs", () => {
     const tools = buildFeedbackTools(stubRetriever, () => true);
 
     expect(Object.keys(tools).sort()).toEqual(
       [
         "countFeedback",
+        "getEchoInfo",
         "getFeedbackById",
         "getTimeSeries",
         "readDigest",

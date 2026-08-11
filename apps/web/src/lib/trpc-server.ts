@@ -1,7 +1,9 @@
 import type { AppRouter } from "@echo/api";
 import { env } from "@echo/env/web";
-import { createTRPCClient, httpLink } from "@trpc/client";
+import { createTRPCClient, httpLink, retryLink } from "@trpc/client";
 import { cookies } from "next/headers";
+
+import { isRetryableTrpcError, retryDelayMs } from "./trpc-retry";
 
 export async function createServerTrpc(): Promise<
   ReturnType<typeof createTRPCClient<AppRouter>>
@@ -14,6 +16,11 @@ export async function createServerTrpc(): Promise<
 
   return createTRPCClient<AppRouter>({
     links: [
+      retryLink({
+        retry: ({ op, error, attempts }) =>
+          op.type === "query" && isRetryableTrpcError(error) && attempts < 3,
+        retryDelayMs,
+      }),
       httpLink({
         url: `${env.NEXT_PUBLIC_SERVER_URL}/trpc`,
         headers: () => ({ cookie: cookieHeader }),

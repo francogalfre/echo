@@ -70,7 +70,7 @@ async function createFeedbackWithKey(
     return { success: false, status: 429, error: guard.message };
   }
 
-  touchLastUsed(keyRow.id).catch((e) => logError("api-keys", e));
+  touchLastUsed(keyRow.id).catch((error) => logError("api-keys", error));
 
   return createFeedback({
     organizationId: keyRow.organizationId,
@@ -118,7 +118,7 @@ export async function getFeedback(input: {
     return { success: false, status: 429, error: guard.message };
   }
 
-  touchLastUsed(keyRow.id).catch((e) => logError("api-keys", e));
+  touchLastUsed(keyRow.id).catch((error) => logError("api-keys", error));
 
   return {
     success: true,

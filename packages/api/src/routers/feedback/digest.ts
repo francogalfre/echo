@@ -6,7 +6,7 @@ import {
   getFeedbackDigest,
 } from "../../controllers/feedback/digest";
 import { QuotaExceededError } from "../../controllers/quota";
-import { organizationProcedure, router } from "../../index";
+import { aiProcedure, organizationProcedure, router } from "../../index";
 import { getErrorCode } from "../../lib/error-map";
 
 export const digestRouter = router({
@@ -18,7 +18,7 @@ export const digestRouter = router({
     return getDigestHistory(ctx.organizationId);
   }),
 
-  generate: organizationProcedure.mutation(async ({ ctx }) => {
+  generate: aiProcedure.mutation(async ({ ctx }) => {
     const result = await generateFeedbackDigest(ctx.organizationId);
 
     if (!result.success) {

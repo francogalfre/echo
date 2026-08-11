@@ -12,7 +12,14 @@ type FieldProps = {
   children: ReactNode;
 };
 
-export const Field = ({ name, label, error, hint, className, children }: FieldProps) => {
+export const Field = ({
+  name,
+  label,
+  error,
+  hint,
+  className,
+  children,
+}: FieldProps): React.ReactElement => {
   return (
     <div className={cn("space-y-1.5", className)}>
       <Label htmlFor={name} className="text-xs font-medium text-foreground">

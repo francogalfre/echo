@@ -11,7 +11,7 @@ type SubmitFn = (input: {
   rating?: number;
 }) => Promise<SubmitResult>;
 
-export function createSubmitHandler(submit: SubmitFn) {
+export function createSubmitHandler(submit: SubmitFn): (c: Context) => Promise<Response> {
   return async (c: Context): Promise<Response> => {
     const authorization = c.req.header("Authorization");
 

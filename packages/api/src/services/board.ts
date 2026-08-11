@@ -43,7 +43,13 @@ export async function getBoardItems(organizationId: string): Promise<BoardColumn
       insight: feedback.insight,
     })
     .from(boardItems)
-    .innerJoin(feedback, eq(boardItems.feedbackId, feedback.id))
+    .innerJoin(
+      feedback,
+      and(
+        eq(boardItems.feedbackId, feedback.id),
+        eq(feedback.organizationId, organizationId),
+      ),
+    )
     .where(eq(boardItems.organizationId, organizationId))
     .orderBy(asc(boardItems.position));
 

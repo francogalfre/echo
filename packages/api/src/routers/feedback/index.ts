@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { generateFeedbackInsight } from "../../controllers/feedback/insight";
 import { QuotaExceededError } from "../../controllers/quota";
-import { organizationProcedure, router } from "../../index";
+import { aiProcedure, organizationProcedure, router } from "../../index";
 import { getErrorCode } from "../../lib/error-map";
 import { paginateRows } from "../../lib/pagination";
 import {
@@ -52,7 +52,7 @@ export const feedbackRouter = router({
       return getFeedbackListItemById(ctx.organizationId, input.id);
     }),
 
-  insight: organizationProcedure
+  insight: aiProcedure
     .input(z.object({ id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       const result = await generateFeedbackInsight(ctx.organizationId, input.id);

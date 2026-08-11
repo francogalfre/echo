@@ -56,7 +56,7 @@ export function FeedbackToolbar({
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+      <div className="flex items-center gap-1 overflow-x-auto rounded-lg bg-muted p-1">
         {SENTIMENT_SEGMENTS.map(({ value, label }) => (
           <button
             key={value}
@@ -64,7 +64,7 @@ export function FeedbackToolbar({
             aria-pressed={sentiment === value}
             onClick={() => onSentimentChange(value)}
             className={cn(
-              "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
+              "shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               sentiment === value
                 ? "bg-background text-foreground shadow-sm ring-1 ring-foreground/10"
                 : "text-muted-foreground hover:text-foreground",

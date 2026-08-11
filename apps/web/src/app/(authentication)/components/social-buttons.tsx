@@ -21,7 +21,7 @@ type SocialButtonsProps = {
   callbackURL?: string;
 };
 
-export const SocialButtons = ({ callbackURL }: SocialButtonsProps) => {
+export const SocialButtons = ({ callbackURL }: SocialButtonsProps): React.ReactElement => {
   const [pending, setPending] = useState<Provider | null>(null);
   const [lastMethod, setLastMethod] = useState<string | null>(null);
 
