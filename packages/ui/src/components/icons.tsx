@@ -53,6 +53,7 @@ import {
   Delete02Icon,
   CrownIcon,
   Shield01Icon,
+  Menu01Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -118,4 +119,5 @@ export const Icons = {
   trash: createIcon(Delete02Icon),
   crown: createIcon(CrownIcon),
   shield: createIcon(Shield01Icon),
+  menu: createIcon(Menu01Icon),
 };

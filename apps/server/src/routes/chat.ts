@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { authenticate } from "@/middleware/auth";
+import { chatStreamRateLimit } from "@/middleware/rate-limit";
 
 type SessionWithOrg = { activeOrganizationId?: string | null };
 
@@ -12,6 +13,8 @@ const streamRequestSchema = z.object({
 });
 
 export const chatRoutes = new Hono();
+
+chatRoutes.use("/stream", chatStreamRateLimit);
 
 chatRoutes.post("/stream", async (c) => {
   const session = await authenticate(c);

@@ -77,7 +77,7 @@ export function DashboardClient({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium font-pixel">
             Hello{firstName ? `, ${firstName}` : ""}!

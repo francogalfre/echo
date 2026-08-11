@@ -20,7 +20,7 @@ type LoginFormProps = {
   callbackURL?: string;
 };
 
-export const LoginForm = ({ callbackURL }: LoginFormProps) => {
+export const LoginForm = ({ callbackURL }: LoginFormProps): React.ReactElement => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const {

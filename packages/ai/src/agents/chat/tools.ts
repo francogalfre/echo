@@ -45,6 +45,7 @@ export type FeedbackRetriever = {
 export type ChatStreamInput = {
   readonly messages: readonly UIMessage[];
   readonly digestSummary: string | null;
+  readonly omittedHistoryCount?: number;
   readonly retriever: FeedbackRetriever;
   readonly spendBudget: (chars: number) => boolean;
   readonly traceContext?: {

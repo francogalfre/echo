@@ -1,3 +1,5 @@
+import type { LangfuseGenerationClient, LangfuseTraceClient } from "langfuse";
+
 import { flushLangfuse, getLangfuse } from "./langfuse";
 
 export type TraceInput = {
@@ -45,51 +47,28 @@ function sanitizeMeta(
   return Object.keys(clean).length > 0 ? clean : undefined;
 }
 
-export function createTrace(config: TraceInput) {
+export function createTrace(config: TraceInput): LangfuseTraceClient | null {
   const langfuse = getLangfuse();
-  if (!langfuse) {
-    // eslint-disable-next-line no-console
-    console.log("[Langfuse Trace] skipped — getLangfuse() returned null");
-    return null;
-  }
+  if (!langfuse) return null;
 
   const traceId = crypto.randomUUID();
   const metadata = sanitizeMeta(config.metadata) ?? {};
   if (config.organizationId) metadata.organizationId = config.organizationId;
 
-  // eslint-disable-next-line no-console
-  console.log(
-    "[Langfuse Trace] Creating trace:",
-    traceId,
-    "name:",
-    config.name,
-    "userId:",
-    config.userId,
-  );
-
-  const trace = langfuse.trace({
+  return langfuse.trace({
     id: traceId,
     name: config.name,
     userId: config.userId,
     metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     input: config.input,
   });
-
-  // eslint-disable-next-line no-console
-  console.log("[Langfuse Trace] Created trace:", traceId, "| object present?", !!trace);
-
-  return trace;
 }
 
 export function createGeneration(
   trace: ReturnType<typeof createTrace>,
   config: GenerationInput,
-) {
-  if (!trace) {
-    // eslint-disable-next-line no-console
-    console.log("[Langfuse Generation] skipped — no trace");
-    return null;
-  }
+): LangfuseGenerationClient | null {
+  if (!trace) return null;
 
   const modelParameters: Record<string, string | number | boolean | string[] | null> = {};
   if (config.metadata?.temperature !== undefined) {
@@ -98,12 +77,6 @@ export function createGeneration(
   if (config.metadata?.maxOutputTokens !== undefined) {
     modelParameters.maxTokens = config.metadata.maxOutputTokens as number;
   }
-
-  // eslint-disable-next-line no-console
-  console.log(
-    "[Langfuse Generation] Creating generation on trace, model:",
-    config.model ?? "unknown",
-  );
 
   return trace.generation({
     name: config.name,
@@ -126,18 +99,8 @@ export function updateGeneration(
   span: ReturnType<typeof createGeneration>,
   output: unknown,
   usage?: GenerationInput["usage"],
-) {
-  if (!span) {
-    // eslint-disable-next-line no-console
-    console.log("[Langfuse Generation] update skipped — no span");
-    return;
-  }
-
-  // eslint-disable-next-line no-console
-  console.log(
-    "[Langfuse Generation] Ending span with output length:",
-    typeof output === "string" ? output.length : "non-string",
-  );
+): void {
+  if (!span) return;
 
   span.end({
     output,
@@ -152,18 +115,5 @@ export function updateGeneration(
 }
 
 export async function flushTracing(): Promise<void> {
-  // eslint-disable-next-line no-console
-  console.log("[Langfuse Trace] Calling flush...");
   await flushLangfuse();
-}
-
-export function scoreTrace(
-  trace: ReturnType<typeof createTrace>,
-  name: string,
-  value: number,
-  comment?: string,
-) {
-  if (!trace) return;
-
-  trace.score({ name, value, comment });
 }

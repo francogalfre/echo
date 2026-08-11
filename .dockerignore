@@ -1,0 +1,20 @@
+# Dependencies & build outputs
+**/node_modules
+**/.next
+**/dist
+**/.turbo
+**/coverage
+
+# VCS & agent tooling
+.git
+.claude
+.atl
+.superpowers
+.vscode
+docs
+openspec
+
+# Local env — never bake secrets into the image
+**/.env
+**/.env.local
+**/.env.*.local

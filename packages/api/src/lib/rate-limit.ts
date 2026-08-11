@@ -35,6 +35,15 @@ const keyLimiter = redis
     })
   : null;
 
+const aiOrgLimiter = redis
+  ? new Ratelimit({
+      redis,
+      analytics: true,
+      limiter: Ratelimit.slidingWindow(10, "1 m"),
+      prefix: "echo:rl:ai-org",
+    })
+  : null;
+
 function hashContent(ip: string, content: string): string {
   return sha256(`${ip}:${content.trim().toLowerCase()}`);
 }
@@ -85,6 +94,27 @@ export async function guardSubmission(
     }
   } catch (error) {
     logRedisFailure("guardSubmission.set", error);
+  }
+
+  return { allowed: true };
+}
+
+export async function guardAiOrganization(organizationId: string): Promise<GuardResult> {
+  if (!redis || !aiOrgLimiter) return { allowed: true };
+
+  try {
+    const result = await aiOrgLimiter.limit(organizationId);
+
+    if (!result.success) {
+      return {
+        allowed: false,
+        silent: false,
+        message: "Too many AI requests for this project. Please slow down.",
+      };
+    }
+  } catch (error) {
+    logRedisFailure("guardAiOrganization.limit", error);
+    return { allowed: true };
   }
 
   return { allowed: true };

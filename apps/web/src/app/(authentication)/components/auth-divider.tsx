@@ -1,4 +1,4 @@
-export const AuthDivider = () => {
+export const AuthDivider = (): React.ReactElement => {
   return (
     <div className="my-4 flex items-center gap-3">
       <span className="h-px flex-1 bg-border" />

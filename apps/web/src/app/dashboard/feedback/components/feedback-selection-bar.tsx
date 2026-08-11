@@ -41,7 +41,7 @@ export function FeedbackSelectionBar({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
             transition={{ type: "spring", duration: 0.3, bounce: 0 }}
-            className="fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit items-center gap-3 rounded-full bg-foreground px-4 py-2.5 text-background shadow-lg"
+            className="fixed inset-x-4 bottom-6 z-50 flex items-center gap-3 overflow-x-auto rounded-full bg-foreground px-4 py-2.5 text-background shadow-lg sm:inset-x-0 sm:mx-auto sm:w-fit"
           >
             <span className="text-xs font-medium tabular-nums">{count} selected</span>
 

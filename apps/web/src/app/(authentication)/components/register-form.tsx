@@ -20,7 +20,7 @@ type RegisterFormProps = {
   callbackURL?: string;
 };
 
-export const RegisterForm = ({ callbackURL }: RegisterFormProps) => {
+export const RegisterForm = ({ callbackURL }: RegisterFormProps): React.ReactElement => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const {

@@ -14,7 +14,10 @@ function extractIp(context: HonoContext): string {
   );
 }
 
-export async function createContext({ context }: CreateContextOptions) {
+export async function createContext({ context }: CreateContextOptions): Promise<{
+  session: Awaited<ReturnType<typeof auth.api.getSession>>;
+  ip: string;
+}> {
   const session = await auth.api.getSession({
     headers: context.req.raw.headers,
   });

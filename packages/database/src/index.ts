@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 
 import * as schema from "./schema";
 
-export function createDb() {
+export function createDb(): ReturnType<typeof drizzle<typeof schema>> {
   return drizzle(env.DATABASE_URL, { schema });
 }
 

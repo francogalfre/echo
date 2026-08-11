@@ -42,7 +42,7 @@ export function BoardColumnPane({
   return (
     <KanbanColumn
       value={id}
-      className="flex flex-col gap-2.5 rounded-xl border border-border min-h-full bg-muted/30 p-3"
+      className="flex w-[85vw] max-w-80 shrink-0 snap-start flex-col gap-2.5 rounded-xl border border-border min-h-full bg-muted/30 p-3 md:w-auto md:max-w-none md:shrink"
     >
       <div className="flex items-center gap-1.5 px-1">
         <span aria-hidden className={`size-1.5 shrink-0 rounded-full ${dot}`} />

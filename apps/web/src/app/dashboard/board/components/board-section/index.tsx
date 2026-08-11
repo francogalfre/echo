@@ -87,7 +87,7 @@ export function BoardSection({ initialItems }: BoardSectionProps): React.ReactEl
             onMove={handleMove}
             className="flex flex-col"
           >
-            <KanbanBoard className="grid grid-cols-3 items-start gap-4">
+            <KanbanBoard className="-mx-6 flex snap-x snap-mandatory items-start gap-4 overflow-x-auto px-6 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0 md:snap-none">
               {COLUMNS.map((col) => (
                 <BoardColumnPane
                   key={col.id}

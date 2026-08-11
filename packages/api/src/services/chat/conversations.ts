@@ -1,7 +1,7 @@
 import type { UIMessage } from "@echo/ai";
 import { db } from "@echo/db";
 import { chatConversations, chatMessages } from "@echo/db/schema/chat";
-import { and, asc, desc, eq, max } from "drizzle-orm";
+import { and, desc, eq, max } from "drizzle-orm";
 
 export type ChatConversationSummary = {
   id: string;
@@ -78,14 +78,16 @@ export async function nextSeq(conversationId: string): Promise<number> {
 export async function listMessages(
   organizationId: string,
   conversationId: string,
+  limit?: number,
 ): Promise<ChatMessageRow[]> {
   const rows = await db.query.chatMessages.findMany({
     where: (m) =>
       and(eq(m.conversationId, conversationId), eq(m.organizationId, organizationId)),
-    orderBy: (m) => [asc(m.seq)],
+    orderBy: (m) => [desc(m.seq)],
+    limit,
   });
 
-  return rows.map((row) => ({
+  return rows.toReversed().map((row) => ({
     id: row.id,
     role: row.role,
     parts: row.parts as UIMessage["parts"],

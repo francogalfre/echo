@@ -13,3 +13,9 @@ export const widgetCors = cors({
   allowMethods: ["POST", "OPTIONS"],
   allowHeaders: ["Authorization", "Content-Type"],
 });
+
+export const secretKeyCors = cors({
+  origin: [],
+  allowMethods: ["GET", "POST", "OPTIONS"],
+  allowHeaders: ["Authorization", "Content-Type"],
+});

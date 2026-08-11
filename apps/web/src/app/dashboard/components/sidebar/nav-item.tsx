@@ -11,17 +11,19 @@ import { useState } from "react";
 
 import type { NavItem } from "./types";
 
-type NavLinkProps = { item: NavItem; active: boolean };
+type NavLinkProps = { item: NavItem; active: boolean; onNavigate?: () => void };
 
 const activeSpring = { type: "spring", stiffness: 500, damping: 40 } as const;
 
 export const NavLink = ({
   item: { label, href, icon: Icon },
   active,
+  onNavigate,
 }: NavLinkProps): React.ReactElement => (
   <Link
     href={href as Route}
     aria-current={active ? "page" : undefined}
+    onClick={onNavigate}
     className={cn(
       "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.75 text-sm",
       "transition-colors duration-150",
@@ -46,11 +48,16 @@ export const NavLink = ({
 );
 
 type SubLink = { label: string; href: string };
-type ExpandableNavLinkProps = { item: NavItem; subLinks: SubLink[] };
+type ExpandableNavLinkProps = {
+  item: NavItem;
+  subLinks: SubLink[];
+  onNavigate?: () => void;
+};
 
 export const ExpandableNavLink = ({
   item: { label, icon: Icon },
   subLinks,
+  onNavigate,
 }: ExpandableNavLinkProps): React.ReactElement => {
   const pathname = usePathname();
   const isChildActive = subLinks.some(
@@ -101,6 +108,7 @@ export const ExpandableNavLink = ({
                 key={href}
                 href={href as Route}
                 aria-current={isActive ? "page" : undefined}
+                onClick={onNavigate}
                 className={cn(
                   "relative rounded-md px-2.5 py-1.5 text-[13px] transition-colors duration-150",
                   isActive

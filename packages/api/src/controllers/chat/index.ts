@@ -6,6 +6,7 @@ import {
   createBudget,
   summarizeDigestForPrompt,
 } from "./retriever";
+import { trimChatHistory } from "./history";
 import { enforceQuota } from "../quota";
 import { resolveOrganizationContext } from "../../lib/organization";
 import { recordAiEvent } from "../../services/ai/events";
@@ -22,6 +23,8 @@ import { getDigest } from "../../services/feedback/digest";
 import { logError } from "../../lib/logger";
 
 const chatToolBudgetChars = 24_000;
+const chatHistoryDbFetchLimit = 200;
+const chatHistoryMaxChars = 40_000;
 
 export type ChatOrganizationContext = { organizationId: string };
 
@@ -97,9 +100,9 @@ export async function streamChatTurn(
       };
     }
 
-    const priorMessages = (await listMessages(organizationId, conversation.id)).map(
-      toUIMessage,
-    );
+    const priorMessages = (
+      await listMessages(organizationId, conversation.id, chatHistoryDbFetchLimit)
+    ).map(toUIMessage);
     const userSeq = await nextSeq(conversation.id);
     const userMessage: UIMessage = {
       id: crypto.randomUUID(),
@@ -121,10 +124,14 @@ export async function streamChatTurn(
       ? summarizeDigestForPrompt(digestRecord.digest)
       : null;
     const allMessages = [...priorMessages, userMessage];
+    const { messages: modelMessages, omittedCount } = trimChatHistory(allMessages, {
+      maxChars: chatHistoryMaxChars,
+    });
 
     const streamResult = await streamChatResponse({
-      messages: allMessages,
+      messages: modelMessages,
       digestSummary,
+      omittedHistoryCount: omittedCount,
       retriever: buildFeedbackRetriever(organizationId),
       spendBudget: createBudget(chatToolBudgetChars),
       traceContext: { userId, organizationId, conversationId: conversation.id },

@@ -97,6 +97,11 @@ Any client subtree using nuqs `useQueryState`/`useSearchParams` must be wrapped 
 ### Multi-tenancy & auth
 
 - Every query must filter by `organizationId` at the database level — never trust the frontend.
-- Postgres RLS enforces tenant isolation as a second layer.
+- Tenant isolation today rests entirely on those `organizationId` filters in `packages/api/src/services/*`.
+  There is no Postgres RLS in this codebase — no `ENABLE ROW LEVEL SECURITY`, no policies. Enabling it
+  correctly needs both `FORCE ROW LEVEL SECURITY` (the app's DB role owns its own tables, so RLS is
+  bypassed without it) and per-request `SET LOCAL app.current_organization_id` plumbing that does not
+  exist yet. See `packages/database/src/migrations/proposals/rls-tenant-isolation.proposal.sql` for the
+  unapplied policy set and what shipping it for real would require.
 - Public feedback endpoints (widget/API) use a separate API-key auth layer (secret vs. publishable keys),
   distinct from the Better-Auth session used by the dashboard.

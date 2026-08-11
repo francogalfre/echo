@@ -51,10 +51,15 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
     },
   });
 
+  const systemPrompt = buildChatSystemPrompt(
+    input.digestSummary,
+    input.omittedHistoryCount ?? 0,
+  );
+
   const generation = createGeneration(trace, {
     name: "chat-generation",
     model: CHAT_MODEL,
-    system: buildChatSystemPrompt(input.digestSummary).slice(0, 500),
+    system: systemPrompt.slice(0, 500),
     messages,
     metadata: {
       temperature: 0.3,
@@ -64,7 +69,7 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
 
   return streamText({
     model: openrouterModel(CHAT_MODEL),
-    system: buildChatSystemPrompt(input.digestSummary),
+    system: systemPrompt,
     messages,
     tools: buildFeedbackTools(input.retriever, input.spendBudget),
     stopWhen: stepCountIs(stepLimit),
@@ -82,8 +87,10 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
           totalTokens: totalUsage?.totalTokens,
         });
         await flushTracing();
-      } catch {
-        // Silently ignore tracing failures — never block the user
+      } catch (tracingError) {
+        // Tracing failures must never block the user
+        // eslint-disable-next-line no-console
+        console.error("[echo:ai] chat tracing failed", tracingError);
       }
     },
   });

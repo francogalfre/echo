@@ -58,8 +58,14 @@ const DashboardLayout = async ({
             </Suspense>
           }
         />
-        <div className="flex min-w-0 flex-1 flex-col pl-64">
-          <Topbar />
+        <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
+          <Topbar
+            usageMeterSlot={
+              <Suspense fallback={<UsageMeterSkeleton />}>
+                <UsageMeterData />
+              </Suspense>
+            }
+          />
           <main className="flex-1 overflow-auto bg-background">{children}</main>
         </div>
       </div>

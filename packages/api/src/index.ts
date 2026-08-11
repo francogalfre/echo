@@ -3,6 +3,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { QuotaExceededError } from "./controllers/quota";
 import type { Context } from "./context";
 import { resolveOrganizationContext } from "./lib/organization";
+import { guardAiOrganization } from "./lib/rate-limit";
 
 export type { AppRouter } from "./routers/index";
 
@@ -57,6 +58,16 @@ export const organizationProcedure = protectedProcedure.use(async ({ ctx, next }
   return next({
     ctx: { ...ctx, organizationId: result.organizationId, role: toOrgRole(result.role) },
   });
+});
+
+export const aiProcedure = organizationProcedure.use(async ({ ctx, next }) => {
+  const guard = await guardAiOrganization(ctx.organizationId);
+
+  if (!guard.allowed) {
+    throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: guard.message });
+  }
+
+  return next();
 });
 
 export const ownerProcedure = organizationProcedure.use(({ ctx, next }) => {

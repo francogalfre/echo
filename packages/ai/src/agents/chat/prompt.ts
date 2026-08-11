@@ -30,14 +30,27 @@ How to answer:
 - Keep responses concise: 2–4 sentences for simple questions, bullet points for complex ones.
 - When asked about Echo the product (not user feedback), call getEchoInfo.`;
 
-export function buildChatSystemPrompt(digestSummary: string | null): string {
-  if (!digestSummary) return CHAT_SYSTEM_PROMPT;
+export function buildChatSystemPrompt(
+  digestSummary: string | null,
+  omittedHistoryCount = 0,
+): string {
+  let prompt = CHAT_SYSTEM_PROMPT;
 
-  return `${CHAT_SYSTEM_PROMPT}
+  if (digestSummary) {
+    prompt += `
 
 Quick context from the latest digest:
 """
 ${digestSummary}
 """
 Verify specifics with tools before citing.`;
+  }
+
+  if (omittedHistoryCount > 0) {
+    prompt += `
+
+Note: this conversation has ${omittedHistoryCount} earlier message(s) not shown above because they were trimmed to stay within context limits. Treat the messages you do see as a continuation, not the start, of this conversation.`;
+  }
+
+  return prompt;
 }

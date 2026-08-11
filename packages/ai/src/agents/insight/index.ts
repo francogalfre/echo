@@ -81,8 +81,10 @@ async function attemptGeneration(
       totalTokens: result.usage?.totalTokens,
     });
     await flushTracing();
-  } catch {
+  } catch (tracingError) {
     // Tracing failures must never block the user
+    // eslint-disable-next-line no-console
+    console.error("[echo:ai] insight tracing failed", tracingError);
   }
 
   return { insight, usage };
