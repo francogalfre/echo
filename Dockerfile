@@ -16,7 +16,7 @@ FROM base AS builder
 # t3-env validates at import time; skip during build (no secrets in image)
 ENV SKIP_ENV_VALIDATION=true
 COPY --from=pruner /app/out/json/ .
-RUN bun install
+RUN bun install --ignore-scripts
 COPY --from=pruner /app/out/full/ .
 RUN bunx turbo build --filter=server
 
