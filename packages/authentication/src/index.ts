@@ -44,6 +44,12 @@ export function createAuth() {
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     advanced: {
+      ...(env.NODE_ENV === "production" && {
+        crossSubDomainCookies: {
+          enabled: true,
+          domain: `.${new URL(env.CORS_ORIGIN).hostname}`,
+        },
+      }),
       defaultCookieAttributes: {
         sameSite: "none",
         secure: true,
