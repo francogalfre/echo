@@ -2,7 +2,7 @@ import { generateText } from "ai";
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL } from "../../lib/model";
+import { DEFAULT_MODEL, FALLBACK_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
 import {
@@ -31,7 +31,11 @@ async function attemptGeneration(
 ): Promise<{ insight: string; usage: AgentUsage }> {
   const trace = createTrace({
     name: "insight-agent",
-    metadata: { model: DEFAULT_MODEL, sentiment: input.sentiment },
+    metadata: {
+      model: DEFAULT_MODEL,
+      fallbackModel: FALLBACK_MODEL,
+      sentiment: input.sentiment,
+    },
     input: { content: input.content.slice(0, 500) },
   });
 
@@ -42,7 +46,7 @@ async function attemptGeneration(
     temperature: 0.3,
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),
-    providerOptions: { openrouter: { usage: { include: true } } },
+    providerOptions: { openrouter: { models: [FALLBACK_MODEL], usage: { include: true } } },
   });
 
   const insight = result.text.trim();

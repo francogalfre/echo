@@ -2,7 +2,7 @@ import { convertToModelMessages, stepCountIs, streamText, type ToolSet } from "a
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { CHAT_MODEL } from "../../lib/model";
+import { CHAT_MODEL, FALLBACK_MODEL } from "../../lib/model";
 import { buildChatSystemPrompt } from "./prompt";
 import { buildFeedbackTools, type ChatStreamInput } from "./tools";
 import {
@@ -35,6 +35,7 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
     metadata: {
       conversationId: input.traceContext?.conversationId,
       model: CHAT_MODEL,
+      fallbackModel: FALLBACK_MODEL,
       messageCount: input.messages.length,
       hasDigest: !!input.digestSummary,
     },
@@ -78,7 +79,7 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
     temperature: 0.3,
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),
-    providerOptions: { openrouter: { usage: { include: true } } },
+    providerOptions: { openrouter: { models: [FALLBACK_MODEL], usage: { include: true } } },
     onFinish: async ({ text, totalUsage }) => {
       try {
         updateGeneration(generation, text.slice(0, 1000), {

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL } from "../../lib/model";
+import { DEFAULT_MODEL, FALLBACK_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
 import {
@@ -68,7 +68,11 @@ async function attemptGeneration(
 ): Promise<{ digest: DigestOutput; usage: AgentUsage }> {
   const trace = createTrace({
     name: "digest-agent",
-    metadata: { model: DEFAULT_MODEL, feedbackCount: inputs.length },
+    metadata: {
+      model: DEFAULT_MODEL,
+      fallbackModel: FALLBACK_MODEL,
+      feedbackCount: inputs.length,
+    },
     input: { feedbacks: inputs.map((i) => ({ sentiment: i.sentiment, tags: i.tags })) },
   });
 
@@ -82,6 +86,7 @@ async function attemptGeneration(
     abortSignal: AbortSignal.timeout(timeoutMs),
     providerOptions: {
       openrouter: {
+        models: [FALLBACK_MODEL],
         reasoning: { enabled: false, exclude: true, effort: "none" },
         usage: { include: true },
       },

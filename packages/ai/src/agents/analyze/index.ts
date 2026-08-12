@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL } from "../../lib/model";
+import { DEFAULT_MODEL, FALLBACK_MODEL } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { ANALYZE_SYSTEM_PROMPT, buildAnalyzePrompt } from "./prompt";
 import {
@@ -52,7 +52,7 @@ async function attemptGeneration(
 ): Promise<{ analysis: FeedbackAnalysis; usage: AgentUsage }> {
   const trace = createTrace({
     name: "analyze-agent",
-    metadata: { model: DEFAULT_MODEL },
+    metadata: { model: DEFAULT_MODEL, fallbackModel: FALLBACK_MODEL },
     input: { content: content.slice(0, 500) },
   });
 
@@ -64,7 +64,7 @@ async function attemptGeneration(
     temperature: 0,
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),
-    providerOptions: { openrouter: { usage: { include: true } } },
+    providerOptions: { openrouter: { models: [FALLBACK_MODEL], usage: { include: true } } },
   });
 
   const usage = buildAgentUsage({
