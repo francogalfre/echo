@@ -46,6 +46,7 @@
         "@ai-sdk/react": "3.0.240",
         "@base-ui/react": "^1.0.0",
         "@dnd-kit/sortable": "^10.0.0",
+        "@echo/ai": "workspace:*",
         "@echo/api": "workspace:*",
         "@echo/assets": "workspace:*",
         "@echo/env": "workspace:*",
@@ -101,6 +102,7 @@
         "@trpc/server": "catalog:",
         "@upstash/ratelimit": "^2.0.8",
         "@upstash/redis": "^1.38.0",
+        "ai": "^6.0.0",
         "drizzle-orm": "^0.45.1",
         "zod": "catalog:",
       },
@@ -123,6 +125,7 @@
         "@polar-sh/better-auth": "catalog:",
         "@polar-sh/sdk": "^0.47.1",
         "better-auth": "catalog:",
+        "drizzle-orm": "^0.45.1",
         "resend": "^6.17.2",
       },
       "devDependencies": {

@@ -45,6 +45,7 @@
     "@trpc/server": "catalog:",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
+    "ai": "^6.0.0",
     "drizzle-orm": "^0.45.1",
     "zod": "catalog:"
   },

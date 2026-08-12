@@ -11,6 +11,7 @@
     "@ai-sdk/react": "3.0.240",
     "@base-ui/react": "^1.0.0",
     "@dnd-kit/sortable": "^10.0.0",
+    "@echo/ai": "workspace:*",
     "@echo/api": "workspace:*",
     "@echo/assets": "workspace:*",
     "@echo/env": "workspace:*",
