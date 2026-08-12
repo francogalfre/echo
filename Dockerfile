@@ -23,6 +23,8 @@ RUN bunx turbo build --filter=server
 # ---- Runtime image ----
 FROM base AS runner
 ENV NODE_ENV=production
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app /app
 WORKDIR /app/apps/server
 
