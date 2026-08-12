@@ -1,107 +1,51 @@
-# echo
+<p align="center">
+  <img src="assets/echo-avatar.png" width="140" alt="Echo" />
+</p>
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Hono, TRPC, and more.
+<h1 align="center">Echo</h1>
 
-## Features
+<p align="center">Feedback infrastructure for products that ship.</p>
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Hono** - Lightweight, performant server framework
-- **tRPC** - End-to-end type-safe APIs
-- **Bun** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Husky** - Git hooks for code quality
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Turborepo** - Optimized monorepo build system
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Bun-000000?style=flat&logo=bun&logoColor=white" alt="Bun" />
+  <img src="https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Hono-E36002?style=flat&logo=hono&logoColor=white" alt="Hono" />
+  <img src="https://img.shields.io/badge/tRPC-2596BE?style=flat&logo=trpc&logoColor=white" alt="tRPC" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Turborepo-EF4444?style=flat&logo=turborepo&logoColor=white" alt="Turborepo" />
+</p>
 
-## Getting Started
+<p align="center">
+  <a href="documentation/overview.md">Explore the docs »</a>
+</p>
 
-First, install the dependencies:
+---
+
+Say hi to Echo — the one who listens to what your users are telling you, so you
+don't have to dig through scattered messages to find it.
+
+Drop a widget on your site or post to the API, and feedback lands in one place:
+triaged on a shared list, tracked on a board, summarized with AI-assisted digests
+when patterns start to repeat.
+
+## Documentation
+
+- [Overview](documentation/overview.md) — what Echo does and how it's built
+- [Architecture](documentation/architecture.md) — how the pieces fit together
+- [Contributing](documentation/contributing.md) — local setup
+
+## Quick start
 
 ```bash
 bun install
-```
-
-## Database Setup
-
-This project uses PostgreSQL with Drizzle ORM.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
-
-```bash
+cp .env.example apps/server/.env
 bun run db:push
-```
-
-Then, run the development server:
-
-```bash
 bun run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+See [contributing](documentation/contributing.md) for the full setup.
 
-## UI Customization
+---
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@echo/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Git Hooks and Formatting
-
-- Initialize hooks: `bun run prepare`
-- Run checks: `bun run check`
-
-## Project Structure
-
-```
-echo/
-├── apps/
-│   ├── web/         # Frontend application (Next.js)
-│   └── server/      # Backend API (Hono, TRPC)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Oxlint and Oxfmt
+<p align="center">Built with Next.js, Hono, tRPC, and Bun.</p>

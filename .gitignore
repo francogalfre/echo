@@ -56,9 +56,10 @@ temp
 # .claude/inspiration/
 # .claude/inspiration
 endpoints.md
-docs
+/docs
 
 # Local Pi runtime state
 .atl/
 .mcp.json
 openspec
+.superpowers/
