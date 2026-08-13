@@ -8,26 +8,27 @@ import { HeroBackdrop } from "./hero-backdrop";
 
 export const Hero = (): React.ReactElement => {
   return (
-    <section className="relative -mt-20 overflow-hidden pt-20">
+    <section className="relative -mt-20 overflow-hidden pt-32">
       <HeroBackdrop />
 
       <div className="relative mx-auto max-w-6xl px-6 pt-16 pb-4 sm:pt-24">
-        <Reveal onLoad className="mx-auto max-w-3xl text-center">
+        <Reveal onLoad className="max-w-4xl">
           <RevealItem>
-            <h1 className="font-pixel text-[2.25rem] leading-[1.05] font-medium text-balance sm:text-6xl lg:text-[4.25rem]">
+            <h1 className="font-pixel text-[2.25rem] leading-[1.05] font-medium tracking-tight text-pretty sm:text-5xl lg:text-[3.75rem]">
               User feedback, already sorted
             </h1>
           </RevealItem>
 
           <RevealItem>
-            <p className="mx-auto mt-7 max-w-xl text-base text-muted-foreground text-pretty sm:text-lg">
-              Collect it from a drop-in widget, a REST API or a hosted page. Echo scores
-              sentiment the moment it lands and tells your team what actually matters.
+            <p className="mt-6 max-w-2xl text-base text-muted-foreground text-pretty sm:text-lg">
+              Collect feedback from a drop-in widget, the REST API, or a hosted page. Every
+              submission is sentiment-scored and tagged by source as it lands, and recurring
+              summaries tell you which complaints are trending.
             </p>
           </RevealItem>
 
           <RevealItem>
-            <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/register"
                 className={buttonVariants({
@@ -35,28 +36,24 @@ export const Hero = (): React.ReactElement => {
                   className: "group h-11 rounded-full px-6 text-sm",
                 })}
               >
-                Start collecting free
-                <Icons.arrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                Get started free
               </Link>
               <Link
                 href="/docs/getting-started"
-                className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="rounded-full px-4 py-2 flex items-center text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 Read the docs
+                <Icons.arrowRight className="transition-transform duration-200 group-hover:translate-x-0.5 size-4 mt-0.6" />
               </Link>
             </div>
-          </RevealItem>
-
-          <RevealItem>
-            <p className="mt-6 text-xs text-muted-foreground">
-              Free forever plan · No credit card required
-            </p>
           </RevealItem>
         </Reveal>
 
         <Reveal onLoad delay={0.35} className="mt-16 sm:mt-20">
           <RevealItem>
-            <DashboardMock />
+            <div className="rounded-3xl bg-secondary/70 p-2">
+              <DashboardMock />
+            </div>
           </RevealItem>
         </Reveal>
       </div>

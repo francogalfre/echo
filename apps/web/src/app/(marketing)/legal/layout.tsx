@@ -9,12 +9,12 @@ type LegalLayoutProps = {
 
 const LegalLayout = ({ children }: LegalLayoutProps) => {
   return (
-    <div className="mx-auto max-w-2xl px-6 py-16">
+    <div className="mx-auto max-w-xl px-6 py-20">
       <Link href="/" className="inline-flex">
         <Logo />
       </Link>
-      <div className="mt-10">{children}</div>
-      <footer className="mt-16 flex items-center gap-4 border-t border-border pt-6 text-xs text-muted-foreground">
+      <div className="mt-12">{children}</div>
+      <footer className="mt-20 flex items-center gap-4 border-t border-border pt-8 text-xs text-muted-foreground">
         <Link href="/docs" className="hover:text-foreground">
           Docs
         </Link>

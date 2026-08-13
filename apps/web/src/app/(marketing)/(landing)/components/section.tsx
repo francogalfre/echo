@@ -25,7 +25,7 @@ export const SectionHeading = ({
   align = "start",
 }: SectionHeadingProps): React.ReactElement => (
   <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center")}>
-    <h2 className="font-display text-3xl font-semibold tracking-tight text-balance sm:text-[2.5rem] sm:leading-[1.1]">
+    <h2 className="font-pixel text-3xl font-medium tracking-tight text-balance sm:text-[2.5rem] sm:leading-[1.1]">
       {title}
     </h2>
     {description ? (

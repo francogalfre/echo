@@ -7,10 +7,10 @@ import {
 import { createMetadata } from "@/utils/metadata";
 
 import { CallToAction } from "./components/blocks/call-to-action";
+import { Channels } from "./components/blocks/channels";
 import { Faq, faqItems } from "./components/blocks/faq";
 import { Features } from "./components/blocks/features";
 import { Hero } from "./components/blocks/hero";
-import { Integrate } from "./components/blocks/integrate";
 import { Pricing } from "./components/blocks/pricing";
 
 export const metadata = createMetadata({
@@ -36,7 +36,7 @@ const LandingPage = (): React.ReactElement => {
       />
       <Hero />
       <Features />
-      <Integrate />
+      <Channels />
       <Pricing />
       <Faq />
       <CallToAction />

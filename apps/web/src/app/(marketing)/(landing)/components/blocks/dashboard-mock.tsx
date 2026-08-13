@@ -60,7 +60,7 @@ const toneClass = {
 
 export const DashboardMock = (): React.ReactElement => {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-md">
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
       <div className="flex">
         <aside className="hidden w-52 shrink-0 flex-col border-r border-border bg-sidebar p-3 md:flex">
           <div className="flex items-center gap-2 px-2 py-2">
