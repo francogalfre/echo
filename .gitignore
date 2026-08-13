@@ -55,6 +55,9 @@ temp
 
 # .claude/inspiration/
 # .claude/inspiration
+
+.agents/
+
 .playwright-mcp
 endpoints.md
 /docs
