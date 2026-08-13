@@ -1,4 +1,5 @@
 import { Toaster } from "@echo/ui/components/toast";
+import { Analytics } from "@vercel/analytics/next";
 import { geistMono, geistPixel, geistSans, instrumentSans } from "@/lib/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
@@ -38,6 +39,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           </NuqsAdapter>
           <Toaster position="top-right" />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

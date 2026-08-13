@@ -28,6 +28,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 COPY --from=builder /app /app
 WORKDIR /app/apps/server
 
-# Platform injects $PORT (Railway/Render/Koyeb) — src/index.ts reads it.
 EXPOSE 3000
 CMD ["bun", "run", "start"]

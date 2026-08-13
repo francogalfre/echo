@@ -77,11 +77,11 @@ parse the request → call a controller → translate the `Result` to a response
 
 | URL                           | File                                         | Purpose                           |
 | ----------------------------- | -------------------------------------------- | --------------------------------- |
-| `/`                           | `(marketing)/page.tsx`                       | Landing page                      |
+| `/`                           | `(marketing)/(landing)/page.tsx`             | Landing page                      |
 | `/docs`                       | `(marketing)/docs/`                          | Public docs (3-column shell)      |
 | `/login`                      | `(authentication)/login/page.tsx`            | Authentication                    |
 | `/register`                   | `(authentication)/register/page.tsx`         | Authentication                    |
-| `/new-project`                | `(onboarding)/new-project/page.tsx`          | Create first org (post-auth gate) |
+| `/onboarding`                 | `(onboarding)/onboarding/page.tsx`           | Create first org (post-auth gate) |
 | `/dashboard`                  | `dashboard/(overview)/page.tsx`              | Home: stats, recent feedback      |
 | `/dashboard/feedback`         | `dashboard/feedback/page.tsx`                | Feedback list                     |
 | `/dashboard/feedback/[id]`    | `dashboard/feedback/[id]/page.tsx`           | Feedback detail                   |
@@ -109,8 +109,11 @@ apps/web/src/app/
 │                                       # Their logic lives in src/lib/seo/.
 ├── llms.txt/route.ts                   # GEO: LLM-readable product summary
 ├── (marketing)/                        # landing + docs/ + legal/
+│   └── (landing)/                      # `/` — page.tsx, layout.tsx (nav+footer),
+│                                       # components/ (nav, footer, section) and
+│                                       # components/blocks/ (hero, features, pricing…)
 ├── (authentication)/                   # login, register
-├── (onboarding)/new-project/
+├── (onboarding)/onboarding/
 └── dashboard/
     ├── layout.tsx                      # Sidebar shell + auth/org guard
     ├── components/                     # SHARED dashboard-wide ONLY
@@ -159,7 +162,7 @@ a change is deploy-ready.
 Root layout (fonts, Toaster)
 ├── (marketing) — no extra layout
 ├── (auth)/layout.tsx — centered shell + echo logotype
-├── (onboarding) — no extra layout
+├── (onboarding)/layout.tsx — centered shell + ambient glow (must NOT wrap marketing)
 └── dashboard/layout.tsx — sidebar + main content area
 ```
 
@@ -167,5 +170,5 @@ Root layout (fonts, Toaster)
 
 - Pages are **Server Components** by default.
 - `'use client'` only at leaf components (forms, interactive controls).
-- Auth guard lives in `dashboard/layout.tsx` via a client wrapper: no session → `/login`, no orgs → `/new-project`.
+- Auth guard lives in `dashboard/layout.tsx` via a client wrapper: no session → `/login`, no orgs → `/onboarding`.
 - Data fetching happens at the page level; components receive typed props.
