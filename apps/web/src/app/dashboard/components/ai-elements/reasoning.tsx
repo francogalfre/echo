@@ -52,7 +52,7 @@ export function ReasoningTrigger({ className }: ReasoningTriggerProps): React.Re
       type="button"
       onClick={() => !isStreaming && setIsOpen(!isOpen)}
       className={cn(
-        "group flex items-center gap-2 text-xs",
+        "group flex items-center gap-2 text-sm",
         isStreaming
           ? "text-muted-foreground"
           : "text-muted-foreground/60 hover:text-muted-foreground",
@@ -62,7 +62,7 @@ export function ReasoningTrigger({ className }: ReasoningTriggerProps): React.Re
       )}
     >
       {isStreaming ? (
-        <Diamond className="size-3.5 text-muted-foreground" />
+        <Diamond className="size-4.5 text-muted-foreground" />
       ) : (
         <span className="size-2 rounded-full border border-current" />
       )}

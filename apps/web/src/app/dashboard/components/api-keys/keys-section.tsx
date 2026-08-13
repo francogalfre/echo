@@ -12,7 +12,8 @@ import { EmptyState } from "@echo/ui/components/empty-state";
 import { Icons } from "@echo/ui/components/icons";
 import { useState } from "react";
 
-import type { ApiKeyEntry } from "../hooks/use-api-keys";
+import type { ApiKeyEntry } from "@/app/dashboard/hooks/use-api-keys";
+
 import { KeyCard } from "./key-card";
 
 type KeysSectionProps = {

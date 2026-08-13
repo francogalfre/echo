@@ -1,5 +1,6 @@
 "use client";
 
+import { Diamond } from "@echo/ui/components/diamond";
 import { durations, easings } from "@echo/ui/lib/motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
@@ -26,12 +27,9 @@ export function AiThinking({ phrases, children }: AiThinkingProps): React.ReactE
   return (
     <div className="flex flex-col gap-4">
       <div role="status" aria-live="polite" className="flex items-center gap-2.5">
-        <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-foreground/20 opacity-75" />
-          <span className="relative inline-flex size-2 rounded-full bg-foreground/40" />
-        </span>
+        <Diamond aria-hidden="true" className="size-4.5 text-muted-foreground" />
         {reduced ? (
-          <span className="text-[11px] text-muted-foreground">{phrases[index]}</span>
+          <span className="text-sm text-muted-foreground">{phrases[index]}</span>
         ) : (
           <AnimatePresence mode="wait">
             <motion.span
@@ -40,7 +38,7 @@ export function AiThinking({ phrases, children }: AiThinkingProps): React.ReactE
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -2 }}
               transition={{ duration: durations.fast, ease: easings.out }}
-              className="text-[11px] text-muted-foreground"
+              className="text-sm text-muted-foreground"
             >
               {phrases[index]}
             </motion.span>

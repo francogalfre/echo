@@ -6,7 +6,8 @@ import { DocsToc } from "@echo/ui/components/docs/docs-toc";
 import { EndpointCard } from "@echo/ui/components/docs/endpoint-card";
 import { FadeIn } from "@echo/ui/components/fade-in";
 
-import { useApiKeys, type ApiKeysInitial } from "../../hooks/use-api-keys";
+import { useApiKeys, type ApiKeysInitial } from "@/app/dashboard/hooks/use-api-keys";
+
 import { ApiHero } from "../api-hero";
 import { AuthSection } from "../auth-section";
 import { DocsHeader } from "../../../components/docs-header";
@@ -28,9 +29,8 @@ export function ApiKeysContent({ initialKeys }: ApiKeysContentProps): React.Reac
   const { keys, pending, generate, roll, revoke } = useApiKeys(initialKeys);
   const serverUrl = env.NEXT_PUBLIC_SERVER_URL;
 
-  const pk = keys[0]?.publicKey ?? `echo_pk_${"•".repeat(16)}`;
   const createSnippets = buildCreateSnippets(serverUrl);
-  const listSnippets = buildListSnippets(serverUrl, pk);
+  const listSnippets = buildListSnippets(serverUrl);
 
   return (
     <>
@@ -95,7 +95,7 @@ export function ApiKeysContent({ initialKeys }: ApiKeysContentProps): React.Reac
                 method="GET"
                 path="/api/feedback"
                 description="Lists feedback entries for the authenticated project."
-                note="Requires the publishable key."
+                note="Requires the secret key."
                 snippets={listSnippets}
                 responseStatus={200}
                 responseBody={LIST_RESPONSE}

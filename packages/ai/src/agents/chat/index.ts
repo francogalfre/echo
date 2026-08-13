@@ -2,7 +2,7 @@ import { convertToModelMessages, stepCountIs, streamText, type ToolSet } from "a
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { CHAT_MODEL, FALLBACK_MODEL } from "../../lib/model";
+import { AGENT_MODELS } from "../../lib/model";
 import { buildChatSystemPrompt } from "./prompt";
 import { buildFeedbackTools, type ChatStreamInput } from "./tools";
 import {
@@ -11,6 +11,8 @@ import {
   flushTracing,
   updateGeneration,
 } from "../../lib/tracing";
+
+const { primary: CHAT_MODEL, fallback: FALLBACK_MODEL } = AGENT_MODELS.chat;
 
 export type ChatStreamResult = ReturnType<typeof streamText<ToolSet>>;
 

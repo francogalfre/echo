@@ -10,7 +10,6 @@ import {
 } from "@echo/ui/components/dropdown-menu";
 import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { authClient } from "@/lib/auth-client";
@@ -28,28 +27,41 @@ const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => (
 );
 
 export const OrgSwitcher = (): React.ReactElement => {
-  const router = useRouter();
   const [createOpen, setCreateOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
   const atProjectLimit = useAtProjectLimit();
   const { data: organizations, isPending } = authClient.useListOrganizations();
-  const { data: activeOrg } = authClient.useActiveOrganization();
+  const { data: activeOrg, isPending: isActiveOrgPending } =
+    authClient.useActiveOrganization();
 
   useEffect(() => {
-    if (!activeOrg && organizations && organizations.length > 0) {
-      authClient.organization
-        .setActive({ organizationId: organizations[0].id })
-        .then(() => router.refresh());
+    if (
+      switching ||
+      isPending ||
+      isActiveOrgPending ||
+      activeOrg ||
+      !organizations ||
+      organizations.length === 0
+    ) {
+      return;
     }
-  }, [activeOrg, organizations, router]);
+
+    setSwitching(true);
+    authClient.organization
+      .setActive({ organizationId: organizations[0].id })
+      .then(() => globalThis.location.assign("/dashboard"));
+  }, [activeOrg, isActiveOrgPending, isPending, organizations, switching]);
 
   if (isPending) {
     return <Skeleton className="h-8 w-full rounded-md" />;
   }
 
   const switchOrg = async (orgId: string): Promise<void> => {
+    if (switching || orgId === activeOrg?.id) return;
+    setSwitching(true);
     await authClient.organization.setActive({ organizationId: orgId });
-    router.refresh();
+    globalThis.location.assign("/dashboard");
   };
 
   const openCreateProject = (): void => {
@@ -66,12 +78,19 @@ export const OrgSwitcher = (): React.ReactElement => {
         reason={projectLimitReason}
       />
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.75 text-sm outline-none transition-colors hover:border-border hover:bg-background data-popup-open:border-border data-popup-open:bg-background">
+        <DropdownMenuTrigger
+          disabled={switching}
+          className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.75 text-sm outline-none transition-colors hover:border-border hover:bg-background data-disabled:cursor-not-allowed data-disabled:opacity-60 data-popup-open:border-border data-popup-open:bg-background"
+        >
           <OrgAvatar logo={activeOrg?.logo} name={activeOrg?.name} />
           <span className="flex-1 truncate text-left text-foreground">
             {activeOrg?.name ?? organizations?.[0]?.name ?? "Select"}
           </span>
-          <Icons.chevronDown className="size-3.5 shrink-0 text-muted-foreground/70" />
+          {switching ? (
+            <Icons.loading className="size-3.5 shrink-0 animate-spin text-muted-foreground/70" />
+          ) : (
+            <Icons.chevronDown className="size-3.5 shrink-0 text-muted-foreground/70" />
+          )}
         </DropdownMenuTrigger>
 
         <DropdownMenuContent
@@ -83,6 +102,7 @@ export const OrgSwitcher = (): React.ReactElement => {
             <DropdownMenuItem
               className="text-sm transition-[background-color,color] duration-300"
               key={org.id}
+              disabled={switching}
               onClick={() => switchOrg(org.id)}
             >
               <OrgAvatar logo={org.logo} name={org.name} />
@@ -96,6 +116,7 @@ export const OrgSwitcher = (): React.ReactElement => {
           <DropdownMenuSeparator className="my-2" />
           <DropdownMenuItem
             className="text-sm text-muted-foreground transition-[background-color,color] duration-300"
+            disabled={switching}
             onClick={openCreateProject}
           >
             <Icons.circlePlus className="size-4 text-muted-foreground" />

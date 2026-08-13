@@ -1,5 +1,3 @@
-import { LOGO_BASE64 } from "./logo";
-
 const BRAND_COLOR = "#6b5ce7";
 
 type EmailLayoutInput = {
@@ -8,6 +6,7 @@ type EmailLayoutInput = {
   bodyHtml: string;
   ctaLabel: string;
   ctaLink: string;
+  logoUrl: string;
 };
 
 export function renderEmailLayout(input: EmailLayoutInput): string {
@@ -17,10 +16,10 @@ export function renderEmailLayout(input: EmailLayoutInput): string {
       <div style="max-width: 480px; margin: 0 auto;">
         <div style="text-align: center; margin-bottom: 28px;">
           <img
-            src="data:image/png;base64,${LOGO_BASE64}"
+            src="${input.logoUrl}"
             alt="Echo"
             width="120"
-            style="display: inline-block; height: auto; border: 0;"
+            style="display: inline-block; height: auto; border: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 20px; font-weight: 700; color: ${BRAND_COLOR};"
           />
         </div>
 

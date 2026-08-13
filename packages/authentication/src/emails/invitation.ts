@@ -5,9 +5,10 @@ type InvitationEmailInput = {
   inviterName: string;
   organizationName: string;
   acceptLink: string;
+  logoUrl: string;
 };
 
-type InvitationEmail = { subject: string; html: string };
+type InvitationEmail = { subject: string; html: string; text: string };
 
 export function buildInvitationEmail(input: InvitationEmailInput): InvitationEmail {
   const inviterName = escapeHtml(input.inviterName);
@@ -31,6 +32,13 @@ export function buildInvitationEmail(input: InvitationEmailInput): InvitationEma
       `,
       ctaLabel: "Accept invitation",
       ctaLink: input.acceptLink,
+      logoUrl: input.logoUrl,
     }),
+    text: `${input.inviterName} invited you to join ${input.organizationName} on Echo, developer-first feedback infrastructure for collecting, understanding, and acting on user feedback.
+
+Accept the invitation to get access to the team's projects, feedback, and dashboard:
+${input.acceptLink}
+
+If you weren't expecting this email, you can safely ignore it.`,
   };
 }

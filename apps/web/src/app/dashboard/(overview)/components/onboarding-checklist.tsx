@@ -110,7 +110,7 @@ export function OnboardingChecklist({
           <ProgressBar completed={completedCount} />
         </div>
       </div>
-      <Stagger className="flex flex-col gap-4">
+      <Stagger className="flex flex-col gap-6">
         {steps.map((step, index) => (
           <StaggerItem key={step.title} className="flex items-center gap-3.5">
             <StepCircle index={index} completed={step.completed} />

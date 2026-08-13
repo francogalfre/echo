@@ -3,7 +3,8 @@
 import { trpc } from "@/lib/trpc";
 import { useAsyncResource } from "@/lib/use-async-resource";
 
-import type { ApiKeysInitialState } from "../../hooks/use-api-keys";
+import type { ApiKeysInitialState } from "@/app/dashboard/hooks/use-api-keys";
+
 import { ApiPageSkeleton } from "../api-page-skeleton";
 import { ErrorCard } from "../../../../components/error-card";
 import { ApiKeysContent } from "./api-keys-content";

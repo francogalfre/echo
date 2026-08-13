@@ -29,7 +29,10 @@ export const env = createEnv({
     OPENROUTER_API_KEY: z.string().min(1),
     OPENROUTER_MODEL: z.string().optional(),
     OPENROUTER_CHAT_MODEL: z.string().optional(),
-    OPENROUTER_FALLBACK_MODEL: z.string().optional(),
+    OPENROUTER_ANALYZE_FALLBACK_MODEL: z.string().optional(),
+    OPENROUTER_INSIGHT_FALLBACK_MODEL: z.string().optional(),
+    OPENROUTER_CHAT_FALLBACK_MODEL: z.string().optional(),
+    OPENROUTER_DIGEST_FALLBACK_MODEL: z.string().optional(),
 
     RESEND_API_KEY: z.string().min(1).optional(),
     RESEND_FROM_EMAIL: z.string().min(1).optional(),

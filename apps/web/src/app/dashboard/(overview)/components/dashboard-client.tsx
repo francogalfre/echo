@@ -22,7 +22,6 @@ import {
 import { AiAnalysisButton } from "../../components/ai/ai-analysis-button";
 import { ErrorCard } from "../../components/error-card";
 import { DashboardSkeleton } from "./dashboard-skeleton";
-import { HowEchoWorks } from "./how-echo-works";
 import { MetricStrip } from "./metric-strip";
 import { OnboardingChecklist } from "./onboarding-checklist";
 import { ProductFlowStrip } from "./product-flow-strip";
@@ -124,7 +123,6 @@ export function DashboardClient({
             hasFeedback={state.data.metrics.total.value > 0}
             hasApiKey={hasApiKey}
           />
-          <HowEchoWorks />
         </div>
       )}
 

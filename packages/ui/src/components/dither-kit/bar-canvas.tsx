@@ -89,15 +89,15 @@ export function BarCanvas() {
           const grown = base + ((t.top[i] ?? base) - base) * bp;
           const top = Math.min(grown, base);
           const bottom = Math.max(grown, base);
-          const active = s.hoverIndex === i;
-          const hoverDim = s.hoverIndex != null && !active && s.isMouseInChart ? 0.5 : 1;
+          const active = hoverIdx === i;
+          const hoverDim = hoverIdx != null && !active ? 1 - 0.5 * dimEase : 1;
           const slot = s.barSlot(i, si, keys.length);
           const c0 = Math.round(slot.x * fx);
           const c1 = Math.round((slot.x + slot.width) * fx);
           for (let x = c0; x < c1; x++) {
             paintColumn(c, x, top, bottom, seed, {
               variant,
-              intensity: intensity + (active ? 0.4 : 0),
+              intensity: intensity + (active ? 0.4 * activeEase : 0),
               dim: selDim * hoverDim,
               stacked,
             });
@@ -111,6 +111,9 @@ export function BarCanvas() {
     let lastProg = -1;
     let lastRevision = state.current.revision;
     let intensity = 0;
+    let dimEase = 0;
+    let activeEase = 0;
+    let hoverIdx: number | null = null;
     let needsFill = true;
     let lastPaintSig = "";
     let lastSelected: string | null | undefined = Symbol() as never;
@@ -146,7 +149,23 @@ export function BarCanvas() {
       }
       if (s.hoverIndex !== lastHover) {
         lastHover = s.hoverIndex;
+        if (s.hoverIndex != null) {
+          hoverIdx = s.hoverIndex;
+          activeEase = 0;
+        }
         needsFill = true;
+      }
+      const dimTarget = s.hoverIndex != null && s.isMouseInChart ? 1 : 0;
+      if (Math.abs(dimEase - dimTarget) > 0.001) {
+        dimEase += (dimTarget - dimEase) * (reduce ? 1 : 0.16);
+        needsFill = true;
+      } else dimEase = dimTarget;
+      if (Math.abs(activeEase - dimTarget) > 0.001) {
+        activeEase += (dimTarget - activeEase) * (reduce ? 1 : 0.12);
+        needsFill = true;
+      } else {
+        activeEase = dimTarget;
+        if (dimTarget === 0) hoverIdx = null;
       }
       const itTarget = s.isMouseInChart || s.hovered ? 1 : 0;
       if (Math.abs(intensity - itTarget) > 0.001) {

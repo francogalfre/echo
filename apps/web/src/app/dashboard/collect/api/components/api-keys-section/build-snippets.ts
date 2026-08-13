@@ -81,13 +81,13 @@ requests.post(
   ];
 }
 
-export function buildListSnippets(serverUrl: string, publicKey: string): EndpointSnippet[] {
+export function buildListSnippets(serverUrl: string): EndpointSnippet[] {
   return [
     {
       label: "JavaScript",
       language: "js",
       code: `const res = await fetch("${serverUrl}/api/feedback", {
-  headers: { "Authorization": "Bearer ${publicKey}" },
+  headers: { "Authorization": "Bearer ${MASKED_SECRET}" },
 })
 
 const { feedback } = await res.json()`,
@@ -99,7 +99,7 @@ const { feedback } = await res.json()`,
 
 response = requests.get(
     "${serverUrl}/api/feedback",
-    headers={"Authorization": "Bearer ${publicKey}"},
+    headers={"Authorization": "Bearer ${MASKED_SECRET}"},
 )
 
 feedback = response.json()["feedback"]`,

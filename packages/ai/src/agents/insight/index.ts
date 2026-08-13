@@ -2,7 +2,7 @@ import { generateText } from "ai";
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL, FALLBACK_MODEL } from "../../lib/model";
+import { AGENT_MODELS } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildInsightPrompt, INSIGHT_SYSTEM_PROMPT } from "./prompt";
 import {
@@ -11,6 +11,8 @@ import {
   flushTracing,
   updateGeneration,
 } from "../../lib/tracing";
+
+const { primary: DEFAULT_MODEL, fallback: FALLBACK_MODEL } = AGENT_MODELS.insight;
 
 const timeoutMs = 30_000;
 const maxOutputTokens = 400;

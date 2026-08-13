@@ -16,6 +16,7 @@ type SettingsNavItem = {
 const SETTINGS_NAV_ITEMS: readonly SettingsNavItem[] = [
   { label: "Account", href: "/dashboard/settings/account" },
   { label: "Team", href: "/dashboard/settings/team", adminOnly: true },
+  { label: "API keys", href: "/dashboard/settings/api-keys", adminOnly: true },
   { label: "Billing", href: "/dashboard/settings/billing", adminOnly: true },
 ];
 

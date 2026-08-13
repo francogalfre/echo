@@ -6,7 +6,6 @@ import { Icons } from "@echo/ui/components/icons";
 import { Skeleton } from "@echo/ui/components/skeleton";
 import { Stagger, StaggerItem } from "@echo/ui/components/motion/stagger";
 import { cn } from "@echo/ui/lib/utils";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "@echo/ui/components/toast";
 
@@ -114,7 +113,6 @@ type ProjectsListProps = {
 };
 
 export function ProjectsList({ initialData }: ProjectsListProps): React.ReactElement {
-  const router = useRouter();
   const { data: organizations, isPending } = authClient.useListOrganizations();
   const { data: activeOrg } = authClient.useActiveOrganization();
   const [switchingId, setSwitchingId] = useState<string | null>(null);
@@ -128,15 +126,14 @@ export function ProjectsList({ initialData }: ProjectsListProps): React.ReactEle
 
     setSwitchingId(organizationId);
     const { error } = await authClient.organization.setActive({ organizationId });
-    setSwitchingId(null);
 
     if (error) {
+      setSwitchingId(null);
       toast.error(error.message ?? "Could not switch project.");
       return;
     }
 
-    toast.success("Switched project");
-    router.refresh();
+    globalThis.location.assign("/dashboard");
   };
 
   const activePlan = initialData.plan;

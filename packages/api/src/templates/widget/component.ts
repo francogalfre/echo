@@ -16,10 +16,10 @@ type BuildWidgetComponentInput = {
 function header(input: BuildWidgetComponentInput): string {
   const imports =
     input.variant === "shadcn"
-      ? `import { useState, type FormEvent } from 'react'
+      ? `import { useState, type FormEvent, type ReactElement } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'`
-      : `import { useState, type FormEvent } from 'react'`;
+      : `import { useState, type FormEvent, type ReactElement } from 'react'`;
 
   return `'use client'
 
@@ -227,7 +227,7 @@ function panel(variant: WidgetVariant): string {
 export function buildWidgetComponent(input: BuildWidgetComponentInput): string {
   return `${header(input)}
 
-export function EchoWidget({ position = 'right' }: Props): JSX.Element {
+export function EchoWidget({ position = 'right' }: Props): ReactElement {
   const [open, setOpen] = useState(false)
   const [rating, setRating] = useState<number | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)

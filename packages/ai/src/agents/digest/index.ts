@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { AIError } from "../../errors";
 import { openrouterModel } from "../../lib/provider";
-import { DEFAULT_MODEL, FALLBACK_MODEL } from "../../lib/model";
+import { AGENT_MODELS } from "../../lib/model";
 import { buildAgentUsage, type AgentUsage } from "../../lib/usage";
 import { buildDigestPrompt, DIGEST_SYSTEM_PROMPT } from "./prompt";
 import {
@@ -12,6 +12,8 @@ import {
   flushTracing,
   updateGeneration,
 } from "../../lib/tracing";
+
+const { primary: DEFAULT_MODEL, fallback: FALLBACK_MODEL } = AGENT_MODELS.digest;
 
 const timeoutMs = 20_000;
 const maxOutputTokens = 1300;

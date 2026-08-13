@@ -3,8 +3,8 @@ import { DOCS_TABLE_HEAD_CELL, DocsTable } from "@echo/ui/components/docs/docs-t
 import { DocsSectionHeading } from "@echo/ui/components/docs/docs-section";
 import { InlineCode } from "@echo/ui/components/docs/inline-code";
 
-import type { ApiKeyEntry } from "../hooks/use-api-keys";
-import { KeysSection } from "./keys-section";
+import { KeysSection } from "@/app/dashboard/components/api-keys/keys-section";
+import type { ApiKeyEntry } from "@/app/dashboard/hooks/use-api-keys";
 
 type AuthSectionProps = {
   keys: ApiKeyEntry[];

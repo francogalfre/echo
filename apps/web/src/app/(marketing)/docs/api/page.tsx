@@ -64,13 +64,13 @@ function buildListSnippets(serverUrl: string): EndpointSnippet[] {
       label: "cURL",
       language: "bash",
       code: `curl ${serverUrl}/api/feedback \\
-  -H "Authorization: Bearer echo_pk_your_publishable_key"`,
+  -H "Authorization: Bearer echo_sk_your_secret_key"`,
     },
     {
       label: "JavaScript",
       language: "js",
       code: `const res = await fetch("${serverUrl}/api/feedback", {
-  headers: { "Authorization": "Bearer echo_pk_your_publishable_key" },
+  headers: { "Authorization": "Bearer echo_sk_your_secret_key" },
 })
 
 const { feedback } = await res.json()`,
@@ -147,7 +147,7 @@ const ApiDocsPage = () => {
             method="GET"
             path="/api/feedback"
             description="Lists feedback entries for the authenticated project."
-            note="Requires the publishable key."
+            note="Requires the secret key."
             snippets={listSnippets}
             responseStatus={200}
             responseBody={LIST_RESPONSE}

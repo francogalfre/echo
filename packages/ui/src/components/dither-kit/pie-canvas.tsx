@@ -53,6 +53,7 @@ export function PieCanvas() {
     let lastRevision = state.current.revision;
     let intensity = 0;
     let popEase = 0;
+    let popIndex: number | null = null;
     let needsFill = true;
     let lastPaintSig = "";
     let lastSelected: string | null | undefined = Symbol() as never;
@@ -86,7 +87,7 @@ export function PieCanvas() {
           if (si < 0) continue;
           const slice = slices[si];
           if (!slice) continue;
-          const active = s.hoverIndex === si;
+          const active = popIndex === si;
           const localOuter = active ? outerR + POP * popEase : outerR;
           if (r > localOuter) continue;
 
@@ -144,7 +145,10 @@ export function PieCanvas() {
         // Only snap the pop back to 0 when entering a new slice — restarting the
         // grow-in each time. Leaving (hoverIndex -> null) must ease down through
         // the normal popTarget lerp below, not jump instantly.
-        if (s.hoverIndex != null) popEase = 0;
+        if (s.hoverIndex != null) {
+          popEase = 0;
+          popIndex = s.hoverIndex;
+        }
         needsFill = true;
       }
       const itTarget = s.isMouseInChart ? 1 : 0;
@@ -154,9 +158,12 @@ export function PieCanvas() {
       } else intensity = itTarget;
       const popTarget = s.hoverIndex != null ? 1 : 0;
       if (Math.abs(popEase - popTarget) > 0.001) {
-        popEase += (popTarget - popEase) * (reduce ? 1 : 0.22);
+        popEase += (popTarget - popEase) * (reduce ? 1 : 0.14);
         needsFill = true;
-      } else popEase = popTarget;
+      } else {
+        popEase = popTarget;
+        if (popTarget === 0) popIndex = null;
+      }
       if (prog !== lastProg) {
         lastProg = prog;
         needsFill = true;

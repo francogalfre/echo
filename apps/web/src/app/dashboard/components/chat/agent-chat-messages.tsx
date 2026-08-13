@@ -45,8 +45,8 @@ type AgentChatMessagesProps = {
 function TypingIndicator(): React.ReactElement {
   return (
     <div className="flex items-center gap-2.5 py-0.5">
-      <Diamond className="size-4 text-muted-foreground/60" />
-      <span className="text-sm text-muted-foreground/60">Thinking</span>
+      <Diamond className="size-5.5 text-muted-foreground/60" />
+      <span className="text-base text-muted-foreground/60">Thinking</span>
     </div>
   );
 }

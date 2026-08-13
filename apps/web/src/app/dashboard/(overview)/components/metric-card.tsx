@@ -34,6 +34,12 @@ function TrendIndicator({ growth }: { growth: number | null }): React.ReactEleme
   );
 }
 
+function isFlatSeries(data: readonly number[]): boolean {
+  if (data.length < 3) return true;
+  const first = data[0];
+  return data.every((point) => point === first);
+}
+
 export function MetricCard({
   label,
   value,
@@ -41,8 +47,10 @@ export function MetricCard({
   sparklineData,
   sparklineColor = "accent",
 }: MetricCardProps): React.ReactElement {
+  const showSparkline = !isFlatSeries(sparklineData);
+
   return (
-    <div className="relative flex h-[190px] flex-col gap-2.5 overflow-hidden rounded-lg bg-card p-5 ring-1 ring-foreground/10 transition-colors hover:bg-muted/30">
+    <div className="group relative flex h-[184px] flex-col gap-2.5 overflow-hidden rounded-lg bg-card p-5 ring-1 ring-foreground/10">
       <div className="relative z-10 flex items-center justify-between">
         <p className="text-xs text-muted-foreground">{label}</p>
         <TrendIndicator growth={growth} />
@@ -51,12 +59,20 @@ export function MetricCard({
         value={value}
         className="relative z-10 font-pixel text-3xl font-medium tracking-tight"
       />
-      <Sparkline
-        data={[...sparklineData]}
-        color={sparklineColor}
-        variant="gradient"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28"
-      />
+      {showSparkline ? (
+        <>
+          <Sparkline
+            data={[...sparklineData]}
+            color={sparklineColor}
+            variant="gradient"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-20"
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-card to-transparent" />
+        </>
+      ) : (
+        <div className="pointer-events-none absolute inset-x-6 bottom-10 h-px bg-foreground/10" />
+      )}
+      <div className="pointer-events-none absolute inset-0 z-20 bg-foreground/[0.05] opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100" />
     </div>
   );
 }

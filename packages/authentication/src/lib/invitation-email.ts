@@ -16,18 +16,22 @@ export const sendInvitationEmail: SendInvitationEmail = async (data) => {
 
   const resend = new Resend(env.RESEND_API_KEY);
   const acceptLink = `${env.CORS_ORIGIN}/accept-invitation/${data.id}`;
+  const logoUrl = `${env.CORS_ORIGIN}/logo-email.png`;
 
   const email = buildInvitationEmail({
     inviterName: data.inviter.user.name,
     organizationName: data.organization.name,
     acceptLink,
+    logoUrl,
   });
 
   const { error } = await resend.emails.send({
     from: env.RESEND_FROM_EMAIL,
     to: data.email,
+    replyTo: env.RESEND_FROM_EMAIL,
     subject: email.subject,
     html: email.html,
+    text: email.text,
   });
 
   if (error) {

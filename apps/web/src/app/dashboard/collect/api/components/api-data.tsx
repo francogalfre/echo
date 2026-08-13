@@ -1,6 +1,7 @@
 import { createServerTrpc } from "@/lib/trpc-server";
 
-import type { ApiKeysInitialState } from "../hooks/use-api-keys";
+import type { ApiKeysInitialState } from "@/app/dashboard/hooks/use-api-keys";
+
 import { ApiKeysSection } from "./api-keys-section";
 
 export async function ApiData(): Promise<React.ReactElement> {

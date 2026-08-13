@@ -18,7 +18,7 @@
   <a href="documentation/overview.md"><strong>Explore the docs »</strong></a>
 </p>
 
----
+<br />
 
 Say hi to Echo — the one who listens to what your users are telling you, so
 you don't have to dig through scattered messages to find it.
@@ -44,6 +44,6 @@ bun run dev
 
 See [contributing](documentation/contributing.md) for the full setup.
 
----
+<br />
 
-<p align="center">Built with Next.js, Hono, tRPC, and Bun.</p>
+<p align="center">Built with Next.js, Hono, tRPC, and the <3.</p>

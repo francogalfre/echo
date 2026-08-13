@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@echo/ui/components/avatar";
 import { Button } from "@echo/ui/components/button";
 import { Icons } from "@echo/ui/components/icons";
 import { Input } from "@echo/ui/components/input";
@@ -8,6 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "@echo/ui/components/toast";
 
 import { authClient } from "@/lib/auth-client";
+import { useLogoUpload } from "@/lib/project/use-logo-upload";
 
 import { SettingsCard } from "../../components/settings-card";
 import { SettingsRow } from "../../components/settings-row";
@@ -17,10 +19,30 @@ export const WorkspaceSection = (): React.ReactElement => {
   const { data: activeOrg } = authClient.useActiveOrganization();
   const [name, setName] = useState("");
   const [saving, setSaving] = useState(false);
+  const logo = useLogoUpload();
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   useEffect(() => {
     if (activeOrg?.name) setName(activeOrg.name);
   }, [activeOrg?.name]);
+
+  const uploadLogo = async (file: File | undefined): Promise<void> => {
+    if (!file || !activeOrg) return;
+
+    logo.onChange(file);
+    if (file.size > 1024 * 1024) return;
+
+    setUploadingLogo(true);
+    try {
+      await logo.upload(activeOrg.id, file);
+      toast.success("Logo updated");
+      router.refresh();
+    } catch {
+      toast.error("Could not upload the logo");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const save = async (): Promise<void> => {
     const trimmed = name.trim();
@@ -52,6 +74,51 @@ export const WorkspaceSection = (): React.ReactElement => {
       </p>
 
       <div className="mt-6 divide-y divide-border/60">
+        <SettingsRow
+          label="Logo"
+          description="Shown in the sidebar and across your dashboard."
+        >
+          <div className="flex items-center gap-4">
+            <Avatar className="size-12 rounded-xl">
+              {(logo.preview ?? activeOrg?.logo) ? (
+                <AvatarImage
+                  src={logo.preview ?? activeOrg?.logo ?? undefined}
+                  alt={`${activeOrg?.name ?? "Workspace"} logo`}
+                />
+              ) : null}
+              <AvatarFallback
+                name={activeOrg?.name ?? "·"}
+                className="rounded-xl text-sm"
+              />
+            </Avatar>
+            <div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => logo.fileInputRef.current?.click()}
+                disabled={!activeOrg || uploadingLogo}
+                className="h-9 text-sm"
+              >
+                {uploadingLogo ? (
+                  <Icons.loading className="size-4 animate-spin" />
+                ) : (
+                  "Change logo"
+                )}
+              </Button>
+              {logo.error ? (
+                <p className="mt-1.5 text-xs text-destructive">{logo.error}</p>
+              ) : null}
+            </div>
+            <input
+              ref={logo.fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/svg+xml"
+              className="hidden"
+              onChange={(e) => uploadLogo(e.target.files?.[0])}
+            />
+          </div>
+        </SettingsRow>
+
         <SettingsRow
           label="Workspace name"
           htmlFor="workspace-name"
