@@ -8,7 +8,7 @@ type SectionProps = {
 };
 
 export const Section = ({ id, className, children }: SectionProps): React.ReactElement => (
-  <section id={id} className={cn("scroll-mt-24 py-20 sm:py-24", className)}>
+  <section id={id} className={cn("scroll-mt-24 py-24 sm:py-32", className)}>
     <div className="mx-auto max-w-6xl px-6">{children}</div>
   </section>
 );
@@ -29,7 +29,14 @@ export const SectionHeading = ({
       {title}
     </h2>
     {description ? (
-      <p className="mt-4 text-base text-muted-foreground text-pretty">{description}</p>
+      <p
+        className={cn(
+          "mt-4 max-w-md text-base text-balance text-muted-foreground",
+          align === "center" && "mx-auto",
+        )}
+      >
+        {description}
+      </p>
     ) : null}
   </div>
 );

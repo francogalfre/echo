@@ -11,9 +11,9 @@ const LandingLayout = ({ children }: LandingLayoutProps) => {
   return (
     <MotionProvider>
       <SmoothScroll />
-      <div className="flex min-h-svh flex-col bg-background">
+      <div className="flex min-h-svh flex-col bg-background p-2 pb-0 rounded-lg">
         <LandingNav />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 ">{children}</main>
         <LandingFooter />
       </div>
     </MotionProvider>

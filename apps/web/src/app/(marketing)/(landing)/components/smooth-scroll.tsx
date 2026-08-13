@@ -15,11 +15,11 @@ export const SmoothScroll = (): null => {
     }
 
     const lenis = new Lenis({
-      duration: 1.05,
-      lerp: 0.12,
+      lerp: 0.065,
       anchors: { offset: -72 },
-      wheelMultiplier: 1,
-      touchMultiplier: 1.6,
+      wheelMultiplier: 0.9,
+      touchMultiplier: 1.5,
+      syncTouch: true,
     });
 
     let frame = requestAnimationFrame(function raf(time: number): void {

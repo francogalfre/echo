@@ -1,20 +1,22 @@
 import { Icons } from "@echo/ui/components/icons";
+import { cn } from "@echo/ui/lib/utils";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { Logo } from "../../components/logo";
+import { MotionButtonLink } from "./motion-button-link";
 
 const glow: CSSProperties = {
   backgroundImage: [
     "radial-gradient(ellipse 42% 34% at 50% 100%, color-mix(in oklch, var(--accent) 62%, transparent), transparent 70%)",
-    "radial-gradient(ellipse 68% 62% at 50% 101%, color-mix(in oklch, var(--accent-soft) 46%, transparent), transparent 72%)",
+    "radial-gradient(ellipse 55% 38% at 50% 106%, color-mix(in oklch, var(--accent-soft) 46%, transparent), transparent 72%)",
     "radial-gradient(ellipse 110% 100% at 50% 103%, color-mix(in oklch, var(--accent-soft) 26%, transparent), transparent 74%)",
   ].join(", "),
 };
 
 const actions = [
-  { href: "/docs", label: "Read the docs" },
-  { href: "/dashboard", label: "Go to dashboard" },
+  { href: "/docs", label: "Read the docs", accent: false },
+  { href: "/dashboard", label: "Go to dashboard", accent: true },
 ] as const;
 
 const columns = [
@@ -57,7 +59,7 @@ export const LandingFooter = (): React.ReactElement => {
     <footer className="relative isolate overflow-x-clip">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[150%]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[200%]"
         style={glow}
       />
 
@@ -69,14 +71,19 @@ export const LandingFooter = (): React.ReactElement => {
 
           <div className="flex flex-wrap gap-3">
             {actions.map((action) => (
-              <Link
+              <MotionButtonLink
                 key={action.href}
                 href={action.href}
-                className="group inline-flex h-10 items-center gap-2 rounded-full border border-border px-4 text-sm font-medium transition-colors hover:border-foreground/20 hover:bg-card"
+                className={cn(
+                  "group inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors duration-300",
+                  action.accent
+                    ? "border-transparent bg-accent text-accent-foreground hover:bg-accent/90"
+                    : "border-border hover:border-foreground/20 hover:bg-card",
+                )}
               >
                 {action.label}
-                <Icons.arrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-              </Link>
+                <Icons.arrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </MotionButtonLink>
             ))}
           </div>
         </div>
@@ -123,15 +130,11 @@ export const LandingFooter = (): React.ReactElement => {
           </nav>
         </div>
 
-        <div className="mt-12 border-t border-border pt-6 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Echo. All rights reserved.</p>
+        <div className="relative overflow-clip pt-24 pb-6 sm:pb-0">
+          <p className="text-start font-pixel text-[18vw] leading-[0.8] font-medium tracking-tighter text-primary-foreground sm:text-[12rem] lg:text-[14rem] opacity-40">
+            echo
+          </p>
         </div>
-      </div>
-
-      <div className="relative overflow-clip px-6 sm:pb-0">
-        <p className="text-center font-pixel text-[18vw] leading-[0.8] font-medium tracking-tighter text-foreground sm:text-[12rem] lg:text-[14rem]">
-          ECHO
-        </p>
       </div>
     </footer>
   );

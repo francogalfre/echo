@@ -1,3 +1,4 @@
+import { Reveal, RevealItem } from "../reveal";
 import { Section, SectionHeading } from "../section";
 import { FaqList } from "./faq-list";
 
@@ -32,16 +33,18 @@ export const faqItems: readonly FaqItem[] = [
 export const Faq = (): React.ReactElement => {
   return (
     <Section id="faq">
-      <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+      <Reveal className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <RevealItem>
           <SectionHeading
             title="Questions, answered"
             description="Still unsure about something? The docs go deeper on every endpoint."
           />
-        </div>
+        </RevealItem>
 
-        <FaqList items={faqItems} />
-      </div>
+        <RevealItem>
+          <FaqList items={faqItems} />
+        </RevealItem>
+      </Reveal>
     </Section>
   );
 };

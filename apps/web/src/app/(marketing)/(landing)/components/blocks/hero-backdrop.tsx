@@ -25,18 +25,27 @@ type HeroBackdropProps = {
 
 export const HeroBackdrop = ({ image }: HeroBackdropProps): React.ReactElement => {
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[44rem]">
+    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[64rem]">
       {image ? (
         <div
-          className="absolute inset-0 opacity-70"
+          className="absolute inset-0 opacity-100 brightness-80"
           style={{ maskImage: fade, WebkitMaskImage: fade }}
         >
-          <Image src={image} alt="" fill priority className="object-cover" />
+          <Image
+            src={image}
+            alt="Hero background clouds in a purple sky"
+            fill
+            priority
+            loading="eager"
+            className="object-cover rounded-2xl"
+          />
         </div>
-      ) : null}
-
-      <div className="absolute inset-0 blur-[64px]" style={field} />
-      <div className="absolute inset-0" style={veil} />
+      ) : (
+        <>
+          <div className="absolute inset-0 blur-[64px]" style={field} />
+          <div className="absolute inset-0" style={veil} />
+        </>
+      )}
     </div>
   );
 };

@@ -6,7 +6,6 @@ import {
 } from "@/lib/seo/structured-data";
 import { createMetadata } from "@/utils/metadata";
 
-import { CallToAction } from "./components/blocks/call-to-action";
 import { Channels } from "./components/blocks/channels";
 import { Faq, faqItems } from "./components/blocks/faq";
 import { Features } from "./components/blocks/features";
@@ -39,7 +38,6 @@ const LandingPage = (): React.ReactElement => {
       <Channels />
       <Pricing />
       <Faq />
-      <CallToAction />
     </>
   );
 };

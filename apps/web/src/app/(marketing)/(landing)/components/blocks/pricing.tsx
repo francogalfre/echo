@@ -1,14 +1,15 @@
-import { Badge } from "@echo/ui/components/badge";
 import { buttonVariants } from "@echo/ui/components/button-variants";
 import { Icons } from "@echo/ui/components/icons";
 import { cn } from "@echo/ui/lib/utils";
-import Link from "next/link";
 
+import { MotionButtonLink } from "../motion-button-link";
+import { Reveal, RevealItem } from "../reveal";
 import { Section, SectionHeading } from "../section";
 
 type Tier = {
   name: string;
   price: string;
+  previousPrice?: string;
   cadence: string;
   description: string;
   features: readonly string[];
@@ -36,6 +37,7 @@ const tiers: readonly Tier[] = [
   {
     name: "Pro",
     price: "$12",
+    previousPrice: "$30",
     cadence: "/month",
     description: "For teams whose feedback volume has outgrown a spreadsheet.",
     features: [
@@ -54,32 +56,33 @@ const tiers: readonly Tier[] = [
 export const Pricing = (): React.ReactElement => {
   return (
     <Section id="pricing">
-      <SectionHeading
-        align="center"
-        title="Start free. Upgrade when the feedback keeps coming."
-        description="No seat pricing, no annual contract, no sales call. Cancel from the billing page whenever you like."
-      />
+      <Reveal>
+        <RevealItem>
+          <SectionHeading
+            align="center"
+            title="Start free. Upgrade when the feedback keeps coming."
+            description="No seat pricing, no annual contract, no sales call. Cancel from the billing page whenever you like."
+          />
+        </RevealItem>
+      </Reveal>
 
-      <div className="mx-auto mt-14 grid max-w-4xl gap-5 md:grid-cols-2">
+      <Reveal className="mx-auto mt-14 grid max-w-4xl gap-5 md:grid-cols-2">
         {tiers.map((tier) => (
-          <div
+          <RevealItem
             key={tier.name}
             className={cn(
-              "flex flex-col rounded-2xl border bg-card p-7",
+              "flex h-full flex-col rounded-2xl border bg-card p-7",
               tier.highlighted ? "border-accent" : "border-border",
             )}
           >
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold tracking-tight">{tier.name}</h3>
-              {tier.highlighted ? (
-                <Badge variant="accent">
-                  <Icons.crown />
-                  Most popular
-                </Badge>
-              ) : null}
-            </div>
+            <h3 className="text-sm font-semibold tracking-tight">{tier.name}</h3>
 
-            <p className="mt-5 flex items-baseline gap-1">
+            <p className="mt-5 flex items-baseline gap-1.5">
+              {tier.previousPrice ? (
+                <span className="font-display text-2xl font-medium tracking-tight text-muted-foreground line-through decoration-from-font">
+                  {tier.previousPrice}
+                </span>
+              ) : null}
               <span className="font-display text-4xl font-semibold tracking-tight">
                 {tier.price}
               </span>
@@ -96,19 +99,24 @@ export const Pricing = (): React.ReactElement => {
               ))}
             </ul>
 
-            <Link
+            <MotionButtonLink
               href="/register"
-              className={buttonVariants({
-                variant: tier.highlighted ? "default" : "outline",
-                size: "lg",
-                className: "mt-8 h-10 w-full rounded-full text-sm",
-              })}
+              className={cn(
+                buttonVariants({
+                  variant: tier.highlighted ? "default" : "outline",
+                  size: "lg",
+                }),
+                "mt-8 h-10 w-full rounded-full text-sm duration-300 hover:shadow-none",
+                tier.highlighted
+                  ? "[a]:hover:bg-accent/90"
+                  : "hover:bg-secondary/60 hover:text-foreground",
+              )}
             >
               {tier.cta}
-            </Link>
-          </div>
+            </MotionButtonLink>
+          </RevealItem>
         ))}
-      </div>
+      </Reveal>
     </Section>
   );
 };

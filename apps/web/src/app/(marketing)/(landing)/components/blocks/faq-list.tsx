@@ -43,7 +43,7 @@ export const FaqList = ({ items }: FaqListProps): React.ReactElement => {
                 aria-expanded={open}
                 aria-controls={panelId}
                 onClick={() => setOpenQuestion(open ? null : item.question)}
-                className="group -mx-2 flex w-[calc(100%+1rem)] cursor-pointer items-center justify-between gap-6 rounded-md px-2 py-5 text-left text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="group -mx-2 flex w-[calc(100%+1rem)] cursor-pointer items-center justify-between gap-6 rounded-md px-2 py-5 text-left text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
               >
                 <span className="text-pretty transition-opacity group-hover:opacity-70">
                   {item.question}
