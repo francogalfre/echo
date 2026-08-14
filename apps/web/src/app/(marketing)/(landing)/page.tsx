@@ -13,7 +13,8 @@ import { Hero } from "./components/blocks/hero";
 import { Pricing } from "./components/blocks/pricing";
 
 export const metadata = createMetadata({
-  title: "Echo: user feedback infrastructure for product teams",
+  title: "Echo | User feedback infrastructure for product teams",
+  absoluteTitle: true,
   description:
     "Collect user feedback with a drop-in widget, REST API or hosted page. Echo classifies sentiment and summarizes what matters, so product, support and engineering teams see it in one inbox.",
   path: "/",

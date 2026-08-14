@@ -1,7 +1,7 @@
 "use client";
 
 import { Icons } from "@echo/ui/components/icons";
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 import { Reveal, RevealItem } from "../reveal";
@@ -50,7 +50,7 @@ const FeatureCard = ({
   const reduced = useReducedMotion();
 
   return (
-    <motion.article
+    <m.article
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors duration-[700ms] ease-out hover:border-foreground/20"
       initial="rest"
       animate="rest"
@@ -67,7 +67,7 @@ const FeatureCard = ({
           {description}
         </p>
       </div>
-    </motion.article>
+    </m.article>
   );
 };
 

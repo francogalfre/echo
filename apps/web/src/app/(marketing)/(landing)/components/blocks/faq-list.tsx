@@ -2,7 +2,7 @@
 
 import { Icons } from "@echo/ui/components/icons";
 import { durations, easings } from "@echo/ui/lib/motion";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { useId, useState } from "react";
 
 import type { FaqItem } from "./faq";
@@ -48,19 +48,19 @@ export const FaqList = ({ items }: FaqListProps): React.ReactElement => {
                 <span className="text-pretty transition-opacity group-hover:opacity-70">
                   {item.question}
                 </span>
-                <motion.span
+                <m.span
                   className="shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
                   animate={{ rotate: open ? 180 : 0 }}
                   transition={reduced ? instantTransition : heightTransition}
                 >
                   <Icons.chevronDown className="size-4" />
-                </motion.span>
+                </m.span>
               </button>
             </h3>
 
             <AnimatePresence initial={false}>
               {open ? (
-                <motion.div
+                <m.div
                   key="panel"
                   id={panelId}
                   role="region"
@@ -71,7 +71,7 @@ export const FaqList = ({ items }: FaqListProps): React.ReactElement => {
                   exit={{ height: 0, opacity: 0 }}
                   transition={reduced ? instantTransition : panelTransition}
                 >
-                  <motion.p
+                  <m.p
                     className="max-w-2xl pb-6 text-sm text-muted-foreground text-pretty"
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -79,8 +79,8 @@ export const FaqList = ({ items }: FaqListProps): React.ReactElement => {
                     transition={reduced ? instantTransition : answerTransition}
                   >
                     {item.answer}
-                  </motion.p>
-                </motion.div>
+                  </m.p>
+                </m.div>
               ) : null}
             </AnimatePresence>
           </div>

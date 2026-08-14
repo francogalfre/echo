@@ -11,5 +11,6 @@ if (key) {
     defaults: "2026-05-30",
     capture_pageview: false,
     capture_pageleave: true,
+    disable_surveys: true,
   });
 }

@@ -9,9 +9,9 @@ import { SocialButtons } from "../components/social-buttons";
 
 export const metadata = createMetadata({
   title: "Log in",
-  description: "Log in to your Echo account.",
+  description:
+    "Log in to Echo to read your user feedback inbox, sentiment breakdown and AI summaries.",
   path: "/login",
-  noIndex: true,
 });
 
 type LoginPageProps = {

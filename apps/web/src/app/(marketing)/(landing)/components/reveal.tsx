@@ -1,7 +1,7 @@
 "use client";
 
 import { easings } from "@echo/ui/lib/motion";
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
 const container = (delay: number) => ({
@@ -39,7 +39,7 @@ export const Reveal = ({
   }
 
   return (
-    <motion.div
+    <m.div
       className={className}
       variants={container(delay)}
       initial="hidden"
@@ -48,7 +48,7 @@ export const Reveal = ({
         : { whileInView: "visible", viewport: { once: true, margin: "-80px" } })}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -68,8 +68,8 @@ export const RevealItem = ({
   }
 
   return (
-    <motion.div className={className} variants={item}>
+    <m.div className={className} variants={item}>
       {children}
-    </motion.div>
+    </m.div>
   );
 };

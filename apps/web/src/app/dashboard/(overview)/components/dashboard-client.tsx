@@ -1,6 +1,7 @@
 "use client";
 
 import { fadeInUp, staggerContainer } from "@echo/ui/lib/motion";
+import { Skeleton } from "@echo/ui/components/skeleton";
 import { motion } from "motion/react";
 import * as React from "react";
 
@@ -8,7 +9,6 @@ import { useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc";
 import { useAsyncResource } from "@/lib/use-async-resource";
 
-import type { DigestOutput } from "@echo/ai";
 import type { DashboardOverview, StatsRange } from "@echo/api/types";
 
 import {
@@ -29,16 +29,8 @@ import { RecentFeedbackTable } from "./recent-feedback-table";
 import { SentimentChartCard } from "./sentiment-chart-card";
 import { SourcesCard } from "./sources-card";
 
-type InitialDigest = {
-  readonly digest: DigestOutput | null;
-  readonly generatedAt: Date | null;
-  readonly feedbackCount: number;
-};
-
 type DashboardClientProps = {
   readonly initialData: DashboardOverview;
-  readonly hasApiKey: boolean;
-  readonly initialDigest: InitialDigest;
 };
 
 const INITIAL_RANGE: StatsRange = "all";
@@ -51,23 +43,25 @@ const RANGE_OPTIONS: readonly { value: StatsRange; label: string }[] = [
   { value: "all", label: "All time" },
 ];
 
-export function DashboardClient({
-  initialData,
-  hasApiKey,
-  initialDigest,
-}: DashboardClientProps): React.ReactElement {
+export function DashboardClient({ initialData }: DashboardClientProps): React.ReactElement {
   const { data: session } = useSession();
   const [range, setRange] = React.useState<StatsRange>(INITIAL_RANGE);
   const { state } = useAsyncResource(() => trpc.dashboard.overview.query({ range }), {
     initialData,
     deps: [range],
   });
+  const { state: apiKeysState } = useAsyncResource(() => trpc.apiKeys.get.query());
+  const { state: digestState } = useAsyncResource(() => trpc.digest.get.query());
 
   const firstName = session?.user.name?.split(" ")[0] ?? "";
   const hasFeedback = state.status === "ready" && state.data.metrics.total.value > 0;
+  const onboardingReady = apiKeysState.status === "ready" && digestState.status === "ready";
+  const hasApiKey = apiKeysState.status === "ready" && apiKeysState.data.length > 0;
   const hasInsights =
-    initialDigest.digest !== null &&
-    (initialDigest.digest.topIssues.length > 0 || initialDigest.digest.themes.length > 0);
+    digestState.status === "ready" &&
+    digestState.data.digest !== null &&
+    (digestState.data.digest.topIssues.length > 0 ||
+      digestState.data.digest.themes.length > 0);
 
   const handleRangeChange = (value: StatsRange | null): void => {
     const next = RANGE_OPTIONS.find((option) => option.value === value);
@@ -117,15 +111,24 @@ export function DashboardClient({
       {state.status === "ready" && state.data.recent.length === 0 && (
         <div className="flex flex-col gap-5">
           <MetricStrip metrics={state.data.metrics} trend={state.data.trend} />
-          <ProductFlowStrip
-            variant="full"
-            hasFeedback={hasFeedback}
-            hasInsights={hasInsights}
-          />
-          <OnboardingChecklist
-            hasFeedback={state.data.metrics.total.value > 0}
-            hasApiKey={hasApiKey}
-          />
+          {onboardingReady ? (
+            <>
+              <ProductFlowStrip
+                variant="full"
+                hasFeedback={hasFeedback}
+                hasInsights={hasInsights}
+              />
+              <OnboardingChecklist
+                hasFeedback={state.data.metrics.total.value > 0}
+                hasApiKey={hasApiKey}
+              />
+            </>
+          ) : (
+            <>
+              <Skeleton className="h-36 rounded-lg" />
+              <Skeleton className="h-64 rounded-lg" />
+            </>
+          )}
         </div>
       )}
 

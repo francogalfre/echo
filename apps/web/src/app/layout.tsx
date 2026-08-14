@@ -11,10 +11,11 @@ import type { Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { createMetadata } from "@/utils/metadata";
+import { siteConfig } from "@/utils/site";
 
 import "../index.css";
 
-export const metadata = createMetadata();
+export const metadata = createMetadata({ title: siteConfig.title, separator: " - " });
 
 export const viewport: Viewport = {
   themeColor: [

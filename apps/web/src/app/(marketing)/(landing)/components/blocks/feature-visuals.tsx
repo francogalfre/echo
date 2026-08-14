@@ -3,7 +3,7 @@
 import codingCharacter from "@echo/assets/character/coding.webp";
 import { Icons } from "@echo/ui/components/icons";
 import { easings } from "@echo/ui/lib/motion";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import Image from "next/image";
 
 export const cardTransition = { duration: 0.7, ease: easings.out } as const;
@@ -38,10 +38,7 @@ export const InboxVisual = (): React.ReactElement => {
       </div>
 
       <div className="h-60 overflow-hidden">
-        <motion.div
-          variants={{ rest: { y: 0 }, hover: { y: -96 } }}
-          transition={cardTransition}
-        >
+        <m.div variants={{ rest: { y: 0 }, hover: { y: -96 } }} transition={cardTransition}>
           {inboxRows.map((row) => (
             <div
               key={row.author}
@@ -56,7 +53,7 @@ export const InboxVisual = (): React.ReactElement => {
               </span>
             </div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );
@@ -71,19 +68,19 @@ const digestLines = [
 export const DigestVisual = (): React.ReactElement => {
   return (
     <div className="absolute inset-x-5 top-1/2 grid -translate-y-1/2">
-      <motion.div
+      <m.div
         variants={{ rest: { y: -22, rotate: 0 }, hover: { y: -52, rotate: -2.5 } }}
         transition={cardTransition}
         className="col-start-1 row-start-1 mx-6 rounded-xl border border-border bg-card"
       />
 
-      <motion.div
+      <m.div
         variants={{ rest: { y: -11, rotate: 0 }, hover: { y: -28, rotate: -1.2 } }}
         transition={cardTransition}
         className="col-start-1 row-start-1 mx-3 rounded-xl border border-border bg-card"
       />
 
-      <motion.div
+      <m.div
         variants={{ rest: { y: 0 }, hover: { y: 8 } }}
         transition={cardTransition}
         className="relative col-start-1 row-start-1 overflow-hidden rounded-xl border border-border bg-card shadow-sm"
@@ -101,7 +98,7 @@ export const DigestVisual = (): React.ReactElement => {
             </div>
           ))}
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 };
@@ -111,7 +108,7 @@ const themes = ["billing", "csv export", "onboarding"] as const;
 export const AskVisual = (): React.ReactElement => {
   return (
     <>
-      <motion.div
+      <m.div
         variants={{ rest: { y: 16 }, hover: { y: 0 } }}
         transition={cardTransition}
         className="pointer-events-none absolute -right-6 -bottom-6 w-36 sm:w-40"
@@ -123,19 +120,19 @@ export const AskVisual = (): React.ReactElement => {
           className="h-auto w-full"
           priority={false}
         />
-      </motion.div>
+      </m.div>
 
       <div className="absolute inset-x-5 top-10 space-y-3">
-        <motion.div
+        <m.div
           variants={{ rest: { y: 0 }, hover: { y: -8 } }}
           transition={cardTransition}
           className="flex items-center gap-2 rounded-xl border border-border bg-card px-3.5 py-3 shadow-sm"
         >
           <Icons.sparkles className="size-4 shrink-0 text-accent" />
           <span className="truncate text-xs">What broke for people this week?</span>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           variants={{ rest: { y: 0 }, hover: { y: -14 } }}
           transition={cardTransition}
           className="mr-16 rounded-xl border border-border bg-card p-3.5 shadow-sm"
@@ -145,22 +142,22 @@ export const AskVisual = (): React.ReactElement => {
             widget, all on Tuesday.
           </p>
 
-          <motion.div
+          <m.div
             variants={{ rest: {}, hover: { transition: { staggerChildren: 0.08 } } }}
             className="mt-3 flex flex-wrap gap-1.5"
           >
             {themes.map((theme) => (
-              <motion.span
+              <m.span
                 key={theme}
                 variants={{ rest: { opacity: 0.5, y: 0 }, hover: { opacity: 1, y: -2 } }}
                 transition={cardTransition}
                 className="rounded-md bg-pastel-violet-bg px-2 py-0.5 font-mono text-[11px] text-pastel-violet-text"
               >
                 {theme}
-              </motion.span>
+              </m.span>
             ))}
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </>
   );

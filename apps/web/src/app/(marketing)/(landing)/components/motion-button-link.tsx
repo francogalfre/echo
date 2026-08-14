@@ -1,11 +1,11 @@
 "use client";
 
 import { easings } from "@echo/ui/lib/motion";
-import { motion, useReducedMotion } from "motion/react";
+import { m, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { ComponentProps, ReactElement, ReactNode } from "react";
 
-const MotionLink = motion.create(Link);
+const MotionLink = m.create(Link);
 
 type MotionButtonLinkProps = {
   href: ComponentProps<typeof Link>["href"];

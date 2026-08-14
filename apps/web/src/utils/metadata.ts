@@ -7,15 +7,20 @@ type CreateMetadataInput = {
   description?: string;
   path?: string;
   noIndex?: boolean;
+  absoluteTitle?: boolean;
+  separator?: string;
 };
 
 export const createMetadata = (input?: CreateMetadataInput): Metadata => {
   const description = input?.description ?? siteConfig.description;
   const url = input?.path ? new URL(input.path, siteConfig.url).toString() : siteConfig.url;
+  const sep = input?.separator ?? " · ";
 
   const title = input?.title
-    ? { default: input.title, template: `%s · ${siteConfig.name}` }
-    : { default: siteConfig.title, template: `%s · ${siteConfig.name}` };
+    ? input.absoluteTitle
+      ? { absolute: input.title }
+      : { default: input.title, template: `%s${sep}${siteConfig.name}` }
+    : undefined;
 
   return {
     metadataBase: new URL(siteConfig.url),

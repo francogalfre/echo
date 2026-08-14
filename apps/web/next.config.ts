@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
   poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: ["@hugeicons/core-free-icons"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co" },
