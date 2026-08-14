@@ -68,3 +68,6 @@ endpoints.md
 .mcp.json
 openspec
 .superpowers/
+
+# Claude Code skills (heavy JS bundles)
+.claude/skills/impeccable/
