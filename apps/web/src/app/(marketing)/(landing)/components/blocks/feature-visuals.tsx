@@ -116,7 +116,13 @@ export const AskVisual = (): React.ReactElement => {
         transition={cardTransition}
         className="pointer-events-none absolute -right-6 -bottom-6 w-36 sm:w-40"
       >
-        <Image src={codingCharacter} alt="" className="h-auto w-full" priority={false} />
+        <Image
+          src={codingCharacter}
+          alt=""
+          sizes="(min-width: 640px) 160px, 144px"
+          className="h-auto w-full"
+          priority={false}
+        />
       </motion.div>
 
       <div className="absolute inset-x-5 top-10 space-y-3">

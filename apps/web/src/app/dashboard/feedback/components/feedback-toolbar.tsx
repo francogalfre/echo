@@ -78,7 +78,7 @@ export function FeedbackToolbar({
 
       <div className="flex items-center gap-2">
         <Select items={SOURCE_OPTIONS} value={source} onValueChange={handleSourceChange}>
-          <SelectTrigger>
+          <SelectTrigger aria-label="Filter by source">
             <SelectValue />
           </SelectTrigger>
           <SelectContent align="end" alignItemWithTrigger={false}>

@@ -2,9 +2,9 @@ import { Badge } from "@echo/ui/components/badge";
 import { cn } from "@echo/ui/lib/utils";
 
 const SENTIMENT_STYLE: Record<string, string> = {
-  positive: "bg-success/20 text-success",
+  positive: "bg-success/20 text-success-strong dark:text-success",
   neutral: "bg-muted text-muted-foreground",
-  negative: "bg-destructive/20 text-destructive",
+  negative: "bg-destructive/20 text-destructive-strong dark:text-destructive",
 };
 
 const NEUTRAL_STYLE = "bg-muted text-muted-foreground";
@@ -16,8 +16,8 @@ const SOURCE_LABEL: Record<string, string> = {
 };
 
 const SOURCE_STYLE: Record<string, string> = {
-  api: "bg-accent text-white",
-  form: "bg-accent-soft text-white",
+  api: "bg-source-api text-white",
+  form: "bg-source-form text-white",
   widget: "bg-accent-deep text-white",
 };
 

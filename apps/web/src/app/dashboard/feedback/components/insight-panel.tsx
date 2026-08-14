@@ -51,7 +51,7 @@ export function InsightPanel({
     if (item.hasInsight) {
       void generate(item.id);
     }
-  }, [active, item, generate, reset]);
+  }, [active, item.id, item.hasInsight, generate, reset]);
 
   const isLoading =
     state.status === "loading" || (item.hasInsight && state.status === "idle");

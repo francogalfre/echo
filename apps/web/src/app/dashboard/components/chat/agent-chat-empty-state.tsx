@@ -72,6 +72,7 @@ export function AgentChatEmptyState({
           src={codingCharacter}
           alt=""
           className="relative h-36 w-auto drop-shadow-sm"
+          sizes="150px"
           priority
         />
       </motion.div>

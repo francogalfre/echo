@@ -7,6 +7,8 @@ import { MotionButtonLink } from "../motion-button-link";
 import { Reveal, RevealItem } from "../reveal";
 import { Section, SectionHeading } from "../section";
 
+import channelsImage from "../../../../../../public/landing/channels.webp";
+
 const channels = [
   {
     title: "Custom page",
@@ -79,10 +81,11 @@ export const Channels = (): React.ReactElement => {
         <Reveal delay={0.15}>
           <RevealItem>
             <Image
-              src="/landing/channels.webp"
+              src={channelsImage}
               alt="The hosted Echo feedback page, with a comment form beside a list of recent feedback"
-              width={1040}
-              height={896}
+              sizes="(min-width: 1024px) 520px, 100vw"
+              loading="lazy"
+              placeholder="blur"
               className="h-auto w-full rounded-2xl"
             />
           </RevealItem>

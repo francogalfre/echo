@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Echo — User feedback infrastructure for developers";
+export const alt = "Echo: user feedback infrastructure for product teams";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -74,8 +74,8 @@ export default function OpengraphImage(): Response {
             maxWidth: "820px",
           }}
         >
-          A drop-in widget, a REST API and a hosted page — with sentiment scored the moment
-          feedback lands.
+          A drop-in widget, a REST API and a hosted page, with sentiment scored the moment
+          feedback lands, for product, support and engineering teams.
         </div>
       </div>
 

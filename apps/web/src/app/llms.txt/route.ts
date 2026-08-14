@@ -4,9 +4,10 @@ const absolute = (path: string): string => new URL(path, siteConfig.url).toStrin
 
 const body = `# Echo
 
-> Echo is developer-first user feedback infrastructure. It provides a drop-in widget, a REST
+> Echo is user feedback infrastructure for product teams. It provides a drop-in widget, a REST
 > API and a hosted feedback page for collecting feedback, plus a dashboard that classifies
-> sentiment, generates AI summaries and turns recurring themes into a board.
+> sentiment, generates AI summaries and turns recurring themes into a board — so product,
+> support and engineering all work from the same inbox.
 
 ## What Echo does
 

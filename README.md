@@ -1,4 +1,4 @@
-<img src="assets/echo-avatar.png" width="100%" alt="Echo" />
+<img src="assets/cover.webp" width="100%" alt="Echo" />
 
 <h1 align="center">Echo</h1>
 

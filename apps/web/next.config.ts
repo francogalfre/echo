@@ -1,6 +1,8 @@
 import "@echo/env/web";
 import type { NextConfig } from "next";
 
+const oneYearInSeconds = 60 * 60 * 24 * 365;
+
 const nextConfig: NextConfig = {
   typedRoutes: true,
   reactCompiler: true,
@@ -11,6 +13,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
     ],
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: oneYearInSeconds,
+    qualities: [60, 75],
   },
   async headers() {
     const globalHeaders = [

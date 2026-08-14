@@ -36,10 +36,18 @@
   --accent-foreground: oklch(0.985 0 0);
   --accent-soft: oklch(0.68 0.14 282.7);
   --accent-deep: oklch(0.42 0.19 282.7);
+  /* Accent-strong — darker on-surface text for accent-tinted badge fills */
+  --accent-strong: oklch(0.51 0.202 282.7);
+  /* Dedicated opaque badge fills — accent/accent-soft are too light for
+     white text at 4.5:1; these stay separate so other accent usages are untouched */
+  --source-api: oklch(0.5 0.2 282.7);
+  --source-form: oklch(0.5 0.14 282.7);
 
   /* Semantic — solid colors for toasts, statuses and inline feedback */
   --success: oklch(0.55 0.13 150);
   --success-foreground: oklch(0.98 0 0);
+  /* Success-strong — darker on-surface text for success-tinted badge fills */
+  --success-strong: oklch(0.45 0.13 150);
   --warning: oklch(0.72 0.15 75);
   --warning-foreground: oklch(0.24 0.03 75);
   --info: oklch(0.58 0.13 240);
@@ -47,6 +55,8 @@
 
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
+  /* Destructive-strong — darker on-surface text for destructive-tinted badge fills */
+  --destructive-strong: oklch(0.46 0.22 27);
   --border: oklch(0.91 0 0);
   --input: oklch(0.91 0 0);
   --ring: oklch(0.567 0.202 282.7);
@@ -112,6 +122,8 @@
   --accent-foreground: oklch(0.985 0 0);
   --accent-soft: oklch(0.78 0.13 282.7);
   --accent-deep: oklch(0.55 0.17 282.7);
+  --source-api: oklch(0.55 0.2 282.7);
+  --source-form: oklch(0.53 0.14 282.7);
 
   /* Semantic — brighter on dark for legibility */
   --success: oklch(0.7 0.15 150);
@@ -182,14 +194,19 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
   --color-accent-deep: var(--accent-deep);
+  --color-accent-strong: var(--accent-strong);
+  --color-source-api: var(--source-api);
+  --color-source-form: var(--source-form);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-success-strong: var(--success-strong);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-strong: var(--destructive-strong);
 
   --color-pastel-green-bg: var(--pastel-green-bg);
   --color-pastel-green-text: var(--pastel-green-text);

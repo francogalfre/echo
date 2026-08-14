@@ -51,6 +51,66 @@ function TypingIndicator(): React.ReactElement {
   );
 }
 
+type AgentChatMessageItemProps = {
+  message: UIMessage;
+  isLast: boolean;
+  isBusy: boolean;
+  agent: AgentPersona;
+};
+
+function AgentChatMessageItem({
+  message,
+  isLast,
+  isBusy,
+  agent,
+}: AgentChatMessageItemProps): React.ReactElement {
+  const rawText = messageText(message);
+  const text = stripToolXml(rawText);
+  const isAssistant = message.role === "assistant";
+
+  // Show "Thinking..." only for the last assistant bubble while streaming
+  // and there is no visible text yet.
+  const showTyping = isBusy && isAssistant && isLast && text.length === 0;
+
+  return (
+    <motion.div
+      initial={message.role === "user" ? { opacity: 0, y: 8, x: 12 } : false}
+      animate={{ opacity: 1, y: 0, x: 0 }}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
+      className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
+    >
+      {isAssistant && (
+        <span className="relative flex size-8 shrink-0 overflow-hidden rounded-lg bg-muted/50">
+          <Image
+            src={agent.avatarImage}
+            alt={agent.name}
+            fill
+            sizes="32px"
+            className="object-contain"
+          />
+        </span>
+      )}
+
+      <div
+        className={cn(
+          "max-w-[85%] text-sm leading-relaxed",
+          message.role === "user"
+            ? "rounded-2xl bg-muted px-4 py-3 text-foreground"
+            : "px-1 py-1 text-foreground",
+        )}
+      >
+        {message.role === "user" ? (
+          <span className="whitespace-pre-wrap">{rawText}</span>
+        ) : showTyping ? (
+          <TypingIndicator />
+        ) : (
+          <Markdown text={text} />
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
 export function AgentChatMessages({
   messages,
   isBusy,
@@ -58,54 +118,15 @@ export function AgentChatMessages({
 }: AgentChatMessagesProps): React.ReactElement {
   return (
     <div className="flex flex-col gap-5">
-      {messages.map((message) => {
-        const rawText = messageText(message);
-        const text = stripToolXml(rawText);
-        const isLast = message === messages[messages.length - 1];
-        const isAssistant = message.role === "assistant";
-
-        // Show "Thinking..." only for the last assistant bubble while streaming
-        // and there is no visible text yet.
-        const showTyping = isBusy && isAssistant && isLast && text.length === 0;
-
-        return (
-          <motion.div
-            key={`msg-${message.id}`}
-            initial={message.role === "user" ? { opacity: 0, y: 8, x: 12 } : false}
-            animate={{ opacity: 1, y: 0, x: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
-            className={cn("flex gap-3", message.role === "user" && "flex-row-reverse")}
-          >
-            {isAssistant && (
-              <span className="relative flex size-8 shrink-0 overflow-hidden rounded-lg bg-muted/50">
-                <Image
-                  src={agent.avatarImage}
-                  alt={agent.name}
-                  fill
-                  className="object-contain"
-                />
-              </span>
-            )}
-
-            <div
-              className={cn(
-                "max-w-[85%] text-sm leading-relaxed",
-                message.role === "user"
-                  ? "rounded-2xl bg-muted px-4 py-3 text-foreground"
-                  : "px-1 py-1 text-foreground",
-              )}
-            >
-              {message.role === "user" ? (
-                <span className="whitespace-pre-wrap">{rawText}</span>
-              ) : showTyping ? (
-                <TypingIndicator />
-              ) : (
-                <Markdown text={text} />
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
+      {messages.map((message, index) => (
+        <AgentChatMessageItem
+          key={`msg-${message.id}`}
+          message={message}
+          isLast={index === messages.length - 1}
+          isBusy={isBusy}
+          agent={agent}
+        />
+      ))}
     </div>
   );
 }

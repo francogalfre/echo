@@ -31,6 +31,7 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrolledUpRef = useRef(false);
+  const scrollRafRef = useRef<number | null>(null);
 
   const echo = AGENT_PERSONAS.echo;
 
@@ -49,7 +50,14 @@ export function AgentChat({ open, onOpenChange }: AgentChatProps): React.ReactEl
 
   useEffect(() => {
     if (scrolledUpRef.current) return;
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
+    scrollRafRef.current = requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      scrollRafRef.current = null;
+    });
+    return () => {
+      if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
+    };
   }, [thread.messages]);
 
   useEffect(() => {

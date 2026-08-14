@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import type { CSSProperties } from "react";
 
 const fade = "linear-gradient(to bottom, black 0%, black 52%, transparent 100%)";
@@ -20,7 +20,7 @@ const veil: CSSProperties = {
 };
 
 type HeroBackdropProps = {
-  image?: string;
+  image?: StaticImageData;
 };
 
 export const HeroBackdrop = ({ image }: HeroBackdropProps): React.ReactElement => {
@@ -33,10 +33,12 @@ export const HeroBackdrop = ({ image }: HeroBackdropProps): React.ReactElement =
         >
           <Image
             src={image}
-            alt="Hero background clouds in a purple sky"
+            alt=""
             fill
             priority
-            loading="eager"
+            sizes="100vw"
+            quality={60}
+            placeholder="blur"
             className="object-cover rounded-2xl"
           />
         </div>

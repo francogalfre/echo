@@ -78,8 +78,8 @@ export const Features = (): React.ReactElement => {
         <RevealItem>
           <SectionHeading
             align="center"
-            title="Feedback stops being a chore to read"
-            description="Echo does the triage the moment something lands, so the only thing left is deciding what to build."
+            title="User feedback, sorted by sentiment the moment it lands"
+            description="Echo's sentiment analysis does the triage automatically, so the only thing left is deciding what to build."
           />
         </RevealItem>
       </Reveal>

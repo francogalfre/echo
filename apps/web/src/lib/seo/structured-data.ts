@@ -16,6 +16,7 @@ export const organizationJsonLd = (): JsonLd => ({
   name: siteConfig.name,
   url: siteConfig.url,
   description: siteConfig.description,
+  logo: absolute("/logo-email.png"),
 });
 
 export const websiteJsonLd = (): JsonLd => ({
@@ -54,6 +55,8 @@ export const softwareApplicationJsonLd = (): JsonLd => ({
       price: "0",
       priceCurrency: "USD",
       description: "1 project, 300 stored feedback, widget, REST API and hosted page.",
+      availability: "https://schema.org/InStock",
+      url: absolute("/#pricing"),
     },
     {
       "@type": "Offer",
@@ -61,6 +64,8 @@ export const softwareApplicationJsonLd = (): JsonLd => ({
       price: "12",
       priceCurrency: "USD",
       description: "Unlimited stored feedback, 5 projects and higher daily AI limits.",
+      availability: "https://schema.org/InStock",
+      url: absolute("/#pricing"),
     },
   ],
   provider: { "@id": absolute("/#organization") },

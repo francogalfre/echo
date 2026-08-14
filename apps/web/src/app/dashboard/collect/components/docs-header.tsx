@@ -53,6 +53,7 @@ export const DocsHeader = ({
           <button
             type="button"
             onClick={copy}
+            aria-label={`Copy base URL: ${baseUrl}`}
             className="group flex w-full items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-left transition-colors hover:border-foreground/20"
           >
             <span className="min-w-0 flex-1 font-mono text-xs text-foreground">

@@ -46,6 +46,7 @@ function ProjectCard({
         type="button"
         onClick={() => onSwitch(id)}
         disabled={isActive || isSwitching}
+        aria-label={isActive ? `${name}, current project` : `Switch to ${name}`}
         className={cn(
           "group flex w-full items-center gap-3 rounded-xl border border-border bg-card",
           "p-4 text-left transition-[translate,border-color] duration-150",
@@ -55,7 +56,7 @@ function ProjectCard({
         )}
       >
         <Avatar className="size-9 shrink-0 rounded-lg">
-          {logo ? <AvatarImage src={logo} alt={`${name} logo`} /> : null}
+          {logo ? <AvatarImage src={logo} alt="" /> : null}
           <AvatarFallback name={name} className="rounded-lg text-sm" />
         </Avatar>
 

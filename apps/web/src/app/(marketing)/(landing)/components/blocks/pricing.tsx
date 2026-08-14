@@ -60,7 +60,7 @@ export const Pricing = (): React.ReactElement => {
         <RevealItem>
           <SectionHeading
             align="center"
-            title="Start free. Upgrade when the feedback keeps coming."
+            title="Simple pricing for user feedback management"
             description="No seat pricing, no annual contract, no sales call. Cancel from the billing page whenever you like."
           />
         </RevealItem>

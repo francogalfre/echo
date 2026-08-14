@@ -87,7 +87,10 @@ export function DashboardClient({
         </div>
         <div className="flex items-center gap-3">
           <Select items={RANGE_OPTIONS} value={range} onValueChange={handleRangeChange}>
-            <SelectTrigger className="data-[size=default]:h-10 rounded-lg px-4 text-sm">
+            <SelectTrigger
+              aria-label="Select date range"
+              className="data-[size=default]:h-10 rounded-lg px-4 text-sm"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent align="end" side="bottom" alignItemWithTrigger={false}>

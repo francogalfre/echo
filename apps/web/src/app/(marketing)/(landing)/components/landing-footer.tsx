@@ -30,7 +30,7 @@ const columns = [
     ],
   },
   {
-    title: "Developers",
+    title: "Docs",
     links: [
       { href: "/docs", label: "Documentation" },
       { href: "/docs/getting-started", label: "Getting started" },

@@ -21,7 +21,7 @@ type OrgAvatarProps = { logo?: string | null; name?: string | null };
 
 const OrgAvatar = ({ logo, name }: OrgAvatarProps): React.ReactElement => (
   <Avatar className="size-6 rounded-md">
-    {logo ? <AvatarImage src={logo} alt={`${name} logo`} /> : null}
+    {logo ? <AvatarImage src={logo} alt="" /> : null}
     <AvatarFallback name={name ?? "·"} className="rounded-md text-[9px]" />
   </Avatar>
 );
@@ -80,6 +80,7 @@ export const OrgSwitcher = (): React.ReactElement => {
       <DropdownMenu>
         <DropdownMenuTrigger
           disabled={switching}
+          aria-label={`Switch project, current: ${activeOrg?.name ?? organizations?.[0]?.name ?? "none"}`}
           className="flex w-full items-center gap-2.5 rounded-lg border border-transparent px-2 py-1.75 text-sm outline-none transition-colors hover:border-border hover:bg-background data-disabled:cursor-not-allowed data-disabled:opacity-60 data-popup-open:border-border data-popup-open:bg-background"
         >
           <OrgAvatar logo={activeOrg?.logo} name={activeOrg?.name} />

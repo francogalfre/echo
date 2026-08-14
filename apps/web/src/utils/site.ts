@@ -17,8 +17,8 @@ export const siteConfig: SiteConfig = {
   name: "Echo",
   title: "Echo",
   description:
-    "Collect, classify, and act on user feedback with a drop-in widget, REST API, " +
-    "and a clean dashboard. Built for developers.",
+    "Collect user feedback via widget, REST API or hosted page. Echo classifies sentiment " +
+    "and summarizes what matters for product, support and engineering teams.",
   url: env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001",
   twitter: "@echo",
   links: {

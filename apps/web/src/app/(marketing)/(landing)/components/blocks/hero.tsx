@@ -9,10 +9,13 @@ import { HeroBackdrop } from "./hero-backdrop";
 import Link from "next/link";
 import Image from "next/image";
 
+import dashboardMock from "../../../../../../public/landing/dashboard-mock.webp";
+import heroBackground from "../../../../../../public/landing/hero-background.webp";
+
 export const Hero = (): React.ReactElement => {
   return (
     <section className="relative -mt-20 overflow-hidden pt-32">
-      <HeroBackdrop image="/landing/hero-background.webp" />
+      <HeroBackdrop image={heroBackground} />
 
       <div className="relative mx-auto max-w-6xl px-6 pt-16 pb-4 sm:pt-24">
         <Reveal onLoad className="max-w-4xl">
@@ -55,10 +58,11 @@ export const Hero = (): React.ReactElement => {
         <Reveal onLoad delay={0.35} className="mt-16 sm:mt-20">
           <RevealItem>
             <Image
-              src="/landing/dashboard-mock.webp"
-              alt=""
-              width="1920"
-              height="1080"
+              src={dashboardMock}
+              alt="The Echo dashboard showing the feedback inbox with sentiment-scored, source-tagged submissions"
+              sizes="(max-width: 1152px) 100vw, 1152px"
+              loading="eager"
+              placeholder="blur"
               className="rounded-[48px] border-8 border-gray-200/80 border-double"
             />
           </RevealItem>

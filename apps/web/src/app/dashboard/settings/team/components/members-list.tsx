@@ -76,7 +76,7 @@ function MemberRow({
     <StaggerItem>
       <div className="group flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-foreground/15">
         <Avatar className="size-9 shrink-0">
-          {image ? <AvatarImage src={image} alt={`${name} avatar`} /> : null}
+          {image ? <AvatarImage src={image} alt="" /> : null}
           <AvatarFallback name={name} />
         </Avatar>
 

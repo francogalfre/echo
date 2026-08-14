@@ -1,13 +1,18 @@
 import { env } from "@echo/env/web";
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense, type ReactNode } from "react";
+
+import { createMetadata } from "@/utils/metadata";
 
 import { AgentChatButton } from "./components/chat/agent-chat-button";
 import { MotionProvider } from "./components/layout/motion-provider";
 import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";
+
+export const metadata: Metadata = createMetadata({ noIndex: true });
 
 type DashboardLayoutProps = {
   children: ReactNode;

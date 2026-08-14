@@ -19,9 +19,9 @@ export const faqItems: readonly FaqItem[] = [
       "No. The widget, the hosted feedback page and the API all accept anonymous submissions. A name is optional, so you can ask for as little as a rating and a comment.",
   },
   {
-    question: "How does Echo classify feedback?",
+    question: "How does Echo's sentiment analysis work?",
     answer:
-      "Each submission is scored for sentiment as positive, neutral or negative when it arrives, and tagged with the source it came from — widget, form or api. You can filter the inbox by both without labelling anything by hand.",
+      "Each submission is scored for sentiment as positive, neutral or negative when it arrives, and tagged with the source it came from: widget, form or api. You can filter the inbox by both without labelling anything by hand.",
   },
   {
     question: "What happens when I hit the free feedback limit?",
@@ -36,7 +36,7 @@ export const Faq = (): React.ReactElement => {
       <Reveal className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <RevealItem>
           <SectionHeading
-            title="Questions, answered"
+            title="Feedback widget and API questions, answered"
             description="Still unsure about something? The docs go deeper on every endpoint."
           />
         </RevealItem>
