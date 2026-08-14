@@ -63,7 +63,7 @@ export const Hero = (): React.ReactElement => {
               sizes="(max-width: 1152px) 100vw, 1152px"
               loading="eager"
               placeholder="blur"
-              className="rounded-[48px] border-8 border-gray-200/80 border-double"
+              className="hidden sm:block rounded-[48px] border-8 border-gray-200/80 border-double"
             />
           </RevealItem>
         </Reveal>
