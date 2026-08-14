@@ -68,8 +68,6 @@ function AgentChatMessageItem({
   const text = stripToolXml(rawText);
   const isAssistant = message.role === "assistant";
 
-  // Show "Thinking..." only for the last assistant bubble while streaming
-  // and there is no visible text yet.
   const showTyping = isBusy && isAssistant && isLast && text.length === 0;
 
   return (
