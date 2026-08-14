@@ -26,7 +26,7 @@ export type CachedDigest = {
 
 export type FeedbackRetriever = {
   readonly search: (
-    query: string,
+    query: string | null,
     limit: number,
     sentiment?: string,
   ) => Promise<readonly SearchHit[]>;
@@ -77,6 +77,21 @@ function withBudget<T>(
   return output;
 }
 
+export type ToolErrorResult = { readonly error: true; readonly message: string };
+
+async function safeExecute<T>(
+  toolName: string,
+  action: () => Promise<T>,
+): Promise<T | ToolErrorResult> {
+  try {
+    return await action();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(`[echo:ai] tool "${toolName}" failed`, error);
+    return { error: true, message: `${toolName} failed and returned no data.` };
+  }
+}
+
 const ECHO_INFO = {
   name: "Echo",
   description:
@@ -102,17 +117,22 @@ export function buildFeedbackTools(
   return {
     searchFeedback: tool({
       description:
-        "Full-text search across the organization's feedback. Use this to find feedback " +
-        "matching a topic, keyword, or complaint.",
+        "Search or list the organization's feedback. Pass `query` for full-text search " +
+        "on a topic, keyword, or complaint. Omit `query` (optionally with `sentiment`) " +
+        "to just list/browse the most recent feedback matching a sentiment filter — use " +
+        "this to read the actual feedback behind a count, e.g. after countFeedback " +
+        "reports how many negative items exist, call this without a query and " +
+        "sentiment: 'negative' to read them.",
       inputSchema: z.object({
-        query: z.string().min(1).max(200),
+        query: z.string().min(1).max(200).optional(),
         sentiment: z.enum(["positive", "neutral", "negative"]).optional(),
         limit: z.number().int().min(1).max(maxSearchLimit).optional(),
       }),
-      execute: async ({ query, sentiment, limit }) => {
-        const hits = await retriever.search(query, limit ?? 10, sentiment);
-        return withBudget(spendBudget, { results: toSearchOutput(hits) });
-      },
+      execute: async ({ query, sentiment, limit }) =>
+        safeExecute("searchFeedback", async () => {
+          const hits = await retriever.search(query ?? null, limit ?? 10, sentiment);
+          return withBudget(spendBudget, { results: toSearchOutput(hits) });
+        }),
     }),
 
     countFeedback: tool({
@@ -123,17 +143,20 @@ export function buildFeedbackTools(
         groupBy: z.enum(["sentiment", "tag", "day", "week"]),
         sentiment: z.enum(["positive", "neutral", "negative"]).optional(),
       }),
-      execute: async ({ groupBy, sentiment }) => {
-        if (groupBy === "sentiment") {
-          return withBudget(spendBudget, { counts: await retriever.countBySentiment() });
-        }
-        if (groupBy === "tag") {
+      execute: async ({ groupBy, sentiment }) =>
+        safeExecute("countFeedback", async () => {
+          if (groupBy === "sentiment") {
+            return withBudget(spendBudget, { counts: await retriever.countBySentiment() });
+          }
+          if (groupBy === "tag") {
+            return withBudget(spendBudget, {
+              counts: await retriever.tagBreakdown(sentiment),
+            });
+          }
           return withBudget(spendBudget, {
-            counts: await retriever.tagBreakdown(sentiment),
+            series: await retriever.timeSeries(groupBy, 30),
           });
-        }
-        return withBudget(spendBudget, { series: await retriever.timeSeries(groupBy, 30) });
-      },
+        }),
     }),
 
     getFeedbackById: tool({
@@ -142,10 +165,11 @@ export function buildFeedbackTools(
       inputSchema: z.object({
         ids: z.array(z.string().min(1)).min(1).max(maxByIdCount),
       }),
-      execute: async ({ ids }) => {
-        const hits = await retriever.byId(ids);
-        return withBudget(spendBudget, { results: toSearchOutput(hits) });
-      },
+      execute: async ({ ids }) =>
+        safeExecute("getFeedbackById", async () => {
+          const hits = await retriever.byId(ids);
+          return withBudget(spendBudget, { results: toSearchOutput(hits) });
+        }),
     }),
 
     getTimeSeries: tool({
@@ -155,10 +179,11 @@ export function buildFeedbackTools(
         bucket: z.enum(["day", "week", "month"]),
         limit: z.number().int().min(1).max(maxTimeSeriesLimit).optional(),
       }),
-      execute: async ({ bucket, limit }) => {
-        const series = await retriever.timeSeries(bucket, limit ?? 30);
-        return withBudget(spendBudget, { series });
-      },
+      execute: async ({ bucket, limit }) =>
+        safeExecute("getTimeSeries", async () => {
+          const series = await retriever.timeSeries(bucket, limit ?? 30);
+          return withBudget(spendBudget, { series });
+        }),
     }),
 
     readDigest: tool({
@@ -166,11 +191,12 @@ export function buildFeedbackTools(
         "Read the most recently generated feedback digest (executive summary, themes, " +
         "top issues) if one exists.",
       inputSchema: z.object({}),
-      execute: async () => {
-        const digest = await retriever.readDigest();
-        if (!digest) return { available: false as const };
-        return withBudget(spendBudget, { available: true as const, digest });
-      },
+      execute: async () =>
+        safeExecute("readDigest", async () => {
+          const digest = await retriever.readDigest();
+          if (!digest) return { available: false as const };
+          return withBudget(spendBudget, { available: true as const, digest });
+        }),
     }),
 
     getEchoInfo: tool({
@@ -182,27 +208,28 @@ export function buildFeedbackTools(
           .enum(["features", "pricing", "how_it_works", "general"])
           .default("general"),
       }),
-      execute: async ({ topic }) => {
-        if (topic === "pricing") {
-          return {
-            name: ECHO_INFO.name,
-            pricing: ECHO_INFO.pricing,
-          };
-        }
-        if (topic === "features") {
+      execute: async ({ topic }) =>
+        safeExecute("getEchoInfo", async () => {
+          if (topic === "pricing") {
+            return {
+              name: ECHO_INFO.name,
+              pricing: ECHO_INFO.pricing,
+            };
+          }
+          if (topic === "features") {
+            return {
+              name: ECHO_INFO.name,
+              description: ECHO_INFO.description,
+              features: ECHO_INFO.features,
+            };
+          }
           return {
             name: ECHO_INFO.name,
             description: ECHO_INFO.description,
             features: ECHO_INFO.features,
+            pricing: ECHO_INFO.pricing,
           };
-        }
-        return {
-          name: ECHO_INFO.name,
-          description: ECHO_INFO.description,
-          features: ECHO_INFO.features,
-          pricing: ECHO_INFO.pricing,
-        };
-      },
+        }),
     }),
   };
 }

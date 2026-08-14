@@ -140,6 +140,10 @@ export async function streamChatTurn(
     const uiMessageStream = streamResult.toUIMessageStream({
       originalMessages: allMessages,
       generateMessageId: () => crypto.randomUUID(),
+      onError: (error) => {
+        logError(`[echo:ai] chat stream error (conversation ${conversation.id})`, error);
+        return "An error occurred.";
+      },
       onFinish: async ({ responseMessage }) => {
         try {
           const [usage, modelResponse, providerMetadata] = await Promise.all([
