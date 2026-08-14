@@ -7,7 +7,7 @@ type Failure<Status extends number> = { success: false; status: Status; error: s
 
 export type SubmitPublicFeedbackResult =
   | { success: true }
-  | Failure<400 | 401 | 403 | 404 | 429>;
+  | Failure<400 | 401 | 403 | 404 | 409 | 429>;
 
 export async function submitPublicFeedback(
   input: PublicFeedbackInput,
@@ -26,8 +26,7 @@ export async function submitPublicFeedback(
 
   const guard = await guardSubmission(ip, input.slug, input.content);
   if (!guard.allowed) {
-    if (guard.silent) return { success: true };
-    return { success: false, status: 429, error: guard.message };
+    return { success: false, status: guard.status, error: guard.message };
   }
 
   const { email, rating, slug: _slug, _hp: _honeypot, ...rest } = input;

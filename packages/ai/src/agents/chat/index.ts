@@ -23,6 +23,11 @@ const toolsDisabledFromStep = 3;
 const maxAttempts = 2;
 const retryDelayMs = 500;
 
+const toolsDisabledNotice =
+  "Tools are no longer available for the rest of this turn. Do not call a tool or " +
+  "write tool-call syntax as text. Answer directly, in plain prose, using only what " +
+  "you already learned from earlier tool results in this conversation.";
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -77,7 +82,9 @@ async function attemptStream(input: ChatStreamInput): Promise<ChatStreamResult> 
     tools: buildFeedbackTools(input.retriever, input.spendBudget),
     stopWhen: stepCountIs(stepLimit),
     prepareStep: ({ stepNumber }) =>
-      stepNumber >= toolsDisabledFromStep ? { activeTools: [] } : {},
+      stepNumber >= toolsDisabledFromStep
+        ? { activeTools: [], system: `${systemPrompt}\n\n${toolsDisabledNotice}` }
+        : {},
     temperature: 0.3,
     maxOutputTokens,
     abortSignal: AbortSignal.timeout(timeoutMs),

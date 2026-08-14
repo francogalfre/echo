@@ -5,14 +5,16 @@ import { redis } from "./redis";
 import { logError } from "./logger";
 
 type Allowed = { allowed: true };
-type Blocked = { allowed: false; silent: boolean; message: string };
+type Blocked = { allowed: false; status: 409 | 429; message: string };
 export type GuardResult = Allowed | Blocked;
+
+const dedupWindowSeconds = 120;
 
 const ipLimiter = redis
   ? new Ratelimit({
       redis,
       analytics: true,
-      limiter: Ratelimit.slidingWindow(5, "1 h"),
+      limiter: Ratelimit.slidingWindow(20, "10 m"),
       prefix: "echo:rl:ip",
     })
   : null;
@@ -59,41 +61,48 @@ export async function guardSubmission(
 ): Promise<GuardResult> {
   if (!redis || !ipLimiter || !slugLimiter) return { allowed: true };
 
+  const isKnownIp = ip !== "unknown";
+
   try {
-    const [ipResult, slugResult] = await Promise.all([
-      ipLimiter.limit(ip),
-      slugLimiter.limit(slug),
-    ]);
-
-    if (!ipResult.success) {
-      return {
-        allowed: false,
-        silent: false,
-        message: "Too many submissions. Please wait before trying again.",
-      };
-    }
-
+    const slugResult = await slugLimiter.limit(slug);
     if (!slugResult.success) {
       return {
         allowed: false,
-        silent: false,
+        status: 429,
         message: "This page is receiving too many submissions right now.",
       };
+    }
+
+    if (isKnownIp) {
+      const ipResult = await ipLimiter.limit(ip);
+      if (!ipResult.success) {
+        return {
+          allowed: false,
+          status: 429,
+          message: "Too many submissions. Please wait before trying again.",
+        };
+      }
     }
   } catch (error) {
     logRedisFailure("guardSubmission.limit", error);
     return { allowed: true };
   }
 
-  try {
-    const dedupKey = `echo:dedup:${hashContent(ip, content)}`;
-    const isNew = await redis.set(dedupKey, "1", { nx: true, ex: 86400 });
+  if (isKnownIp) {
+    try {
+      const dedupKey = `echo:dedup:${hashContent(ip, content)}`;
+      const isNew = await redis.set(dedupKey, "1", { nx: true, ex: dedupWindowSeconds });
 
-    if (isNew === null) {
-      return { allowed: false, silent: true, message: "" };
+      if (isNew === null) {
+        return {
+          allowed: false,
+          status: 409,
+          message: "You've already submitted this — thanks for your feedback!",
+        };
+      }
+    } catch (error) {
+      logRedisFailure("guardSubmission.set", error);
     }
-  } catch (error) {
-    logRedisFailure("guardSubmission.set", error);
   }
 
   return { allowed: true };
@@ -108,7 +117,7 @@ export async function guardAiOrganization(organizationId: string): Promise<Guard
     if (!result.success) {
       return {
         allowed: false,
-        silent: false,
+        status: 429,
         message: "Too many AI requests for this project. Please slow down.",
       };
     }
@@ -129,7 +138,7 @@ export async function guardKeySubmission(key: string): Promise<GuardResult> {
     if (!result.success) {
       return {
         allowed: false,
-        silent: false,
+        status: 429,
         message: "Too many requests for this API key. Please slow down.",
       };
     }

@@ -21,10 +21,30 @@ export type FeedbackSeriesRow = {
 
 export async function searchFeedbackFts(
   organizationId: string,
-  query: string,
+  query: string | null,
   limit: number,
   sentiment: string | null,
 ): Promise<readonly FeedbackSearchRow[]> {
+  if (!query) {
+    return db
+      .select({
+        id: feedback.id,
+        content: feedback.content,
+        sentiment: feedback.sentiment,
+        tags: feedback.tags,
+        createdAt: feedback.createdAt,
+      })
+      .from(feedback)
+      .where(
+        and(
+          eq(feedback.organizationId, organizationId),
+          sentiment ? eq(feedback.sentiment, sentiment) : undefined,
+        ),
+      )
+      .orderBy(desc(feedback.createdAt))
+      .limit(limit);
+  }
+
   const scoreExpr = sql`
     ts_rank_cd(to_tsvector('english', ${feedback.content}), websearch_to_tsquery('english', ${query})) * 0.7
     + similarity(${feedback.content}, ${query}) * 0.3

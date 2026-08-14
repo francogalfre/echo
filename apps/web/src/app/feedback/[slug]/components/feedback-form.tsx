@@ -37,6 +37,7 @@ export const FeedbackForm = ({
   enableRating,
 }: FeedbackFormProps): React.ReactElement => {
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const shouldReduceMotion = useReducedMotion();
   const {
     register,
@@ -55,15 +56,22 @@ export const FeedbackForm = ({
     "focus:border-[var(--accent-color)]/70";
 
   const onSubmit = handleSubmit(async (values) => {
-    await trpc.publicFeedback.submit.mutate({
-      slug,
-      authorName: values.authorName,
-      content: values.content,
-      email: values.email || undefined,
-      rating: values.rating,
-      _hp: values._hp,
-    });
-    setSubmitted(true);
+    setSubmitError(null);
+    try {
+      await trpc.publicFeedback.submit.mutate({
+        slug,
+        authorName: values.authorName,
+        content: values.content,
+        email: values.email || undefined,
+        rating: values.rating,
+        _hp: values._hp,
+      });
+      setSubmitted(true);
+    } catch (error: unknown) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Something went wrong. Please try again.",
+      );
+    }
   });
 
   if (submitted) {
@@ -169,6 +177,12 @@ export const FeedbackForm = ({
             size="lg"
           />
         </motion.div>
+      )}
+
+      {submitError && (
+        <motion.p variants={fadeInUp} className="text-xs text-destructive">
+          {submitError}
+        </motion.p>
       )}
 
       <motion.button

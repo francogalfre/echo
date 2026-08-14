@@ -52,9 +52,8 @@ coverage
 .cache
 tmp
 temp
- ap
-# .claude/inspiration/
-# .claude/inspiration
+ap
+
 
 .agents/
 .agents
@@ -67,7 +66,9 @@ endpoints.md
 .atl/
 .mcp.json
 openspec
-.superpowers/
 
 # Claude Code skills (heavy JS bundles)
 .claude/skills/impeccable/
+.superpowers/
+# .claude/inspiration/
+# .claude/inspiration
