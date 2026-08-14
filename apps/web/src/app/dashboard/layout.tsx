@@ -12,7 +12,7 @@ import { Sidebar } from "./components/sidebar";
 import { UsageMeterData, UsageMeterSkeleton } from "./components/sidebar/usage-meter-data";
 import { Topbar } from "./components/topbar";
 
-export const metadata: Metadata = createMetadata({ noIndex: true });
+export const metadata: Metadata = createMetadata({ title: "Dashboard", noIndex: true });
 
 type DashboardLayoutProps = {
   children: ReactNode;
