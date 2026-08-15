@@ -54,6 +54,40 @@ const columns = [
   },
 ] as const;
 
+const LandingFooterSocials = () => {
+  return (
+    <div className="flex gap-4 pb-4 sm:pb-8 opacity-80">
+      <a
+        href="https://x.com/francogalfredev"
+        aria-label="Twitter"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <Icons.twitter className="size-4 sm:size-5" />
+      </a>
+
+      <a
+        href="https://www.linkedin.com/in/francogalfre/"
+        aria-label="LinkedIn"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <Icons.linkedin className="size-4 sm:size-5" />
+      </a>
+
+      <a
+        href="mailto:francogalfre.code@gmail.com"
+        aria-label="Email"
+        className="text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <Icons.mail className="size-4 sm:size-5" />
+      </a>
+    </div>
+  );
+};
+
 export const LandingFooter = (): React.ReactElement => {
   return (
     <footer className="relative isolate overflow-x-clip">
@@ -130,10 +164,12 @@ export const LandingFooter = (): React.ReactElement => {
           </nav>
         </div>
 
-        <div className="relative overflow-clip pt-24 pb-6 sm:pb-0">
+        <div className="relative overflow-clip pt-24 pb-6 sm:pb-0 flex items-end justify-between gap-8">
           <p className="text-start font-pixel text-[18vw] leading-[0.8] font-medium tracking-tighter text-primary-foreground sm:text-[12rem] lg:text-[14rem] opacity-40">
             echo
           </p>
+
+          <LandingFooterSocials />
         </div>
       </div>
     </footer>

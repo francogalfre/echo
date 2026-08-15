@@ -54,6 +54,8 @@ import {
   CrownIcon,
   Shield01Icon,
   Menu01Icon,
+  TwitterIcon,
+  Linkedin01Icon,
 } from "@hugeicons/core-free-icons";
 
 type IconProps = Omit<HugeiconsIconProps, "icon">;
@@ -120,4 +122,6 @@ export const Icons = {
   crown: createIcon(CrownIcon),
   shield: createIcon(Shield01Icon),
   menu: createIcon(Menu01Icon),
+  twitter: createIcon(TwitterIcon),
+  linkedin: createIcon(Linkedin01Icon),
 };
