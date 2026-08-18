@@ -35,9 +35,9 @@ export const createMetadata = (input?: CreateMetadataInput): Metadata => {
       locale: "en_US",
       images: [
         {
-          url: `${siteConfig.url}/opengraph-image.png`,
+          url: `${siteConfig.url}/opengraph-image.jpg`,
           width: 1200,
-          height: 630,
+          height: 800,
           alt: siteConfig.name,
         },
       ],
@@ -48,7 +48,7 @@ export const createMetadata = (input?: CreateMetadataInput): Metadata => {
       description,
       creator: siteConfig.twitter,
       site: siteConfig.twitter,
-      images: [`${siteConfig.url}/twitter-image.png`],
+      images: [`${siteConfig.url}/twitter-image.jpg`],
     },
     ...(input?.noIndex ? { robots: { index: false, follow: false } } : {}),
     alternates: input?.path ? { canonical: input.path } : undefined,
