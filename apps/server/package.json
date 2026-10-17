@@ -9,7 +9,7 @@
     "dev": "bun run --hot src/index.ts",
     "start": "bun run dist/index.mjs",
     "test": "vitest run",
-    "worker": "bun run src/worker.ts"
+    "worker": "bun run src/worker-cli.ts"
   },
   "dependencies": {
     "@echo/api": "workspace:*",
