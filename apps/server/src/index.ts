@@ -11,6 +11,7 @@ import { logger } from "hono/logger";
 import { dashboardCors, secretKeyCors } from "./middleware/cors";
 import { aiTrpcRateLimit } from "./middleware/rate-limit";
 import { secureHeadersMiddleware } from "./middleware/security-headers";
+import { workerKick } from "./middleware/worker-kick";
 import { chatRoutes } from "./routes/chat";
 import { feedbackRoutes } from "./routes/feedback";
 import { projectRoutes } from "./routes/projects";
@@ -44,6 +45,7 @@ app.onError((err, c) => {
 
 app.use(logger());
 app.use("*", secureHeadersMiddleware);
+app.use("*", workerKick);
 
 const chatCors = cors({
   origin: env.CORS_ORIGIN,
@@ -78,9 +80,4 @@ app.use(
 
 app.get("/", (c) => c.text("OK"));
 
-const port = Number(process.env.PORT) || 3000;
-
-export default {
-  port,
-  fetch: app.fetch,
-};
+export default app;

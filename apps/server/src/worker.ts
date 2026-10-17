@@ -24,6 +24,52 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export async function runWorkerOnce(options: {
+  concurrency: number;
+  workerId: string;
+  budgetMs: number;
+}): Promise<{ processed: number }> {
+  const { concurrency, workerId, budgetMs } = options;
+  const deadline = Date.now() + budgetMs;
+  let processed = 0;
+
+  await ensureDefaultSchedules();
+
+  const reaped = await reapStuckJobs(new Date(Date.now() - REAP_STALE_MS));
+  if (reaped > 0) console.warn(`[echo:worker] reaped ${reaped} stuck job(s)`);
+
+  while (Date.now() < deadline) {
+    const schedules = await dueSchedules();
+    for (const schedule of schedules) {
+      if (!isJobKind(schedule.kind)) continue;
+      await enqueue(schedule.kind, schedule.payload as Record<string, unknown>);
+      await advanceSchedule(schedule.kind, schedule.intervalSeconds);
+    }
+
+    const claimed = await claimJobs(workerId, concurrency);
+    if (claimed.length === 0 && schedules.length === 0) break;
+
+    await Promise.allSettled(claimed.map((job) => runJob(job)));
+    processed += claimed.length;
+  }
+
+  return { processed };
+}
+
+async function runJob(job: JobRow): Promise<void> {
+  try {
+    if (!isJobKind(job.kind)) {
+      throw new Error(`No handler registered for job kind "${job.kind}"`);
+    }
+    await jobRegistry[job.kind](job.payload);
+    await completeJob(job.id);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[echo:worker] job ${job.id} (${job.kind}) failed`, error);
+    await failJob(job.id, message, job.maxAttempts);
+  }
+}
+
 export async function startWorker(options: {
   concurrency: number;
   pollIntervalMs: number;
@@ -37,22 +83,8 @@ export async function startWorker(options: {
 
   await ensureDefaultSchedules();
 
-  async function executeJob(job: JobRow): Promise<void> {
-    try {
-      if (!isJobKind(job.kind)) {
-        throw new Error(`No handler registered for job kind "${job.kind}"`);
-      }
-      await jobRegistry[job.kind](job.payload);
-      await completeJob(job.id);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(`[echo:worker] job ${job.id} (${job.kind}) failed`, error);
-      await failJob(job.id, message, job.maxAttempts);
-    }
-  }
-
   function dispatch(job: JobRow): void {
-    const task = executeJob(job).finally(() => inFlight.delete(job.id));
+    const task = runJob(job).finally(() => inFlight.delete(job.id));
     inFlight.set(job.id, task);
   }
 

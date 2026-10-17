@@ -1,5 +1,5 @@
 {
-  "extends": "@echo/config/tsconfig.base.json",
+  "extends": "../../packages/configuration/tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
     "outDir": "dist",
