@@ -56,6 +56,8 @@ export type ChatStreamInput = {
 };
 
 const excerptLimit = 240;
+const noMatchNote =
+  "No feedback matched these arguments. Do not search again with the same arguments; at most try one different query.";
 const maxSearchLimit = 20;
 const maxByIdCount = 20;
 const maxTimeSeriesLimit = 90;
@@ -131,6 +133,9 @@ export function buildFeedbackTools(
       execute: async ({ query, sentiment, limit }) =>
         safeExecute("searchFeedback", async () => {
           const hits = await retriever.search(query ?? null, limit ?? 10, sentiment);
+          if (hits.length === 0) {
+            return { results: [], note: noMatchNote };
+          }
           return withBudget(spendBudget, { results: toSearchOutput(hits) });
         }),
     }),

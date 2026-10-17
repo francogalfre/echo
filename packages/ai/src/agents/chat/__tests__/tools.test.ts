@@ -128,8 +128,34 @@ describe("buildFeedbackTools", () => {
     expect(digestResult).toEqual({ error: true, message: expect.any(String) });
   });
 
+  it("should tell the model to stop searching when a search matches nothing", async () => {
+    const tools = buildFeedbackTools(stubRetriever, () => true);
+
+    const result = await tools.searchFeedback?.execute?.(
+      { query: "nonexistent topic", limit: 10 },
+      { toolCallId: "t0", messages: [] },
+    );
+
+    expect(result).toEqual({
+      results: [],
+      note: expect.stringContaining("Do not search again"),
+    });
+  });
+
   it("should still report { truncated: true } separately from a tool error", async () => {
-    const tools = buildFeedbackTools(stubRetriever, () => false);
+    const hitRetriever: FeedbackRetriever = {
+      ...stubRetriever,
+      search: async () => [
+        {
+          id: "1",
+          excerpt: "x",
+          sentiment: "negative",
+          tags: [],
+          createdAt: "2026-01-01T00:00:00.000Z",
+        },
+      ],
+    };
+    const tools = buildFeedbackTools(hitRetriever, () => false);
 
     const result = await tools.searchFeedback?.execute?.(
       { sentiment: "negative", limit: 10 },
