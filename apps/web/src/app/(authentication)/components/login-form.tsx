@@ -23,6 +23,7 @@ type LoginFormProps = {
 export const LoginForm = ({ callbackURL }: LoginFormProps): React.ReactElement => {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -54,13 +55,29 @@ export const LoginForm = ({ callbackURL }: LoginFormProps): React.ReactElement =
       </Field>
 
       <Field name="password" label="Password" error={errors.password?.message}>
-        <Input
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          {...register("password")}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            placeholder="••••••••"
+            className="pr-10"
+            {...register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((visible) => !visible)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {showPassword ? (
+              <Icons.eyeOff className="size-4" />
+            ) : (
+              <Icons.eye className="size-4" />
+            )}
+          </button>
+        </div>
       </Field>
 
       {serverError ? <p className="text-xs text-destructive">{serverError}</p> : null}
