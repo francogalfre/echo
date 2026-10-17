@@ -5,10 +5,6 @@ const CHEAP_FALLBACK_MODEL = "openai/gpt-5-nano";
 const STRONG_FALLBACK_MODEL = "openai/gpt-4.1-mini";
 
 export const AGENT_MODELS = {
-  analyze: {
-    primary: env.OPENROUTER_MODEL ?? FREE_MODEL,
-    fallback: env.OPENROUTER_ANALYZE_FALLBACK_MODEL ?? CHEAP_FALLBACK_MODEL,
-  },
   insight: {
     primary: env.OPENROUTER_MODEL ?? FREE_MODEL,
     fallback: env.OPENROUTER_INSIGHT_FALLBACK_MODEL ?? CHEAP_FALLBACK_MODEL,
